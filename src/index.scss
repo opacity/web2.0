@@ -1,0 +1,67 @@
+body {
+  background-color: white;
+}
+
+header {
+  height: 140px;
+  background-color: #2e6dde !important;
+  @media (max-width: 767.9px) {
+    height: 70px;
+  }
+  .navbar-brand-image {
+    height: 60px;
+    @media (max-width: 767.9px) {
+      height: 30px;
+    }
+  }
+  &.navbar .navbar-nav .nav-link {
+    color: white;
+    font-size: 20px;
+    line-height: 30px;
+    &:hover {
+      color: white;
+      opacity: 0.8;
+    }
+  }
+  .logo-wrapper {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    font-size: 30px;
+    line-height: 45px;
+    color: #ffffff;
+    text-decoration: none !important;
+    @media (max-width: 767.9px) {
+      font-size: 14px;
+      line-height: 21px;
+      .ml-3 {
+        margin-inline-start: 0px !important;
+      }
+    }
+  }
+  .nav-item {
+    .btn {
+      font-size: 16px;
+      line-height: 24px;
+      &.btn-primary {
+        background-color: transparent;
+        border-color: white;
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+  }
+  &.navbar .navbar-toggler {
+    color: white;
+  }
+  .mobile-menu {
+    position: absolute;
+    top: 73px;
+    width: 100%;
+    background: #2e6dde;
+    z-index: 10;
+    padding-bottom: 30px;
+    border-bottom: 2px solid white;
+  }
+}
