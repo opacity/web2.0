@@ -13,12 +13,18 @@
   "license": "ISC",
   "dependencies": {
     "@types/react-router-dom": "^5.1.7",
+    "aos": "^2.3.4",
+    "formik": "^2.2.6",
     "fuse-react": "^3.0.8",
     "react": "^16.8.6",
     "react-bootstrap": "^1.4.3",
+    "react-copy-to-clipboard": "^5.0.3",
     "react-dom": "^16.8.6",
+    "react-lottie": "^1.2.3",
     "react-router-dom": "^5.2.0",
-    "tabler-react": "^2.0.0-alpha.1"
+    "reaptcha": "^1.7.2",
+    "tabler-react": "^2.0.0-alpha.1",
+    "yup": "^0.32.8"
   },
   "devDependencies": {
     "@types/react": "^16.9.2",

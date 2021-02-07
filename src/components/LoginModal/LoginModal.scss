@@ -1,0 +1,114 @@
+.modal-dialog {
+  .modal-content {
+    border-radius: 15px;
+  }
+  top: 100px;
+  .modal-body {
+    h2 {
+      font-weight: 600;
+      font-size: 26px;
+      line-height: 30px;
+      color: #000000;
+      margin-bottom: 65px;
+      position: relative;
+      margin-top: 30px;
+      &::after {
+        content: "";
+        width: 36px;
+        height: 3px;
+        background-color: #2e6dde;
+        position: absolute;
+        bottom: -10px;
+        margin-left: auto;
+        margin-right: auto;
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      @media (max-width: 767.9px) {
+        font-size: 20px;
+        line-height: 30px;
+        margin-top: 20px;
+        margin-bottom: 40px;
+      }
+    }
+    form {
+      padding: 65px;
+      @media (max-width: 767.9px) {
+        padding: 0;
+        img {
+          width: 68px;
+        }
+      }
+
+      .form-control {
+        background: #d8e7ff;
+        border-radius: 100px;
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 30px;
+        color: #353535;
+        // height: 57px;
+        padding-left: 20px;
+       
+      }
+      .btn {
+        width: 100%;
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 19px;
+        height: 46px;
+      }
+      .btn-outline-primary {
+        border-color: #4680e8;
+      }
+      .forgot {
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 19px;
+        color: #2e6dde;
+        margin-top: 30px;
+        text-align: center;
+      }
+      .border-line {
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 19px;
+        color: #1c1c1d;
+        margin: 25px 0;
+        text-align: center;
+        position: relative;
+        &::before {
+          content: "";
+          width: 50%;
+          height: 1px;
+          background-color: #cbdbf4;
+          position: absolute;
+          left: -40px;
+          top: 50%;
+        }
+        &::after {
+          content: "";
+          width: 50%;
+          height: 1px;
+          background-color: #cbdbf4;
+          position: absolute;
+          right: -40px;
+          top: 50%;
+        }
+        @media (max-width: 767.9px) {
+          &::before {
+            left: 0;
+            width: 40%;
+          }
+          &::after {
+            right: 0;
+            width: 40%;
+          }
+        }
+      }
+    }
+  }
+}

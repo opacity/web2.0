@@ -1,0 +1,116 @@
+.modal-dialog {
+  @media (min-width: 992px) {
+    &.signup {
+      max-width: 860px;
+    }
+  }
+  .modal-body {
+    form {
+      .form-group {
+        position: relative;
+        .handle {
+          &::after {
+            position: absolute;
+            content: url("../../assets/copies.png");
+            right: 22px;
+            top: 14px;
+            cursor: pointer;
+          }
+        }
+        .copy-feedback {
+          font-weight: 500;
+          font-size: 14px;
+          line-height: 30px;
+          color: #8c8c8c;
+          float: right;
+        }
+      }
+      h3 {
+        font-size: 20px;
+        line-height: 30px;
+        text-align: center;
+        color: #0c0e0d;
+        margin-bottom: 15px;
+        span {
+          font-size: 21px;
+          line-height: 31px;
+          color: #2e6dde;
+        }
+        @media (max-width: 767.9px) {
+          font-size: 14px;
+          line-height: 98.5%;
+          span {
+            font-size: 16px;
+            line-height: 24px;
+          }
+        }
+      }
+      .words-safe {
+        flex-wrap: unset !important;
+        justify-content: space-between;
+        @media (max-width: 767.9px) {
+          flex-wrap: wrap !important;
+        }
+        .col-md-3 {
+          margin: 15px 0;
+          div {
+            font-weight: 500;
+            font-size: 15px;
+            line-height: 22px;
+            background: #d8e7ff;
+            border-radius: 8px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+        }
+      }
+      .download-link {
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 24px;
+        text-decoration-line: underline;
+        color: #2e6dde;
+        margin-bottom: 20px;
+        @media (max-width: 767.9px) {
+          font-size: 14px;
+        }
+      }
+      .custom-control-label {
+        margin-left: 5px;
+        span {
+          font-weight: 600;
+          font-size: 16px;
+          line-height: 24px;
+          color: #2e6dde;
+          @media (max-width: 767.9px) {
+            font-size: 14px;
+          }
+        }
+      }
+    }
+    .signup-process {
+      .polygon {
+        background-color: #e0ebff;
+        font-size: 14px;
+        line-height: 21px;
+        color: #666666;
+        position: relative;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        
+        &::after {
+          clip-path: polygon(0 0, 50% 0, 100% 50%, 50% 100%, 0% 100%);
+          content: "";
+          background-color: #e0ebff;
+          width: 30px;
+          height: 100%;
+          position: absolute;
+          right: -30px;
+        }
+      }
+    }
+  }
+}

@@ -1,5 +1,10 @@
 import * as React from "react";
+import { useState } from "react";
 import { NavLink } from "tabler-react";
+import Lottie from "react-lottie";
+const animationData1 = require("./lottie1.json");
+const animationData2 = require("./lottie2.json");
+
 import SiteWrapper from "../../SiteWrapper";
 import "./LandingPage.scss";
 const bannerImage = require("../../assets/banner.png");
@@ -18,11 +23,35 @@ const uniswap = require("../../assets/uniswap.png");
 const mercatox = require("../../assets/mercatox.png");
 const kucoin = require("../../assets/kucoin.png");
 
-const LandingPage = ({ history }) => {
+const LandingPage = (props) => {
+  const [showSignUpModal, setShowSignUpModal] = useState(false);
+
+  const handleCloseSignUpModal = () => {
+    setShowSignUpModal(false);
+  };
+  const handleOpenSignUpModal = () => {
+    setShowSignUpModal(true);
+  };
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: animationData1,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
+  const defaultOptions2 = {
+    loop: true,
+    autoplay: true,
+    animationData: animationData2,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
   return (
-    <SiteWrapper>
-      <div className="first-ele">
-        <div className="container-xl">
+    <SiteWrapper showSignUpModal={showSignUpModal} handleCloseSignUpModal={handleCloseSignUpModal} isHome={true}>
+      <div className="first-ele" >
+        <div className="container-xl" data-aos="fade-up">
           <div className="row">
             <div className="col-md-6">
               <h1>Is file sharing a stressful process?</h1>
@@ -38,7 +67,7 @@ const LandingPage = ({ history }) => {
                   </button>
                 </div>
                 <div className="col-md-5">
-                  <button className="btn btn-pill btn-upload">
+                  <button className="btn btn-pill btn-upload" onClick={handleOpenSignUpModal}>
                     <span></span>
                     Get Started for FREE
                   </button>
@@ -53,8 +82,8 @@ const LandingPage = ({ history }) => {
           </div>
         </div>
       </div>
-      <div className="container-xl second-ele ">
-        <div className="row text-center">
+      <div className="container-xl second-ele " >
+        <div className="row text-center" data-aos="fade-up">
           <div className="col-md-4 card-items image-personal">
             <div className="image-ele"></div>
             <div className="title">No Personal Info Required</div>
@@ -71,8 +100,8 @@ const LandingPage = ({ history }) => {
             <div className="descriptions">Using the OPCT token, you can pay for your storage needs without ever having to use a credit card.</div>
           </div>
         </div>
-        <div className="row how-it-works" style={{ marginTop: 150 }}>
-          <div className="col-md-12">
+        <div className="row how-it-works"  style={{ marginTop: 150 }}>
+          <div className="col-md-12" data-aos="fade-up">
             <div className="row justify-content-center">
               <div className="col-md-5 pr-4">
                 <img className="mt-4" src={dashboard} />
@@ -96,7 +125,7 @@ const LandingPage = ({ history }) => {
 
           <div className="col-md-12 dot-left"></div>
 
-          <div className="col-md-12">
+          <div className="col-md-12" data-aos="fade-up">
             <div className="row justify-content-center">
               <div className="col-md-5 pr-4">
                 <h1 className="title mb-4">Get real-time updates when you share files</h1>
@@ -115,7 +144,7 @@ const LandingPage = ({ history }) => {
           </div>
         </div>
       </div>
-      <div className="third-ele text-center">
+      <div className="third-ele text-center" data-aos="fade-up">
         <div className="container-xl">
           <h1>What can Opacity help you do?</h1>
           <h3>
@@ -123,10 +152,12 @@ const LandingPage = ({ history }) => {
             on any other file hosting site. We’re always thinking outside of the box to remain one step ahead of our competitors, making our file
             upload system the best.
           </h3>
-          <button className="btn btn-pill btn-primary">Get Started for Free</button>
+          <button className="btn btn-pill btn-primary" onClick={handleOpenSignUpModal}>
+            Get Started for Free
+          </button>
         </div>
       </div>
-      <div className="fourth-ele">
+      <div className="fourth-ele" data-aos="fade-up">
         <div className="container-xl">
           <div className="row justify-content-center">
             <div className="col-md-6 pr-4 mt-7">
@@ -137,20 +168,23 @@ const LandingPage = ({ history }) => {
               </h4>
             </div>
             <div className="col-md-6 pl-4">
-              <img src={secure} />
-              <img className="d-none" src={securem} />
-              <div className="circle-primary"></div>
+              <Lottie options={defaultOptions}  width={"100%"} />
+              {/* <img src={secure} />
+              <img className="d-none" src={securem} /> */}
+              {/* <div className="circle-primary"></div> */}
             </div>
           </div>
         </div>
       </div>
-      <div className="six-ele">
+      <div className="six-ele" data-aos="fade-up">
         <div className="container-xl">
           <div className="row justify-content-center">
             <div className="col-md-6 pr-4 mt-7">
-              <img src={rules} />
+              <Lottie options={defaultOptions2}  width={"100%"} />
+
+              {/* <img src={rules} />
               <img className="d-none" src={rulesm} />
-              <div className="circle-yellow"></div>
+              <div className="circle-yellow"></div> */}
             </div>
             <div className="col-md-6 pl-4 ">
               <h1>Your Handle, Your Rules.</h1>
@@ -164,17 +198,19 @@ const LandingPage = ({ history }) => {
           </div>
         </div>
       </div>
-      <div className="third-ele text-center">
+      <div className="third-ele text-center" data-aos="fade-up">
         <div className="container-xl">
           <h1>Sync files automatically</h1>
           <h3 className="pl-5 pr-5">
             When you download the Opacity desktop app for Windows or Mac, you can automatically sync your local files with your Opacity Private cloud
             storage
           </h3>
-          <button className="btn btn-pill btn-primary">Get Started for Free</button>
+          <button className="btn btn-pill btn-primary" onClick={handleOpenSignUpModal}>
+            Get Started for Free
+          </button>
         </div>
       </div>
-      <div className="card-items container-xl">
+      <div className="card-items container-xl" data-aos="fade-up">
         <h1>More Info? No Problem.</h1>
         <div className="row">
           <div className="col-md-3 ">
@@ -228,7 +264,7 @@ const LandingPage = ({ history }) => {
           </div>
         </div>
       </div>
-      <div className="container-xl opct">
+      <div className="container-xl opct" data-aos="fade-up">
         <h1>Where to Buy OPCT</h1>
         <div className="row text-center align-items-center">
           <div className="col-md-4">

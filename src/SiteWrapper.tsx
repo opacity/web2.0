@@ -1,22 +1,38 @@
 // @flow
 
 import * as React from "react";
-import { ReactNode } from "react";
+import { ReactElement, ReactNode } from "react";
 import { NavLink, withRouter } from "react-router-dom";
-
 import { Site, Nav, Grid, List, Button, RouterContextProvider } from "tabler-react";
-
+import AOS from "aos";
 import type { NotificationProps } from "tabler-react";
 import { Navbar, NavDropdown } from "react-bootstrap";
 import Footer from "./components/footer/footer";
+import LoginModal from "./components/LoginModal/LoginModal";
+import SignUpModal from "./components/SignUpModal/SignUpModal";
+import "aos/dist/aos.css";
+AOS.init({
+  once: true,
+  anchorPlacement: 'center-bottom',
+  offset: 200,
+  delay: 50,
+  duration: 700
+});
 const logo = require("./assets/logo.svg");
 type Props = {
   children: ReactNode;
+  showSignUpModal?: boolean;
+  handleCloseSignUpModal?: Function;
+  showLoginModal?: boolean;
+  handleCloseLoginModal?: Function;
+  isHome?: boolean;
 };
 
 type State = {
   notificationsObjects?: Array<typeof NotificationProps>;
   showMobileMenu: boolean;
+  showLoginModal: boolean;
+  showSignUpModal: boolean;
 };
 
 class SiteWrapper extends React.Component<Props, State> {
@@ -24,15 +40,32 @@ class SiteWrapper extends React.Component<Props, State> {
     super(props);
     this.state = {
       showMobileMenu: false,
+      showLoginModal: false,
+      showSignUpModal: false,
     };
   }
   SetMobileMenu() {
     this.setState({ showMobileMenu: !this.state.showMobileMenu });
   }
-  render(): ReactNode {
+  handleCloseLoginModal() {
+    this.setState({ showLoginModal: false });
+  }
+  handleCloseSignUpModal() {
+    this.setState({ showSignUpModal: false });
+  }
+  handleOpenSignUpModal() {
+    this.setState({ showSignUpModal: true });
+  }
+  render(): ReactElement {
     return (
       <div className="page">
-        <header className="navbar navbar-expand-md navbar-light d-print-none">
+        <header
+          className={
+            this.props.isHome
+              ? "navbar navbar-expand-md navbar-light d-print-none "
+              : "navbar navbar-expand-md navbar-light d-print-none border-bottom"
+          }
+        >
           <div className="container-xl">
             <h1 className="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3 mb-0">
               <a href="/" className="logo-wrapper">
@@ -52,7 +85,7 @@ class SiteWrapper extends React.Component<Props, State> {
             </button>
 
             <div className="collapse navbar-collapse" id="navbar-menu">
-              <div className="d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center justify-content-center">
+              <div className="d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center justify-content-end">
                 <ul className="navbar-nav">
                   <li className="nav-item">
                     <Nav.Link href="/platform">The Platform</Nav.Link>
@@ -65,14 +98,25 @@ class SiteWrapper extends React.Component<Props, State> {
                   </li>
                   <li className="nav-item">
                     <div className="nav-link">
-                      <Button className="btn btn-white btn-pill" href="/plans">
+                      <Button
+                        className="btn btn-white btn-pill"
+                        onClick={() => {
+                          this.setState({ showSignUpModal: true });
+                        }}
+                      >
                         Explore Plans
                       </Button>
                     </div>
                   </li>
                   <li className="nav-item">
                     <div className="">
-                      <Button className="btn btn-primary btn-pill" href="/plans">
+                      <Button
+                        className="btn btn-primary btn-pill"
+                        href="/plans"
+                        onClick={() => {
+                          this.setState({ showLoginModal: true });
+                        }}
+                      >
                         Log in
                       </Button>
                     </div>
@@ -94,10 +138,15 @@ class SiteWrapper extends React.Component<Props, State> {
                       <Nav.Link href="/blog">Blog</Nav.Link>
                     </li>
                     <li className="nav-item">
-                      <Nav.Link href="/plans">Explore Plans</Nav.Link>
+                      <Nav.Link>Explore Plans</Nav.Link>
                     </li>
-                    <li className="nav-item">
-                      <Nav.Link href="/login">Log in</Nav.Link>
+                    <li
+                      className="nav-item"
+                      onClick={() => {
+                        this.setState({ showLoginModal: true });
+                      }}
+                    >
+                      <Nav.Link>Log in</Nav.Link>
                     </li>
                   </ul>
                 </div>
@@ -107,6 +156,14 @@ class SiteWrapper extends React.Component<Props, State> {
         </header>
         {this.props.children}
         <Footer />
+        <LoginModal
+          show={this.state.showLoginModal || this.props.showLoginModal}
+          handleClose={() => {
+            this.handleCloseLoginModal();
+            this.props.handleCloseLoginModal && this.props.handleCloseLoginModal();
+          }}
+        />
+        <SignUpModal show={this.props.showSignUpModal} handleClose={this.props.handleCloseSignUpModal} />
       </div>
     );
   }

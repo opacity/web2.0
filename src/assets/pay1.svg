@@ -1,10 +1,10 @@
-<svg width="214" height="217" viewBox="0 0 214 217" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="214" height="218" viewBox="0 0 214 218" fill="none" xmlns="http://www.w3.org/2000/svg">
 <circle cx="106.514" cy="106.514" r="105.514" fill="white" stroke="#2E6DDE" stroke-width="2" stroke-dasharray="2 2"/>
 <g filter="url(#filter0_d)">
 <circle cx="106.514" cy="106.514" r="70.1345" fill="white"/>
 </g>
 <g filter="url(#filter1_d)">
-<ellipse cx="107.632" cy="107.457" rx="53.6322" ry="55.4567" fill="#FAFCFF"/>
+<ellipse cx="106.514" cy="139.188" rx="53.6322" ry="55.4567" fill="#FAFCFF"/>
 </g>
 <g clip-path="url(#clip0)">
 <path d="M81.9824 120.948H83.81V122.776H81.9824V120.948Z" fill="#4680E8"/>
@@ -36,7 +36,7 @@
 <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow"/>
 <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape"/>
 </filter>
-<filter id="filter1_d" x="46" y="52" width="123.264" height="133.913" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<filter id="filter1_d" x="44.8818" y="83.7315" width="123.264" height="133.913" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
 <feOffset dy="15"/>

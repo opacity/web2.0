@@ -1,0 +1,154 @@
+import * as React from "react";
+import { NavLink } from "tabler-react";
+import { Row, Col, Container, Media, Button } from "react-bootstrap";
+import SiteWrapper from "../../SiteWrapper";
+import "./PlatformPage.scss";
+const fullControl = require("../../assets/full-control.png");
+const handle = require("../../assets/handle-access.png");
+const encryptt = require("../../assets/encrypt.png");
+const lastpass = require("../../assets/lastpass.png");
+const password = require("../../assets/password.png");
+const keepass = require("../../assets/keepass.png");
+const ourcode = require("../../assets/our-code.png");
+const uploadButton = require("../../assets/upload.png");
+
+const PlatformPage = ({ history }) => {
+  const [showLoginModal, setShowLoginModal] = React.useState(false);
+  const handleCloseLoginModal = () => {
+    setShowLoginModal(false);
+  };
+  return (
+    <SiteWrapper showLoginModal={showLoginModal} handleCloseLoginModal={handleCloseLoginModal}>
+      <Container fluid="xl" className="mt-5">
+        <Row className="justify-content-md-center">
+          <Col md="8" className="text-center">
+            <h1 className="page1-title mb-3">With Opacity, You’re in Full Control</h1>
+            <h3 className="page1-description mb-5">
+              Unlike other storage solutions, Opacity relies on client-side encryption to ensure that you, and only you have access to your files. Our
+              backend services keep zero knowledge regarding your file uploads.
+            </h3>
+            <img src={fullControl} />
+          </Col>
+        </Row>
+        <Row className="mt-md-5 mb-md-5">
+          <Col md="5" className="pr-md-5">
+            <img src={handle} />
+          </Col>
+          <Col md="7" className="pl-md-5">
+            <h1 className="page1-title">One Handle To Access Your Account.</h1>
+            <h3 className="page1-description">
+              When you sign up with Opacity, a unique Account Handle is created just for you. This Handle is all that is required to access your
+              storage account. By default, you are the only person with this information, so it is important that you record your Account Handle to
+              avoid trouble accessing your account. Keep it safe!
+            </h3>
+          </Col>
+        </Row>
+        <Row className="mt-md-5 mb-md-5">
+          <Col md="7" className="pr-md-5">
+            <h1 className="page1-title">Encrypted At Rest. Share Only What You Want.</h1>
+            <h3 className="page1-description">
+              The key to unlocking your files is generated client-side - not even Opacity can access your files! When you want to share a file with a
+              friend, you can easily generate a shareable link with a single button click. Only people with that link can access your file, giving you
+              granular control over who has access to your data.
+            </h3>
+          </Col>
+          <Col md="5" className="pl-md-5">
+            <img src={encryptt} />
+          </Col>
+        </Row>
+        <Row className="justify-content-md-center">
+          <Col md="7" className="text-center">
+            <h1 className="page1-title">Password Manager Recommended</h1>
+            <h3 className="page1-description-small mb-5">
+              <p>
+                We understand the need for privacy. That’s why our architecture ensures only you control access to your personal data. However, this
+                level of account privacy means that Opacity does not retain any record of your account information, including the Account Handle and
+                pin used to create and access your account.
+              </p>
+              <p>
+                To avoid any potential loss of access, we recommend using a password manager to safely store your Opacity credentials. Check out some
+                of the solutions below:
+              </p>
+            </h3>
+          </Col>
+        </Row>
+        <Row className="justify-content-md-center mb-md-5">
+          <Col md="8" className="text-center">
+            <Row className="justify-content-md-center">
+              <Col md="4">
+                <div className="card-item">
+                  <img src={lastpass} />
+                  <span className="card1-title">Lastpass</span>
+                </div>
+              </Col>
+              <Col md="4">
+                <div className="card-item">
+                  <img src={password} />
+                  <span className="card1-title">1Password</span>
+                </div>
+              </Col>
+              <Col md="4">
+                <div className="card-item">
+                  <img src={keepass} />
+                  <span className="card1-title">Keepass</span>
+                </div>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+        <Row className="justify-content-md-center mt-md-5">
+          <Col md="12" className="text-center mb-md-4">
+            <h1 className="page1-title">Transparent Code Base</h1>
+          </Col>
+          <Col md="6" className="pr-md-3">
+            <Media>
+              <img className="align-self-center mr-md-3" src={ourcode} />
+              <Media.Body>
+                <p>
+                  Wondering how things work? Take a peek under the hood! All of Opacity’s codebase is completely open source for anyone wondering how
+                  our system works.
+                </p>
+                <NavLink>Explore our code</NavLink>
+              </Media.Body>
+            </Media>
+          </Col>
+          <Col md="6" className="pl-md-3">
+            <Media>
+              <img className="align-self-center mr-md-3" src={ourcode} />
+              <Media.Body>
+                <p>
+                  Want an overview of Opacity, its current architecture, and where we want to go in the future? Check out the Opacity Whitepaper!
+                  Current version: 1.0
+                </p>
+                <NavLink>
+                  <img src={uploadButton} />
+                  Download Whitepaper
+                </NavLink>
+              </Media.Body>
+            </Media>
+          </Col>
+        </Row>
+      </Container>
+      <Container className="manage">
+        <Row className="justify-content-md-center">
+          <Col md="12" className="text-center">
+            <h1 className="page1-title">Password Manager Recommended</h1>
+            <div className="btn-groups">
+              <Button variant="warning btn-pill mr-md-3">Explore Plans</Button>
+              <Button
+                variant="outline-primary btn-pill"
+                onClick={() => {
+                  setShowLoginModal(true);
+                }}
+              >
+                Log in
+              </Button>
+            </div>
+          </Col>
+        </Row>
+      </Container>
+    </SiteWrapper>
+  );
+};
+
+export default PlatformPage;
