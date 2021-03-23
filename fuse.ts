@@ -1,5 +1,4 @@
-import { fusebox, sparky } from "fuse-box";
-
+import { fusebox, sparky, pluginReplace } from "fuse-box";
 class Context {
   runServer;
   getConfig = () =>
@@ -9,8 +8,19 @@ class Context {
       webIndex: {
         template: "src/index.html"
       },
-      cache : true,
-      devServer: this.runServer
+      cache: true,
+      devServer: this.runServer,
+      plugins: [
+        pluginReplace(/node_modules\/bn\.js\/.*/, {
+          "require('buffer')": "require('" + require.resolve("./node_modules/buffer") + "')",
+        }),
+        pluginReplace(/node_modules\/readable-stream\/.*/, {
+          "require('util')": "require('" + require.resolve("./node_modules/util") + "')",
+        }),
+        pluginReplace(/node_modules\/readable-stream\/.*/, {
+          "require('stream')": "require('" + require.resolve("./node_modules/stream-browserify") + "')",
+        })
+      ],
     });
 }
 const { task } = sparky<Context>(Context);
@@ -31,3 +41,4 @@ task("dist", async ctx => {
   const fuse = ctx.getConfig();
   await fuse.runProd({ uglify: false });
 });
+

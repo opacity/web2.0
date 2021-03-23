@@ -1,0 +1,36 @@
+{
+	"name": "@opacity/util",
+	"version": "0.0.17",
+	"description": "> TODO: description",
+	"author": "Connor <13987924+CKH4@users.noreply.github.com>",
+	"homepage": "https://github.com/opacity/ts-client-library#readme",
+	"directories": {
+		"lib": "src"
+	},
+	"files": [
+		"src"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/opacity/ts-client-library.git"
+	},
+	"bugs": {
+		"url": "https://github.com/opacity/ts-client-library/issues"
+	},
+	"scripts": {
+		"pretty": "prettierx --ignore-path ./config/.prettierxignore --config ./config/.prettierx.config.json --write .",
+		"test": "echo \"Error: run tests from root\" && exit 1"
+	},
+	"dependencies": {
+		"@opacity/middleware": "^0.0.17",
+		"async-mutex": "^0.2.6",
+		"bip39": "^3.0.3",
+		"buffer": "^6.0.3",
+		"hdkey": "https://github.com/cryptocoinjs/hdkey#browserFriendly",
+		"js-sha3": "^0.8.0",
+		"path-browserify": "^1.0.1",
+		"tslib": "^2.1.0",
+		"util": "^0.12.3",
+		"web-streams-polyfill": "^3.0.1"
+	}
+}

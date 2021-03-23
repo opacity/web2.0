@@ -1,0 +1,18 @@
+{
+	"arrowParens": "always",
+	"breakBeforeElse": true,
+	"endOfLine": "lf",
+	"jsxBracketSameLine": false,
+	"jsxSingleQuote": false,
+	"offsetTernaryExpressions": true,
+	"printWidth": 120,
+	"quoteProps": "as-needed",
+	"semi": false,
+	"singleQuote": false,
+	"spaceBeforeFunctionParen": true,
+	"spaceUnaryOps": false,
+	"trailingComma": "all",
+	"typeAngleBracketSpacing": false,
+	"typeBracketSpacing": true,
+	"useTabs": true
+}

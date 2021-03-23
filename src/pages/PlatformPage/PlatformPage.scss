@@ -1,0 +1,132 @@
+.page1-title {
+  font-weight: 600;
+  font-size: 35px;
+  line-height: 114.8%;
+  color: #000000;
+  margin-bottom: 25px;
+  @media (max-width: 767.9px) {
+    font-size: 18px;
+    line-height: 144.8%;
+    margin-top: 20px;
+  }
+}
+.page1-description {
+  font-size: 20px;
+  line-height: 193%;
+  color: #000000;
+  @media (max-width: 767.9px) {
+    font-size: 14px;
+    line-height: 184%;
+  }
+}
+.page1-description-small {
+  font-size: 16px;
+  line-height: 24px;
+  color: #000000;
+}
+.card-item {
+  position: relative;
+  .card1-title {
+    position: absolute;
+    // bottom: 10px;
+    top: 175px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-weight: 600;
+    font-size: 19px;
+    line-height: 28px;
+    color: #4680e8;
+    &::before {
+      position: absolute;
+      content: "";
+      background: #4680e8;
+      width: 13px;
+      height: 2px;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+    }
+  }
+
+}
+.media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @media (max-width: 767.9px) {
+    flex-direction: column;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-top: 10px;
+    & > img {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+  }
+  .media-body {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 172.8%;
+    color: #575757;
+    @media (max-width: 767.9px) {
+      p {
+        margin-bottom: 0;
+      }
+    }
+    .nav-link {
+      font-weight: 600;
+      font-size: 15px;
+      line-height: 120.8%;
+      text-decoration-line: underline;
+      color: #0572e1;
+      cursor: pointer;
+      padding-left: 0;
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+}
+.manage {
+  margin-top: 100px;
+  background-color: #d8e7ff;
+  max-width: 100%;
+  padding: 60px;
+  background-image: url("../../assets/manager.png");
+  @media (max-width: 767.9px) {
+    margin-top: 50px;
+    padding: 30px;
+    background-size: cover;
+    .btn-groups {
+      display: flex;
+      flex-direction: column;
+      .btn {
+        height: 45px;
+        &:first-child {
+          margin-bottom: 10px;
+        }
+      }
+    }
+  }
+  .btn {
+    height: 48px;
+    &.btn-warning {
+      background: #fdd801;
+      box-shadow: 0px 2px 6px 1px rgba(0, 0, 0, 0.16);
+      font-size: 16px;
+      line-height: 24px;
+      color: #000000;
+    }
+    &.btn-outline-primary {
+      border-color: #2e6dde;
+      border: 1px solid #2e6dde;
+      background-color: #d8e7ff;
+      min-width: 117px;
+      &:hover {
+        background-color: #206bc4;
+      }
+    }
+  }
+}

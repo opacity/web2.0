@@ -1,0 +1,31 @@
+{
+	"name": "@opacity/account-management",
+	"version": "0.0.17",
+	"description": "> TODO: description",
+	"author": "Connor <13987924+CKH4@users.noreply.github.com>",
+	"homepage": "https://github.com/opacity/ts-client-library#readme",
+	"main": "src/index.ts",
+	"directories": {
+		"lib": "src"
+	},
+	"files": [
+		"src"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/opacity/ts-client-library.git"
+	},
+	"bugs": {
+		"url": "https://github.com/opacity/ts-client-library/issues"
+	},
+	"scripts": {
+		"start": "rm -rf ./.cache && rm -rf ./dist && npx ts-node --project ./config/tsconfig.dev.json fuse.ts",
+		"pretty": "prettierx --ignore-path ./config/.prettierxignore --config ./config/.prettierx.config.json --write .",
+		"test": "echo \"Error: run tests from root\" && exit 1"
+	},
+	"dependencies": {
+		"@opacity/middleware": "^0.0.17",
+		"@opacity/util": "^0.0.17",
+		"tslib": "^2.1.0"
+	}
+}

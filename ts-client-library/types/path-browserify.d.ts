@@ -1,0 +1,43 @@
+declare module "path-browserify" {
+	import path, {
+		FormatInputPathObject,
+		ParsedPath,
+		PlatformPath,
+		basename,
+		delimiter,
+		dirname,
+		extname,
+		format,
+		isAbsolute,
+		join,
+		normalize,
+		parse,
+		posix,
+		relative,
+		resolve,
+		sep,
+		toNamespacedPath,
+		win32,
+	} from "path"
+	export default path
+	export {
+		FormatInputPathObject,
+		ParsedPath,
+		PlatformPath,
+		basename,
+		delimiter,
+		dirname,
+		extname,
+		format,
+		isAbsolute,
+		join,
+		normalize,
+		parse,
+		posix,
+		relative,
+		resolve,
+		sep,
+		toNamespacedPath,
+		win32,
+	}
+}

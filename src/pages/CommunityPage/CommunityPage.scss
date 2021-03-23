@@ -1,0 +1,105 @@
+.community {
+  margin-top: 110px;
+  padding-left: 100px;
+  padding-right: 100px;
+  margin-bottom: 110px;
+  @media (max-width: 767.8px) {
+    margin-top: 50px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-bottom: 50px;
+  }
+  h1 {
+    font-family: Playfair Display;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 42px;
+    line-height: 57px;
+    color: #000000;
+    margin-bottom: 28px;
+    text-align: center;
+    @media (max-width: 767.8px) {
+      font-size: 17px;
+      line-height: 10px;
+    }
+  }
+  h3 {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 24px;
+    color: #000000;
+    text-align: center;
+    @media (max-width: 767.8px) {
+      font-size: 14px;
+      line-height: 21px;
+    }
+  }
+  .site-items {
+    margin: 30px 0;
+  }
+  .site-item {
+    padding: 20px;
+    @media (max-width: 767.8px) {
+      padding: 0;
+      margin-top: 50px;
+    }
+    .d-flex {
+      img {
+        margin-right: 20px;
+        height: fit-content;
+      }
+      p {
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 24px;
+        color: #2e6dde;
+        @media (max-width: 767.8px) {
+          font-size: 16px;
+          line-height: 24px;
+        }
+        &.download {
+          position: relative;
+          &::before {
+            content: url("../../assets/download-button.svg");
+            position: absolute;       
+            left: 0;
+          }
+          font-weight: normal;
+          font-size: 16px;
+          line-height: 136%;
+          text-decoration-line: underline;
+          color: #2e6dde;
+          padding-left: 30px;
+          @media (max-width: 767.8px) {
+            font-size: 14px;
+            line-height: 136%;
+          }
+        }
+      }
+      .item-link {
+        font-weight: 600;
+        font-size: 18px;
+        line-height: 27px;
+        color: #000000;
+        @media (max-width: 767.8px) {
+          font-size: 16px;
+          line-height: 24px;
+          word-break: break-all;
+        }
+      }
+    }
+
+    h4 {
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 136%;
+      margin-top: 20px;
+    }
+    h5 {
+      font-size: 14px;
+      line-height: 191%;
+      color: #414141;
+    }
+  }
+}
