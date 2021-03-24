@@ -20,6 +20,7 @@
     "formik": "^2.2.6",
     "fuse-react": "^3.0.8",
     "moment": "^2.29.1",
+    "path-browserify": "^1.0.1",
     "react": "^16.8.6",
     "react-bootstrap": "^1.4.3",
     "react-copy-to-clipboard": "^5.0.3",

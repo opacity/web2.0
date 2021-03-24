@@ -4,7 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { Row, Col, Container, Media, Button, Nav, ProgressBar, Breadcrumb, DropdownButton, Dropdown } from "react-bootstrap";
 import TreeMenu, { TreeMenuProps, ItemComponent } from "react-simple-tree-menu";
 import { Account, AccountGetRes, AccountCreationInvoice } from "../../../ts-client-library/packages/account-management"
-import { AccountSystem, MetadataAccess, FileMetadata, FolderMetadata } from "../../../ts-client-library/packages/account-system"
+import { AccountSystem, MetadataAccess, FileMetadata, FolderMetadata, FolderFileEntry, FoldersIndexEntry } from "../../../ts-client-library/packages/account-system"
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web"
 import { bytesToB64, b64ToBytes } from "../../../ts-client-library/packages/util/src/b64"
 import { polyfillReadableStream } from "../../../ts-client-library/packages/util/src/streams"
@@ -17,6 +17,9 @@ import { formatBytes, formatGbs } from "../../helpers"
 import * as moment from 'moment';
 import { DndProvider, useDrop, DropTargetMonitor } from 'react-dnd'
 import { HTML5Backend, NativeTypes } from 'react-dnd-html5-backend'
+import { FileManagerFileEntry } from "../../components/FileManager/FileManagerFileEntry"
+import { posix } from "path-browserify"
+import { FileManagerFolderEntry } from "../../components/FileManager/FileManagerFolderEntry"
 const uploadImage = require("../../assets/upload.png");
 
 const storageNode = "http://18.191.166.234:3000";
@@ -77,6 +80,7 @@ const FileManagePage = ({ history }) => {
     net: netMiddleware,
     crypto: cryptoMiddleware,
     metadataNode: storageNode,
+    maxConcurrency: 7,
   });
   const accountSystem = new AccountSystem({ metadataAccess });
   const account = new Account({ crypto: cryptoMiddleware, net: netMiddleware, storageNode })
@@ -84,8 +88,8 @@ const FileManagePage = ({ history }) => {
   const [showSidebar, setShowSidebar] = React.useState(false);
   const [tableView, setTableView] = React.useState(true);
   const [currentPath, setCurrentPath] = React.useState('/')
-  const [fileList, setFileList] = React.useState([])
-  const [folderList, setFolderList] = React.useState([]);
+  const [fileList, setFileList] = React.useState<FolderFileEntry[]>([])
+  const [folderList, setFolderList] = React.useState<FoldersIndexEntry[]>([]);
   const [treeData, setTreeData] = React.useState([
     // {
     //   key: "first-level-node-1",
@@ -109,8 +113,10 @@ const FileManagePage = ({ history }) => {
   const [subPaths, setSubPaths] = React.useState([])
   const [accountInfo, setAccountInfo] = React.useState<AccountGetRes>();
   const [showRenameModal, setShowRenameModal] = React.useState(false);
-  const [renameFile, setRenameFile] = React.useState<FileMetadata>()
-  const [renameFolder, setRenameFolder] = React.useState<FolderMetadata>()
+  const [fileToRename, setFileToRename] = React.useState<FolderFileEntry>()
+  const [fileToDelete, setFileToDelete] = React.useState<FolderFileEntry>()
+  const [folderToRename, setFolderToRename] = React.useState<FoldersIndexEntry>()
+  const [folderToDelete, setFolderToDelete] = React.useState<FoldersIndexEntry>()
   const [oldName, setOldName] = React.useState();
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const handleShowSidebar = () => {
@@ -132,23 +138,13 @@ const FileManagePage = ({ history }) => {
     setSubPaths(subpaths);
     accountSystem.getFolderMetadataByPath(currentPath).then(async res => {
       let g = await accountSystem.getFoldersInFolderByPath(currentPath);
-      let folders = g.map(async folder => {
-        return await accountSystem.getFolderMetadataByPath(folder.path);
-      })
-      let folderlist = await Promise.all(folders);
+      // let folders = g.map(async folder => {
+      //   return await accountSystem.getFolderMetadataByPath(folder.path);
+      // })
+      let folderlist = g;
       console.log(folderlist)
       setFolderList(folderlist);
-      let filelist = res.files.map(async file => {
-        return await accountSystem.getFileMetadata(file.location)
-      })
-
-      Promise.all(filelist).then(res => {
-        res.map(file => {
-          file.type = typeList[file.type] || file.type
-        })
-        setFileList(res);
-        console.log(res)
-      })
+      setFileList(res.files);
     }).catch(err => {
       toast.error(`folder "${currentPath}" not found`)
     })
@@ -274,7 +270,7 @@ const FileManagePage = ({ history }) => {
       toast.error(`An error occurred while creating new folder.`)
     }
   }
-  const fileShare = async (file: FileMetadata) => {
+  const fileShare = async (file: FolderFileEntry) => {
     try {
     } catch (e) {
       toast.error(`An error occurred while sharing ${file.name}.`)
@@ -289,61 +285,62 @@ const FileManagePage = ({ history }) => {
 
     }
   }
-  const deletFile = async (file: FileMetadata) => {
+  const deleteFile = async (file: FolderFileEntry) => {
     try {
       const status = await accountSystem.removeFile(file.location);
       toast(`${file.name} was successfully deleted.`);
       setUpdateStatus(!updateStatus);
-      setRenameFile(null)
+      setFileToRename(null)
     } catch (e) {
       toast.error(`An error occurred while deleting ${file.name}.`)
     }
   }
-  const deletFolder = async (folder: FolderMetadata) => {
+  const deleteaFolder = async (folder: FoldersIndexEntry) => {
+    const name = posix.basename(folder.path)
     try {
       const status = await accountSystem.removeFolderByPath(folder.path);
-      toast(`Folder ${folder.name} was successfully deleted.`);
+      toast(`Folder ${folder.path} was successfully deleted.`);
       setUpdateStatus(!updateStatus);
-      setRenameFolder(null);
+      setFolderToRename(null);
     } catch (e) {
       console.log(e)
-      toast.error(`An error occurred while deleting Folder ${folder.name}.`)
+      toast.error(`An error occurred while deleting Folder ${folder.path}.`)
     }
   }
   const handleOpenRenameModal = (item, isFile) => {
     setOldName(item.name)
-    if (isFile) setRenameFile(item)
-    else setRenameFolder(item)
+    if (isFile) setFileToRename(item)
+    else setFolderToRename(item)
     setShowRenameModal(true)
   }
   const handleChangeRename = async (rename) => {
     try {
       setShowRenameModal(false);
       setOldName(null);
-      if (renameFile) {
-        const status = await accountSystem.renameFile((renameFile.location), rename);
-        toast(`${renameFile.name} was renamed successfully.`);
+      if (fileToRename) {
+        const status = await accountSystem.renameFile((fileToRename.location), rename);
+        toast(`${fileToRename.name} was renamed successfully.`);
       }
-      if (renameFolder) {
-        const status = await accountSystem.renameFolder((renameFolder.path), rename);
-        toast(`${renameFolder.name} was renamed successfully.`);
+      if (folderToRename) {
+        const status = await accountSystem.renameFolder((folderToRename.path), rename);
+        toast(`${folderToRename.path} was renamed successfully.`);
       }
-      setRenameFolder(null);
-      setRenameFile(null);
+      setFolderToRename(null);
+      setFileToRename(null);
       setUpdateStatus(!updateStatus)
     } catch (e) {
       console.log(e)
       toast.error(`An error occurred while rename ${rename}.`)
     }
   }
-  const handleDeleteItem = (item, isFile) => {
-    if (isFile) setRenameFile(item)
-    else setRenameFolder(item)
+  const handleDeleteItem = (item: FolderFileEntry | FoldersIndexEntry, isFile: boolean) => {
+    if (isFile) setFileToDelete(item as FolderFileEntry)
+    else setFolderToDelete(item as FoldersIndexEntry)
     setShowDeleteModal(true)
   }
   const handleDelete = async () => {
-    if (renameFolder) deletFolder(renameFolder)
-    else deletFile(renameFile)
+    if (folderToRename) deleteaFolder(folderToDelete)
+    else deleteFile(fileToDelete)
     setShowDeleteModal(false)
   }
   const handleDrop = React.useCallback(item => {
@@ -510,7 +507,7 @@ const FileManagePage = ({ history }) => {
                     <Breadcrumb.Item key={i} onClick={() => setCurrentPath(path)}>{text}</Breadcrumb.Item>
                   )
               )}
-              {/*             
+              {/*
               <Breadcrumb.Item href='#'>Library</Breadcrumb.Item>
               <Breadcrumb.Item active>Data</Breadcrumb.Item> */}
             </Breadcrumb>
@@ -519,9 +516,9 @@ const FileManagePage = ({ history }) => {
             <div className='grid-view'>
               {fileList.map((item, i) => (
                 <div className='grid-item' key={i}>
-                  <i className={`icon-${item.type}`}></i>
+                  {/* <i className={`icon-${item.type}`}></i>
                   <h3 className='file-name'>{item.name}</h3>
-                  <div className='file-info'>{item.size}</div>
+                  <div className='file-info'>{item.size}</div> */}
                 </div>
               ))}
             </div>
@@ -538,77 +535,26 @@ const FileManagePage = ({ history }) => {
               </Table.Header>
               <Table.Body>
                 {folderList.map((item, i) => (
-                  <Table.Row key={i}>
-                    <Table.Col className='file-name' onDoubleClick={() => setCurrentPath(item.path)}>
-                      <div className='d-flex'>
-                        <i className='icon-folder'></i>
-                        {item.name}
-                      </div>
-                    </Table.Col>
-                    <Table.Col>{moment(item.uploaded).calendar()}</Table.Col>
-                    {/* <Table.Col>{moment(item.created).format("MM/DD/YYYY")}</Table.Col> */}
-                    <Table.Col>{item.files.length} iteams</Table.Col>
-                    <Table.Col className='text-nowrap'>
-                      <DropdownButton menuAlign='right' title='' id='dropdown-menu-align-right'>
-                        {/* <Dropdown.Item eventKey='1'>
-                          <i className='icon-share'></i>
-                          Share
-                        </Dropdown.Item>
-                        <Dropdown.Divider /> */}
-                        {/* <Dropdown.Item eventKey='2'>
-                          <i className='icon-download'></i>
-                          Download
-                        </Dropdown.Item>
-                        <Dropdown.Divider /> */}
-                        <Dropdown.Item eventKey='3' onClick={() => handleDeleteItem(item, false)}>
-                          <i className='icon-delete'></i>
-                          Delete
-                        </Dropdown.Item>
-                        <Dropdown.Divider />
-                        <Dropdown.Item eventKey='4' onClick={() => handleOpenRenameModal(item, false)}>
-                          <i className='icon-rename'></i>
-                          Rename
-                        </Dropdown.Item>
-                      </DropdownButton>
-                    </Table.Col>
-                  </Table.Row>
+                  <FileManagerFolderEntry
+                    key={i}
+                    accountSystem={accountSystem}
+                    folderEntry={item}
+                    handleDeleteItem={handleDeleteItem}
+                    handleOpenRenameModal={handleOpenRenameModal}
+                    setCurrentPath={setCurrentPath}
+                  />
                 ))}
                 {fileList.map((item, i) => (
-                  <Table.Row key={i}>
-                    <Table.Col className='file-name'>
-                      <div className='d-flex'>
-                        <i className={`icon-${item.type}`}></i>
-                        {item.name}
-                      </div>
-                    </Table.Col>
-                    <Table.Col>{moment(item.uploaded).calendar()}</Table.Col>
-                    <Table.Col>{formatBytes(item.size)}</Table.Col>
-                    <Table.Col className='text-nowrap'>
-                      <DropdownButton menuAlign='right' title='' id='dropdown-menu-align-right'>
-                        <Dropdown.Item eventKey='1' onClick={() => fileShare(item)}>
-                          <i className='icon-share'></i>
-                          Share
-                        </Dropdown.Item>
-                        <Dropdown.Divider />
-                        <Dropdown.Item eventKey='2'>
-                          <i className='icon-download'></i>
-                          Download
-                        </Dropdown.Item>
-                        <Dropdown.Divider />
-                        <Dropdown.Item eventKey='3' onClick={() => handleDeleteItem(item, true)}>
-                          <i className='icon-delete'></i>
-                          Delete
-                        </Dropdown.Item>
-                        <Dropdown.Divider />
-                        <Dropdown.Item eventKey='4' onClick={() => handleOpenRenameModal(item, true)}>
-                          <i className='icon-rename'></i>
-                          Rename
-                        </Dropdown.Item>
-                      </DropdownButton>
-                    </Table.Col>
-                  </Table.Row>
+                  <FileManagerFileEntry
+                    key={i}
+                    accountSystem={accountSystem}
+                    fileEntry={item}
+                    fileShare={fileShare}
+                    handleDeleteItem={handleDeleteItem}
+                    handleOpenRenameModal={handleOpenRenameModal}
+                  />
                 ))}
-                {/* 
+                {/*
                 <Table.Row className='selected'>
                   <Table.Col className='file-name'>
                     <div className='d-flex'>
