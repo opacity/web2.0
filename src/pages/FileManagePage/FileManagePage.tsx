@@ -11,64 +11,43 @@ import { polyfillReadableStream } from "../../../ts-client-library/packages/util
 import { Upload, bindUploadToAccountSystem } from "../../../ts-client-library/packages/opaque"
 import { theme, FILE_MAX_SIZE } from "../../config";
 import RenameModal from "../../components/RenameModal/RenameModal";
-import DeleteModal from "../../components/DeleteModal/DeleteModal"
+import DeleteModal from "../../components/DeleteModal/DeleteModal";
+import AddNewFolderModal from "../../components/NewFolderModal/NewFolderModal"
 import "./FileManagePage.scss";
 import { formatBytes, formatGbs } from "../../helpers"
 import * as moment from 'moment';
 import { DndProvider, useDrop, DropTargetMonitor } from 'react-dnd'
 import { HTML5Backend, NativeTypes } from 'react-dnd-html5-backend'
+import { useDropzone } from "react-dropzone";
+import ReactLoading from "react-loading";
+
 const uploadImage = require("../../assets/upload.png");
+const empty = require("../../assets/empty.png");
 
 const storageNode = "http://18.191.166.234:3000";
 const typeList = {
   "text/plain": 'document',
   "application/x-zip-compressed": 'zip',
-  "image/png":'image'
+  'application/zip': 'zip',
+  'application/x-tar': 'zip',
+  'application/vnd.rar': 'zip',
+  "image/png": 'image',
+  'video/mp4': 'video',
+  'video/mpeg': 'video',
+  'video/ogg': 'video',
+  'video/mp2t': 'video',
+  'video/webm': 'video',
+  'video/3gpp': 'video',
+  'video/3gpp2': 'video',
+  'video/x-msvideo': 'video',
+  'image/bmp': 'image',
+  'image/gif': 'image',
+  'image/vnd.microsoft.icon': 'image',
+  'image/jpeg': 'image',
+  'image/svg+xml': 'image',
+  'image/tiff': 'image',
+  'image/webp': 'image',
 }
-// const fileList = [
-//   {
-//     name: "Movies",
-//     type: "folder",
-//     size: "8 iteams",
-//     created: "Yesterday",
-//   },
-//   {
-//     name: "New Folder",
-//     type: "folder",
-//     size: "3 iteams",
-//     created: "Today",
-//   },
-//   {
-//     name: "Pictures",
-//     type: "folder",
-//     size: "115 iteams",
-//     created: "June 23",
-//   },
-//   {
-//     name: "Document.txt",
-//     type: "document",
-//     size: "947 B",
-//     created: "Yesterday",
-//   },
-//   {
-//     name: "Example.png",
-//     type: "image",
-//     size: "12.4 MB",
-//     created: "Feb 19",
-//   },
-//   {
-//     name: "Files.tar",
-//     type: "zip",
-//     size: "1.5 GB",
-//     created: "Jul 8",
-//   },
-//   {
-//     name: "Video.mkv",
-//     type: "video",
-//     size: "133.8 MB",
-//     created: "Dec 17,2020",
-//   },
-// ];
 const logo = require("../../assets/logo2.png");
 const FileManagePage = ({ history }) => {
   const cryptoMiddleware = new WebAccountMiddleware({ asymmetricKey: b64ToBytes(localStorage.getItem('key')) });
@@ -86,26 +65,8 @@ const FileManagePage = ({ history }) => {
   const [currentPath, setCurrentPath] = React.useState('/')
   const [fileList, setFileList] = React.useState([])
   const [folderList, setFolderList] = React.useState([]);
-  const [treeData, setTreeData] = React.useState([
-    // {
-    //   key: "first-level-node-1",
-    //   label: "My Folders",
-    //   nodes: [
-    //     {
-    //       key: "0-level-node-1",
-    //       label: "Movies",
-    //     },
-    //     {
-    //       key: "1-level-node-1",
-    //       label: "New Folder",
-    //     },
-    //     {
-    //       key: "2-level-node-1",
-    //       label: "Pictures",
-    //     },
-    //   ],
-    // },
-  ]);
+  const [pageLoading, setPageLoading] = React.useState(true)
+  const [treeData, setTreeData] = React.useState([]);
   const [subPaths, setSubPaths] = React.useState([])
   const [accountInfo, setAccountInfo] = React.useState<AccountGetRes>();
   const [showRenameModal, setShowRenameModal] = React.useState(false);
@@ -113,6 +74,7 @@ const FileManagePage = ({ history }) => {
   const [renameFolder, setRenameFolder] = React.useState<FolderMetadata>()
   const [oldName, setOldName] = React.useState();
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
+  const [showNewFolderModal, setShowNewFolderModal] = React.useState(false);
   const handleShowSidebar = () => {
     setShowSidebar(!showSidebar);
   };
@@ -133,31 +95,38 @@ const FileManagePage = ({ history }) => {
     accountSystem.getFolderMetadataByPath(currentPath).then(async res => {
       let g = await accountSystem.getFoldersInFolderByPath(currentPath);
       let folders = g.map(async folder => {
-        return await accountSystem.getFolderMetadataByPath(folder.path);
+        try {
+          return await accountSystem.getFolderMetadataByPath(folder.path);
+        } catch (e) { }
       })
-      let folderlist = await Promise.all(folders);
-      console.log(folderlist)
-      setFolderList(folderlist);
+      Promise.all(folders).then(list => {
+        console.log(list)
+        setFolderList(list.filter(item => item));
+      });
+
       let filelist = res.files.map(async file => {
-        return await accountSystem.getFileMetadata(file.location)
+        try {
+          return await accountSystem.getFileMetadata(file.location)
+        } catch (e) { }
       })
 
       Promise.all(filelist).then(res => {
-        res.map(file => {
-          file.type = typeList[file.type] || file.type
+        res.filter(file => file).map(file => {
+          file.type = typeList[file.type] || 'document'
         })
         setFileList(res);
-        console.log(res)
+        console.log(res);
+        setPageLoading(false);
       })
     }).catch(err => {
-      toast.error(`folder "${currentPath}" not found`)
+      // toast.error(`folder "${currentPath}" not found`)
     })
   }, [currentPath, updateStatus]);
   const getFolderData = async () => {
     const accountInfo = await account.info();
     setAccountInfo(accountInfo);
-    // const a = await accountSystem.renameFile(filesIndex.files[0].location,'test.txt');
     const t = await accountSystem.getFoldersIndex();
+    console.log(t)
     function filesToTreeNodes(arr) {
       var tree = {}
       function addnode(obj) {
@@ -196,10 +165,19 @@ const FileManagePage = ({ history }) => {
     }
     let arrayList = filesToTreeNodes(t.folders)
     let temp = []
-    temp[0] = arrayList[0];
-    temp[0].label = 'Root'
-    arrayList.splice(0, 1);
-    temp[0].nodes = arrayList
+    if (arrayList.length) {
+      temp[0] = arrayList[0];
+      temp[0].label = 'My Folders'
+      arrayList.splice(0, 1);
+      temp[0].nodes = arrayList
+    } else {
+      temp[0] = {
+        label: 'My Folders',
+        path: '/',
+        nodes: []
+      }
+    }
+
     setTreeData(temp);
   }
   const handleLogout = () => {
@@ -264,10 +242,10 @@ const FileManagePage = ({ history }) => {
     }
 
   }
-  const addNewFolder = async () => {
+  const addNewFolder = async (folderName) => {
     try {
-      let folderName = 'my folder';
-      // const status = await accountSystem.addFolder(currentPath === '/' ? currentPath + folderName : currentPath + '/' + folderName)
+      setShowNewFolderModal(false);
+      const status = await accountSystem.addFolder(currentPath === '/' ? currentPath + folderName : currentPath + '/' + folderName)
       toast(`Folder ${folderName} was successfully created.`);
       setUpdateStatus(!updateStatus);
     } catch (e) {
@@ -296,6 +274,7 @@ const FileManagePage = ({ history }) => {
       setUpdateStatus(!updateStatus);
       setRenameFile(null)
     } catch (e) {
+      setRenameFile(null)
       toast.error(`An error occurred while deleting ${file.name}.`)
     }
   }
@@ -307,6 +286,7 @@ const FileManagePage = ({ history }) => {
       setRenameFolder(null);
     } catch (e) {
       console.log(e)
+      setRenameFolder(null);
       toast.error(`An error occurred while deleting Folder ${folder.name}.`)
     }
   }
@@ -333,6 +313,8 @@ const FileManagePage = ({ history }) => {
       setUpdateStatus(!updateStatus)
     } catch (e) {
       console.log(e)
+      setRenameFolder(null);
+      setRenameFile(null);
       toast.error(`An error occurred while rename ${rename}.`)
     }
   }
@@ -346,28 +328,24 @@ const FileManagePage = ({ history }) => {
     else deletFile(renameFile)
     setShowDeleteModal(false)
   }
-  const handleDrop = React.useCallback(item => {
-    if (item) selectFiles(item.files);
-  }, []);
-  const [{ canDrop, isOver }, drop] = useDrop(
-    () => ({
-      accept: [NativeTypes.FILE],
-      drop(item: { files: any[] }) {
-        if (handleDrop) {
-          handleDrop(item)
-        }
-      },
-      collect: (monitor: DropTargetMonitor) => ({
-        isOver: monitor.isOver(),
-        canDrop: monitor.canDrop(),
-      }),
-    }),
-    [],
-  )
+  const onDrop = React.useCallback(files => {
+    selectFiles(files)
+  }, [currentPath]);
+  const { isDragActive, getRootProps } = useDropzone({
+    onDrop,
+    minSize: 0,
+    maxSize: FILE_MAX_SIZE,
+    multiple: true
+  });
 
-  const isActive = canDrop && isOver
   return (
     <div className='page'>
+      {
+        pageLoading && <div className='loading'>
+          <ReactLoading type="spinningBubbles" color="#2e6dde" />
+        </div>
+      }
+
       <div className='mobile-header'>
         <button
           className='navbar-toggler'
@@ -455,8 +433,8 @@ const FileManagePage = ({ history }) => {
         </div>
       </aside>
 
-      <div className='file-content' ref={drop}>
-        {isActive && <div className='dnd-overlay'>
+      <div className='file-content' {...getRootProps()}>
+        {isDragActive && <div className='dnd-overlay'>
           <div className='content-wrapper'>
             <div className='overlay-content'>
               <img src={uploadImage} />
@@ -471,7 +449,7 @@ const FileManagePage = ({ history }) => {
               <span>FILE UPLOAD</span>
             </div>
           </UploadForm>
-          <div className=' d-flex header-item ml-3' onClick={addNewFolder}>
+          <div className=' d-flex header-item ml-3' onClick={() => setShowNewFolderModal(true)}>
             <span className='item-icon new-folder'></span>
             <span>NEW FOLDER</span>
           </div>
@@ -510,145 +488,134 @@ const FileManagePage = ({ history }) => {
                     <Breadcrumb.Item key={i} onClick={() => setCurrentPath(path)}>{text}</Breadcrumb.Item>
                   )
               )}
-              {/*             
-              <Breadcrumb.Item href='#'>Library</Breadcrumb.Item>
-              <Breadcrumb.Item active>Data</Breadcrumb.Item> */}
             </Breadcrumb>
           </div>
-          {!tableView && (
-            <div className='grid-view'>
-              {fileList.map((item, i) => (
-                <div className='grid-item' key={i}>
-                  <i className={`icon-${item.type}`}></i>
-                  <h3 className='file-name'>{item.name}</h3>
-                  <div className='file-info'>{item.size}</div>
-                </div>
-              ))}
+          {(fileList.length === 0 && folderList.length === 0) &&
+            <div className='empty-list'>
+              <img src={empty} />
+              <h4>This folder is empty</h4>
+              <span>Upload files or folder by clicking the upload button, or drag & drop from your device.</span>
             </div>
-          )}
-          {tableView && (
-            <Table highlightRowOnHover hasOutline verticalAlign='center' className='text-nowrap'>
-              <Table.Header>
-                <tr>
-                  <th style={{ width: "50%" }}>Name</th>
-                  <th>Created</th>
-                  <th>Size</th>
-                  <th></th>
-                </tr>
-              </Table.Header>
-              <Table.Body>
-                {folderList.map((item, i) => (
-                  <Table.Row key={i}>
-                    <Table.Col className='file-name' onDoubleClick={() => setCurrentPath(item.path)}>
-                      <div className='d-flex'>
+          }
+          {
+            (fileList.length > 0 || folderList.length > 0) &&
+            <div>
+              {!tableView && (
+                <div className='grid-view'>
+                  {folderList.map((item, i) => item && (
+                    <div className='grid-item' key={i}>
+                      <div className='items' onDoubleClick={() => setCurrentPath(item.path)}>
                         <i className='icon-folder'></i>
-                        {item.name}
+                        <h3 className='file-name'>{item.name}</h3>
+                        <div className='file-info'>{item.files.length} Files</div>
                       </div>
-                    </Table.Col>
-                    <Table.Col>{moment(item.uploaded).calendar()}</Table.Col>
-                    {/* <Table.Col>{moment(item.created).format("MM/DD/YYYY")}</Table.Col> */}
-                    <Table.Col>{item.files.length} iteams</Table.Col>
-                    <Table.Col className='text-nowrap'>
-                      <DropdownButton menuAlign='right' title='' id='dropdown-menu-align-right'>
-                        {/* <Dropdown.Item eventKey='1'>
-                          <i className='icon-share'></i>
-                          Share
-                        </Dropdown.Item>
-                        <Dropdown.Divider /> */}
-                        {/* <Dropdown.Item eventKey='2'>
-                          <i className='icon-download'></i>
-                          Download
-                        </Dropdown.Item>
-                        <Dropdown.Divider /> */}
-                        <Dropdown.Item eventKey='3' onClick={() => handleDeleteItem(item, false)}>
-                          <i className='icon-delete'></i>
-                          Delete
-                        </Dropdown.Item>
-                        <Dropdown.Divider />
-                        <Dropdown.Item eventKey='4' onClick={() => handleOpenRenameModal(item, false)}>
-                          <i className='icon-rename'></i>
-                          Rename
-                        </Dropdown.Item>
-                      </DropdownButton>
-                    </Table.Col>
-                  </Table.Row>
-                ))}
-                {fileList.map((item, i) => (
-                  <Table.Row key={i}>
-                    <Table.Col className='file-name'>
-                      <div className='d-flex'>
-                        <i className={`icon-${item.type}`}></i>
-                        {item.name}
-                      </div>
-                    </Table.Col>
-                    <Table.Col>{moment(item.uploaded).calendar()}</Table.Col>
-                    <Table.Col>{formatBytes(item.size)}</Table.Col>
-                    <Table.Col className='text-nowrap'>
-                      <DropdownButton menuAlign='right' title='' id='dropdown-menu-align-right'>
-                        <Dropdown.Item eventKey='1' onClick={() => fileShare(item)}>
-                          <i className='icon-share'></i>
-                          Share
-                        </Dropdown.Item>
-                        <Dropdown.Divider />
-                        <Dropdown.Item eventKey='2'>
-                          <i className='icon-download'></i>
-                          Download
-                        </Dropdown.Item>
-                        <Dropdown.Divider />
-                        <Dropdown.Item eventKey='3' onClick={() => handleDeleteItem(item, true)}>
-                          <i className='icon-delete'></i>
-                          Delete
-                        </Dropdown.Item>
-                        <Dropdown.Divider />
-                        <Dropdown.Item eventKey='4' onClick={() => handleOpenRenameModal(item, true)}>
-                          <i className='icon-rename'></i>
-                          Rename
-                        </Dropdown.Item>
-                      </DropdownButton>
-                    </Table.Col>
-                  </Table.Row>
-                ))}
-                {/* 
-                <Table.Row className='selected'>
-                  <Table.Col className='file-name'>
-                    <div className='d-flex'>
-                      <i className='icon-folder'></i>Movies
                     </div>
-                  </Table.Col>
-                  <Table.Col>Yesterday</Table.Col>
-                  <Table.Col>8 items</Table.Col>
-                  <Table.Col className='text-nowrap'>
-                    <DropdownButton menuAlign='right' title='' id='dropdown-menu-align-right'>
-                      <Dropdown.Item eventKey='1'>
-                        <i className='icon-share'></i>
-                        Share
-                      </Dropdown.Item>
-                      <Dropdown.Divider />
-                      <Dropdown.Item eventKey='2'>
-                        <i className='icon-download'></i>
-                        Download
-                      </Dropdown.Item>
-                      <Dropdown.Divider />
-                      <Dropdown.Item eventKey='3'>
-                        <i className='icon-delete'></i>
-                        Delete
-                      </Dropdown.Item>
-                      <Dropdown.Divider />
-                      <Dropdown.Item eventKey='4'>
-                        <i className='icon-rename'></i>
-                        Rename
-                      </Dropdown.Item>
-                    </DropdownButton>
-                  </Table.Col>
-                </Table.Row> */}
-              </Table.Body>
-            </Table>
-          )}
+                  ))}
+                  {fileList.map((item, i) => item && (
+                    <div className='grid-item' key={i}>
+                      <div className='items'>
+                        <i className={`icon-${item.type}`}></i>
+                        <h3 className='file-name'>{item.name}</h3>
+                        <div className='file-info'>{formatGbs(item.size)}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {tableView && (
+                <Table highlightRowOnHover hasOutline verticalAlign='center' className='text-nowrap'>
+                  <Table.Header>
+                    <tr>
+                      <th style={{ width: "50%" }}>Name</th>
+                      <th>Created</th>
+                      <th>Size</th>
+                      <th></th>
+                    </tr>
+                  </Table.Header>
+                  <Table.Body>
+                    {folderList.map((item, i) => item && (
+                      <Table.Row key={i}>
+                        <Table.Col className='file-name' onDoubleClick={() => setCurrentPath(item.path)}>
+                          <div className='d-flex'>
+                            <i className='icon-folder'></i>
+                            {item.name}
+                          </div>
+                        </Table.Col>
+                        <Table.Col>{moment(item.uploaded).calendar()}</Table.Col>
+                        <Table.Col>{item.files.length} iteams</Table.Col>
+                        <Table.Col className='text-nowrap'>
+                          <DropdownButton menuAlign='right' title='' id='dropdown-menu-align-right'>
+                            {/* <Dropdown.Item eventKey='1'>
+                          <i className='icon-share'></i>
+                          Share
+                        </Dropdown.Item>
+                        <Dropdown.Divider /> */}
+                            {/* <Dropdown.Item eventKey='2'>
+                          <i className='icon-download'></i>
+                          Download
+                        </Dropdown.Item>
+                        <Dropdown.Divider /> */}
+                            <Dropdown.Item eventKey='3' onClick={() => handleDeleteItem(item, false)}>
+                              <i className='icon-delete'></i>
+                          Delete
+                        </Dropdown.Item>
+                            <Dropdown.Divider />
+                            <Dropdown.Item eventKey='4' onClick={() => handleOpenRenameModal(item, false)}>
+                              <i className='icon-rename'></i>
+                          Rename
+                        </Dropdown.Item>
+                          </DropdownButton>
+                        </Table.Col>
+                      </Table.Row>
+                    ))}
+                    {fileList.map((item, i) => item && (
+                      <Table.Row key={i}>
+                        <Table.Col className='file-name'>
+                          <div className='d-flex'>
+                            <i className={`icon-${item.type}`}></i>
+                            {item.name}
+                          </div>
+                        </Table.Col>
+                        <Table.Col>{moment(item.uploaded).calendar()}</Table.Col>
+                        <Table.Col>{formatBytes(item.size)}</Table.Col>
+                        <Table.Col className='text-nowrap'>
+                          <DropdownButton menuAlign='right' title='' id='dropdown-menu-align-right'>
+                            <Dropdown.Item eventKey='1' onClick={() => fileShare(item)}>
+                              <i className='icon-share'></i>
+                          Share
+                        </Dropdown.Item>
+                            <Dropdown.Divider />
+                            <Dropdown.Item eventKey='2'>
+                              <i className='icon-download'></i>
+                          Download
+                        </Dropdown.Item>
+                            <Dropdown.Divider />
+                            <Dropdown.Item eventKey='3' onClick={() => handleDeleteItem(item, true)}>
+                              <i className='icon-delete'></i>
+                          Delete
+                        </Dropdown.Item>
+                            <Dropdown.Divider />
+                            <Dropdown.Item eventKey='4' onClick={() => handleOpenRenameModal(item, true)}>
+                              <i className='icon-rename'></i>
+                          Rename
+                        </Dropdown.Item>
+                          </DropdownButton>
+                        </Table.Col>
+                      </Table.Row>
+                    ))}
+                  </Table.Body>
+                </Table>
+              )}
+            </div>
+          }
+
+
         </div>
       </div>
 
-      {oldName && <RenameModal show={showRenameModal} handleClose={() => setShowRenameModal(false)} oldName={oldName} setNewName={handleChangeRename} />}
+      { oldName && <RenameModal show={showRenameModal} handleClose={() => setShowRenameModal(false)} oldName={oldName} setNewName={handleChangeRename} />}
       <DeleteModal show={showDeleteModal} handleClose={() => setShowDeleteModal(false)} setDelete={handleDelete} />
+      <AddNewFolderModal show={showNewFolderModal} handleClose={() => setShowNewFolderModal(false)} addNewFolder={addNewFolder} />
       <ToastContainer
         pauseOnHover={false}
         draggable={true}
@@ -657,7 +624,7 @@ const FileManagePage = ({ history }) => {
         position="bottom-right"
         hideProgressBar
       />
-    </div>
+    </div >
   );
 };
 

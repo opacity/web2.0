@@ -254,7 +254,7 @@ const AccountHandle: React.FC<SignUpProps> = ({ plan, goBack, goNext, mnemonic, 
                 </Col>
                 <Col md={6}>
                   <Button variant='primary' size='lg' type='submit'
-                   disabled={!isCaptchaVerified || !values.termsCheck}
+                    disabled={!isCaptchaVerified || !values.termsCheck}
                   >
                     Continue
                   </Button>
@@ -263,7 +263,7 @@ const AccountHandle: React.FC<SignUpProps> = ({ plan, goBack, goNext, mnemonic, 
             ) : (
               <Col>
                 <Button variant='primary btn-pill' size='lg' type='submit'
-                //  disabled={!isCaptchaVerified || !values.termsCheck}
+                  disabled={!isCaptchaVerified || !values.termsCheck}
                 >
                   SIGN UP FOR FREE
                 </Button>
