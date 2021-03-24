@@ -27,6 +27,7 @@ import streamsaver from "streamsaver";
 import { WritableStream } from "web-streams-polyfill/ponyfill";
 
 streamsaver.mitm = "/resources/streamsaver/mitm.html"
+Object.assign(streamsaver, { WritableStream })
 
 const uploadImage = require("../../assets/upload.png");
 const empty = require("../../assets/empty.png");
