@@ -24,11 +24,10 @@ import { FileManagerFolderEntryGrid, FileManagerFolderEntryList } from "../../co
 import { useDropzone } from "react-dropzone";
 import ReactLoading from "react-loading";
 import * as streamsaver from "streamsaver";
-import { WritableStream, TransformStream } from "web-streams-polyfill/ponyfill";
+import { WritableStream } from "web-streams-polyfill/ponyfill";
 
 Object.assign(streamsaver, {
   WritableStream,
-  TransformStream,
   mitm: "/resources/streamsaver/mitm.html",
 })
 
