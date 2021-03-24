@@ -15,7 +15,36 @@ export type FileManagerFolderEntryProps = {
 	handleOpenRenameModal: (f: FolderFileEntry | FoldersIndexEntry, isFile: boolean) => void
 }
 
-export const FileManagerFolderEntry = ({
+export const FileManagerFolderEntryGrid = ({
+	key,
+	accountSystem,
+	folderEntry,
+	setCurrentPath,
+	handleDeleteItem,
+	handleOpenRenameModal,
+}: FileManagerFolderEntryProps) => {
+	const [folderMeta, setFolderMeta] = React.useState<FolderMetadata>()
+
+	React.useEffect(() => {
+		if (folderEntry) {
+			accountSystem._getFolderMetadataByLocation(folderEntry.location).then((f) => {
+				setFolderMeta(f)
+			})
+		}
+	}, [folderEntry])
+
+	return (
+		<div className='grid-item' key={key}>
+			<div className='items' onDoubleClick={() => setCurrentPath(folderEntry.path)}>
+				<i className='icon-folder'></i>
+				<h3 className='file-name'>{posix.basename(folderEntry.path)}</h3>
+				<div className='file-info'>{folderMeta ? folderMeta.files.length : "..."} Files</div>
+			</div>
+		</div>
+	)
+}
+
+export const FileManagerFolderEntryList = ({
 	key,
 	accountSystem,
 	folderEntry,

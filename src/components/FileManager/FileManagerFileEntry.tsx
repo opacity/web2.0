@@ -3,7 +3,7 @@ import * as React from "react"
 import { Dropdown, DropdownButton } from "react-bootstrap"
 import { Table } from "tabler-react"
 import { AccountSystem, FileMetadata, FolderFileEntry, FoldersIndexEntry } from "../../../ts-client-library/packages/account-system"
-import { formatBytes } from "../../helpers"
+import { formatBytes, formatGbs } from "../../helpers"
 
 export type FileManagerFileEntryProps = {
 	key: React.Key
@@ -14,7 +14,36 @@ export type FileManagerFileEntryProps = {
 	handleOpenRenameModal: (f: FolderFileEntry | FoldersIndexEntry, isFile: boolean) => void
 }
 
-export const FileManagerFileEntry = ({
+export const FileManagerFileEntryGrid = ({
+	key,
+	accountSystem,
+	fileEntry,
+	fileShare,
+	handleDeleteItem,
+	handleOpenRenameModal,
+}: FileManagerFileEntryProps) => {
+	const [fileMeta, setFileMeta] = React.useState<FileMetadata>()
+
+	React.useEffect(() => {
+		if (fileEntry) {
+			accountSystem._getFileMetadata(fileEntry.location).then((f) => {
+				setFileMeta(f)
+			})
+		}
+	}, [fileEntry])
+
+	return (
+		<div className='grid-item' key={key}>
+			<div className='items'>
+				<i className={`icon-${fileMeta && fileMeta.type}`}></i>
+				<h3 className='file-name'>{fileEntry.name}</h3>
+				<div className='file-info'>{formatGbs(fileMeta ? fileMeta.size : "...")}</div>
+			</div>
+		</div>
+	)
+}
+
+export const FileManagerFileEntryList = ({
 	key,
 	accountSystem,
 	fileEntry,

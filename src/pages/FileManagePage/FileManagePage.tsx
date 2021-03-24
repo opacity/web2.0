@@ -98,6 +98,7 @@ const FileManagePage = ({ history }) => {
       return { text: l, path: parentPaths + l };
     });
     setSubPaths(subpaths);
+    setPageLoading(true)
     accountSystem.addFolder(currentPath).then(async res => {
       let fl = await accountSystem.getFoldersInFolderByPath(currentPath);
       console.log(fl)
