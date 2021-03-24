@@ -7,7 +7,7 @@ import { Account, AccountGetRes, AccountCreationInvoice } from "../../../ts-clie
 import { AccountSystem, MetadataAccess, FileMetadata, FolderMetadata, FolderFileEntry, FoldersIndexEntry } from "../../../ts-client-library/packages/account-system"
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web"
 import { bytesToB64, b64ToBytes } from "../../../ts-client-library/packages/util/src/b64"
-import { polyfillReadableStream } from "../../../ts-client-library/packages/util/src/streams"
+import { polyfillReadableStream, polyfillWritableStream } from "../../../ts-client-library/packages/util/src/streams"
 import { Upload, bindUploadToAccountSystem, Download, bindDownloadToAccountSystem } from "../../../ts-client-library/packages/opaque"
 import { theme, FILE_MAX_SIZE } from "../../config";
 import RenameModal from "../../components/RenameModal/RenameModal";
@@ -23,13 +23,10 @@ import { posix } from "path-browserify"
 import { FileManagerFolderEntryGrid, FileManagerFolderEntryList } from "../../components/FileManager/FileManagerFolderEntry"
 import { useDropzone } from "react-dropzone";
 import ReactLoading from "react-loading";
-import * as streamsaver from "streamsaver";
+import streamsaver from "streamsaver";
 import { WritableStream } from "web-streams-polyfill/ponyfill";
 
-Object.assign(streamsaver, {
-  WritableStream,
-  mitm: "/resources/streamsaver/mitm.html",
-})
+streamsaver.mitm = "/resources/streamsaver/mitm.html"
 
 const uploadImage = require("../../assets/upload.png");
 const empty = require("../../assets/empty.png");
@@ -268,7 +265,7 @@ const FileManagePage = ({ history }) => {
       // side effects
       bindDownloadToAccountSystem(accountSystem, d)
 
-      const fileStream = streamsaver.createWriteStream(file.name, { size: file.size }) as WritableStream<Uint8Array>
+      const fileStream = polyfillWritableStream(streamsaver.createWriteStream(file.name, { size: file.size }) as WritableStream<Uint8Array>)
       const s = await d.start()
 
       d.finish().then(() => {
@@ -292,10 +289,7 @@ const FileManagePage = ({ history }) => {
         const reader = s.getReader();
 
         const pump = async () => {
-          const res = await reader.read().catch(err => {
-            console.error(err)
-            throw err
-          })
+          const res = await reader.read()
 
           if (!res || !res.done) {
             writer.close().catch(err => {
@@ -304,17 +298,11 @@ const FileManagePage = ({ history }) => {
             });
             console.log("done")
           } else {
-            writer.write(res.value).then(pump).catch(err => {
-              console.error(err)
-              throw err;
-            });
+            writer.write(res.value).then(pump).catch(err => { throw err });
           }
         };
 
-        pump().catch(err => {
-          console.error(err)
-          throw err;
-        });
+        pump()
       }
     } catch (e) {
       console.error(e)
