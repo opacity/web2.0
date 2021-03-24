@@ -1,6 +1,8 @@
 import { fusebox, sparky, pluginReplace } from "fuse-box";
+import * as path from "path"
+
 class Context {
-  runServer;
+  runServer: boolean;
   getConfig = () =>
     fusebox({
       target: "browser",
@@ -23,11 +25,18 @@ class Context {
       ],
     });
 }
-const { task } = sparky<Context>(Context);
+
+const { task, src } = sparky<Context>(Context);
 
 task("default", async ctx => {
   ctx.runServer = true;
   const fuse = ctx.getConfig();
+
+  src("node_modules/streamsaver/{mitm.html,sw.js}")
+    .dest("dist/resources/streamsaver", path.join(__dirname, "node_modules/streamsaver"))
+    .write()
+    .exec()
+
   await fuse.runDev();
 });
 
@@ -41,4 +50,3 @@ task("dist", async ctx => {
   const fuse = ctx.getConfig();
   await fuse.runProd({ uglify: false });
 });
-

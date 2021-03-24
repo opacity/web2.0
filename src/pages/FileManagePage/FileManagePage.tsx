@@ -8,7 +8,7 @@ import { AccountSystem, MetadataAccess, FileMetadata, FolderMetadata, FolderFile
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web"
 import { bytesToB64, b64ToBytes } from "../../../ts-client-library/packages/util/src/b64"
 import { polyfillReadableStream } from "../../../ts-client-library/packages/util/src/streams"
-import { Upload, bindUploadToAccountSystem } from "../../../ts-client-library/packages/opaque"
+import { Upload, bindUploadToAccountSystem, Download, bindDownloadToAccountSystem } from "../../../ts-client-library/packages/opaque"
 import { theme, FILE_MAX_SIZE } from "../../config";
 import RenameModal from "../../components/RenameModal/RenameModal";
 import DeleteModal from "../../components/DeleteModal/DeleteModal";
@@ -18,11 +18,19 @@ import { formatBytes, formatGbs } from "../../helpers"
 import * as moment from 'moment';
 import { DndProvider, useDrop, DropTargetMonitor } from 'react-dnd'
 import { HTML5Backend, NativeTypes } from 'react-dnd-html5-backend'
-import { FileManagerFileEntryList } from "../../components/FileManager/FileManagerFileEntry"
+import { FileManagerFileEntryGrid, FileManagerFileEntryList } from "../../components/FileManager/FileManagerFileEntry"
 import { posix } from "path-browserify"
-import { FileManagerFolderEntryList } from "../../components/FileManager/FileManagerFolderEntry"
+import { FileManagerFolderEntryGrid, FileManagerFolderEntryList } from "../../components/FileManager/FileManagerFolderEntry"
 import { useDropzone } from "react-dropzone";
 import ReactLoading from "react-loading";
+import * as streamsaver from "streamsaver";
+import { WritableStream, TransformStream } from "web-streams-polyfill/ponyfill";
+
+Object.assign(streamsaver, {
+  WritableStream,
+  TransformStream,
+  mitm: "/resources/streamsaver/mitm.html",
+})
 
 const uploadImage = require("../../assets/upload.png");
 const empty = require("../../assets/empty.png");
@@ -59,7 +67,7 @@ const FileManagePage = ({ history }) => {
     net: netMiddleware,
     crypto: cryptoMiddleware,
     metadataNode: storageNode,
-    maxConcurrency: 7,
+    maxConcurrency: 3,
   });
   const accountSystem = new AccountSystem({ metadataAccess });
   const account = new Account({ crypto: cryptoMiddleware, net: netMiddleware, storageNode })
@@ -249,10 +257,69 @@ const FileManagePage = ({ history }) => {
   }
   const fileDownload = async (file: FileMetadata) => {
     try {
+      const d = new Download({
+        handle: file.handle,
+        config: {
+          crypto: cryptoMiddleware,
+          net: netMiddleware,
+          storageNode,
+        }
+      })
 
+      // side effects
+      bindDownloadToAccountSystem(accountSystem, d)
+
+      const fileStream = streamsaver.createWriteStream(file.name, { size: file.size }) as WritableStream<Uint8Array>
+      const s = await d.start()
+
+      d.finish().then(() => {
+        console.log("finish")
+      })
+
+      // more optimized
+      if ("WritableStream" in window && s.pipeTo) {
+        console.log("pipe")
+        s.pipeTo(fileStream)
+          .then(() => {
+            console.log("done")
+          })
+          .catch(err => {
+            console.log(err)
+            throw err
+          })
+      } else {
+        console.log("pump")
+        const writer = fileStream.getWriter();
+        const reader = s.getReader();
+
+        const pump = async () => {
+          const res = await reader.read().catch(err => {
+            console.error(err)
+            throw err
+          })
+
+          if (!res || !res.done) {
+            writer.close().catch(err => {
+              console.error(err)
+              throw err;
+            });
+            console.log("done")
+          } else {
+            writer.write(res.value).then(pump).catch(err => {
+              console.error(err)
+              throw err;
+            });
+          }
+        };
+
+        pump().catch(err => {
+          console.error(err)
+          throw err;
+        });
+      }
     } catch (e) {
+      console.error(e)
       toast.error(`An error occurred while downloading ${file.name}.`)
-
     }
   }
   const deleteFile = async (file: FolderFileEntry) => {
@@ -491,7 +558,7 @@ const FileManagePage = ({ history }) => {
               {!tableView && (
                 <div className='grid-view'>
                   {folderList.map((item, i) => item && (
-                    <FileManagerFolderEntryList
+                    <FileManagerFolderEntryGrid
                       key={i}
                       accountSystem={accountSystem}
                       folderEntry={item}
@@ -501,13 +568,14 @@ const FileManagePage = ({ history }) => {
                     />
                   ))}
                   {fileList.map((item, i) => item && (
-                    <FileManagerFileEntryList
+                    <FileManagerFileEntryGrid
                       key={i}
                       accountSystem={accountSystem}
                       fileEntry={item}
                       fileShare={fileShare}
                       handleDeleteItem={handleDeleteItem}
                       handleOpenRenameModal={handleOpenRenameModal}
+                      downloadItem={fileDownload}
                     />
                   ))}
                 </div>
@@ -541,6 +609,7 @@ const FileManagePage = ({ history }) => {
                         fileShare={fileShare}
                         handleDeleteItem={handleDeleteItem}
                         handleOpenRenameModal={handleOpenRenameModal}
+                        downloadItem={fileDownload}
                       />
                     ))}
                   </Table.Body>

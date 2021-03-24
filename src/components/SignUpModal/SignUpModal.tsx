@@ -248,7 +248,7 @@ const AccountHandle: React.FC<SignUpProps> = ({ plan, goBack, goNext, mnemonic, 
             {plan ? (
               <>
                 <Col md={6} className='mb-md-0 mb-2'>
-                  <Button variant='outline-primary' size='lg' type='button' onClick={goBack}>
+                  <Button variant='outline-primary' size='lg' type='button' onClick={() => { goBack() }}>
                     Go Back
                   </Button>
                 </Col>
