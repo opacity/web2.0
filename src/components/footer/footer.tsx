@@ -11,71 +11,63 @@ const youtube = require("../../assets/youtube.svg");
 const Footer = () => {
   return (
     <footer>
-      <div className="container-xl">
-        <div className="row">
-          <div className="col-md-6 footer-logo">
-            <img width="78" src={logo} />
-            <span className="ml-3">OPACITY</span>
+      <div className='container-xl'>
+        <div className='row'>
+          <div className='col-md-6 footer-logo'>
+            <img width='78' src={logo} />
+            <span className='ml-3'>OPACITY</span>
           </div>
-          <div className="col-md-6 footer-third">
-            <div className="d-flex h-100 align-items-center" style={{ justifyContent: "flex-end" }}>
+          <div className='col-md-6 footer-third'>
+            <div className='d-flex h-100 align-items-center' style={{ justifyContent: "flex-end" }}>
               <NavLink>
-                <img width="43" src={github} />
+                <img width='43' src={github} />
               </NavLink>
               <NavLink>
-                <img width="43" src={reddit} />
+                <img width='43' src={reddit} />
               </NavLink>
               <NavLink>
-                <img width="43" src={telegram} />
+                <img width='43' src={telegram} />
               </NavLink>
               <NavLink>
-                <img width="43" src={twitter} />
+                <img width='43' src={twitter} />
               </NavLink>
               <NavLink>
-                <img width="43" src={youtube} />
+                <img width='43' src={youtube} />
               </NavLink>
             </div>
           </div>
         </div>
-        <div className="divider"></div>
-        <div className=" footer-links">
-          <div className="link-wrapper">
-            <span className="title"> Company</span>
-            <NavLink>Opacity</NavLink>
-            <NavLink>Storage</NavLink>
-            <NavLink>The Platform</NavLink>
-            <NavLink>Community</NavLink>
+        <div className='divider'></div>
+        <div className=' footer-links'>
+          <div className='link-wrapper'>
+            <span className='title'> Company</span>
+            <NavLink>About us</NavLink>
             <NavLink>Blog</NavLink>
-            <NavLink>Buy OPCT</NavLink>
+            <NavLink>Press</NavLink>
+          </div>
+          <div className='link-wrapper'>
+            <span className='title'> Resources</span>
+            <NavLink>Products</NavLink>
+            <NavLink>Downloads</NavLink>
+            <NavLink>Learn</NavLink>
+            <NavLink>API for Developers</NavLink>
+          </div>
+          <div className='link-wrapper'>
+            <span className='title'> Help</span>
             <NavLink>Contact us</NavLink>
+            <NavLink>Telegram</NavLink>
+            <NavLink>Discord</NavLink>
           </div>
-          <div className="link-wrapper">
-            <span className="title"> Use Cases</span>
-            <NavLink>File Sharing</NavLink>
-            <NavLink>Document Management</NavLink>
-            <NavLink>FTP Alternative</NavLink>
-            <NavLink>File Transfer</NavLink>
-            <NavLink>Cloud Backup</NavLink>
-          </div>
-          <div className="link-wrapper">
-            <span className="title"> Service & Support</span>
-            <NavLink>Customer Success</NavLink>
-            <NavLink>Community</NavLink>
-            <NavLink>Contact us</NavLink>
-          </div>
-          <div className="link-wrapper">
-            <span className="title"> Others Link</span>
-            <NavLink>Sitemap</NavLink>
-            <NavLink>Subscription</NavLink>
-            <NavLink>Management</NavLink>
+          <div className='link-wrapper'>
+            <span className='title'> Legal</span>
             <NavLink>Terms of Service</NavLink>
             <NavLink>Privacy Policy</NavLink>
-            <NavLink>Cookie Notification</NavLink>
+            <NavLink>Code License</NavLink>
           </div>
         </div>
-        <div className="divider"></div>
-        <div className="row">
-          <div className="col-md-12 text-center copywrite">Opacity © 2021</div>
+        <div className='divider'></div>
+        <div className='row'>
+          <div className='col-md-12 text-center copywrite'> © 2018-2021 Opacity Storage Inc. All rights reserved.</div>
         </div>
       </div>
     </footer>

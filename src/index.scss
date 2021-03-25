@@ -3,8 +3,11 @@ body {
 }
 
 header {
-  height: 140px;
+  height: 100px;
   background-color: #2e6dde !important;
+  &.border-bottom {
+    border-bottom: 2px solid #c4c4c4 !important;
+  }
   @media (max-width: 767.9px) {
     height: 70px;
   }
@@ -58,10 +61,24 @@ header {
   .mobile-menu {
     position: absolute;
     top: 73px;
-    width: 100%;
+    // width: 100%;
     background: #2e6dde;
     z-index: 10;
     padding-bottom: 30px;
     border-bottom: 2px solid white;
+    left: 0;
+    right: 0;
   }
+}
+
+
+.page .loading {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.2);
 }

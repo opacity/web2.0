@@ -13,5 +13,4 @@ out.js
 dist/
 sourcemaps.js.map
 .fusebox
-
 .cache
