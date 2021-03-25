@@ -26,9 +26,14 @@ class Context {
     });
 }
 
-const { task, src, exec } = sparky<Context>(Context);
+const { task, src, exec, rm } = sparky<Context>(Context);
 
-task("copy-streamsaver", async ctx => {
+task("remove-artifacts", async () => {
+  rm("dist")
+  rm(".cache")
+})
+
+task("copy-streamsaver", async () => {
   await src("node_modules/streamsaver/{mitm.html,sw.js}")
     .dest("dist/resources/streamsaver", path.join(__dirname, "node_modules/streamsaver"))
     .write()
@@ -36,6 +41,8 @@ task("copy-streamsaver", async ctx => {
 })
 
 task("default", async ctx => {
+  await exec("remove-artifacts")
+
   ctx.runServer = true;
   const fuse = ctx.getConfig();
 
@@ -44,6 +51,8 @@ task("default", async ctx => {
 });
 
 task("preview", async ctx => {
+  await exec("remove-artifacts")
+
   ctx.runServer = true;
   const fuse = ctx.getConfig();
 
@@ -51,6 +60,8 @@ task("preview", async ctx => {
   await fuse.runProd({ uglify: false });
 });
 task("dist", async ctx => {
+  await exec("remove-artifacts")
+
   ctx.runServer = false;
   const fuse = ctx.getConfig();
 

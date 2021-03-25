@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "rm -rf ./.cache && rm -rf ./dist && ts-node -T fuse",
+    "start": "ts-node -T fuse",
     "dist": "ts-node -T fuse dist",
     "build": "ts-node -T fuse dist",
     "preview": "ts-node -T fuse preview",
