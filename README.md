@@ -15,6 +15,9 @@ git submodule add -b dev https://github.com/opacity/ts-client-library.git <br/>
 cd ts-client-library <br/>
 npx lerna bootstrap
 
+git submodule foreach git pull
+git submodule update --init --recursive
+
 
  // {
     //   key: "first-level-node-1",

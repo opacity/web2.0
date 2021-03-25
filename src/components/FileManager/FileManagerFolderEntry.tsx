@@ -7,7 +7,6 @@ import { formatBytes } from "../../helpers"
 import { posix } from "path-browserify"
 
 export type FileManagerFolderEntryProps = {
-	key: React.Key
 	accountSystem: AccountSystem
 	folderEntry: FoldersIndexEntry
 	setCurrentPath: (p: string) => void
@@ -16,7 +15,6 @@ export type FileManagerFolderEntryProps = {
 }
 
 export const FileManagerFolderEntryGrid = ({
-	key,
 	accountSystem,
 	folderEntry,
 	setCurrentPath,
@@ -34,7 +32,7 @@ export const FileManagerFolderEntryGrid = ({
 	}, [folderEntry])
 
 	return (
-		<div className='grid-item' key={key}>
+		<div className='grid-item'>
 			<div className='items' onDoubleClick={() => setCurrentPath(folderEntry.path)}>
 				<i className='icon-folder'></i>
 				<h3 className='file-name'>{posix.basename(folderEntry.path)}</h3>
@@ -45,7 +43,6 @@ export const FileManagerFolderEntryGrid = ({
 }
 
 export const FileManagerFolderEntryList = ({
-	key,
 	accountSystem,
 	folderEntry,
 	setCurrentPath,
@@ -63,7 +60,7 @@ export const FileManagerFolderEntryList = ({
 	}, [folderEntry])
 
 	return (
-		<Table.Row key={key}>
+		<Table.Row >
 			<Table.Col className='file-name' onDoubleClick={() => setCurrentPath(folderEntry.path)}>
 				<div className='d-flex'>
 					<i className='icon-folder'></i>
@@ -72,7 +69,7 @@ export const FileManagerFolderEntryList = ({
 			</Table.Col>
 			<Table.Col>{folderMeta ? moment(folderMeta.uploaded).calendar() : "..."}</Table.Col>
 			{/* <Table.Col>{moment(item.created).format("MM/DD/YYYY")}</Table.Col> */}
-			<Table.Col>{folderMeta  ? folderMeta.files.length : "..."} items</Table.Col>
+			<Table.Col>{folderMeta ? folderMeta.files.length : "..."} items</Table.Col>
 			<Table.Col className='text-nowrap'>
 				<DropdownButton menuAlign='right' title='' id='dropdown-menu-align-right'>
 					{/* <Dropdown.Item eventKey='1'>
@@ -90,7 +87,7 @@ export const FileManagerFolderEntryList = ({
 						Delete
 					</Dropdown.Item>
 					<Dropdown.Divider />
-					<Dropdown.Item eventKey='4' onClick={() => handleOpenRenameModal(folderEntry, false)}>
+					<Dropdown.Item eventKey='4' onClick={() => handleOpenRenameModal(Object.assign(folderEntry, { name: posix.basename(folderEntry.path) }), false)}>
 						<i className='icon-rename'></i>
 						Rename
 					</Dropdown.Item>

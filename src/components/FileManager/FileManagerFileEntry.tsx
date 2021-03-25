@@ -4,9 +4,30 @@ import { Dropdown, DropdownButton } from "react-bootstrap"
 import { Table } from "tabler-react"
 import { AccountSystem, FileMetadata, FolderFileEntry, FoldersIndexEntry } from "../../../ts-client-library/packages/account-system"
 import { formatBytes } from "../../helpers"
-
+const typeList = {
+	"text/plain": 'document',
+	"application/x-zip-compressed": 'zip',
+	'application/zip': 'zip',
+	'application/x-tar': 'zip',
+	'application/vnd.rar': 'zip',
+	"image/png": 'image',
+	'video/mp4': 'video',
+	'video/mpeg': 'video',
+	'video/ogg': 'video',
+	'video/mp2t': 'video',
+	'video/webm': 'video',
+	'video/3gpp': 'video',
+	'video/3gpp2': 'video',
+	'video/x-msvideo': 'video',
+	'image/bmp': 'image',
+	'image/gif': 'image',
+	'image/vnd.microsoft.icon': 'image',
+	'image/jpeg': 'image',
+	'image/svg+xml': 'image',
+	'image/tiff': 'image',
+	'image/webp': 'image',
+}
 export type FileManagerFileEntryProps = {
-	key: React.Key
 	accountSystem: AccountSystem
 	fileEntry: FolderFileEntry
 	fileShare: (f: FolderFileEntry) => Promise<void>
@@ -16,7 +37,6 @@ export type FileManagerFileEntryProps = {
 }
 
 export const FileManagerFileEntryGrid = ({
-	key,
 	accountSystem,
 	fileEntry,
 	fileShare,
@@ -34,9 +54,9 @@ export const FileManagerFileEntryGrid = ({
 	}, [fileEntry])
 
 	return (
-		<div className='grid-item' key={key}>
+		<div className='grid-item' >
 			<div className='items'>
-				<i className={`icon-${fileMeta && fileMeta.type}`}></i>
+				<i className={`icon-${fileMeta && typeList[fileMeta.type]}`}></i>
 				<h3 className='file-name'>{fileEntry.name}</h3>
 				<div className='file-info'>{fileMeta ? formatBytes(fileMeta.size) : "..."}</div>
 			</div>
@@ -45,7 +65,6 @@ export const FileManagerFileEntryGrid = ({
 }
 
 export const FileManagerFileEntryList = ({
-	key,
 	accountSystem,
 	fileEntry,
 	fileShare,
@@ -64,10 +83,10 @@ export const FileManagerFileEntryList = ({
 	}, [fileEntry])
 
 	return (
-		<Table.Row key={key}>
+		<Table.Row>
 			<Table.Col className='file-name'>
 				<div className='d-flex'>
-					<i className={`icon-${fileMeta && fileMeta.type}`}></i>
+					<i className={`icon-${fileMeta && typeList[fileMeta.type]}`}></i>
 					{fileEntry.name}
 				</div>
 			</Table.Col>

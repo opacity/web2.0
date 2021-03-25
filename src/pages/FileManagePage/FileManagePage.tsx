@@ -32,29 +32,7 @@ const uploadImage = require("../../assets/upload.png");
 const empty = require("../../assets/empty.png");
 
 const storageNode = "http://18.191.166.234:3000";
-const typeList = {
-  "text/plain": 'document',
-  "application/x-zip-compressed": 'zip',
-  'application/zip': 'zip',
-  'application/x-tar': 'zip',
-  'application/vnd.rar': 'zip',
-  "image/png": 'image',
-  'video/mp4': 'video',
-  'video/mpeg': 'video',
-  'video/ogg': 'video',
-  'video/mp2t': 'video',
-  'video/webm': 'video',
-  'video/3gpp': 'video',
-  'video/3gpp2': 'video',
-  'video/x-msvideo': 'video',
-  'image/bmp': 'image',
-  'image/gif': 'image',
-  'image/vnd.microsoft.icon': 'image',
-  'image/jpeg': 'image',
-  'image/svg+xml': 'image',
-  'image/tiff': 'image',
-  'image/webp': 'image',
-}
+
 const logo = require("../../assets/logo2.png");
 const FileManagePage = ({ history }) => {
   const cryptoMiddleware = new WebAccountMiddleware({ asymmetricKey: b64ToBytes(localStorage.getItem('key')) });
@@ -290,9 +268,9 @@ const FileManagePage = ({ history }) => {
         const reader = s.getReader();
 
         const pump = () => reader.read()
-        .then(res => res.done
-          ? writer.close()
-          : writer.write(res.value).then(pump))
+          .then(res => res.done
+            ? writer.close()
+            : writer.write(res.value).then(pump))
 
         pump()
       }
@@ -358,7 +336,7 @@ const FileManagePage = ({ history }) => {
     setShowDeleteModal(true)
   }
   const handleDelete = async () => {
-    if (folderToRename) deleteaFolder(folderToDelete)
+    if (folderToDelete) deleteaFolder(folderToDelete)
     else deleteFile(fileToDelete)
     setShowDeleteModal(false)
   }

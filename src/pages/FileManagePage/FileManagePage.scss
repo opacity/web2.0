@@ -523,7 +523,7 @@
     .grid-view {
       display: inline-block;
       @media (max-width:768px) {
-        text-align: center;
+        // text-align: center;
       }
       .grid-item {
         text-align: center;
@@ -531,8 +531,11 @@
         width: 150px;
         height: 134px;
         margin-bottom: 35px;
+        margin-right: 20px;
         @media (max-width:768px) {
           margin-bottom: 15px;
+          margin-left: 10px;
+          margin-right: 10px;
         }
         .items{
           display: flex;
@@ -540,10 +543,19 @@
           justify-content: center;
           flex-direction: column;
           height: 100%;
+          padding: 20px;
+          //  border: 1px solid #E4DEDE;
+           box-sizing: border-box;
+           border-radius: 2px;
+           padding: 20px;
           h3 {
             font-weight: 500;
             font-size: 15px;
             color: #000000;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 100%;
+            overflow: hidden;
           }
           .file-info {
             font-weight: normal;
@@ -551,8 +563,8 @@
             color: #2d2d2d;
           }
           i {
-            width: 60px;
-            height: 60px;
+            width: 40px;
+            height: 40px;
             display: block;
             -webkit-mask-size: contain;
             margin: auto;
