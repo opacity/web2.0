@@ -26,27 +26,34 @@ class Context {
     });
 }
 
-const { task, src } = sparky<Context>(Context);
+const { task, src, exec } = sparky<Context>(Context);
+
+task("copy-streamsaver", async ctx => {
+  await src("node_modules/streamsaver/{mitm.html,sw.js}")
+    .dest("dist/resources/streamsaver", path.join(__dirname, "node_modules/streamsaver"))
+    .write()
+    .exec()
+})
 
 task("default", async ctx => {
   ctx.runServer = true;
   const fuse = ctx.getConfig();
 
-  src("node_modules/streamsaver/{mitm.html,sw.js}")
-    .dest("dist/resources/streamsaver", path.join(__dirname, "node_modules/streamsaver"))
-    .write()
-    .exec()
-
+  await exec("copy-streamsaver")
   await fuse.runDev();
 });
 
 task("preview", async ctx => {
   ctx.runServer = true;
   const fuse = ctx.getConfig();
+
+  await exec("copy-streamsaver")
   await fuse.runProd({ uglify: false });
 });
 task("dist", async ctx => {
   ctx.runServer = false;
   const fuse = ctx.getConfig();
+
+  await exec("copy-streamsaver")
   await fuse.runProd({ uglify: false });
 });
