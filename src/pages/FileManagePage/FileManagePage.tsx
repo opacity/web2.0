@@ -31,7 +31,7 @@ Object.assign(streamsaver, { WritableStream })
 const uploadImage = require("../../assets/upload.png");
 const empty = require("../../assets/empty.png");
 
-const storageNode = "http://18.191.166.234:3000";
+import { STORAGE_NODE as storageNode } from "../../config"
 
 const logo = require("../../assets/logo2.png");
 const FileManagePage = ({ history }) => {

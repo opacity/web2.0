@@ -9,7 +9,7 @@ import "./LoginModal.scss";
 import { Account, AccountGetRes, AccountCreationInvoice } from "../../../ts-client-library/packages/account-management"
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web"
 import { bytesToB64, b64ToBytes } from "../../../ts-client-library/packages/util/src/b64"
-const storageNode = "http://18.191.166.234:3000"
+import { STORAGE_NODE as storageNode } from "../../config"
 
 const logo = require("../../assets/logo2.png");
 const loginSchema = Yup.object().shape({

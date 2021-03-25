@@ -8,14 +8,14 @@ import HCaptcha from "@hcaptcha/react-hcaptcha";
 
 import "./SignUpModal.scss";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { RECAPTCHA_SITEKEY, PlanType } from "../../config";
+import { PlanType } from "../../config";
 import { createMnemonic, mnemonicToHandle } from "../../../ts-client-library/packages/util/src/mnemonic";
 import { Account, AccountGetRes, AccountCreationInvoice } from "../../../ts-client-library/packages/account-management"
 import { AccountSystem, MetadataAccess } from "../../../ts-client-library/packages/account-system"
 import { Upload, bindUploadToAccountSystem } from "../../../ts-client-library/packages/opaque"
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web"
 import { bytesToB64, b64ToBytes } from "../../../ts-client-library/packages/util/src/b64"
-const storageNode = "http://18.191.166.234:3000"
+import { STORAGE_NODE as storageNode } from "../../config"
 const logo = require("../../assets/logo2.png");
 const loginSchema = Yup.object().shape({
   handle: Yup.string(),
