@@ -83,8 +83,6 @@ const FileManagePage = ({ history }) => {
     setPageLoading(true)
     accountSystem.addFolder(currentPath).then(async res => {
       let fl = await accountSystem.getFoldersInFolderByPath(currentPath);
-      console.log(fl)
-
       setFolderList(fl);
       setFileList(res.files);
       setPageLoading(false)
@@ -96,7 +94,7 @@ const FileManagePage = ({ history }) => {
     const accountInfo = await account.info();
     setAccountInfo(accountInfo);
     const t = await accountSystem.getFoldersIndex();
-    console.log(t)
+    console.log('---folder indexes', t)
     function filesToTreeNodes(arr) {
       var tree = {}
       function addnode(obj) {
@@ -136,9 +134,10 @@ const FileManagePage = ({ history }) => {
     let arrayList = filesToTreeNodes(t.folders)
     let temp = []
     if (arrayList.length) {
-      temp[0] = arrayList[0];
+      let i = arrayList.findIndex(e => e.path === "/");
+      temp[0] = arrayList[i];
       temp[0].label = 'My Folders'
-      arrayList.splice(0, 1);
+      arrayList.splice(i, 1);
       temp[0].nodes = arrayList
     } else {
       temp[0] = {
@@ -147,7 +146,6 @@ const FileManagePage = ({ history }) => {
         nodes: []
       }
     }
-
     setTreeData(temp);
   }
   const handleLogout = () => {
@@ -290,7 +288,7 @@ const FileManagePage = ({ history }) => {
       toast.error(`An error occurred while deleting ${file.name}.`)
     }
   }
-  const deleteaFolder = async (folder: FoldersIndexEntry) => {
+  const deleteFolder = async (folder: FoldersIndexEntry) => {
     const name = posix.basename(folder.path)
     try {
       const status = await accountSystem.removeFolderByPath(folder.path);
@@ -336,7 +334,7 @@ const FileManagePage = ({ history }) => {
     setShowDeleteModal(true)
   }
   const handleDelete = async () => {
-    if (folderToDelete) deleteaFolder(folderToDelete)
+    if (folderToDelete) deleteFolder(folderToDelete)
     else deleteFile(fileToDelete)
     setShowDeleteModal(false)
   }
@@ -349,7 +347,10 @@ const FileManagePage = ({ history }) => {
     maxSize: FILE_MAX_SIZE,
     multiple: true
   });
-
+  const handleSelectFolder = (folder) => {
+    if (folder.path !== currentPath)
+      setCurrentPath(folder.path)
+  }
   return (
     <div className='page'>
       {
@@ -419,7 +420,7 @@ const FileManagePage = ({ history }) => {
                 {({ search, items }) => (
                   <ul className='tree-menu'>
                     {items.map(({ key, ...props }) => (
-                      <div key={key} className={props.isOpen ? "opened" : ""}>
+                      <div key={key} className={props.isOpen ? "opened" : ""} onClick={() => handleSelectFolder(props)}>
                         <ItemComponent key={key} {...props} />
                       </div>
                     ))}
