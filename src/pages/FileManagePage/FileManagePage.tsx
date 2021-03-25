@@ -7,7 +7,7 @@ import { Account, AccountGetRes, AccountCreationInvoice } from "../../../ts-clie
 import { AccountSystem, MetadataAccess, FileMetadata, FolderMetadata, FolderFileEntry, FoldersIndexEntry } from "../../../ts-client-library/packages/account-system"
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web"
 import { bytesToB64, b64ToBytes } from "../../../ts-client-library/packages/util/src/b64"
-import { polyfillReadableStream, polyfillWritableStream } from "../../../ts-client-library/packages/util/src/streams"
+import { polyfillReadableStreamIfNeeded, polyfillWritableStreamIfNeeded, ReadableStream, TransformStream, WritableStream } from "../../../ts-client-library/packages/util/src/streams"
 import { Upload, bindUploadToAccountSystem, Download, bindDownloadToAccountSystem } from "../../../ts-client-library/packages/opaque"
 import { theme, FILE_MAX_SIZE } from "../../config";
 import RenameModal from "../../components/RenameModal/RenameModal";
@@ -24,7 +24,6 @@ import { FileManagerFolderEntryGrid, FileManagerFolderEntryList } from "../../co
 import { useDropzone } from "react-dropzone";
 import ReactLoading from "react-loading";
 import streamsaver from "streamsaver";
-import { WritableStream } from "web-streams-polyfill/ponyfill";
 
 streamsaver.mitm = "/resources/streamsaver/mitm.html"
 Object.assign(streamsaver, { WritableStream })
@@ -213,7 +212,8 @@ const FileManagePage = ({ history }) => {
       toast(`${file.name} is uploading. Please wait...`, { toastId: handle, autoClose: false, });
       // if there is no error
       if (stream) {
-        polyfillReadableStream<Uint8Array>(file.stream()).pipeThrough(stream)
+        // TODO: Why does it do this?
+        polyfillReadableStreamIfNeeded<Uint8Array>(file.stream()).pipeThrough(stream as TransformStream<Uint8Array, Uint8Array> as any)
       } else {
         toast.update(handle, {
           render: `An error occurred while uploading ${file.name}.`,
@@ -266,7 +266,7 @@ const FileManagePage = ({ history }) => {
       // side effects
       bindDownloadToAccountSystem(accountSystem, d)
 
-      const fileStream = polyfillWritableStream(streamsaver.createWriteStream(file.name, { size: file.size }) as WritableStream<Uint8Array>)
+      const fileStream = polyfillWritableStreamIfNeeded(streamsaver.createWriteStream(file.name, { size: file.size }))
       const s = await d.start()
 
       d.finish().then(() => {
@@ -276,7 +276,7 @@ const FileManagePage = ({ history }) => {
       // more optimized
       if ("WritableStream" in window && s.pipeTo) {
         console.log("pipe")
-        s.pipeTo(fileStream)
+        s.pipeTo(fileStream as WritableStream<Uint8Array>)
           .then(() => {
             console.log("done")
           })
@@ -289,19 +289,10 @@ const FileManagePage = ({ history }) => {
         const writer = fileStream.getWriter();
         const reader = s.getReader();
 
-        const pump = async () => {
-          const res = await reader.read()
-
-          if (!res || !res.done) {
-            writer.close().catch(err => {
-              console.error(err)
-              throw err;
-            });
-            console.log("done")
-          } else {
-            writer.write(res.value).then(pump).catch(err => { throw err });
-          }
-        };
+        const pump = () => reader.read()
+        .then(res => res.done
+          ? writer.close()
+          : writer.write(res.value).then(pump))
 
         pump()
       }

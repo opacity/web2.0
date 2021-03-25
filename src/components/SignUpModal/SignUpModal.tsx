@@ -12,7 +12,6 @@ import { RECAPTCHA_SITEKEY, PlanType } from "../../config";
 import { createMnemonic, mnemonicToHandle } from "../../../ts-client-library/packages/util/src/mnemonic";
 import { Account, AccountGetRes, AccountCreationInvoice } from "../../../ts-client-library/packages/account-management"
 import { AccountSystem, MetadataAccess } from "../../../ts-client-library/packages/account-system"
-import { polyfillReadableStream } from "../../../ts-client-library/packages/util/src/streams"
 import { Upload, bindUploadToAccountSystem } from "../../../ts-client-library/packages/opaque"
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web"
 import { bytesToB64, b64ToBytes } from "../../../ts-client-library/packages/util/src/b64"
