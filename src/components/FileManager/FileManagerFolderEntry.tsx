@@ -2,6 +2,7 @@ import moment from "moment"
 import * as React from "react"
 import { Dropdown, DropdownButton } from "react-bootstrap"
 import { Table } from "tabler-react"
+import { useIntersectionObserver } from "@researchgate/react-intersection-observer"
 import { AccountSystem, FolderFileEntry, FolderMetadata, FoldersIndexEntry } from "../../../ts-client-library/packages/account-system"
 import { formatBytes } from "../../helpers"
 import { posix } from "path-browserify"
@@ -23,20 +24,21 @@ export const FileManagerFolderEntryGrid = ({
 }: FileManagerFolderEntryProps) => {
 	const [folderMeta, setFolderMeta] = React.useState<FolderMetadata>()
 
-	React.useEffect(() => {
-		if (folderEntry) {
+	const [ref, unobserve] = useIntersectionObserver((e) => {
+		if (folderEntry && e.isIntersecting) {
+			unobserve()
 			accountSystem._getFolderMetadataByLocation(folderEntry.location).then((f) => {
 				setFolderMeta(f)
 			})
 		}
-	}, [folderEntry])
+	})
 
 	return (
 		<div className='grid-item'>
 			<div className='items' onDoubleClick={() => setCurrentPath(folderEntry.path)}>
 				<i className='icon-folder'></i>
 				<h3 className='file-name'>{posix.basename(folderEntry.path)}</h3>
-				<div className='file-info'>{folderMeta ? folderMeta.files.length : "..."} Files</div>
+				<div className='file-info' ref={ref}>{folderMeta ? folderMeta.files.length : "..."} Files</div>
 			</div>
 		</div>
 	)
@@ -51,18 +53,19 @@ export const FileManagerFolderEntryList = ({
 }: FileManagerFolderEntryProps) => {
 	const [folderMeta, setFolderMeta] = React.useState<FolderMetadata>()
 
-	React.useEffect(() => {
-		if (folderEntry) {
+	const [ref, unobserve] = useIntersectionObserver((e) => {
+		if (folderEntry && e.isIntersecting) {
+			unobserve()
 			accountSystem._getFolderMetadataByLocation(folderEntry.location).then((f) => {
 				setFolderMeta(f)
 			})
 		}
-	}, [folderEntry])
+	})
 
 	return (
 		<Table.Row >
 			<Table.Col className='file-name' onDoubleClick={() => setCurrentPath(folderEntry.path)}>
-				<div className='d-flex'>
+				<div className='d-flex' ref={ref}>
 					<i className='icon-folder'></i>
 					{posix.basename(folderEntry.path)}
 				</div>

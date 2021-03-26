@@ -2,6 +2,7 @@ import moment from "moment"
 import * as React from "react"
 import { Dropdown, DropdownButton } from "react-bootstrap"
 import { Table } from "tabler-react"
+import { useIntersectionObserver } from "@researchgate/react-intersection-observer"
 import { AccountSystem, FileMetadata, FolderFileEntry, FoldersIndexEntry } from "../../../ts-client-library/packages/account-system"
 import { formatBytes } from "../../helpers"
 const typeList = {
@@ -27,6 +28,7 @@ const typeList = {
 	'image/tiff': 'image',
 	'image/webp': 'image',
 }
+
 export type FileManagerFileEntryProps = {
 	accountSystem: AccountSystem
 	fileEntry: FolderFileEntry
@@ -45,20 +47,21 @@ export const FileManagerFileEntryGrid = ({
 }: FileManagerFileEntryProps) => {
 	const [fileMeta, setFileMeta] = React.useState<FileMetadata>()
 
-	React.useEffect(() => {
+	const [ref, unobserve] = useIntersectionObserver(() => {
 		if (fileEntry) {
+			unobserve()
 			accountSystem._getFileMetadata(fileEntry.location).then((f) => {
 				setFileMeta(f)
 			})
 		}
-	}, [fileEntry])
+	})
 
 	return (
-		<div className='grid-item' >
+		<div className='grid-item'>
 			<div className='items'>
 				<i className={`icon-${fileMeta && typeList[fileMeta.type]}`}></i>
 				<h3 className='file-name'>{fileEntry.name}</h3>
-				<div className='file-info'>{fileMeta ? formatBytes(fileMeta.size) : "..."}</div>
+				<div className='file-info' ref={ref}>{fileMeta ? formatBytes(fileMeta.size) : "..."}</div>
 			</div>
 		</div>
 	)
@@ -74,18 +77,19 @@ export const FileManagerFileEntryList = ({
 }: FileManagerFileEntryProps) => {
 	const [fileMeta, setFileMeta] = React.useState<FileMetadata>()
 
-	React.useEffect(() => {
-		if (fileEntry) {
+	const [ref, unobserve] = useIntersectionObserver((e) => {
+		if (fileEntry && e.isIntersecting) {
+			unobserve()
 			accountSystem._getFileMetadata(fileEntry.location).then((f) => {
 				setFileMeta(f)
 			})
 		}
-	}, [fileEntry])
+	})
 
 	return (
 		<Table.Row>
 			<Table.Col className='file-name'>
-				<div className='d-flex'>
+				<div className='d-flex' ref={ref}>
 					<i className={`icon-${fileMeta && typeList[fileMeta.type]}`}></i>
 					{fileEntry.name}
 				</div>

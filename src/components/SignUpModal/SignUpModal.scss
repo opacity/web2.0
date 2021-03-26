@@ -293,6 +293,13 @@
               display: none !important;
             }
           }
+          // TODO: switch this to formik
+          .redeem-form-error {
+            width: 100%;
+            margin-top: .25rem;
+            font-size: 85.7142857%;
+            color: #e53e3e;
+          }
           .dropdown {
             @media (max-width: 767.7px) {
               display: block !important;

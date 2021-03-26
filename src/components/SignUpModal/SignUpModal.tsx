@@ -8,17 +8,18 @@ import HCaptcha from "@hcaptcha/react-hcaptcha";
 
 import "./SignUpModal.scss";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { RECAPTCHA_SITEKEY, PlanType } from "../../config";
+import { PlanType } from "../../config";
 import { createMnemonic, mnemonicToHandle } from "../../../ts-client-library/packages/util/src/mnemonic";
 import { Account, AccountGetRes, AccountCreationInvoice } from "../../../ts-client-library/packages/account-management"
 import { AccountSystem, MetadataAccess } from "../../../ts-client-library/packages/account-system"
 import { Upload, bindUploadToAccountSystem } from "../../../ts-client-library/packages/opaque"
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web"
-import { bytesToB64, b64ToBytes } from "../../../ts-client-library/packages/util/src/b64"
-const storageNode = "http://18.191.166.234:3000"
+import { bytesToHex, hexToBytes } from "../../../ts-client-library/packages/util/src/hex"
+import { STORAGE_NODE as storageNode } from "../../config"
+import Redeem from "./Redeem"
 const logo = require("../../assets/logo2.png");
 const loginSchema = Yup.object().shape({
-  handle: Yup.string(),
+  handle: Yup.string().length(128),
   termsCheck: Yup.boolean().required(""),
 });
 type OtherProps = {
@@ -74,7 +75,7 @@ const SignUpModal: React.FC<OtherProps> = ({ show, handleClose, plan, openLoginM
     openLoginModal();
   };
   const createAccount = async () => {
-    const cryptoMiddleware = new WebAccountMiddleware({ asymmetricKey: b64ToBytes(handle) });
+    const cryptoMiddleware = new WebAccountMiddleware({ asymmetricKey: hexToBytes(handle) });
     const netMiddleware = new WebNetworkMiddleware();
     const account = new Account({ crypto: cryptoMiddleware, net: netMiddleware, storageNode });
     setAccount(account)
@@ -95,7 +96,7 @@ const SignUpModal: React.FC<OtherProps> = ({ show, handleClose, plan, openLoginM
     createMnemonic().then(async (res) => {
       setMnemonic(res);
       const handle = await mnemonicToHandle(res);
-      setPrivateKey(bytesToB64(handle));
+      setPrivateKey(bytesToHex(handle));
     });
   }, []);
   return (
@@ -315,14 +316,8 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account }) 
         </div>
       </div>
       <div className='card-body qrcode'>
+        <Redeem storageLimit={plan.storageLimit} ethAddress={invoice.ethAddress} />
         <h1>Other Ways To Pay</h1>
-        <div className='d-flex'>
-          <h4>OPCT1TB-</h4>
-          <input name='code' className='form-control' />
-          <Button variant='primary' >
-            REDEEM GIFT CODE
-          </Button>
-        </div>
         <div className='or-line col-md-5 m-auto'>or</div>
         <div className='scan'>
           <h3>Scan QR code to pay</h3>
