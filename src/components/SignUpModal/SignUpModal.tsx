@@ -277,6 +277,7 @@ const AccountHandle: React.FC<SignUpProps> = ({ plan, goBack, goNext, mnemonic, 
 };
 
 const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account }) => {
+  const [isCopied, setIsCopied] = useState(false);
   React.useEffect(() => {
     account.waitForPayment().then(() => {
       goNext();
@@ -308,11 +309,17 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account }) 
           Once your payment is sent, it may take some time to confirm your payment on the Ethereum network. We will confirm receipt and complete setup
           of your account once the network transaction is confirmed. Please be patient.
         </div>
-        <ProgressBar striped now={100} />
-        <div className='send-email'>Send 16 OPCT to Ethereum Address:</div>
-        <div className='account-handle'>{invoice.ethAddress}</div>
+        <ProgressBar striped now={100} animated />
+        <div className='send-email'>Send {plan.opctCost} OPCT to Ethereum Address:</div>
+        <div className='form-group'>
+          <div className='account-handle'>{invoice.ethAddress}</div>
+          <CopyToClipboard text={invoice.ethAddress} onCopy={() => invoice.ethAddress && setIsCopied(true)}>
+            <span className='handle'></span>
+          </CopyToClipboard>
+          {isCopied && <div className='copy-feedback'>Copied to clipboard!</div>}
+        </div>
         <div className='need-opct'>
-          Need OPCT? <span className='here'>Purchase here</span>
+          Need OPCT? <span className='here' onClick={() => window.open('https://www.kucoin.com/trade/OPCT-BTC', "_blank")}>Purchase here</span>
         </div>
       </div>
       <div className='card-body qrcode'>

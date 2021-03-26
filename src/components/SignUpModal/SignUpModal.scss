@@ -571,3 +571,8 @@
     }
   }
 }
+
+.progress-bar-animated {
+  -webkit-animation: 1s linear infinite progress-bar-stripes;
+  animation: 10s linear infinite progress-bar-stripes;
+}

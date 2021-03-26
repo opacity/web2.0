@@ -95,15 +95,21 @@ const FileManagePage = ({ history }) => {
   React.useEffect(() => {
     if (window.performance) {
       if (performance.navigation.type == 1) {
-        // localStorage.clear();
+        localStorage.clear();
       } else {
       }
     }
   }, []);
 
   const getFolderData = async () => {
-    const accountInfo = await account.info();
-    setAccountInfo(accountInfo);
+    try {
+      const accountInfo = await account.info();
+      setAccountInfo(accountInfo);
+    } catch (e) {
+      localStorage.clear();
+      history.push('/')
+    }
+
     const t = await accountSystem.getFoldersIndex();
     console.log('---folder indexes', t)
     function filesToTreeNodes(arr) {
@@ -381,7 +387,7 @@ const FileManagePage = ({ history }) => {
         >
           <span className='navbar-toggler-icon'></span>
         </button>
-        <h1 className='navbar-brand'>
+        <h1 className='navbar-brand ' onClick={()=>history.push('/')}>
           <Link to='/'>
             <img src={logo} width='60' height='60' alt='Opacity' className='navbar-brand-image' />
           </Link>
@@ -396,7 +402,7 @@ const FileManagePage = ({ history }) => {
         }
       >
         <div className='container-fluid'>
-          <h1 className='navbar-brand navbar-brand-autodark'>
+          <h1 className='navbar-brand navbar-brand-autodark cursor-point' onClick={()=>history.push('/')}>
             <Link to='/'>
               <img src={logo} width='60' height='60' alt='Opacity' className='navbar-brand-image' />
             </Link>
