@@ -3,6 +3,10 @@ import * as path from "path"
 
 class Context {
   runServer: boolean;
+  env: {
+    NODE_ENV: "development" | "production",
+    STORAGE_NODE_VERSION: "beta" | "production"
+  }
   getConfig = () =>
     fusebox({
       target: "browser",
@@ -23,6 +27,7 @@ class Context {
           "require('stream')": "require('" + require.resolve("./node_modules/stream-browserify") + "')",
         })
       ],
+      env: this.env
     });
 }
 
@@ -41,28 +46,87 @@ task("copy-streamsaver", async () => {
 })
 
 task("default", async ctx => {
+  await exec("run-dev-beta")
+})
+
+task("run-dev-prod", async ctx => {
   await exec("remove-artifacts")
 
   ctx.runServer = true;
+  ctx.env = {
+    NODE_ENV: "development",
+    STORAGE_NODE_VERSION: "production",
+  }
   const fuse = ctx.getConfig();
 
   await exec("copy-streamsaver")
   await fuse.runDev();
 });
 
-task("preview", async ctx => {
+task("run-dev-beta", async ctx => {
   await exec("remove-artifacts")
 
   ctx.runServer = true;
+  ctx.env = {
+    NODE_ENV: "development",
+    STORAGE_NODE_VERSION: "beta",
+  }
+  const fuse = ctx.getConfig();
+
+  await exec("copy-streamsaver")
+  await fuse.runDev();
+});
+
+task("run-prod-beta", async ctx => {
+  await exec("remove-artifacts")
+
+  ctx.runServer = true;
+  ctx.env = {
+    NODE_ENV: "production",
+    STORAGE_NODE_VERSION: "beta",
+  }
   const fuse = ctx.getConfig();
 
   await exec("copy-streamsaver")
   await fuse.runProd({ uglify: false });
 });
-task("dist", async ctx => {
+
+task("run-prod-prod", async ctx => {
+  await exec("remove-artifacts")
+
+  ctx.runServer = true;
+  ctx.env = {
+    NODE_ENV: "production",
+    STORAGE_NODE_VERSION: "production",
+  }
+  const fuse = ctx.getConfig();
+
+  await exec("copy-streamsaver")
+  await fuse.runProd({ uglify: false });
+});
+
+task("dist-prod-beta", async ctx => {
   await exec("remove-artifacts")
 
   ctx.runServer = false;
+  ctx.env = {
+    NODE_ENV: "production",
+    STORAGE_NODE_VERSION: "beta",
+  }
+  const fuse = ctx.getConfig();
+
+  await exec("copy-streamsaver")
+  await fuse.runProd({ uglify: false });
+});
+
+task("dist-prod-prod", async ctx => {
+  await exec("remove-artifacts")
+
+  ctx.runServer = false;
+  ctx.env = {
+    NODE_ENV: "production",
+    STORAGE_NODE_VERSION: "production",
+  }
   const fuse = ctx.getConfig();
 
   await exec("copy-streamsaver")

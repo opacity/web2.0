@@ -1,12 +1,13 @@
 import * as React from "react";
-import { NavLink, Table } from "tabler-react";
+import { Table } from "tabler-react";
+import { Link } from "react-router-dom"
 import { ToastContainer, toast } from "react-toastify";
 import { Row, Col, Container, Media, Button, Nav, ProgressBar, Breadcrumb, DropdownButton, Dropdown } from "react-bootstrap";
 import TreeMenu, { TreeMenuProps, ItemComponent } from "react-simple-tree-menu";
 import { Account, AccountGetRes, AccountCreationInvoice } from "../../../ts-client-library/packages/account-management"
 import { AccountSystem, MetadataAccess, FileMetadata, FolderMetadata, FolderFileEntry, FoldersIndexEntry } from "../../../ts-client-library/packages/account-system"
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web"
-import { bytesToB64, b64ToBytes } from "../../../ts-client-library/packages/util/src/b64"
+import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex"
 import { polyfillReadableStreamIfNeeded, polyfillWritableStreamIfNeeded, ReadableStream, TransformStream, WritableStream } from "../../../ts-client-library/packages/util/src/streams"
 import { Upload, bindUploadToAccountSystem, Download, bindDownloadToAccountSystem } from "../../../ts-client-library/packages/opaque"
 import { theme, FILE_MAX_SIZE } from "../../config";
@@ -31,11 +32,11 @@ Object.assign(streamsaver, { WritableStream })
 const uploadImage = require("../../assets/upload.png");
 const empty = require("../../assets/empty.png");
 
-const storageNode = "http://18.191.166.234:3000";
+import { STORAGE_NODE as storageNode } from "../../config"
 
 const logo = require("../../assets/logo2.png");
 const FileManagePage = ({ history }) => {
-  const cryptoMiddleware = new WebAccountMiddleware({ asymmetricKey: b64ToBytes(localStorage.getItem('key')) });
+  const cryptoMiddleware = new WebAccountMiddleware({ asymmetricKey: hexToBytes(localStorage.getItem('key')) });
   const netMiddleware = new WebNetworkMiddleware();
   const metadataAccess = new MetadataAccess({
     net: netMiddleware,
@@ -90,9 +91,25 @@ const FileManagePage = ({ history }) => {
       // toast.error(`folder "${currentPath}" not found`)
     })
   }, [currentPath, updateStatus]);
+
+  React.useEffect(() => {
+    if (window.performance) {
+      if (performance.navigation.type == 1) {
+        localStorage.clear();
+      } else {
+      }
+    }
+  }, []);
+
   const getFolderData = async () => {
-    const accountInfo = await account.info();
-    setAccountInfo(accountInfo);
+    try {
+      const accountInfo = await account.info();
+      setAccountInfo(accountInfo);
+    } catch (e) {
+      localStorage.clear();
+      history.push('/')
+    }
+
     const t = await accountSystem.getFoldersIndex();
     console.log('---folder indexes', t)
     function filesToTreeNodes(arr) {
@@ -370,10 +387,10 @@ const FileManagePage = ({ history }) => {
         >
           <span className='navbar-toggler-icon'></span>
         </button>
-        <h1 className='navbar-brand'>
-          <a href='/'>
+        <h1 className='navbar-brand ' onClick={()=>history.push('/')}>
+          <Link to='/'>
             <img src={logo} width='60' height='60' alt='Opacity' className='navbar-brand-image' />
-          </a>
+          </Link>
           Opacity <span>v2.0.0</span>
         </h1>
       </div>
@@ -385,10 +402,10 @@ const FileManagePage = ({ history }) => {
         }
       >
         <div className='container-fluid'>
-          <h1 className='navbar-brand navbar-brand-autodark'>
-            <a href='/'>
+          <h1 className='navbar-brand navbar-brand-autodark cursor-point' onClick={()=>history.push('/')}>
+            <Link to='/'>
               <img src={logo} width='60' height='60' alt='Opacity' className='navbar-brand-image' />
-            </a>
+            </Link>
             Opacity <span>v2.0.0</span>
           </h1>
           <div className='collapse navbar-collapse' id='navbar-menu'>

@@ -65,6 +65,7 @@ class SiteWrapper extends React.Component<Props, State> {
   }
 
   render(): ReactElement {
+    const loggedIn = localStorage.getItem('key') ? true : false;
     return (
       <div className='page'>
         <header
@@ -76,10 +77,10 @@ class SiteWrapper extends React.Component<Props, State> {
         >
           <div className='container-xl'>
             <h1 className='navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3 mb-0'>
-              <a href='/' className='logo-wrapper'>
+              <NavLink to='/' className='logo-wrapper'>
                 <img src={logo} width='60' height='60' alt='Opacity' className='navbar-brand-image' />
                 <span className='ml-3'>OPACITY</span>
-              </a>
+              </NavLink>
             </h1>
             <button
               className='navbar-toggler'
@@ -96,37 +97,72 @@ class SiteWrapper extends React.Component<Props, State> {
               <div className='d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center justify-content-end'>
                 <ul className='navbar-nav'>
                   <li className='nav-item'>
-                    <Nav.Link href='/platform'>Why Opacity?</Nav.Link>
+                    <NavLink to='/platform' className='nav-link'>
+                      Why Opacity?
+                    </NavLink>
                   </li>
                   <li className='nav-item'>
-                    <Nav.Link href='/community'>App Gallery </Nav.Link>
+                    <NavLink to='/community' className='nav-link'>
+                      App Gallery
+                    </NavLink>
                   </li>
                   <li className='nav-item'>
                     <Nav.Link href='/blog'>Learn</Nav.Link>
                   </li>
                   <li className='nav-item'>
-                    <div className='nav-link'>
-                      <Button
-                        className='btn btn-white btn-pill'
-                        onClick={() => {
-                          this.props.history.push("/plans");
-                        }}
-                      >
-                        Explore Plans
+                    {loggedIn ?
+                      (
+                        <div className='nav-link'>
+                          <Button
+                            className='btn btn-primary'
+                            onClick={() => {
+                              this.props.history.push("/file-manager");
+                            }}
+                          >
+                            Dashboard
+                        </Button>
+                        </div>
+                      ) : (
+                        <div className='nav-link'>
+                          <Button
+                            className='btn btn-white btn-pill'
+                            onClick={() => {
+                              this.props.history.push("/plans");
+                            }}
+                          >
+                            Explore Plans
                       </Button>
-                    </div>
+                        </div>
+                      )
+                    }
+
                   </li>
                   <li className='nav-item'>
-                    <div className=''>
-                      <Button
-                        className='btn btn-primary btn-pill'
-                        onClick={() => {
-                          this.setState({ showLoginModal: true });
-                        }}
-                      >
-                        Log in
+                    {loggedIn ? (
+                      <div className=''>
+                        <Button
+                          className='btn btn-primary'
+                          onClick={() => {
+                            localStorage.clear();
+                            this.props.history.push('/')
+                          }}
+                        >
+                          Logout
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className=''>
+                        <Button
+                          className='btn btn-primary btn-pill'
+                          onClick={() => {
+                            this.setState({ showLoginModal: true });
+                          }}
+                        >
+                          Log in
                       </Button>
-                    </div>
+                      </div>
+                    )}
+
                   </li>
                 </ul>
               </div>
@@ -136,25 +172,54 @@ class SiteWrapper extends React.Component<Props, State> {
                 <div className='d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center justify-content-center'>
                   <ul className='navbar-nav'>
                     <li className='nav-item'>
-                      <Nav.Link href='/platform'>Why Opacity?</Nav.Link>
+                      <NavLink to='/platform' className='nav-link'>
+                        Why Opacity?
+                    </NavLink>
                     </li>
                     <li className='nav-item'>
-                      <Nav.Link href='/community'>App Gallery </Nav.Link>
+                      <NavLink to='/community' className='nav-link'>
+                        App Gallery
+                    </NavLink>
                     </li>
                     <li className='nav-item'>
                       <Nav.Link href='/blog'>Learn</Nav.Link>
                     </li>
-                    <li className='nav-item'>
-                      <Nav.Link href='/plans'>Explore Plans</Nav.Link>
-                    </li>
-                    <li
-                      className='nav-item'
-                      onClick={() => {
-                        this.setState({ showLoginModal: true });
-                      }}
-                    >
-                      <Nav.Link>Log in</Nav.Link>
-                    </li>
+
+                    {
+                      loggedIn ? (
+                        <>
+                          <li className='nav-item'>
+                            <NavLink to='/file-manager' className='nav-link'>
+                              Dashboard
+                              </NavLink>
+                          </li>
+                          <li
+                            className='nav-item'
+                            onClick={() => {
+                              localStorage.clear();
+                              this.props.history.push('/')
+                            }}
+                          >
+                            <Nav.Link>Logout</Nav.Link>
+                          </li>
+                        </>
+                      ) : (
+                        <>
+                          <li className='nav-item'>
+                            <Nav.Link href='/plans'>Explore Plans</Nav.Link>
+                          </li>
+                          <li
+                            className='nav-item'
+                            onClick={() => {
+                              this.setState({ showLoginModal: true });
+                            }}
+                          >
+                            <Nav.Link>Log in</Nav.Link>
+                          </li>
+                        </>
+                      )
+                    }
+
                   </ul>
                 </div>
               </div>

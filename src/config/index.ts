@@ -1,52 +1,41 @@
 export const version = "v1.3.0";
 
-export const IS_DEV = process.env.NODE_ENV === "development";
-export const IS_BETA_DEV = process.env.NODE_ENV === "development-beta";
-export const IS_BETA_PROD = process.env.NODE_ENV === "production-beta";
-export const IS_PROD = process.env.NODE_ENV === "production";
+enum NODE_ENV {
+  DEVELOPMENT = "development",
+  PRODUCTION = "production",
+}
 
-const PROTOCOL = IS_DEV ? "http" : "https";
+enum STORAGE_NODE_VERSION {
+  BETA = "beta",
+  PRODUCTION = "production",
+}
 
-export const STRIPE_API_KEY = IS_PROD
+const PROTOCOL = process.env.NODE_ENV == NODE_ENV.DEVELOPMENT && process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
+  ? "http"
+  : "https";
+
+export const STRIPE_API_KEY = process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.PRODUCTION
   ? "pk_live_SLMPS7zVFurFwLOKEdiICAGC00kN41fASj"
   : "pk_test_jHC9KKrYExP2pdqmuSmkPSqT00ErWapX4f";
 
 export const HOST =
-  IS_DEV || IS_BETA_DEV
+  process.env.NODE_ENV == NODE_ENV.DEVELOPMENT
     ? "localhost:3001"
-    : IS_BETA_PROD
-    ? "beta.opacity.io"
+    : process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
+    ? "dev2.opacity.io"
     : "opacity.io";
 export const FRONT_END_URL = `${PROTOCOL}://${HOST}`;
 
 export const EXCHANGE_LINK = "https://www.kucoin.com/trade/OPCT-BTC";
-export const GTM_ID = IS_DEV ? "GTM-MTCZFC8" : "GTM-WBG5C67";
 
-const DEFAULT_BROKER_IP =
-  IS_BETA_PROD || IS_BETA_DEV
+const DEFAULT_STORAGE_NODE_IP =
+  process.env.NODE_ENV == NODE_ENV.DEVELOPMENT
+    ? "18.191.166.234"
+    : process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
     ? "beta-broker.opacitynodes.com"
-    : IS_DEV
-    ? "18.220.6.26"
     : "broker-1.opacitynodes.com";
 
-export const API = Object.freeze({
-  STORAGE_NODE: `${PROTOCOL}://${DEFAULT_BROKER_IP}:3000`,
-  V1_SUBSCRIPTIONS_PATH: "/api/v1/stripe/create"
-});
-
-export const OPAQUE = Object.freeze({
-  UPLOAD_OPTIONS: {
-    autostart: true,
-    endpoint: API.STORAGE_NODE,
-    params: {
-      blockSize: 64 * 1024, // 256 KiB encryption blocks
-      partSize: 10 * 1024 * 1024
-    }
-  },
-  DOWNLOAD_OPTIONS: {
-    endpoint: API.STORAGE_NODE
-  }
-});
+export const STORAGE_NODE = `${PROTOCOL}://${DEFAULT_STORAGE_NODE_IP}:3000`
 
 export const FILE_MAX_SIZE = 2000 * 1000 * 1000;
 
@@ -59,11 +48,6 @@ export const AGREEMENT_TYPES = Object.freeze({
 export const THIRD_PARTY = Object.freeze({
   COINMARKETCAP: "https://opacity.io/widget.php"
 });
-
-export const RECAPTCHA_SITEKEY =
-  IS_DEV || IS_BETA_DEV
-    ? "6LciI6cUAAAAAL03VKUCArV9MFS8zgQn49NHItA8"
-    : "6Le3I6cUAAAAAILR-MfvTFAi258rXVSd10HVXBoI";
 
 export const LANDING_PAGE_VIDEO =
   "https://s3.us-east-2.amazonaws.com/opacity-public/whatIsOpacity.mov";
