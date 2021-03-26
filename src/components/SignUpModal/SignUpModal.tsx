@@ -16,9 +16,10 @@ import { Upload, bindUploadToAccountSystem } from "../../../ts-client-library/pa
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web"
 import { bytesToHex, hexToBytes } from "../../../ts-client-library/packages/util/src/hex"
 import { STORAGE_NODE as storageNode } from "../../config"
+import Redeem from "./Redeem"
 const logo = require("../../assets/logo2.png");
 const loginSchema = Yup.object().shape({
-  handle: Yup.string(),
+  handle: Yup.string().length(128),
   termsCheck: Yup.boolean().required(""),
 });
 type OtherProps = {
@@ -315,14 +316,8 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account }) 
         </div>
       </div>
       <div className='card-body qrcode'>
+        <Redeem storageLimit={plan.storageLimit} ethAddress={invoice.ethAddress} />
         <h1>Other Ways To Pay</h1>
-        <div className='d-flex'>
-          <h4>OPCT1TB-</h4>
-          <input name='code' className='form-control' />
-          <Button variant='primary' >
-            REDEEM GIFT CODE
-          </Button>
-        </div>
         <div className='or-line col-md-5 m-auto'>or</div>
         <div className='scan'>
           <h3>Scan QR code to pay</h3>
