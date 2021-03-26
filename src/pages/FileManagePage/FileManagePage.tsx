@@ -1,5 +1,6 @@
 import * as React from "react";
-import { NavLink, Table } from "tabler-react";
+import { Table } from "tabler-react";
+import { Link } from "react-router-dom"
 import { ToastContainer, toast } from "react-toastify";
 import { Row, Col, Container, Media, Button, Nav, ProgressBar, Breadcrumb, DropdownButton, Dropdown } from "react-bootstrap";
 import TreeMenu, { TreeMenuProps, ItemComponent } from "react-simple-tree-menu";
@@ -90,6 +91,16 @@ const FileManagePage = ({ history }) => {
       // toast.error(`folder "${currentPath}" not found`)
     })
   }, [currentPath, updateStatus]);
+
+  React.useEffect(() => {
+    if (window.performance) {
+      if (performance.navigation.type == 1) {
+        // localStorage.clear();
+      } else {
+      }
+    }
+  }, []);
+
   const getFolderData = async () => {
     const accountInfo = await account.info();
     setAccountInfo(accountInfo);
@@ -371,9 +382,9 @@ const FileManagePage = ({ history }) => {
           <span className='navbar-toggler-icon'></span>
         </button>
         <h1 className='navbar-brand'>
-          <a href='/'>
+          <Link to='/'>
             <img src={logo} width='60' height='60' alt='Opacity' className='navbar-brand-image' />
-          </a>
+          </Link>
           Opacity <span>v2.0.0</span>
         </h1>
       </div>
@@ -386,9 +397,9 @@ const FileManagePage = ({ history }) => {
       >
         <div className='container-fluid'>
           <h1 className='navbar-brand navbar-brand-autodark'>
-            <a href='/'>
+            <Link to='/'>
               <img src={logo} width='60' height='60' alt='Opacity' className='navbar-brand-image' />
-            </a>
+            </Link>
             Opacity <span>v2.0.0</span>
           </h1>
           <div className='collapse navbar-collapse' id='navbar-menu'>

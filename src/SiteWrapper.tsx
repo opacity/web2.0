@@ -76,10 +76,10 @@ class SiteWrapper extends React.Component<Props, State> {
         >
           <div className='container-xl'>
             <h1 className='navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3 mb-0'>
-              <a href='/' className='logo-wrapper'>
+              <NavLink to='/' className='logo-wrapper'>
                 <img src={logo} width='60' height='60' alt='Opacity' className='navbar-brand-image' />
                 <span className='ml-3'>OPACITY</span>
-              </a>
+              </NavLink>
             </h1>
             <button
               className='navbar-toggler'
