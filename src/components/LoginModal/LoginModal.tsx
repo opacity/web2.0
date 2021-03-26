@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState } from "react";
 import { Modal, Button, Row, Col } from "react-bootstrap";
-import { Field, Formik } from "formik";
+import { Field, Formik, FormikHelpers } from "formik";
 import { Form } from "tabler-react";
 import * as Yup from "yup";
 import history from "../../redux/history";
@@ -19,11 +19,25 @@ type OtherProps = {
   show: boolean;
   handleClose: Function;
 };
+
+type LoginFormProps = {
+  privateKey: string
+}
+
 const LoginModal: React.FC<OtherProps> = ({ show, handleClose }) => {
   const [privateKey, setPrivateKey] = useState("");
   const [validatePrivateKey, setValidatePrivateKey] = useState(true);
   const [account, setAccount] = React.useState<Account>();
-  const handleLogin = (values) => {
+
+  const handleLogin = (values: LoginFormProps, { setErrors }: FormikHelpers<LoginFormProps>) => {
+    if (values.privateKey.length != 128) {
+      setErrors({
+        privateKey: "Account handle must be 128 characters long"
+      })
+
+      return
+    }
+
     const cryptoMiddleware = new WebAccountMiddleware({ asymmetricKey: hexToBytes(values.privateKey) });
     const netMiddleware = new WebNetworkMiddleware();
     const account = new Account({ crypto: cryptoMiddleware, net: netMiddleware, storageNode });
@@ -32,10 +46,15 @@ const LoginModal: React.FC<OtherProps> = ({ show, handleClose }) => {
         localStorage.setItem('key', values.privateKey);
         history.push('file-manager')
       }
+    }).catch((err: Error) => {
+      setErrors({
+        privateKey: err.message
+      })
     })
   }
+
   return (
-    <Formik initialValues={{ privateKey: "" }} validationSchema={loginSchema} onSubmit={(values, { setErrors }) => { handleLogin(values) }}>
+    <Formik initialValues={{ privateKey: "" }} validationSchema={loginSchema} onSubmit={(values, helpers) => { handleLogin(values, helpers) }}>
       {({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => (
         <Modal show={show} onHide={handleClose} size='lg' dialogClassName='login'>
           <Modal.Body>
