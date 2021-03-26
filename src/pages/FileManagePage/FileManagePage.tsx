@@ -6,7 +6,7 @@ import TreeMenu, { TreeMenuProps, ItemComponent } from "react-simple-tree-menu";
 import { Account, AccountGetRes, AccountCreationInvoice } from "../../../ts-client-library/packages/account-management"
 import { AccountSystem, MetadataAccess, FileMetadata, FolderMetadata, FolderFileEntry, FoldersIndexEntry } from "../../../ts-client-library/packages/account-system"
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web"
-import { bytesToB64, b64ToBytes } from "../../../ts-client-library/packages/util/src/b64"
+import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex"
 import { polyfillReadableStreamIfNeeded, polyfillWritableStreamIfNeeded, ReadableStream, TransformStream, WritableStream } from "../../../ts-client-library/packages/util/src/streams"
 import { Upload, bindUploadToAccountSystem, Download, bindDownloadToAccountSystem } from "../../../ts-client-library/packages/opaque"
 import { theme, FILE_MAX_SIZE } from "../../config";
@@ -35,7 +35,7 @@ import { STORAGE_NODE as storageNode } from "../../config"
 
 const logo = require("../../assets/logo2.png");
 const FileManagePage = ({ history }) => {
-  const cryptoMiddleware = new WebAccountMiddleware({ asymmetricKey: b64ToBytes(localStorage.getItem('key')) });
+  const cryptoMiddleware = new WebAccountMiddleware({ asymmetricKey: hexToBytes(localStorage.getItem('key')) });
   const netMiddleware = new WebNetworkMiddleware();
   const metadataAccess = new MetadataAccess({
     net: netMiddleware,

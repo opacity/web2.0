@@ -8,7 +8,7 @@ import history from "../../redux/history";
 import "./LoginModal.scss";
 import { Account, AccountGetRes, AccountCreationInvoice } from "../../../ts-client-library/packages/account-management"
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web"
-import { bytesToB64, b64ToBytes } from "../../../ts-client-library/packages/util/src/b64"
+import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex"
 import { STORAGE_NODE as storageNode } from "../../config"
 
 const logo = require("../../assets/logo2.png");
@@ -24,7 +24,7 @@ const LoginModal: React.FC<OtherProps> = ({ show, handleClose }) => {
   const [validatePrivateKey, setValidatePrivateKey] = useState(true);
   const [account, setAccount] = React.useState<Account>();
   const handleLogin = (values) => {
-    const cryptoMiddleware = new WebAccountMiddleware({ asymmetricKey: b64ToBytes(values.privateKey) });
+    const cryptoMiddleware = new WebAccountMiddleware({ asymmetricKey: hexToBytes(values.privateKey) });
     const netMiddleware = new WebNetworkMiddleware();
     const account = new Account({ crypto: cryptoMiddleware, net: netMiddleware, storageNode });
     account.info().then(acc => {

@@ -14,7 +14,7 @@ import { Account, AccountGetRes, AccountCreationInvoice } from "../../../ts-clie
 import { AccountSystem, MetadataAccess } from "../../../ts-client-library/packages/account-system"
 import { Upload, bindUploadToAccountSystem } from "../../../ts-client-library/packages/opaque"
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web"
-import { bytesToB64, b64ToBytes } from "../../../ts-client-library/packages/util/src/b64"
+import { bytesToHex, hexToBytes } from "../../../ts-client-library/packages/util/src/hex"
 import { STORAGE_NODE as storageNode } from "../../config"
 const logo = require("../../assets/logo2.png");
 const loginSchema = Yup.object().shape({
@@ -74,7 +74,7 @@ const SignUpModal: React.FC<OtherProps> = ({ show, handleClose, plan, openLoginM
     openLoginModal();
   };
   const createAccount = async () => {
-    const cryptoMiddleware = new WebAccountMiddleware({ asymmetricKey: b64ToBytes(handle) });
+    const cryptoMiddleware = new WebAccountMiddleware({ asymmetricKey: hexToBytes(handle) });
     const netMiddleware = new WebNetworkMiddleware();
     const account = new Account({ crypto: cryptoMiddleware, net: netMiddleware, storageNode });
     setAccount(account)
@@ -95,7 +95,7 @@ const SignUpModal: React.FC<OtherProps> = ({ show, handleClose, plan, openLoginM
     createMnemonic().then(async (res) => {
       setMnemonic(res);
       const handle = await mnemonicToHandle(res);
-      setPrivateKey(bytesToB64(handle));
+      setPrivateKey(bytesToHex(handle));
     });
   }, []);
   return (
