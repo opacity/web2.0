@@ -50,9 +50,11 @@ export const FileManagerFileEntryGrid = ({
 	const [ref, unobserve] = useIntersectionObserver(() => {
 		if (fileEntry) {
 			unobserve()
-			accountSystem._getFileMetadata(fileEntry.location).then((f) => {
-				setFileMeta(f)
-			})
+			setTimeout(() => {
+				accountSystem._getFileMetadata(fileEntry.location).then((f) => {
+					setFileMeta(f)
+				})
+			}, 100)
 		}
 	})
 
@@ -80,9 +82,11 @@ export const FileManagerFileEntryList = ({
 	const [ref, unobserve] = useIntersectionObserver((e) => {
 		if (fileEntry && e.isIntersecting) {
 			unobserve()
-			accountSystem._getFileMetadata(fileEntry.location).then((f) => {
-				setFileMeta(f)
-			})
+			setTimeout(() => {
+				accountSystem._getFileMetadata(fileEntry.location).then((f) => {
+					setFileMeta(f)
+				})
+			}, 100)
 		}
 	})
 

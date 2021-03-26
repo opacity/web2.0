@@ -36,16 +36,16 @@ import { STORAGE_NODE as storageNode } from "../../config"
 
 const logo = require("../../assets/logo2.png");
 const FileManagePage = ({ history }) => {
-  const cryptoMiddleware = new WebAccountMiddleware({ asymmetricKey: hexToBytes(localStorage.getItem('key')) });
-  const netMiddleware = new WebNetworkMiddleware();
-  const metadataAccess = new MetadataAccess({
+  const cryptoMiddleware = React.useMemo(() => new WebAccountMiddleware({ asymmetricKey: hexToBytes(localStorage.getItem('key')) }), []);
+  const netMiddleware = React.useMemo(() => new WebNetworkMiddleware(), []);
+  const metadataAccess = React.useMemo(() => new MetadataAccess({
     net: netMiddleware,
     crypto: cryptoMiddleware,
     metadataNode: storageNode,
     maxConcurrency: 3,
-  });
-  const accountSystem = new AccountSystem({ metadataAccess });
-  const account = new Account({ crypto: cryptoMiddleware, net: netMiddleware, storageNode })
+  }), [netMiddleware, cryptoMiddleware, storageNode]);
+  const accountSystem = React.useMemo(() => new AccountSystem({ metadataAccess }), [metadataAccess]);
+  const account = React.useMemo(() => new Account({ crypto: cryptoMiddleware, net: netMiddleware, storageNode }), [cryptoMiddleware, netMiddleware, storageNode])
   const [updateStatus, setUpdateStatus] = React.useState(false);
   const [showSidebar, setShowSidebar] = React.useState(false);
   const [tableView, setTableView] = React.useState(true);
@@ -82,13 +82,22 @@ const FileManagePage = ({ history }) => {
     });
     setSubPaths(subpaths);
     setPageLoading(true)
-    accountSystem.addFolder(currentPath).then(async res => {
+
+    let folderMetaPromise: Promise<FolderMetadata>
+
+    if (currentPath == "/") {
+      folderMetaPromise = accountSystem.addFolder(currentPath)
+    } else {
+      folderMetaPromise = accountSystem.getFolderMetadataByPath(currentPath)
+    }
+
+    folderMetaPromise.then(async res => {
       let fl = await accountSystem.getFoldersInFolderByPath(currentPath);
       setFolderList(fl);
       setFileList(res.files);
       setPageLoading(false)
     }).catch(err => {
-      // toast.error(`folder "${currentPath}" not found`)
+      toast.error(`folder "${currentPath}" not found`)
     })
   }, [currentPath, updateStatus]);
 

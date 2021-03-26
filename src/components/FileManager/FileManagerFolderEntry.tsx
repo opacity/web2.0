@@ -27,9 +27,11 @@ export const FileManagerFolderEntryGrid = ({
 	const [ref, unobserve] = useIntersectionObserver((e) => {
 		if (folderEntry && e.isIntersecting) {
 			unobserve()
-			accountSystem._getFolderMetadataByLocation(folderEntry.location).then((f) => {
-				setFolderMeta(f)
-			})
+			setTimeout(() => {
+				accountSystem._getFolderMetadataByLocation(folderEntry.location).then((f) => {
+					setFolderMeta(f)
+				})
+			}, 100)
 		}
 	})
 
@@ -56,9 +58,11 @@ export const FileManagerFolderEntryList = ({
 	const [ref, unobserve] = useIntersectionObserver((e) => {
 		if (folderEntry && e.isIntersecting) {
 			unobserve()
-			accountSystem._getFolderMetadataByLocation(folderEntry.location).then((f) => {
-				setFolderMeta(f)
-			})
+			setTimeout(() => {
+				accountSystem._getFolderMetadataByLocation(folderEntry.location).then((f) => {
+					setFolderMeta(f)
+				})
+			}, 100)
 		}
 	})
 
