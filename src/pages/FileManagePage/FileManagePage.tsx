@@ -25,6 +25,7 @@ import { FileManagerFolderEntryGrid, FileManagerFolderEntryList } from "../../co
 import { useDropzone } from "react-dropzone";
 import ReactLoading from "react-loading";
 import streamsaver from "streamsaver";
+import { Mutex } from "async-mutex"
 
 streamsaver.mitm = "/resources/streamsaver/mitm.html"
 Object.assign(streamsaver, { WritableStream })
@@ -42,7 +43,6 @@ const FileManagePage = ({ history }) => {
     net: netMiddleware,
     crypto: cryptoMiddleware,
     metadataNode: storageNode,
-    maxConcurrency: 3,
   }), [netMiddleware, cryptoMiddleware, storageNode]);
   const accountSystem = React.useMemo(() => new AccountSystem({ metadataAccess }), [metadataAccess]);
   const account = React.useMemo(() => new Account({ crypto: cryptoMiddleware, net: netMiddleware, storageNode }), [cryptoMiddleware, netMiddleware, storageNode])
@@ -194,6 +194,8 @@ const FileManagePage = ({ history }) => {
         )
     );
   }
+
+  const fileUploadMutex = React.useMemo(() => new Mutex(), [])
   const uploadFile = async (file, path) => {
     try {
       const upload = new Upload({
@@ -210,30 +212,34 @@ const FileManagePage = ({ history }) => {
       // side effects
       bindUploadToAccountSystem(accountSystem, upload)
 
-      const stream = await upload.start()
-      toast(`${file.name} is uploading. Please wait...`, { toastId: handle, autoClose: false, });
-      // if there is no error
-      if (stream) {
-        // TODO: Why does it do this?
-        polyfillReadableStreamIfNeeded<Uint8Array>(file.stream()).pipeThrough(stream as TransformStream<Uint8Array, Uint8Array> as any)
-      } else {
-        toast.update(handle, {
-          render: `An error occurred while uploading ${file.name}.`,
-          type: toast.TYPE.ERROR,
-        })
+      const release = await fileUploadMutex.acquire()
+      try {
+        const stream = await upload.start()
+        toast(`${file.name} is uploading. Please wait...`, { toastId: handle, autoClose: false, });
+        // if there is no error
+        if (stream) {
+          // TODO: Why does it do this?
+          polyfillReadableStreamIfNeeded<Uint8Array>(file.stream()).pipeThrough(stream as TransformStream<Uint8Array, Uint8Array> as any)
+        } else {
+          toast.update(handle, {
+            render: `An error occurred while uploading ${file.name}.`,
+            type: toast.TYPE.ERROR,
+          })
+        }
+        await upload.finish()
+        toast.update(handle, { render: `${file.name} has finished uploading.` })
+        setUpdateStatus(!updateStatus);
+        setTimeout(() => {
+          toast.dismiss(handle);
+        }, 3000);
+      } finally {
+        release()
       }
-      await upload.finish()
-      toast.update(handle, { render: `${file.name} has finished uploading.` })
-      setUpdateStatus(!updateStatus);
-      setTimeout(() => {
-        toast.dismiss(handle);
-      }, 3000);
     } catch (e) {
       toast.update(file.size + file.name, {
         render: `An error occurred while uploading ${file.name}.`,
         type: toast.TYPE.ERROR,
       })
-
     }
 
   }
