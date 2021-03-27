@@ -215,8 +215,14 @@ const FileManagePage = ({ history }) => {
       // side effects
       bindUploadToAccountSystem(accountSystem, upload)
 
-      upload.addEventListener(UploadEvents.START, () => {
-        setUpdateCurrentFolderSwitch(!updateCurrentFoldersSwitch)
+      upload.addEventListener(UploadEvents.START, async () => {
+        console.log("uploadStart")
+
+        setPageLoading(true)
+        const folderMeta = await accountSystem.getFolderMetadataByPath(currentPath)
+        console.log("folderMeta", folderMeta)
+        setFileList(folderMeta.files);
+        setPageLoading(false)
       })
 
       const fileStream = polyfillReadableStreamIfNeeded<Uint8Array>(file.stream())
