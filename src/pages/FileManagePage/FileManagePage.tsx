@@ -462,9 +462,9 @@ const FileManagePage = ({ history }) => {
             </div>
             <div className='account-info'>
               <div className='storage-info'>
-                <span>{formatGbs(accountInfo ? accountInfo.account.storageUsed : 0)} </span> of {formatGbs(accountInfo ? accountInfo.account.storageLimit : 0)} used
+                <span>{formatGbs(accountInfo ? accountInfo.account.storageUsed : 0)} </span> of {formatGbs(accountInfo ? accountInfo.account.storageLimit : "...")} used
               </div>
-              <ProgressBar now={60} />
+              <ProgressBar now={accountInfo ? 100 * accountInfo.account.storageUsed / accountInfo.account.storageLimit : 0} />
               <div className='upgrade text-right'>UPGRADE NOW</div>
               <div className='renew'>
                 <p>Your account expires within 30 days</p>
