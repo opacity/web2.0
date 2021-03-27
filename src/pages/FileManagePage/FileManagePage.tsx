@@ -9,7 +9,7 @@ import { AccountSystem, MetadataAccess, FileMetadata, FolderMetadata, FolderFile
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web"
 import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex"
 import { polyfillReadableStreamIfNeeded, polyfillWritableStreamIfNeeded, ReadableStream, TransformStream, WritableStream } from "../../../ts-client-library/packages/util/src/streams"
-import { Upload, bindUploadToAccountSystem, Download, bindDownloadToAccountSystem } from "../../../ts-client-library/packages/opaque"
+import { Upload, bindUploadToAccountSystem, Download, bindDownloadToAccountSystem, UploadEvents } from "../../../ts-client-library/packages/opaque"
 import { theme, FILE_MAX_SIZE } from "../../config";
 import RenameModal from "../../components/RenameModal/RenameModal";
 import DeleteModal from "../../components/DeleteModal/DeleteModal";
@@ -34,6 +34,7 @@ const uploadImage = require("../../assets/upload.png");
 const empty = require("../../assets/empty.png");
 
 import { STORAGE_NODE as storageNode } from "../../config"
+import { bytesToB64 } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/b64"
 
 const logo = require("../../assets/logo2.png");
 const FileManagePage = ({ history }) => {
@@ -46,7 +47,7 @@ const FileManagePage = ({ history }) => {
   }), [netMiddleware, cryptoMiddleware, storageNode]);
   const accountSystem = React.useMemo(() => new AccountSystem({ metadataAccess }), [metadataAccess]);
   const account = React.useMemo(() => new Account({ crypto: cryptoMiddleware, net: netMiddleware, storageNode }), [cryptoMiddleware, netMiddleware, storageNode])
-  const [updateStatus, setUpdateStatus] = React.useState(false);
+  const [updateCurrentFoldersSwitch, setUpdateCurrentFolderSwitch] = React.useState(false);
   const [showSidebar, setShowSidebar] = React.useState(false);
   const [tableView, setTableView] = React.useState(true);
   const [currentPath, setCurrentPath] = React.useState('/')
@@ -69,7 +70,7 @@ const FileManagePage = ({ history }) => {
   };
   React.useEffect(() => {
     getFolderData();
-  }, [updateStatus]);
+  }, [updateCurrentFoldersSwitch]);
   React.useEffect(() => {
     const levels = currentPath.split("/").slice(1);
     const subpaths = levels.map((l, i) => {
@@ -96,10 +97,12 @@ const FileManagePage = ({ history }) => {
       setFolderList(fl);
       setFileList(res.files);
       setPageLoading(false)
-    }).catch(err => {
+    }).catch((err) => {
+      console.error(err)
+
       toast.error(`folder "${currentPath}" not found`)
     })
-  }, [currentPath, updateStatus]);
+  }, [currentPath, updateCurrentFoldersSwitch]);
 
   React.useEffect(() => {
     if (window.performance) {
@@ -196,7 +199,7 @@ const FileManagePage = ({ history }) => {
   }
 
   const fileUploadMutex = React.useMemo(() => new Mutex(), [])
-  const uploadFile = async (file, path) => {
+  const uploadFile = async (file: File, path: string) => {
     try {
       const upload = new Upload({
         config: {
@@ -208,34 +211,42 @@ const FileManagePage = ({ history }) => {
         name: file.name,
         path: path,
       })
-      let handle = file.size + file.name
+      let toastID = file.size + file.name
       // side effects
       bindUploadToAccountSystem(accountSystem, upload)
+
+      upload.addEventListener(UploadEvents.START, () => {
+        setUpdateCurrentFolderSwitch(!updateCurrentFoldersSwitch)
+      })
+
+      const fileStream = polyfillReadableStreamIfNeeded<Uint8Array>(file.stream())
 
       const release = await fileUploadMutex.acquire()
       try {
         const stream = await upload.start()
-        toast(`${file.name} is uploading. Please wait...`, { toastId: handle, autoClose: false, });
+        toast(`${file.name} is uploading. Please wait...`, { toastId: toastID, autoClose: false, });
         // if there is no error
         if (stream) {
           // TODO: Why does it do this?
-          polyfillReadableStreamIfNeeded<Uint8Array>(file.stream()).pipeThrough(stream as TransformStream<Uint8Array, Uint8Array> as any)
+          fileStream.pipeThrough(stream as TransformStream<Uint8Array, Uint8Array> as any)
         } else {
-          toast.update(handle, {
+          toast.update(toastID, {
             render: `An error occurred while uploading ${file.name}.`,
             type: toast.TYPE.ERROR,
           })
         }
         await upload.finish()
-        toast.update(handle, { render: `${file.name} has finished uploading.` })
-        setUpdateStatus(!updateStatus);
+        toast.update(toastID, { render: `${file.name} has finished uploading.` })
+        // setUpdateStatus(!updateStatus);
         setTimeout(() => {
-          toast.dismiss(handle);
+          toast.dismiss(toastID);
         }, 3000);
       } finally {
         release()
       }
     } catch (e) {
+      console.error(e)
+
       toast.update(file.size + file.name, {
         render: `An error occurred while uploading ${file.name}.`,
         type: toast.TYPE.ERROR,
@@ -248,7 +259,7 @@ const FileManagePage = ({ history }) => {
       setShowNewFolderModal(false);
       const status = await accountSystem.addFolder(currentPath === '/' ? currentPath + folderName : currentPath + '/' + folderName)
       toast(`Folder ${folderName} was successfully created.`);
-      setUpdateStatus(!updateStatus);
+      setUpdateCurrentFolderSwitch(!updateCurrentFoldersSwitch);
     } catch (e) {
       toast.error(`An error occurred while creating new folder.`)
     }
@@ -274,7 +285,7 @@ const FileManagePage = ({ history }) => {
       // side effects
       bindDownloadToAccountSystem(accountSystem, d)
 
-      const fileStream = polyfillWritableStreamIfNeeded(streamsaver.createWriteStream(file.name, { size: file.size }))
+      const fileStream = polyfillWritableStreamIfNeeded<Uint8Array>(streamsaver.createWriteStream(file.name, { size: file.size }))
       const s = await d.start()
 
       d.finish().then(() => {
@@ -313,7 +324,7 @@ const FileManagePage = ({ history }) => {
     try {
       const status = await accountSystem.removeFile(file.location);
       toast(`${file.name} was successfully deleted.`);
-      setUpdateStatus(!updateStatus);
+      setUpdateCurrentFolderSwitch(!updateCurrentFoldersSwitch);
       setFileToDelete(null)
     } catch (e) {
       setFileToDelete(null)
@@ -325,7 +336,7 @@ const FileManagePage = ({ history }) => {
     try {
       const status = await accountSystem.removeFolderByPath(folder.path);
       toast(`Folder ${folder.path} was successfully deleted.`);
-      setUpdateStatus(!updateStatus);
+      setUpdateCurrentFolderSwitch(!updateCurrentFoldersSwitch);
       setFolderToDelete(null);
     } catch (e) {
       console.log(e)
@@ -351,7 +362,7 @@ const FileManagePage = ({ history }) => {
         const status = await accountSystem.renameFolder((folderToRename.path), rename);
         toast(`${folderToRename.path} was renamed successfully.`);
       }
-      setUpdateStatus(!updateStatus)
+      setUpdateCurrentFolderSwitch(!updateCurrentFoldersSwitch)
     } catch (e) {
       console.log(e)
       toast.error(`An error occurred while rename ${rename}.`)
