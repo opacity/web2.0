@@ -547,9 +547,9 @@ const FileManagePage = ({ history }) => {
             <div>
               {!tableView && (
                 <div className='grid-view'>
-                  {folderList.map((item, i) => item && (
+                  {folderList.map((item) => item && (
                     <FileManagerFolderEntryGrid
-                      key={i}
+                      key={bytesToB64(item.location)}
                       accountSystem={accountSystem}
                       folderEntry={item}
                       handleDeleteItem={handleDeleteItem}
@@ -557,9 +557,9 @@ const FileManagePage = ({ history }) => {
                       setCurrentPath={setCurrentPath}
                     />
                   ))}
-                  {fileList.map((item, i) => item && (
+                  {fileList.map((item) => item && (
                     <FileManagerFileEntryGrid
-                      key={i}
+                      key={bytesToB64(item.location)}
                       accountSystem={accountSystem}
                       fileEntry={item}
                       fileShare={fileShare}
@@ -581,9 +581,9 @@ const FileManagePage = ({ history }) => {
                     </tr>
                   </Table.Header>
                   <Table.Body>
-                    {folderList.map((item, i) => item && (
+                    {folderList.map((item) => item && (
                       <FileManagerFolderEntryList
-                        key={i}
+                        key={bytesToB64(item.location)}
                         accountSystem={accountSystem}
                         folderEntry={item}
                         handleDeleteItem={handleDeleteItem}
@@ -591,9 +591,9 @@ const FileManagePage = ({ history }) => {
                         setCurrentPath={setCurrentPath}
                       />
                     ))}
-                    {fileList.map((item, i) => item && (
+                    {fileList.map((item) => item && (
                       <FileManagerFileEntryList
-                        key={i}
+                        key={bytesToB64(item.location)}
                         accountSystem={accountSystem}
                         fileEntry={item}
                         fileShare={fileShare}
