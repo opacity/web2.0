@@ -223,8 +223,8 @@ const FileManagePage = ({ history }) => {
         console.log(currentPathRef.current, path)
 
         if (isPathChild(currentPathRef.current, path)) {
-          setPageLoading(true)
-          setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)
+          // setPageLoading(true)
+          // setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)
         }
 
         if (path == currentPathRef.current) {
