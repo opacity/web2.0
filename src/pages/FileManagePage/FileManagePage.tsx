@@ -36,6 +36,7 @@ const empty = require("../../assets/empty.png");
 import { STORAGE_NODE as storageNode } from "../../config"
 import { bytesToB64 } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/b64"
 import { isPathChild } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/path"
+import { arraysEqual } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/arrayEquality"
 
 const logo = require("../../assets/logo2.png");
 const FileManagePage = ({ history }) => {
@@ -48,13 +49,17 @@ const FileManagePage = ({ history }) => {
   }), [netMiddleware, cryptoMiddleware, storageNode]);
   const accountSystem = React.useMemo(() => new AccountSystem({ metadataAccess }), [metadataAccess]);
   const account = React.useMemo(() => new Account({ crypto: cryptoMiddleware, net: netMiddleware, storageNode }), [cryptoMiddleware, netMiddleware, storageNode])
-  const [updateCurrentFoldersSwitch, setUpdateCurrentFolderSwitch] = React.useState(false);
+  const [updateCurrentFolderSwitch, setUpdateCurrentFolderSwitch] = React.useState(false);
+  const [updateFolderEntrySwitch, setUpdateFolderEntrySwitch] = React.useState<{ [key: string]: boolean }>({});
+  const [updateFileEntrySwitch, setUpdateFileEntrySwitch] = React.useState<{ [key: string]: boolean }>({});
   const [showSidebar, setShowSidebar] = React.useState(false);
   const [tableView, setTableView] = React.useState(true);
   const [currentPath, setCurrentPath] = React.useState('/')
   const currentPathRef = React.useRef("/")
-  const [fileList, setFileList] = React.useState<FolderFileEntry[]>([])
   const [folderList, setFolderList] = React.useState<FoldersIndexEntry[]>([]);
+  const folderListRef = React.useRef<FoldersIndexEntry[]>([])
+  const [fileList, setFileList] = React.useState<FolderFileEntry[]>([])
+  const fileListRef = React.useRef<FolderFileEntry[]>([])
   const [treeData, setTreeData] = React.useState([]);
   const [pageLoading, setPageLoading] = React.useState(true)
   const [subPaths, setSubPaths] = React.useState([])
@@ -74,11 +79,19 @@ const FileManagePage = ({ history }) => {
 
   React.useEffect(() => {
     getFolderData();
-  }, [updateCurrentFoldersSwitch]);
+  }, [updateCurrentFolderSwitch]);
 
   React.useEffect(() => {
     currentPathRef.current = currentPath
   }, [currentPath])
+
+  React.useEffect(() => {
+    folderListRef.current = folderList
+  }, [folderList])
+
+  React.useEffect(() => {
+    fileListRef.current = fileList
+  }, [fileList])
 
   React.useEffect(() => {
     const levels = currentPath.split("/").slice(1);
@@ -93,25 +106,19 @@ const FileManagePage = ({ history }) => {
     setSubPaths(subpaths);
     setPageLoading(true)
 
-    let folderMetaPromise: Promise<FolderMetadata>
-
-    if (currentPath == "/") {
-      folderMetaPromise = accountSystem.addFolder(currentPath)
-    } else {
-      folderMetaPromise = accountSystem.getFolderMetadataByPath(currentPath)
-    }
-
-    folderMetaPromise.then(async res => {
-      let fl = await accountSystem.getFoldersInFolderByPath(currentPath);
-      setFolderList(fl);
-      setFileList(res.files);
+    Promise.all([
+      accountSystem.getFoldersInFolderByPath(currentPath),
+      (currentPath == "/") ? accountSystem.addFolder(currentPath) : accountSystem.getFolderMetadataByPath(currentPath),
+    ]).then(([folders, folderMeta]) => {
+      setFolderList(folders);
+      setFileList(folderMeta.files);
       setPageLoading(false)
     }).catch((err) => {
       console.error(err)
 
       toast.error(`folder "${currentPath}" not found`)
     })
-  }, [currentPath, updateCurrentFoldersSwitch]);
+  }, [currentPath, updateCurrentFolderSwitch]);
 
   React.useEffect(() => {
     if (window.performance) {
@@ -217,7 +224,7 @@ const FileManagePage = ({ history }) => {
 
         if (isPathChild(currentPathRef.current, path)) {
           setPageLoading(true)
-          setUpdateCurrentFolderSwitch(!updateCurrentFoldersSwitch)
+          setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)
         }
 
         if (path == currentPathRef.current) {
@@ -261,7 +268,7 @@ const FileManagePage = ({ history }) => {
         type: toast.TYPE.ERROR,
       })
     }
-  }, [accountSystem, cryptoMiddleware, netMiddleware, storageNode, updateCurrentFoldersSwitch])
+  }, [accountSystem, cryptoMiddleware, netMiddleware, storageNode, updateCurrentFolderSwitch, updateFolderEntrySwitch, updateFileEntrySwitch])
 
   const selectFiles = React.useCallback(async (files) => {
     return files.map(file =>
@@ -283,11 +290,11 @@ const FileManagePage = ({ history }) => {
       setShowNewFolderModal(false);
       const status = await accountSystem.addFolder(currentPath === '/' ? currentPath + folderName : currentPath + '/' + folderName)
       toast(`Folder ${folderName} was successfully created.`);
-      setUpdateCurrentFolderSwitch(!updateCurrentFoldersSwitch);
+      setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
     } catch (e) {
       toast.error(`An error occurred while creating new folder.`)
     }
-  }, [accountSystem, updateCurrentFoldersSwitch])
+  }, [accountSystem, currentPath, updateCurrentFolderSwitch])
 
   const fileShare = async (file: FolderFileEntry) => {
     try {
@@ -350,27 +357,27 @@ const FileManagePage = ({ history }) => {
     try {
       const status = await accountSystem.removeFile(file.location);
       toast(`${file.name} was successfully deleted.`);
-      setUpdateCurrentFolderSwitch(!updateCurrentFoldersSwitch);
+      setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
       setFileToDelete(null)
     } catch (e) {
       setFileToDelete(null)
       toast.error(`An error occurred while deleting ${file.name}.`)
     }
-  }, [accountSystem, updateCurrentFoldersSwitch])
+  }, [accountSystem, updateCurrentFolderSwitch])
 
   const deleteFolder = React.useCallback(async (folder: FoldersIndexEntry) => {
     const name = posix.basename(folder.path)
     try {
       const status = await accountSystem.removeFolderByPath(folder.path);
       toast(`Folder ${folder.path} was successfully deleted.`);
-      setUpdateCurrentFolderSwitch(!updateCurrentFoldersSwitch);
+      setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
       setFolderToDelete(null);
     } catch (e) {
-      console.log(e)
+      console.error(e)
       setFolderToDelete(null);
       toast.error(`An error occurred while deleting Folder ${folder.path}.`)
     }
-  }, [accountSystem, updateCurrentFoldersSwitch])
+  }, [accountSystem, updateCurrentFolderSwitch])
 
   const handleOpenRenameModal = React.useCallback((item, isFile) => {
     setOldName(item.name)
@@ -391,15 +398,15 @@ const FileManagePage = ({ history }) => {
         const status = await accountSystem.renameFolder((folderToRename.path), rename);
         toast(`${folderToRename.path} was renamed successfully.`);
       }
-      setUpdateCurrentFolderSwitch(!updateCurrentFoldersSwitch)
+      setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)
     } catch (e) {
-      console.log(e)
+      console.error(e)
       toast.error(`An error occurred while rename ${rename}.`)
     } finally {
       setFolderToRename(null);
       setFileToRename(null);
     }
-  }, [accountSystem])
+  }, [accountSystem, fileToRename, folderToRename, updateCurrentFolderSwitch])
 
   const handleDeleteItem = React.useCallback((item: FolderFileEntry | FoldersIndexEntry, isFile: boolean) => {
     if (isFile) setFileToDelete(item as FolderFileEntry)
