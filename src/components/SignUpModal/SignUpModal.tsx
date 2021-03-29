@@ -42,7 +42,7 @@ type SignUpProps = {
   account?: Account;
 };
 const SignUpModal: React.FC<OtherProps> = ({ show, handleClose, plan, openLoginModal }) => {
-  const [handle, setPrivateKey] = useState("");
+  const [handle, setHandle] = useState("");
   const [mnemonic, setMnemonic] = useState<string[]>([]);
   const [currentStep, setStep] = React.useState<number>(1);
   const [account, setAccount] = React.useState<Account>();
@@ -93,12 +93,15 @@ const SignUpModal: React.FC<OtherProps> = ({ show, handleClose, plan, openLoginM
     setInvoiceData(invoice)
   }
   useEffect(() => {
+    setMnemonic([])
+    setHandle("")
     createMnemonic().then(async (res) => {
       setMnemonic(res);
       const handle = await mnemonicToHandle(res);
-      setPrivateKey(bytesToHex(handle));
+      setHandle(bytesToHex(handle));
     });
-  }, []);
+    // change in the plan must cause handle to update
+  }, [plan]);
   return (
     <Modal show={show} onHide={ModalClose} size='lg' dialogClassName='signup'>
       <Modal.Body>
