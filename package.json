@@ -1,7 +1,7 @@
 {
   "name": "opacity-web2.0",
   "version": "1.0.0",
-	"author": "Opacity Storage <support@opacity.io>",
+  "author": "Opacity Storage <support@opacity.io>",
   "license": "SEE LICENSE IN LICENSE.md",
   "main": "index.js",
   "scripts": {
