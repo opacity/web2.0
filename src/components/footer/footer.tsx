@@ -19,19 +19,19 @@ const Footer = () => {
           </div>
           <div className='col-md-6 footer-third'>
             <div className='d-flex h-100 align-items-center' style={{ justifyContent: "flex-end" }}>
-              <NavLink>
+              <NavLink to='https://github.com/opacity'>
                 <img width='43' src={github} />
               </NavLink>
-              <NavLink>
+              <NavLink to='https://www.reddit.com/r/Opacity/'>
                 <img width='43' src={reddit} />
               </NavLink>
-              <NavLink>
+              <NavLink to='https://telegram.me/opacitystorage'>
                 <img width='43' src={telegram} />
               </NavLink>
-              <NavLink>
+              <NavLink to='https://twitter.com/Opacity_Storage'>
                 <img width='43' src={twitter} />
               </NavLink>
-              <NavLink>
+              <NavLink to='https://www.youtube.com/opacitystorage'>
                 <img width='43' src={youtube} />
               </NavLink>
             </div>
@@ -41,28 +41,28 @@ const Footer = () => {
         <div className=' footer-links'>
           <div className='link-wrapper'>
             <span className='title'> Company</span>
-            <NavLink>About us</NavLink>
-            <NavLink>Blog</NavLink>
+            <NavLink to='https://telegram.me/opacitystorage'>About us</NavLink>
+            <NavLink to='https://medium.com/opacity-storage'>Blog</NavLink>
             <NavLink>Press</NavLink>
           </div>
           <div className='link-wrapper'>
             <span className='title'> Resources</span>
             <NavLink>Products</NavLink>
-            <NavLink>Downloads</NavLink>
+            <NavLink to='https://dev2.opacity.io/community'>Downloads</NavLink>
             <NavLink>Learn</NavLink>
-            <NavLink>API for Developers</NavLink>
+            <NavLink to='https://api.opacity.io:3000/swagger/index.html'>API for Developers</NavLink>
           </div>
           <div className='link-wrapper'>
             <span className='title'> Help</span>
-            <NavLink>Contact us</NavLink>
-            <NavLink>Telegram</NavLink>
-            <NavLink>Discord</NavLink>
+            <NavLink to='https://telegram.me/opacitystorage'>Contact us</NavLink>
+            <NavLink to='https://telegram.me/opacitystorage'>Telegram</NavLink>
+            <NavLink to='http://discord.opacity.io/'>Discord</NavLink>
           </div>
           <div className='link-wrapper'>
             <span className='title'> Legal</span>
-            <NavLink>Terms of Service</NavLink>
-            <NavLink>Privacy Policy</NavLink>
-            <NavLink>Code License</NavLink>
+            <NavLink to='https://www.opacity.io/terms-of-service'>Terms of Service</NavLink>
+            <NavLink to='https://www.opacity.io/privacy-policy'>Privacy Policy</NavLink>
+            <NavLink to='https://www.opacity.io/code-review-license'>Code License</NavLink>
           </div>
         </div>
         <div className='divider'></div>

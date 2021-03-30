@@ -56,7 +56,7 @@ const LandingPage = ({ history }) => {
         <div className='container-xl' data-aos='fade-up'>
           <div className='row'>
             <div className='col-md-6'>
-              <h1>Data Privacy By Design</h1>
+              <h1>Privacy By Design</h1>
               <div className='description mb-5 mt-2'>Free to share ideas. Free to be protected. Free to be you.</div>
               <div className='row mb-3'>
                 <div className='col-md-5'>
