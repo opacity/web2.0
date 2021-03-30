@@ -37,7 +37,7 @@ const PlansPage = ({ history }) => {
               <div className='d-flex'>
                 <img src={opqImage} />
                 <span>
-                  <p className='item-link'>imgopq.com</p>
+                  <p className='item-link'>imgopct.com</p>
                   <p>Developer</p>
                   <p className='download'>Link to Download</p>
                 </span>
