@@ -96,6 +96,7 @@ export const FileManagerFileEntryList = ({
 				<div className='d-flex' ref={ref}>
 					<i className={`icon-${fileMeta && typeList[fileMeta.type]}`}></i>
 					{fileEntry.name}
+					{fileMeta && !fileMeta.finished && <span style={{ display: "inline-block", background: "rgba(0,0,0,.1)", padding: "4px 6px", borderRadius: 4, marginInline: "1em" }}>Pending</span>}
 				</div>
 			</Table.Col>
 			<Table.Col>{fileMeta ? moment(fileMeta.uploaded).calendar() : "..."}</Table.Col>
