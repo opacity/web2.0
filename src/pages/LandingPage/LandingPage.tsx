@@ -22,7 +22,6 @@ const kucoin = require("../../assets/kucoin.png");
 const LandingPage = ({ history }) => {
   const [showSignUpModal, setShowSignUpModal] = useState(false);
 
-
   const handleCloseSignUpModal = () => {
     setShowSignUpModal(false);
   };
@@ -45,6 +44,7 @@ const LandingPage = ({ history }) => {
       preserveAspectRatio: "xMidYMid slice",
     },
   };
+
   return (
     <SiteWrapper showSignUpModal={showSignUpModal} handleCloseSignUpModal={handleCloseSignUpModal} isHome={true} history={history}>
       <div className='first-ele'>
