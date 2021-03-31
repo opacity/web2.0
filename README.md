@@ -16,10 +16,3 @@ npx lerna bootstrap
 
 git submodule foreach git pull
 git submodule update --init --recursive
-
-
-const upload = new Upload(...)
-
-upload.addEventListener(UploadEvents.PROGRESS, (e) => {
-  console.log(e.detail.progress)
-})

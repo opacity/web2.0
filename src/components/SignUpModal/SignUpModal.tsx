@@ -256,7 +256,7 @@ const AccountHandle: React.FC<SignUpProps> = ({ plan, goBack, goNext, mnemonic, 
                 </Col>
                 <Col md={6}>
                   <Button variant='primary' size='lg' type='submit'
-                  // disabled={!isCaptchaVerified || !values.termsCheck}
+                    disabled={!isCaptchaVerified || !values.termsCheck}
                   >
                     Continue
                   </Button>
@@ -333,19 +333,8 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account }) 
               <h3>Scan QR code to pay</h3>
             </div>
           </Col>
-
-
         </div>
-
       </div>
-      {/* <div className='card-body qrcode'>
-        <Redeem storageLimit={plan.storageLimit} ethAddress={invoice.ethAddress} />
-        <h1>Other Ways To Pay</h1>
-        <div className='or-line col-md-5 m-auto'>or</div>
-        <div className='scan'>
-          <h3>Scan QR code to pay</h3>
-        </div>
-      </div> */}
     </div>
   );
 };
