@@ -12,12 +12,7 @@ const bannerImage = require("../../assets/banner.png");
 const opacitym = require("../../assets/opacity-m.png");
 const dashboard = require("../../assets/dashboard.png");
 const share = require("../../assets/share.png");
-const secure = require("../../assets/secure.png");
-const securem = require("../../assets/secure-m.png");
-const rules = require("../../assets/rules.png");
-const rulesm = require("../../assets/rules-m.png");
 const community = require("../../assets/community.png");
-const privacy = require("../../assets/privacy.png");
 const stand = require("../../assets/stand.png");
 const crypto = require("../../assets/crypto.png");
 const uniswap = require("../../assets/uniswap.png");
@@ -26,7 +21,6 @@ const kucoin = require("../../assets/kucoin.png");
 
 const LandingPage = ({ history }) => {
   const [showSignUpModal, setShowSignUpModal] = useState(false);
-
 
   const handleCloseSignUpModal = () => {
     setShowSignUpModal(false);
@@ -50,6 +44,7 @@ const LandingPage = ({ history }) => {
       preserveAspectRatio: "xMidYMid slice",
     },
   };
+
   return (
     <SiteWrapper showSignUpModal={showSignUpModal} handleCloseSignUpModal={handleCloseSignUpModal} isHome={true} history={history}>
       <div className='first-ele'>
