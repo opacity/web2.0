@@ -56,12 +56,12 @@ const LoginModal: React.FC<OtherProps> = ({ show, handleClose }) => {
   return (
     <Formik initialValues={{ privateKey: "" }} validationSchema={loginSchema} onSubmit={(values, helpers) => { handleLogin(values, helpers) }}>
       {({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => (
-        <Modal show={show} onHide={handleClose} size='lg' dialogClassName='login'>
+        <Modal show={show} onHide={handleClose} size='lg' centered dialogClassName='login'>
           <Modal.Body>
             <form onSubmit={handleSubmit} autoComplete='off'>
               <Row className='align-items-center '>
                 <Col className='text-center'>
-                  <img width='108' src={logo} />
+                  <img width='70' src={logo} />
                   <h2>Sign In to Your Account</h2>
                 </Col>
               </Row>

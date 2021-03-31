@@ -19,5 +19,3 @@ cd ts-client-library
 git fetch --all
 git reset --hard origin/dev
 npx lerna bootstrap
-cd ..
-```

@@ -103,7 +103,7 @@ const SignUpModal: React.FC<OtherProps> = ({ show, handleClose, plan, openLoginM
     // change in the plan must cause handle to update
   }, [plan]);
   return (
-    <Modal show={show} onHide={ModalClose} size='lg' dialogClassName='signup'>
+    <Modal show={show} onHide={ModalClose} size='lg' centered dialogClassName='signup'>
       <Modal.Body>
         {plan && (
           <div className='signup-process'>
@@ -181,11 +181,10 @@ const AccountHandle: React.FC<SignUpProps> = ({ plan, goBack, goNext, mnemonic, 
                 <h2 className='plans'>IMPORTANT: Save Your Account Handle Recovery Phrase</h2>
               ) : (
                 <>
-                  <img width='108' src={logo} />
+                  <img width='70' src={logo} />
                   <h2>Get started for FREE</h2>
                 </>
               )}
-
               <h3>
                 Your Privacy and <span>Security is in your hands.</span> Keep These Numbers <span>Safe.</span>
               </h3>
@@ -218,7 +217,7 @@ const AccountHandle: React.FC<SignUpProps> = ({ plan, goBack, goNext, mnemonic, 
             ))}
           </Row>
           <Row>
-            <Col className='text-md-right'>
+            <Col>
               <div
                 className='download-link'
                 onClick={() => {
@@ -230,13 +229,13 @@ const AccountHandle: React.FC<SignUpProps> = ({ plan, goBack, goNext, mnemonic, 
             </Col>
           </Row>
           <Row className='align-items-center mb-3'>
-            <Col md='7' className='mb-3'>
+            <Col md='12' className='mb-3 text-md-right' >
               <Field type='checkbox' name='termsCheck' className='form-check-input' onChange={handleChange} onBlur={handleBlur} />
               <span className='custom-control-label'>
                 I agree to the <span>Terms of Service</span> and Privacy Policy
               </span>
             </Col>
-            <Col md='5'>
+            <Col md='12' className='text-md-right'>
               <HCaptcha
                 sitekey='e43ebc8e-8590-4991-bde4-eb93a9301f0d'
                 onVerify={
@@ -324,13 +323,16 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account }) 
         <div className='need-opct'>
           Need OPCT? <span className='here' onClick={() => window.open('https://www.kucoin.com/trade/OPCT-BTC', "_blank")}>Purchase here</span>
         </div>
-      </div>
-      <div className='card-body qrcode'>
-        <Redeem storageLimit={plan.storageLimit} ethAddress={invoice.ethAddress} />
-        <h1>Other Ways To Pay</h1>
-        <div className='or-line col-md-5 m-auto'>or</div>
-        <div className='scan'>
-          <h3>Scan QR code to pay</h3>
+        <div className='row qrcode'>
+          <Col>
+            <h1>Other Ways To Pay</h1>
+            <Redeem storageLimit={plan.storageLimit} ethAddress={invoice.ethAddress} />
+          </Col>
+          <Col>
+            <div className='scan'>
+              <h3>Scan QR code to pay</h3>
+            </div>
+          </Col>
         </div>
       </div>
     </div>

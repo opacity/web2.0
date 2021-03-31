@@ -2,11 +2,12 @@
   .modal-content {
     border-radius: 15px;
   }
-  top: 100px;
+  // top: 100px;
   .modal-body {
+    padding: 0;
     h2 {
       font-weight: 600;
-      font-size: 26px;
+      font-size: 24px;
       line-height: 30px;
       color: #000000;
       margin-bottom: 65px;
@@ -35,9 +36,9 @@
       }
     }
     form {
-      padding: 65px;
+      padding: 50px 128px;
       @media (max-width: 767.9px) {
-        padding: 0;
+        padding: 30px 10px;
         img {
           width: 68px;
         }
@@ -45,13 +46,14 @@
 
       .form-control {
         background: #d8e7ff;
-        border-radius: 100px;
+        border-radius: 10px;
         font-weight: 500;
         font-size: 16px;
         line-height: 30px;
         color: #353535;
         // height: 57px;
         padding-left: 20px;
+        height: 40px;
        
       }
       .btn {
@@ -59,19 +61,28 @@
         font-weight: 600;
         font-size: 16px;
         line-height: 19px;
-        height: 46px;
+        height: 40px;
+        border-radius: 10px;
       }
       .btn-outline-primary {
-        border-color: #4680e8;
+        border-color: #4680e8 !important;
+        font-weight: bold;
+        font-size: 16px;
+        line-height: 19px;
+        color: #2E6DDE !important;
+        &:hover{
+          color: #fff !important;
+        }
       }
       .forgot {
         font-weight: 600;
-        font-size: 16px;
+        font-size: 14px;
         line-height: 19px;
         color: #2e6dde;
-        margin-top: 30px;
+        margin-top: 20px;
         text-align: center;
         cursor: pointer;
+        padding-bottom: 0;
       }
       .border-line {
         font-weight: 600;
