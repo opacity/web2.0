@@ -18,21 +18,8 @@ git submodule foreach git pull
 git submodule update --init --recursive
 
 
- // {
-    //   key: "first-level-node-1",
-    //   label: "My Folders",
-    //   nodes: [
-    //     {
-    //       key: "0-level-node-1",
-    //       label: "Movies",
-    //     },
-    //     {
-    //       key: "1-level-node-1",
-    //       label: "New Folder",
-    //     },
-    //     {
-    //       key: "2-level-node-1",
-    //       label: "Pictures",
-    //     },
-    //   ],
-    // },
+const upload = new Upload(...)
+
+upload.addEventListener(UploadEvents.PROGRESS, (e) => {
+  console.log(e.detail.progress)
+})

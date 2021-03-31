@@ -64,21 +64,23 @@ const Redeem = ({ ethAddress, storageLimit }: RedeemProps) => {
 	return (
 		storageLimitToCodeName({ storageLimit })
 			? (
-				<div className='d-flex'>
-					<h4>OPCT{storageLimitToCodeName({ storageLimit })}</h4>
-					<div>
-						<input
-							className={statusType == "error" ? "redeem-form-error" : ""}
-							onChange={(e) => setCode(e.target.value)}
-						/>
-						{status && <div className={statusType == "error" ? "redeem-form-error" : ""}>{status}</div>}
+				<>
+					<div className='d-flex'>
+						<h4>OPCT{storageLimitToCodeName({ storageLimit })}</h4>
+						<div>
+							<input
+								className={statusType == "error" ? "redeem-form-error" : ""}
+								onChange={(e) => setCode(e.target.value)}
+							/>
+							{status && <div className={statusType == "error" ? "redeem-form-error" : ""}>{status}</div>}
+						</div>
 					</div>
 					<Button
 						disabled={disabled}
 						variant='primary'
 						onClick={() => redeemCode({ code, ethAddress, storageLimit })}
 					>{buttonText}</Button>
-				</div>
+				</>
 			)
 			: null
 	);
