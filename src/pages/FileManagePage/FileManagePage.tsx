@@ -258,6 +258,7 @@ const FileManagePage = ({ history }) => {
           toast.dismiss(toastID);
         }, 3000);
       } finally {
+        setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
         release()
       }
     } catch (e) {
