@@ -74,7 +74,7 @@ const FileManagePage = ({ history }) => {
   const [showNewFolderModal, setShowNewFolderModal] = React.useState(false);
   const [uploadingList, setUploadingList] = React.useState([]);
   const currentUploadingList = React.useRef([])
-
+  const [selectedFiles, setSelectedFiles] = React.useState<FileMetadata[]>([])
   const handleShowSidebar = React.useCallback(() => {
     setShowSidebar(!showSidebar);
   }, [showSidebar]);
@@ -118,6 +118,7 @@ const FileManagePage = ({ history }) => {
     ]).then(([folders, folderMeta]) => {
       setFolderList(folders);
       setFileList(folderMeta.files);
+      console.log(folderMeta.files)
       setPageLoading(false)
     }).catch((err) => {
       console.error(err)
@@ -129,7 +130,7 @@ const FileManagePage = ({ history }) => {
   React.useEffect(() => {
     if (window.performance) {
       if (performance.navigation.type == 1) {
-        // localStorage.clear();
+        localStorage.clear();
       } else {
       }
     }
@@ -444,9 +445,16 @@ const FileManagePage = ({ history }) => {
   }, [])
 
   const handleDelete = React.useCallback(async () => {
-    if (folderToDelete) deleteFolder(folderToDelete)
-    else deleteFile(fileToDelete)
+    if (selectedFiles.length === 0) {
+      if (folderToDelete) deleteFolder(folderToDelete)
+      else deleteFile(fileToDelete)
+    } else {
+      selectedFiles.forEach(file => {
+        deleteFile(file)
+      })
+    }
     setShowDeleteModal(false)
+
   }, [folderToDelete, fileToDelete])
 
   const onDrop = React.useCallback(files => {
@@ -463,7 +471,29 @@ const FileManagePage = ({ history }) => {
     if (folder.path !== currentPath)
       setCurrentPath(folder.path)
   }, [currentPath])
-
+  const handleSelectFile = (file) => {
+    let temp = selectedFiles.slice();
+    let i = selectedFiles.findIndex(item => item.name === file.name)
+    if (i !== -1) {
+      temp.splice(i, 1)
+    } else {
+      temp = [...selectedFiles, file]
+    }
+    setSelectedFiles(temp)
+  }
+  const getSelectedFileSize = () => {
+    let size = 0;
+    selectedFiles.map(item => size = size + item.size);
+    return formatBytes(size);
+  }
+  const handleMultiDownload = () => {
+    selectedFiles.forEach(file => {
+      fileDownload(file)
+    })
+  }
+  const handleMultiDelete = () => {
+    setShowDeleteModal(true)
+  }
   return (
     <div className='page'>
       {
@@ -568,38 +598,66 @@ const FileManagePage = ({ history }) => {
             </div>
           </div>
         </div>}
-        <div className='file-header'>
-          <UploadForm isDirectory={false} onSelected={selectFiles}>
-            <div className='d-flex header-item'>
-              <span className='item-icon file-upload'></span>
-              <span>FILE UPLOAD</span>
+        {
+          selectedFiles.length === 0 && (
+            <div className='file-header'>
+              <UploadForm isDirectory={false} onSelected={selectFiles}>
+                <div className='d-flex header-item'>
+                  <span className='item-icon file-upload'></span>
+                  <span>FILE UPLOAD</span>
+                </div>
+              </UploadForm>
+              <div className=' d-flex header-item ml-3' onClick={() => setShowNewFolderModal(true)}>
+                <span className='item-icon new-folder'></span>
+                <span>NEW FOLDER</span>
+              </div>
+              {tableView && (
+                <div className=' d-flex header-item ml-3'>
+                  <span
+                    className='item-icon grid-view'
+                    onClick={() => {
+                      setTableView(false);
+                    }}
+                  ></span>
+                </div>
+              )}
+              {!tableView && (
+                <div className=' d-flex header-item ml-3'>
+                  <span
+                    className='item-icon table-view'
+                    onClick={() => {
+                      setTableView(true);
+                    }}
+                  ></span>
+                </div>
+              )}
             </div>
-          </UploadForm>
-          <div className=' d-flex header-item ml-3' onClick={() => setShowNewFolderModal(true)}>
-            <span className='item-icon new-folder'></span>
-            <span>NEW FOLDER</span>
-          </div>
-          {tableView && (
-            <div className=' d-flex header-item ml-3'>
-              <span
-                className='item-icon grid-view'
-                onClick={() => {
-                  setTableView(false);
-                }}
-              ></span>
+          )
+        }
+        {
+          selectedFiles.length > 0 && (
+            <div className='file-header selected-info'>
+              <div className='selected-info'>
+                <span className='circle-check'></span>
+                <span>{selectedFiles.length}&nbsp;items({getSelectedFileSize()})</span>
+              </div>
+              <div className='d-flex align-items-center'>
+                <div className=' d-flex header-item ml-3' onClick={() => handleMultiDownload()}>
+                  <span className='item-icon file-download'></span>
+                  <span>DOWNLOAD</span>
+                </div>
+                <div className=' d-flex header-item ml-3' onClick={() => handleMultiDelete()}>
+                  <span className='item-icon file-delete'></span>
+                  <span>DELETE</span>
+                </div>
+                <div className=' d-flex header-item ml-5' onClick={() => setSelectedFiles([])}>
+                  <span className='item-icon file-close'></span>
+                </div>
+              </div>
+
             </div>
-          )}
-          {!tableView && (
-            <div className=' d-flex header-item ml-3'>
-              <span
-                className='item-icon table-view'
-                onClick={() => {
-                  setTableView(true);
-                }}
-              ></span>
-            </div>
-          )}
-        </div>
+          )
+        }
         <div className='container-xl'>
           <div className='breadcrumb-content'>
             <Breadcrumb>
@@ -647,6 +705,8 @@ const FileManagePage = ({ history }) => {
                       handleDeleteItem={handleDeleteItem}
                       handleOpenRenameModal={handleOpenRenameModal}
                       downloadItem={fileDownload}
+                      handleSelectFile={handleSelectFile}
+                      selectedFiles={selectedFiles}
                     />
                   ))}
                 </div>
@@ -681,6 +741,8 @@ const FileManagePage = ({ history }) => {
                         handleDeleteItem={handleDeleteItem}
                         handleOpenRenameModal={handleOpenRenameModal}
                         downloadItem={fileDownload}
+                        handleSelectFile={handleSelectFile}
+                        selectedFiles={selectedFiles}
                       />
                     ))}
                   </Table.Body>
