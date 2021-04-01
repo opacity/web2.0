@@ -26,7 +26,7 @@ import { useDropzone } from "react-dropzone";
 import ReactLoading from "react-loading";
 import streamsaver from "streamsaver";
 import { Mutex } from "async-mutex"
-
+import UploadingNotification from "../../components/UploadingNotification/UploadingNotification"
 streamsaver.mitm = "/resources/streamsaver/mitm.html"
 Object.assign(streamsaver, { WritableStream })
 
@@ -72,6 +72,8 @@ const FileManagePage = ({ history }) => {
   const [oldName, setOldName] = React.useState();
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const [showNewFolderModal, setShowNewFolderModal] = React.useState(false);
+  const [uploadingList, setUploadingList] = React.useState([]);
+  const currentUploadingList = React.useRef([])
 
   const handleShowSidebar = React.useCallback(() => {
     setShowSidebar(!showSidebar);
@@ -84,6 +86,10 @@ const FileManagePage = ({ history }) => {
   React.useEffect(() => {
     currentPathRef.current = currentPath
   }, [currentPath])
+
+  React.useEffect(() => {
+    currentUploadingList.current = uploadingList
+  }, [uploadingList])
 
   React.useEffect(() => {
     folderListRef.current = folderList
@@ -123,7 +129,7 @@ const FileManagePage = ({ history }) => {
   React.useEffect(() => {
     if (window.performance) {
       if (performance.navigation.type == 1) {
-        localStorage.clear();
+        // localStorage.clear();
       } else {
       }
     }
@@ -203,7 +209,6 @@ const FileManagePage = ({ history }) => {
 
   const fileUploadMutex = React.useMemo(() => new Mutex(), [])
   const uploadFile = React.useCallback(async (file: File, path: string) => {
-
     try {
       const upload = new Upload({
         config: {
@@ -234,45 +239,67 @@ const FileManagePage = ({ history }) => {
           setPageLoading(false)
         }
       })
+      upload.addEventListener(UploadEvents.PROGRESS, (e) => {
+        let templist = currentUploadingList.current.slice();
+        let index = templist.findIndex(ele => ele.id === toastID);
+        if (index > -1) {
+          templist[index].percent = e.detail.progress * 100
+          setUploadingList(templist)
+        }
+      })
 
       const fileStream = polyfillReadableStreamIfNeeded<Uint8Array>(file.stream())
 
       const release = await fileUploadMutex.acquire()
       try {
-        const stream = await upload.start()
-        toast(`${file.name} is uploading. Please wait...`, { toastId: toastID, autoClose: false, });
+        const stream = await upload.start();
+        // let templist = currentUploadingList.current.slice();
+        // templist.push({ id: toastID, fileName: file.name, percent: 0 });
+        // setUploadingList(templist);
+        // toast(`${file.name} is uploading. Please wait...`, { toastId: toastID, autoClose: false, });
         // if there is no error
         if (stream) {
           // TODO: Why does it do this?
           fileStream.pipeThrough(stream as TransformStream<Uint8Array, Uint8Array> as any)
         } else {
-          toast.update(toastID, {
-            render: `An error occurred while uploading ${file.name}.`,
-            type: toast.TYPE.ERROR,
-          })
+          // toast.update(toastID, {
+          //   render: `An error occurred while uploading ${file.name}.`,
+          //   type: toast.TYPE.ERROR,
+          // })
         }
         await upload.finish()
-        toast.update(toastID, { render: `${file.name} has finished uploading.` })
+        let templistdone = currentUploadingList.current.slice();
+        let index = templistdone.findIndex(ele => ele.id === toastID);
+        if (index > -1) {
+          templistdone[index].percent = 100
+          setUploadingList(templistdone)
+        }
+        // toast.update(toastID, { render: `${file.name} has finished uploading.` })
         // setUpdateStatus(!updateStatus);
-        setTimeout(() => {
-          toast.dismiss(toastID);
-        }, 3000);
+        // setTimeout(() => {
+        //   toast.dismiss(toastID);
+        // }, 3000);
+        // setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
+
       } finally {
         release()
       }
     } catch (e) {
       console.error(e)
 
-      toast.update(file.size + file.name, {
-        render: `An error occurred while uploading ${file.name}.`,
-        type: toast.TYPE.ERROR,
-      })
+      // toast.update(file.size + file.name, {
+      //   render: `An error occurred while uploading ${file.name}.`,
+      //   type: toast.TYPE.ERROR,
+      // })
     }
   }, [accountSystem, cryptoMiddleware, netMiddleware, storageNode, updateCurrentFolderSwitch, updateFolderEntrySwitch, updateFileEntrySwitch])
 
   const selectFiles = React.useCallback(async (files) => {
-    return files.map(file =>
-      // Current path or subdirectory
+    let templist = currentUploadingList.current.slice();
+
+    files.map(file => {
+      let toastID = file.size + file.name
+      templist.push({ id: toastID, fileName: file.name, percent: 0 });
       (file.name === (file.path || file.webkitRelativePath || file.name))
         ? uploadFile(file, currentPath)
         : uploadFile(
@@ -280,9 +307,11 @@ const FileManagePage = ({ history }) => {
           currentPath === "/"
             ? file.webkitRelativePath ? currentPath + relativePath(file.webkitRelativePath) : relativePath(file.path)
             : file.webkitRelativePath ? currentPath + "/" + relativePath(file.webkitRelativePath) : currentPath + relativePath(file.path),
-
         )
+    }
     );
+    setUploadingList(templist)
+
   }, [currentPath, uploadFile])
 
   const addNewFolder = React.useCallback(async (folderName) => {
@@ -454,7 +483,7 @@ const FileManagePage = ({ history }) => {
         >
           <span className='navbar-toggler-icon'></span>
         </button>
-        <h1 className='navbar-brand ' onClick={()=>history.push('/')}>
+        <h1 className='navbar-brand ' onClick={() => history.push('/')}>
           <Link to='/'>
             <img src={logo} width='60' height='60' alt='Opacity' className='navbar-brand-image' />
           </Link>
@@ -469,7 +498,7 @@ const FileManagePage = ({ history }) => {
         }
       >
         <div className='container-fluid'>
-          <h1 className='navbar-brand navbar-brand-autodark cursor-point' onClick={()=>history.push('/')}>
+          <h1 className='navbar-brand navbar-brand-autodark cursor-point' onClick={() => history.push('/')}>
             <Link to='/'>
               <img src={logo} width='60' height='60' alt='Opacity' className='navbar-brand-image' />
             </Link>
@@ -673,6 +702,7 @@ const FileManagePage = ({ history }) => {
         position="bottom-right"
         hideProgressBar
       />
+      {uploadingList.length > 0 && <UploadingNotification setUploadingList={() => { setUploadingList([]) }} notifications={uploadingList} uploadFinish={() => setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)} />}
     </div >
   );
 };

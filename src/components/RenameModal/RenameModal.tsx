@@ -30,7 +30,7 @@ const RenameModal: React.FC<OtherProps> = ({ show, handleClose, oldName, setNewN
     return (
         <Formik enableReinitialize initialValues={initValues} validationSchema={nameSchema} onSubmit={(values, { setErrors }) => { handleNewName(values) }}>
             {({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => (
-                <Modal show={show} onHide={handleClose} dialogClassName='rename'>
+                <Modal show={show} onHide={handleClose} dialogClassName='rename' centered={true}>
                     <Modal.Body>
                         <form onSubmit={handleSubmit} autoComplete='off' className='rename-form'>
                             <Row className='align-items-center '>

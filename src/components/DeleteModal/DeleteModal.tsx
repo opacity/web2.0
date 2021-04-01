@@ -9,7 +9,7 @@ type OtherProps = {
 };
 const DeleteModal: React.FC<OtherProps> = ({ show, handleClose, setDelete }) => {
     return (
-        <Modal show={show} onHide={handleClose} dialogClassName='delete-modal'>
+        <Modal show={show} onHide={handleClose} dialogClassName='delete-modal' centered>
             <Modal.Header>
                 Delete
             </Modal.Header>
@@ -17,10 +17,10 @@ const DeleteModal: React.FC<OtherProps> = ({ show, handleClose, setDelete }) => 
                 <h4>Are you sure you want to delete these items? </h4>
             </Modal.Body>
             <Modal.Footer>
-                <Button type='submit' variant='default' onClick={handleClose}>
+                <Button type='submit' variant='default' onClick={() => handleClose()}>
                     Cancel
                 </Button>
-                <Button type='submit' variant='danger' onClick={setDelete}>
+                <Button type='submit' variant='danger' onClick={() => setDelete()}>
                     Delete
                 </Button>
             </Modal.Footer>
