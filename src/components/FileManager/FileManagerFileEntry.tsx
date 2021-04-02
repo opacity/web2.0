@@ -36,6 +36,8 @@ export type FileManagerFileEntryProps = {
 	handleDeleteItem: (f: FolderFileEntry | FoldersIndexEntry, isFile: boolean) => void
 	handleOpenRenameModal: (f: FolderFileEntry | FoldersIndexEntry, isFile: boolean) => void
 	downloadItem: (f: FileMetadata) => Promise<void>
+	handleSelectFile: Function
+	selectedFiles?: FileMetadata[]
 }
 
 export const FileManagerFileEntryGrid = ({
@@ -76,9 +78,11 @@ export const FileManagerFileEntryList = ({
 	handleDeleteItem,
 	handleOpenRenameModal,
 	downloadItem,
+	handleSelectFile,
+	selectedFiles
 }: FileManagerFileEntryProps) => {
 	const [fileMeta, setFileMeta] = React.useState<FileMetadata>()
-
+	const [isSelected, setSelected] = React.useState(false);
 	const [ref, unobserve] = useIntersectionObserver((e) => {
 		if (fileEntry && e.isIntersecting) {
 			unobserve()
@@ -90,17 +94,28 @@ export const FileManagerFileEntryList = ({
 		}
 	})
 
+	React.useEffect(() => {
+		if (fileMeta) {
+			if (selectedFiles.filter(ele => ele.name === fileMeta.name).length > 0) {
+				setSelected(true)
+			} else {
+				setSelected(false)
+			}
+		}
+
+	}, [selectedFiles])
+
 	return (
-		<Table.Row>
-			<Table.Col className='file-name'>
+		<Table.Row  className={isSelected ? 'selected' : ''}>
+			<Table.Col className='file-name' onClick={() => fileMeta && handleSelectFile(fileMeta)}>
 				<div className='d-flex' ref={ref}>
 					<i className={`icon-${fileMeta && typeList[fileMeta.type]}`}></i>
 					{fileEntry.name}
 					{fileMeta && !fileMeta.finished && <span style={{ display: "inline-block", background: "rgba(0,0,0,.1)", padding: "4px 6px", borderRadius: 4, marginInline: "1em" }}>Pending</span>}
 				</div>
 			</Table.Col>
-			<Table.Col>{fileMeta ? moment(fileMeta.uploaded).calendar() : "..."}</Table.Col>
-			<Table.Col>{fileMeta ? formatBytes(fileMeta.size) : "..."}</Table.Col>
+			<Table.Col onClick={() => fileMeta && handleSelectFile(fileMeta)}>{fileMeta ? moment(fileMeta.uploaded).calendar() : "..."}</Table.Col>
+			<Table.Col onClick={() => fileMeta && handleSelectFile(fileMeta)}>{fileMeta ? formatBytes(fileMeta.size) : "..."}</Table.Col>
 			<Table.Col className='text-nowrap'>
 				<DropdownButton menuAlign='right' title='' id='dropdown-menu-align-right'>
 					<Dropdown.Item disabled={!fileMeta} eventKey='1' onClick={() => fileShare(fileMeta)}>
