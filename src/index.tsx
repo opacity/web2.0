@@ -19,15 +19,12 @@ function App() {
   let logoutTimeout;
 
   React.useEffect(() => {
-    const status = React.useContext(FileManagementStatus)
-
     if (status.isManaging === true) {
       clearTimeouts()
     }
-  }, [React.useContext(FileManagementStatus)])
+  }, [status])
 
   const logout = () => {
-    const status = React.useContext(FileManagementStatus)
     if(status.isManaging === true) { return }
     console.log('You have been loged out');
     localStorage.clear();
