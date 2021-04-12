@@ -141,7 +141,7 @@ const FileManagePage = ({ history }) => {
   React.useEffect(() => {
     if (window.performance) {
       if (performance.navigation.type == 1) {
-        localStorage.clear();
+        // localStorage.clear();
       } else {
       }
     }
@@ -264,9 +264,9 @@ const FileManagePage = ({ history }) => {
 
       const release = await fileUploadMutex.acquire()
       try {
-        const stream = await upload.start().then(() => {
-          isFileManaging()
-        });
+        const stream = await upload.start()
+        isFileManaging()
+        
         // let templist = currentUploadingList.current.slice();
         // templist.push({ id: toastID, fileName: file.name, percent: 0 });
         // setUploadingList(templist);
@@ -281,9 +281,9 @@ const FileManagePage = ({ history }) => {
           //   type: toast.TYPE.ERROR,
           // })
         }
-        await upload.finish().then(() => {
-          OnfinishFileManaging()
-        })
+        await upload.finish()
+        OnfinishFileManaging()
+        
         let templistdone = currentUploadingList.current.slice();
         let index = templistdone.findIndex(ele => ele.id === toastID);
         if (index > -1) {
@@ -363,9 +363,8 @@ const FileManagePage = ({ history }) => {
       bindDownloadToAccountSystem(accountSystem, d)
 
       const fileStream = polyfillWritableStreamIfNeeded<Uint8Array>(streamsaver.createWriteStream(file.name, { size: file.size }))
-      const s = await d.start().then(() => {
-        isFileManaging()
-      })
+      const s = await d.start()
+      isFileManaging()
 
       d.finish().then(() => {
         console.log("finish")

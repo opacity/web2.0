@@ -32,6 +32,7 @@
     "react-dnd-html5-backend": "^14.0.0",
     "react-dom": "^16.8.6",
     "react-dropzone": "^11.3.1",
+    "react-file-icon": "^1.0.0",
     "react-loading": "^2.0.3",
     "react-lottie": "^1.2.3",
     "react-router-dom": "^5.2.0",
