@@ -232,14 +232,20 @@ class SiteWrapper extends React.Component<Props, State> {
         <LoginModal
           show={this.state.showLoginModal || this.props.showLoginModal}
           recoveryHandle={this.props.recoveryHandle}
+          handleSignup={() => {
+            this.setState({ showSignUpModal: true });
+          }}
           handleClose={() => {
             this.handleCloseLoginModal();
             this.props.handleCloseLoginModal && this.props.handleCloseLoginModal();
           }}
         />
         <SignUpModal
-          show={this.props.showSignUpModal}
-          handleClose={this.props.handleCloseSignUpModal}
+          show={this.state.showSignUpModal || this.props.showSignUpModal}
+          handleClose={() => {
+            this.setState({ showSignUpModal: false });
+            this.props.handleCloseSignUpModal && this.props.handleCloseSignUpModal();
+          }}
           plan={this.props.plan}
           openLoginModal={this.handleOpenLoginModal.bind(this)}
         />

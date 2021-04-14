@@ -16,6 +16,7 @@ const logo = require("../../assets/logo2.png");
 type OtherProps = {
   show: boolean;
   handleClose: Function;
+  handleSignup: Function;
   recoveryHandle: string;
 };
 
@@ -23,7 +24,7 @@ type LoginFormProps = {
   privateKey: string
 }
 
-const LoginModal: React.FC<OtherProps> = ({ show, handleClose, recoveryHandle }) => {
+const LoginModal: React.FC<OtherProps> = ({ show, handleClose, recoveryHandle, handleSignup }) => {
   const [privateKey, setPrivateKey] = useState(recoveryHandle);
   const [validatePrivateKey, setValidatePrivateKey] = useState(true);
   const [account, setAccount] = React.useState<Account>();
@@ -113,8 +114,9 @@ const LoginModal: React.FC<OtherProps> = ({ show, handleClose, recoveryHandle })
               <Row>
                 <Col>
                   <Button variant='outline-primary btn-pill' size='lg' onClick={() => {
+                    handleSignup();
                     handleClose();
-                    history.push("/plans");
+                    // history.push("/plans");
                   }}>
                     CREATE AN ACCOUNT
                   </Button>
