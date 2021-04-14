@@ -592,7 +592,9 @@
     .modal-body {
       .plans {
         font-size: 22px;
-        white-space: nowrap;
+        @media (max-width: 767.9px) {
+          font-size: 20px;
+        }
       }
     }
   }
