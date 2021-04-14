@@ -602,3 +602,33 @@
   -webkit-animation: 1s linear infinite progress-bar-stripes;
   animation: 10s linear infinite progress-bar-stripes;
 }
+
+.custom-form-size {
+  padding: 10px !important;
+  padding-top: 50px !important;
+}
+
+.stripe-cc-input {
+  background: #d8e7ff;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #dddddd;
+  height: 40px;
+}
+
+.stripe-cc-input-error {
+  border: 1px solid #ff3860;
+}
+
+.cardform-highlight-text {
+  background: #d8e7ff;
+  border-radius: 10px;
+  height: 40px;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 40px;
+  color: #353535;
+  text-align: center;
+  margin-top: 28px;
+  margin-bottom: 22px;
+}

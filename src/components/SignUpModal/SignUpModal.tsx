@@ -16,7 +16,11 @@ import { Upload, bindUploadToAccountSystem } from "../../../ts-client-library/pa
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web"
 import { bytesToHex, hexToBytes } from "../../../ts-client-library/packages/util/src/hex"
 import { STORAGE_NODE as storageNode } from "../../config"
+import { STRIPE_API_KEY } from "../../config";
 import Redeem from "./Redeem"
+import UsdPaymentForm from './UsdPaymentForm'
+import { Elements, StripeProvider } from "react-stripe-elements";
+
 const logo = require("../../assets/logo2.png");
 const loginSchema = Yup.object().shape({
   handle: Yup.string().length(128),
@@ -47,6 +51,7 @@ const SignUpModal: React.FC<OtherProps> = ({ show, handleClose, plan, openLoginM
   const [currentStep, setStep] = React.useState<number>(1);
   const [account, setAccount] = React.useState<Account>();
   const [invoiceData, setInvoiceData] = React.useState<AccountCreationInvoice>();
+
   const goBack = () => {
     if (currentStep > 1) setStep(currentStep - 1);
     else handleClose();
@@ -180,11 +185,11 @@ const AccountHandle: React.FC<SignUpProps> = ({ plan, goBack, goNext, mnemonic, 
               {plan ? (
                 <h2 className='plans'>IMPORTANT: Save Your Account Handle Recovery Phrase</h2>
               ) : (
-                <>
-                  <img width='70' src={logo} />
-                  <h2>Get started for FREE</h2>
-                </>
-              )}
+                  <>
+                    <img width='70' src={logo} />
+                    <h2>Get started for FREE</h2>
+                  </>
+                )}
               <h3>
                 Your Privacy and <span>Security is in your hands.</span> Keep These Numbers <span>Safe.</span>
               </h3>
@@ -263,14 +268,14 @@ const AccountHandle: React.FC<SignUpProps> = ({ plan, goBack, goNext, mnemonic, 
                 </Col>
               </>
             ) : (
-              <Col>
-                <Button variant='primary btn-pill' size='lg' type='submit'
-                  disabled={!isCaptchaVerified || !values.termsCheck}
-                >
-                  SIGN UP FOR FREE
+                <Col>
+                  <Button variant='primary btn-pill' size='lg' type='submit'
+                    disabled={!isCaptchaVerified || !values.termsCheck}
+                  >
+                    SIGN UP FOR FREE
                 </Button>
-              </Col>
-            )}
+                </Col>
+              )}
           </Row>
         </form>
       )}
@@ -280,60 +285,82 @@ const AccountHandle: React.FC<SignUpProps> = ({ plan, goBack, goNext, mnemonic, 
 
 const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account }) => {
   const [isCopied, setIsCopied] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('crypto')
+
   React.useEffect(() => {
     account.waitForPayment().then(() => {
       goNext();
     })
   }, [])
+
   return (
     <div className='SendPayment'>
       <div className='card-body'>
         <div className='payment-type'>
           <div className='d-flex'>
-            <div className='type-item active'>Pay with cryptocurrency</div>
-            <div className='type-item'>Pay with USD</div>
+            <div className={`type-item ${paymentMethod === 'crypto' && 'active'}`} onClick={(e) => {
+              setPaymentMethod('crypto')
+            }}>Pay with cryptocurrency</div>
+            <div className={`type-item ${paymentMethod === 'usd' && 'active'}`} onClick={(e) => {
+              setPaymentMethod('usd')
+            }}>Pay with USD</div>
           </div>
           <DropdownButton id='dropdown-basic-button' title='Pay with cryptocurrency' className='d-none'>
             <Dropdown.Item href='#/action-2'>Pay with cryptocurrency</Dropdown.Item>
             <Dropdown.Item href='#/action-3'>Pay with USD</Dropdown.Item>
           </DropdownButton>
         </div>
-        <h3>Send Payment with OPCT</h3>
-        <div className='payment-content'>
-          Use the Opacity Storage Token, OPCT, to pay for your storage account. Send your total amount of 16 OPCT to the address below or you may use
-          MetaMask to easily make your payment right in your browser.
-        </div>
-        <div className='important-content'>
-          IMPORTANT: Do not send any other coin or token to this account address as it may result in a loss of funds. Only send 16 OPCT. Sending more
-          may also result in loss of funds.
-        </div>
-        <div className='payment-content'>
-          Once your payment is sent, it may take some time to confirm your payment on the Ethereum network. We will confirm receipt and complete setup
-          of your account once the network transaction is confirmed. Please be patient.
-        </div>
-        <ProgressBar striped now={100} animated />
-        <div className='send-email'>Send {plan.opctCost} OPCT to Ethereum Address:</div>
-        <div className='form-group'>
-          <div className='account-handle'>{invoice.ethAddress}</div>
-          <CopyToClipboard text={invoice.ethAddress} onCopy={() => invoice.ethAddress && setIsCopied(true)}>
-            <span className='handle'></span>
-          </CopyToClipboard>
-          {isCopied && <div className='copy-feedback'>Copied to clipboard!</div>}
-        </div>
-        <div className='need-opct'>
-          Need OPCT? <span className='here' onClick={() => window.open('https://www.kucoin.com/trade/OPCT-BTC', "_blank")}>Purchase here</span>
-        </div>
-        <div className='row qrcode'>
-          <Col>
-            <h1>Other Ways To Pay</h1>
-            <Redeem storageLimit={plan.storageLimit} ethAddress={invoice.ethAddress} />
-          </Col>
-          <Col>
-            <div className='scan'>
-              <h3>Scan QR code to pay</h3>
+        {
+          paymentMethod === 'crypto' &&
+          <div>
+            <h3>Send Payment with OPCT</h3>
+            <div className='payment-content'>
+              Use the Opacity Storage Token, OPCT, to pay for your storage account. Send your total amount of 16 OPCT to the address below or you may use
+              MetaMask to easily make your payment right in your browser.
+              </div>
+            <div className='important-content'>
+              IMPORTANT: Do not send any other coin or token to this account address as it may result in a loss of funds. Only send 16 OPCT. Sending more
+              may also result in loss of funds.
+              </div>
+            <div className='payment-content'>
+              Once your payment is sent, it may take some time to confirm your payment on the Ethereum network. We will confirm receipt and complete setup
+              of your account once the network transaction is confirmed. Please be patient.
+              </div>
+            <ProgressBar striped now={100} animated />
+            <div className='send-email'>Send {plan.opctCost} OPCT to Ethereum Address:</div>
+            <div className='form-group'>
+              <div className='account-handle'>{invoice.ethAddress}</div>
+              <CopyToClipboard text={invoice.ethAddress} onCopy={() => invoice.ethAddress && setIsCopied(true)}>
+                <span className='handle'></span>
+              </CopyToClipboard>
+              {isCopied && <div className='copy-feedback'>Copied to clipboard!</div>}
             </div>
-          </Col>
-        </div>
+            <div className='need-opct'>
+              Need OPCT? <span className='here' onClick={() => window.open('https://www.kucoin.com/trade/OPCT-BTC', "_blank")}>Purchase here</span>
+            </div>
+            <div className='row qrcode'>
+              <Col>
+                <h1>Other Ways To Pay</h1>
+                <Redeem storageLimit={plan.storageLimit} ethAddress={invoice.ethAddress} />
+              </Col>
+              <Col>
+                <div className='scan'>
+                  <h3>Scan QR code to pay</h3>
+                </div>
+              </Col>
+            </div>
+          </div>
+        }
+        {
+          paymentMethod === 'usd' &&
+          <StripeProvider apiKey={STRIPE_API_KEY}>
+            <Elements>
+              <UsdPaymentForm plan={plan} />
+            </Elements>
+          </StripeProvider>
+        }
+
+
       </div>
     </div>
   );

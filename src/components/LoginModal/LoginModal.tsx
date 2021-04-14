@@ -18,16 +18,21 @@ const loginSchema = Yup.object().shape({
 type OtherProps = {
   show: boolean;
   handleClose: Function;
+  recoveryHandle: string;
 };
 
 type LoginFormProps = {
   privateKey: string
 }
 
-const LoginModal: React.FC<OtherProps> = ({ show, handleClose }) => {
-  const [privateKey, setPrivateKey] = useState("");
+const LoginModal: React.FC<OtherProps> = ({ show, handleClose, recoveryHandle }) => {
+  const [privateKey, setPrivateKey] = useState(recoveryHandle);
   const [validatePrivateKey, setValidatePrivateKey] = useState(true);
   const [account, setAccount] = React.useState<Account>();
+
+  React.useEffect(() => {
+    recoveryHandle && setPrivateKey(recoveryHandle);
+  }, [recoveryHandle]);
 
   const handleLogin = (values: LoginFormProps, { setErrors }: FormikHelpers<LoginFormProps>) => {
     if (values.privateKey.length != 128) {
@@ -69,6 +74,7 @@ const LoginModal: React.FC<OtherProps> = ({ show, handleClose }) => {
                 <Col md='12'>
                   <Form.Group>
                     <Field
+                      value={privateKey}
                       name='privateKey'
                       placeholder='Account Handle'
                       className={errors.privateKey && touched.privateKey ? "form-control is-invalid state-invalid" : "form-control"}
