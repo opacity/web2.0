@@ -5,12 +5,14 @@ import { Table } from "tabler-react"
 import { useIntersectionObserver } from "@researchgate/react-intersection-observer"
 import { AccountSystem, FileMetadata, FolderFileEntry, FoldersIndexEntry } from "../../../ts-client-library/packages/account-system"
 import { formatBytes } from "../../helpers"
+import { FileIcon, defaultStyles } from 'react-file-icon';
+
 const typeList = {
 	"text/plain": 'document',
-	"application/x-zip-compressed": 'zip',
-	'application/zip': 'zip',
-	'application/x-tar': 'zip',
-	'application/vnd.rar': 'zip',
+	"application/x-zip-compressed": 'compressed',
+	'application/zip': 'compressed',
+	'application/x-tar': 'compressed',
+	'application/vnd.rar': 'compressed',
 	"image/png": 'image',
 	'video/mp4': 'video',
 	'video/mpeg': 'video',
@@ -27,6 +29,13 @@ const typeList = {
 	'image/svg+xml': 'image',
 	'image/tiff': 'image',
 	'image/webp': 'image',
+}
+
+const getFileExtension = (name) => {
+	const lastDot = name.lastIndexOf('.');
+
+	const ext = name.substring(lastDot + 1);
+	return ext
 }
 
 export type FileManagerFileEntryProps = {
@@ -46,9 +55,12 @@ export const FileManagerFileEntryGrid = ({
 	fileShare,
 	handleDeleteItem,
 	handleOpenRenameModal,
+	handleSelectFile,
+	selectedFiles
 }: FileManagerFileEntryProps) => {
 	const [fileMeta, setFileMeta] = React.useState<FileMetadata>()
-
+	const [isSelected, setSelected] = React.useState(false);
+	
 	const [ref, unobserve] = useIntersectionObserver(() => {
 		if (fileEntry) {
 			unobserve()
@@ -60,13 +72,40 @@ export const FileManagerFileEntryGrid = ({
 		}
 	})
 
+	React.useEffect(() => {
+		if (fileMeta) {
+			if (selectedFiles.filter(ele => ele.name === fileMeta.name).length > 0) {
+				setSelected(true)
+			} else {
+				setSelected(false)
+			}
+		}
+
+	}, [selectedFiles])
+
 	return (
 		<div className='grid-item'>
-			<div className='items'>
-				<i className={`icon-${fileMeta && typeList[fileMeta.type]}`}></i>
+			<div
+			 className={`items ${isSelected && 'grid-item-selected'}`}
+			 onClick={() => fileMeta && handleSelectFile(fileMeta)}
+			>
+				{/* <i className={`icon-${fileMeta && typeList[fileMeta.type]}`}></i> */}
+				<div style={{ width: '40px' }}>
+					<FileIcon
+						color="#A8A8A8"
+						glyphColor="#ffffff"
+						{ ...defaultStyles[fileMeta && getFileExtension(fileMeta.name)] }
+						extension={fileMeta && getFileExtension(fileMeta.name)}
+					/>
+				</div>
 				<h3 className='file-name'>{fileEntry.name}</h3>
 				<div className='file-info' ref={ref}>{fileMeta ? formatBytes(fileMeta.size) : "..."}</div>
 			</div>
+			{
+				isSelected && 
+				<div className='grid-selected-icon'>
+				</div>
+			}
 		</div>
 	)
 }
@@ -109,7 +148,15 @@ export const FileManagerFileEntryList = ({
 		<Table.Row  className={isSelected ? 'selected' : ''}>
 			<Table.Col className='file-name' onClick={() => fileMeta && handleSelectFile(fileMeta)}>
 				<div className='d-flex' ref={ref}>
-					<i className={`icon-${fileMeta && typeList[fileMeta.type]}`}></i>
+					{/* <i className={`icon-${fileMeta && typeList[fileMeta.type]}`}></i> */}
+					<div style={{ width: '18px', marginRight: '40px' }}>
+						<FileIcon
+							color="#A8A8A8"
+							glyphColor="#ffffff"
+							{ ...defaultStyles[fileMeta && getFileExtension(fileMeta.name)] }
+							extension={fileMeta && getFileExtension(fileMeta.name)}
+						/>
+					</div>
 					{fileEntry.name}
 					{fileMeta && !fileMeta.finished && <span style={{ display: "inline-block", background: "rgba(0,0,0,.1)", padding: "4px 6px", borderRadius: 4, marginInline: "1em" }}>Pending</span>}
 				</div>

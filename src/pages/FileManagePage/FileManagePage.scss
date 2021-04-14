@@ -112,7 +112,7 @@
       }
       .nav-link {
         font-size: 12px;
-        line-height: 3px;
+        line-height: 13px;
         color: #424242;
       }
       &:hover {
@@ -577,12 +577,29 @@
         height: 134px;
         margin-bottom: 35px;
         margin-right: 20px;
+        position: relative;
         @media (max-width: 768px) {
           margin-bottom: 15px;
           margin-left: 10px;
           margin-right: 10px;
         }
+        .grid-item-selected {
+          border: 1px solid #E4DEDE;
+          border-radius: 2px;
+        }
+        .grid-selected-icon {
+          position: absolute;
+          top: 18px;
+          left: 8px;
+          width: 26px;
+          height: 26px;
+          background: #E6Efff;
+          border-radius: 13px;
+          padding: 6px;
+          content: url("../../assets/check.svg");
+        }
         .items {
+          cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -637,7 +654,7 @@
       span {
         font-weight: 500;
         font-size: 14px;
-        line-height: 50%;
+        line-height: 19px;
         color: #b7b7c4;
       }
     }

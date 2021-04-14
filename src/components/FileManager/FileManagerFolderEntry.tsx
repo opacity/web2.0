@@ -6,6 +6,7 @@ import { useIntersectionObserver } from "@researchgate/react-intersection-observ
 import { AccountSystem, FolderFileEntry, FolderMetadata, FoldersIndexEntry } from "../../../ts-client-library/packages/account-system"
 import { formatBytes } from "../../helpers"
 import { posix } from "path-browserify"
+import { FileIcon } from 'react-file-icon';
 
 export type FileManagerFolderEntryProps = {
 	accountSystem: AccountSystem
@@ -38,7 +39,15 @@ export const FileManagerFolderEntryGrid = ({
 	return (
 		<div className='grid-item'>
 			<div className='items' onDoubleClick={() => setCurrentPath(folderEntry.path)}>
-				<i className='icon-folder'></i>
+				{/* <i className='icon-folder'></i> */}
+				<div style={{ width: '40px' }}>
+					<FileIcon
+						color="#8A8A8A"
+						labelColor="#A8A8A8"
+						fold={false}
+						extension="folder"
+					/>
+				</div>
 				<h3 className='file-name'>{posix.basename(folderEntry.path)}</h3>
 				<div className='file-info' ref={ref}>{folderMeta ? folderMeta.files.length : "..."} Files</div>
 			</div>

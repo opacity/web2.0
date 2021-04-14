@@ -30,6 +30,7 @@ type Props = {
   isHome?: boolean;
   history: any;
   plan?: PlanType;
+  recoveryHandle: string;
 };
 
 type State = {
@@ -230,6 +231,7 @@ class SiteWrapper extends React.Component<Props, State> {
         <Footer />
         <LoginModal
           show={this.state.showLoginModal || this.props.showLoginModal}
+          recoveryHandle={this.props.recoveryHandle}
           handleClose={() => {
             this.handleCloseLoginModal();
             this.props.handleCloseLoginModal && this.props.handleCloseLoginModal();

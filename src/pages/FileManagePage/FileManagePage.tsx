@@ -37,9 +37,12 @@ import { STORAGE_NODE as storageNode } from "../../config"
 import { bytesToB64 } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/b64"
 import { isPathChild } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/path"
 import { arraysEqual } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/arrayEquality"
+import { FileManagementStatus } from "../../context";
 
 const logo = require("../../assets/logo2.png");
+
 const FileManagePage = ({ history }) => {
+  const fileManaging = React.useContext(FileManagementStatus)
   const cryptoMiddleware = React.useMemo(() => new WebAccountMiddleware({ asymmetricKey: hexToBytes(localStorage.getItem('key')) }), []);
   const netMiddleware = React.useMemo(() => new WebNetworkMiddleware(), []);
   const metadataAccess = React.useMemo(() => new MetadataAccess({
@@ -78,6 +81,14 @@ const FileManagePage = ({ history }) => {
   const handleShowSidebar = React.useCallback(() => {
     setShowSidebar(!showSidebar);
   }, [showSidebar]);
+
+  const isFileManaging = () => {
+    fileManaging.setFileStatus(true)
+  }
+
+  const OnfinishFileManaging = () => {
+    fileManaging.setFileStatus(false)
+  }
 
   React.useEffect(() => {
     getFolderData();
@@ -130,7 +141,7 @@ const FileManagePage = ({ history }) => {
   React.useEffect(() => {
     if (window.performance) {
       if (performance.navigation.type == 1) {
-        localStorage.clear();
+        // localStorage.clear();
       } else {
       }
     }
@@ -253,7 +264,9 @@ const FileManagePage = ({ history }) => {
 
       const release = await fileUploadMutex.acquire()
       try {
-        const stream = await upload.start();
+        const stream = await upload.start()
+        isFileManaging()
+
         // let templist = currentUploadingList.current.slice();
         // templist.push({ id: toastID, fileName: file.name, percent: 0 });
         // setUploadingList(templist);
@@ -269,6 +282,8 @@ const FileManagePage = ({ history }) => {
           // })
         }
         await upload.finish()
+        OnfinishFileManaging()
+
         let templistdone = currentUploadingList.current.slice();
         let index = templistdone.findIndex(ele => ele.id === toastID);
         if (index > -1) {
@@ -287,7 +302,7 @@ const FileManagePage = ({ history }) => {
       }
     } catch (e) {
       console.error(e)
-
+      OnfinishFileManaging()
       // toast.update(file.size + file.name, {
       //   render: `An error occurred while uploading ${file.name}.`,
       //   type: toast.TYPE.ERROR,
@@ -349,9 +364,11 @@ const FileManagePage = ({ history }) => {
 
       const fileStream = polyfillWritableStreamIfNeeded<Uint8Array>(streamsaver.createWriteStream(file.name, { size: file.size }))
       const s = await d.start()
+      isFileManaging()
 
       d.finish().then(() => {
         console.log("finish")
+        OnfinishFileManaging()
       })
 
       // more optimized
@@ -379,6 +396,7 @@ const FileManagePage = ({ history }) => {
       }
     } catch (e) {
       console.error(e)
+      OnfinishFileManaging()
       toast.error(`An error occurred while downloading ${file.name}.`)
     }
   }, [cryptoMiddleware, netMiddleware, storageNode])
@@ -444,7 +462,7 @@ const FileManagePage = ({ history }) => {
     setShowDeleteModal(true)
   }, [])
 
-  const handleDelete = React.useCallback(async () => {
+  const handleDelete = async () => {
     if (selectedFiles.length === 0) {
       if (folderToDelete) deleteFolder(folderToDelete)
       else deleteFile(fileToDelete)
@@ -452,10 +470,11 @@ const FileManagePage = ({ history }) => {
       selectedFiles.forEach(file => {
         deleteFile(file)
       })
+      setSelectedFiles([])
     }
     setShowDeleteModal(false)
 
-  }, [folderToDelete, fileToDelete])
+  }
 
   const onDrop = React.useCallback(files => {
     selectFiles(files)
@@ -669,8 +688,8 @@ const FileManagePage = ({ history }) => {
                   i === subPaths.length - 1 ? (
                     <Breadcrumb.Item active key={i}>{text}</Breadcrumb.Item>
                   ) : (
-                    <Breadcrumb.Item key={i} onClick={() => setCurrentPath(path)}>{text}</Breadcrumb.Item>
-                  )
+                      <Breadcrumb.Item key={i} onClick={() => setCurrentPath(path)}>{text}</Breadcrumb.Item>
+                    )
               )}
             </Breadcrumb>
           </div>
@@ -754,7 +773,7 @@ const FileManagePage = ({ history }) => {
       </div>
 
       { oldName && <RenameModal show={showRenameModal} handleClose={() => setShowRenameModal(false)} oldName={oldName} setNewName={handleChangeRename} />}
-      <DeleteModal show={showDeleteModal} handleClose={() => setShowDeleteModal(false)} setDelete={handleDelete} />
+      <DeleteModal show={showDeleteModal} handleClose={() => setShowDeleteModal(false)} setDelete={() => handleDelete()} />
       <AddNewFolderModal show={showNewFolderModal} handleClose={() => setShowNewFolderModal(false)} addNewFolder={addNewFolder} />
       <ToastContainer
         pauseOnHover={false}
