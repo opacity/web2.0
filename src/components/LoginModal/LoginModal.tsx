@@ -12,9 +12,7 @@ import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex"
 import { STORAGE_NODE as storageNode } from "../../config"
 
 const logo = require("../../assets/logo2.png");
-const loginSchema = Yup.object().shape({
-  privateKey: Yup.string().required("Account handle is required."),
-});
+
 type OtherProps = {
   show: boolean;
   handleClose: Function;
@@ -35,20 +33,25 @@ const LoginModal: React.FC<OtherProps> = ({ show, handleClose, recoveryHandle })
   }, [recoveryHandle]);
 
   const handleLogin = (values: LoginFormProps, { setErrors }: FormikHelpers<LoginFormProps>) => {
-    if (values.privateKey.length != 128) {
+    if (!privateKey?.length) {
+      setErrors({
+        privateKey: "Account handle is required."
+      })
+      return
+    }
+    if (privateKey.length != 128) {
       setErrors({
         privateKey: "Account handle must be 128 characters long"
       })
-
       return
     }
 
-    const cryptoMiddleware = new WebAccountMiddleware({ asymmetricKey: hexToBytes(values.privateKey) });
+    const cryptoMiddleware = new WebAccountMiddleware({ asymmetricKey: hexToBytes(privateKey) });
     const netMiddleware = new WebNetworkMiddleware();
     const account = new Account({ crypto: cryptoMiddleware, net: netMiddleware, storageNode });
     account.info().then(acc => {
       if (acc.paymentStatus === 'paid') {
-        localStorage.setItem('key', values.privateKey);
+        localStorage.setItem('key', privateKey);
         history.push('file-manager')
       }
     }).catch((err: Error) => {
@@ -59,7 +62,7 @@ const LoginModal: React.FC<OtherProps> = ({ show, handleClose, recoveryHandle })
   }
 
   return (
-    <Formik initialValues={{ privateKey: "" }} validationSchema={loginSchema} onSubmit={(values, helpers) => { handleLogin(values, helpers) }}>
+    <Formik initialValues={{ privateKey: "" }} onSubmit={(values, helpers) => { handleLogin(values, helpers) }}>
       {({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => (
         <Modal show={show} onHide={handleClose} size='lg' centered dialogClassName='login'>
           <Modal.Body>
@@ -75,6 +78,7 @@ const LoginModal: React.FC<OtherProps> = ({ show, handleClose, recoveryHandle })
                   <Form.Group>
                     <Field
                       value={privateKey}
+                      onChange={e => setPrivateKey(e.target.value)}
                       name='privateKey'
                       placeholder='Account Handle'
                       className={errors.privateKey && touched.privateKey ? "form-control is-invalid state-invalid" : "form-control"}
