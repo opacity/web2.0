@@ -539,9 +539,11 @@
       line-height: 27px;
       text-align: center;
       color: #8b8b8b;
+      padding: 50px;
       @media (max-width: 767.9px) {
         font-size: 18px;
         line-height: 27px;
+        padding: 10px;
       }
       .plans {
         margin-top: 70px;
