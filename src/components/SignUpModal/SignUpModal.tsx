@@ -20,6 +20,7 @@ import { STRIPE_API_KEY } from "../../config";
 import Redeem from "./Redeem"
 import UsdPaymentForm from './UsdPaymentForm'
 import { Elements, StripeProvider } from "react-stripe-elements";
+import QRCode from "qrcode.react";
 
 const logo = require("../../assets/logo2.png");
 const loginSchema = Yup.object().shape({
@@ -346,6 +347,16 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account }) 
               <Col>
                 <div className='scan'>
                   <h3>Scan QR code to pay</h3>
+                  <QRCode
+                    value={'ethAddress'}
+                    size={200}
+                    renderAs="svg"
+                    bgColor="#ffffff"
+                    fgColor="#2e3854"
+                    level="H"
+                    color="#ffffff"
+                    includeMargin={true}
+                  />
                 </div>
               </Col>
             </div>

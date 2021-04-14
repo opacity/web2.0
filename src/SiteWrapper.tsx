@@ -152,17 +152,17 @@ class SiteWrapper extends React.Component<Props, State> {
                         </Button>
                       </div>
                     ) : (
-                      <div className=''>
-                        <Button
-                          className='btn btn-primary btn-pill'
-                          onClick={() => {
-                            this.setState({ showLoginModal: true });
-                          }}
-                        >
-                          Log in
+                        <div className=''>
+                          <Button
+                            className='btn btn-primary btn-pill'
+                            onClick={() => {
+                              this.setState({ showLoginModal: true });
+                            }}
+                          >
+                            Log in
                       </Button>
-                      </div>
-                    )}
+                        </div>
+                      )}
 
                   </li>
                 </ul>
@@ -205,20 +205,20 @@ class SiteWrapper extends React.Component<Props, State> {
                           </li>
                         </>
                       ) : (
-                        <>
-                          <li className='nav-item'>
-                            <Nav.Link href='/plans'>Explore Plans</Nav.Link>
-                          </li>
-                          <li
-                            className='nav-item'
-                            onClick={() => {
-                              this.setState({ showLoginModal: true });
-                            }}
-                          >
-                            <Nav.Link>Log in</Nav.Link>
-                          </li>
-                        </>
-                      )
+                          <>
+                            <li className='nav-item'>
+                              <Nav.Link href='/plans'>Explore Plans</Nav.Link>
+                            </li>
+                            <li
+                              className='nav-item'
+                              onClick={() => {
+                                this.setState({ showLoginModal: true });
+                              }}
+                            >
+                              <Nav.Link>Log in</Nav.Link>
+                            </li>
+                          </>
+                        )
                     }
 
                   </ul>
@@ -232,17 +232,25 @@ class SiteWrapper extends React.Component<Props, State> {
         <LoginModal
           show={this.state.showLoginModal || this.props.showLoginModal}
           recoveryHandle={this.props.recoveryHandle}
+          handleSignup={() => {
+            this.setState({ showSignUpModal: true });
+          }}
           handleClose={() => {
             this.handleCloseLoginModal();
             this.props.handleCloseLoginModal && this.props.handleCloseLoginModal();
           }}
         />
-        <SignUpModal
-          show={this.props.showSignUpModal}
-          handleClose={this.props.handleCloseSignUpModal}
-          plan={this.props.plan}
-          openLoginModal={this.handleOpenLoginModal.bind(this)}
-        />
+        { (this.state.showSignUpModal || this.props.showSignUpModal) &&
+          <SignUpModal
+            show={this.state.showSignUpModal || this.props.showSignUpModal}
+            handleClose={() => {
+              this.setState({ showSignUpModal: false });
+              this.props.handleCloseSignUpModal && this.props.handleCloseSignUpModal();
+            }}
+            plan={this.props.plan}
+            openLoginModal={this.handleOpenLoginModal.bind(this)}
+          />
+        }
       </div>
     );
   }

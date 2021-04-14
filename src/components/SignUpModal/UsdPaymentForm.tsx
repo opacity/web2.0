@@ -3,6 +3,7 @@ import { Modal, Button, Row, Col } from "react-bootstrap";
 import { Field, Formik, FormikHelpers } from "formik";
 import { Form } from "tabler-react";
 import { injectStripe, CardElement } from "react-stripe-elements";
+import { CountryDropdown, RegionDropdown, CountryRegionData } from 'react-country-region-selector';
 import axios from "axios";
 import { getPayload } from "../../../ts-client-library/packages/util/src/payload"
 const axiosInstance = axios.create({ timeout: 200000 });
@@ -42,7 +43,7 @@ const UsdPaymentForm = ({
             .post(`http://18.191.166.234:3000/api/v1/stripe/create`, signedPayload)
             .then(({ data: { available } }: any) => {
               console.log(available)
-          });
+            });
         }
       })
       .catch(e => {
@@ -93,12 +94,11 @@ const UsdPaymentForm = ({
           </Col><Col md='4'>
             <Form.Group>
               <h4>Billing Country</h4>
-              <Field
-                onChange={e => setBillingCountry(e.target.value)}
+              <CountryDropdown
+                className={`form-control ${billingCountry === '' && 'is-invalid state-invalid'}`}
                 value={billingCountry}
                 name='billingCountry'
-                placeholder='Select Country'
-                className={`form-control ${billingCountry === '' && 'is-invalid state-invalid'}`}
+                onChange={(val) => setBillingCountry(val)}
               />
               {
                 billingCountry === '' && <div className='invalid-feedback'>this field is required.</div>

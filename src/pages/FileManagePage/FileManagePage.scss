@@ -114,6 +114,7 @@
         font-size: 12px;
         line-height: 13px;
         color: #424242;
+        padding: 8px;
       }
       &:hover {
         .nav-link {
@@ -296,8 +297,8 @@
     border-top: 1px solid rgba(80, 137, 240, 0.41);
     justify-content: center;
     text-align: center;
-    margin-left: -50px;
-    margin-right: -50px;
+    // margin-left: -50px;
+    // margin-right: -50px;
     .d-flex {
       display: flex !important;
       align-items: center;
@@ -738,4 +739,9 @@
       }
     }
   }
+}
+
+.custom-sidebar {
+  z-index: 2000 !important;
+  position: fixed !important;
 }
