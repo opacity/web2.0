@@ -11,7 +11,7 @@ interface RedeemProps {
 const storageLimitToCodeName = ({ storageLimit }: { storageLimit: string }) => {
 	switch (storageLimit) {
 		case "128 GB":
-			return "BOT";
+			return "128GB";
 		case "1 TB":
 			return "1TB";
 		case "2 TB":

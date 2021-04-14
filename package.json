@@ -25,6 +25,7 @@
     "fuse-react": "^3.0.8",
     "moment": "^2.29.1",
     "path-browserify": "^1.0.1",
+    "qrcode.react": "^1.0.1",
     "react": "^16.8.6",
     "react-bootstrap": "^1.4.3",
     "react-circular-progressbar": "^2.0.4",
