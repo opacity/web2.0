@@ -544,18 +544,18 @@ const FileManagePage = ({ history }) => {
       <aside
         className={
           showSidebar
-            ? "navbar navbar-vertical navbar-expand-lg navbar-transparent show"
-            : "navbar navbar-vertical navbar-expand-lg navbar-transparent "
+            ? "navbar navbar-vertical navbar-expand-lg navbar-transparent custom-sidebar show"
+            : "navbar navbar-vertical navbar-expand-lg navbar-transparent custom-sidebar"
         }
       >
-        <div className='container-fluid'>
+        <div className='container-fluid collapse navbar-collapse'id='navbar-menu'>
           <h1 className='navbar-brand navbar-brand-autodark cursor-point' onClick={() => history.push('/')}>
             <Link to='/'>
               <img src={logo} width='60' height='60' alt='Opacity' className='navbar-brand-image' />
             </Link>
             Opacity <span>v2.0.0</span>
           </h1>
-          <div className='collapse navbar-collapse' id='navbar-menu'>
+          <div style={{ width: '100%' }}>
             <ul className='navbar-nav'>
               <li className='nav-item'>
                 <span className='nav-icon nav-icon-pro'>P</span>

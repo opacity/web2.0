@@ -148,7 +148,7 @@ export const FileManagerFileEntryList = ({
 	
 	const briefName = (name) => {
 		let resName = name;
-		if (name.length > 10) {
+		if (isMobile && name.length > 10) {
 			resName = name.slice(0, 10) + ' ...';
 		}
 		return resName

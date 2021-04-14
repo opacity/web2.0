@@ -79,7 +79,7 @@ export const FileManagerFolderEntryList = ({
 
 	const briefFolderName = (folderName) => {
 		let resName = folderName;
-		if (folderName.length > 10) {
+		if (isMobile && folderName.length > 10) {
 			resName = folderName.slice(0, 10) + ' ...';
 		}
 		return resName
