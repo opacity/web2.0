@@ -7,6 +7,7 @@ import { AccountSystem, FolderFileEntry, FolderMetadata, FoldersIndexEntry } fro
 import { formatBytes } from "../../helpers"
 import { posix } from "path-browserify"
 import { FileIcon } from 'react-file-icon';
+import { useMediaQuery } from 'react-responsive'
 
 export type FileManagerFolderEntryProps = {
 	accountSystem: AccountSystem
@@ -62,6 +63,7 @@ export const FileManagerFolderEntryList = ({
 	handleDeleteItem,
 	handleOpenRenameModal,
 }: FileManagerFolderEntryProps) => {
+	const isMobile = useMediaQuery({ maxWidth: 768 })
 	const [folderMeta, setFolderMeta] = React.useState<FolderMetadata>()
 
 	const [ref, unobserve] = useIntersectionObserver((e) => {
@@ -75,15 +77,23 @@ export const FileManagerFolderEntryList = ({
 		}
 	})
 
+	const briefFolderName = (folderName) => {
+		let resName = folderName;
+		if (folderName.length > 10) {
+			resName = folderName.slice(0, 10) + ' ...';
+		}
+		return resName
+	}
+
 	return (
 		<Table.Row >
 			<Table.Col className='file-name' onDoubleClick={() => setCurrentPath(folderEntry.path)}>
 				<div className='d-flex' ref={ref}>
 					<i className='icon-folder'></i>
-					{posix.basename(folderEntry.path)}
+					{briefFolderName(posix.basename(folderEntry.path))}
 				</div>
 			</Table.Col>
-			<Table.Col>{folderMeta ? moment(folderMeta.uploaded).calendar() : "..."}</Table.Col>
+			{ !isMobile && <Table.Col>{folderMeta ? moment(folderMeta.uploaded).calendar() : "..."}</Table.Col>}
 			{/* <Table.Col>{moment(item.created).format("MM/DD/YYYY")}</Table.Col> */}
 			<Table.Col>{folderMeta ? folderMeta.files.length : "..."} items</Table.Col>
 			<Table.Col className='text-nowrap'>

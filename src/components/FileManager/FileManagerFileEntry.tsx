@@ -6,6 +6,7 @@ import { useIntersectionObserver } from "@researchgate/react-intersection-observ
 import { AccountSystem, FileMetadata, FolderFileEntry, FoldersIndexEntry } from "../../../ts-client-library/packages/account-system"
 import { formatBytes } from "../../helpers"
 import { FileIcon, defaultStyles } from 'react-file-icon';
+import { useMediaQuery } from 'react-responsive'
 
 const typeList = {
 	"text/plain": 'document',
@@ -120,6 +121,7 @@ export const FileManagerFileEntryList = ({
 	handleSelectFile,
 	selectedFiles
 }: FileManagerFileEntryProps) => {
+	const isMobile = useMediaQuery({ maxWidth: 768 })
 	const [fileMeta, setFileMeta] = React.useState<FileMetadata>()
 	const [isSelected, setSelected] = React.useState(false);
 	const [ref, unobserve] = useIntersectionObserver((e) => {
@@ -143,7 +145,15 @@ export const FileManagerFileEntryList = ({
 		}
 
 	}, [selectedFiles])
-
+	
+	const briefName = (name) => {
+		let resName = name;
+		if (name.length > 10) {
+			resName = name.slice(0, 10) + ' ...';
+		}
+		return resName
+	}
+	
 	return (
 		<Table.Row  className={isSelected ? 'selected' : ''}>
 			<Table.Col className='file-name' onClick={() => fileMeta && handleSelectFile(fileMeta)}>
@@ -157,11 +167,11 @@ export const FileManagerFileEntryList = ({
 							extension={fileMeta && getFileExtension(fileMeta.name)}
 						/>
 					</div>
-					{fileEntry.name}
+					{briefName(fileEntry.name)}
 					{fileMeta && !fileMeta.finished && <span style={{ display: "inline-block", background: "rgba(0,0,0,.1)", padding: "4px 6px", borderRadius: 4, marginInline: "1em" }}>Pending</span>}
 				</div>
 			</Table.Col>
-			<Table.Col onClick={() => fileMeta && handleSelectFile(fileMeta)}>{fileMeta ? moment(fileMeta.uploaded).calendar() : "..."}</Table.Col>
+			{ !isMobile && <Table.Col onClick={() => fileMeta && handleSelectFile(fileMeta)}>{fileMeta ? moment(fileMeta.uploaded).calendar() : "..."}</Table.Col> }
 			<Table.Col onClick={() => fileMeta && handleSelectFile(fileMeta)}>{fileMeta ? formatBytes(fileMeta.size) : "..."}</Table.Col>
 			<Table.Col className='text-nowrap'>
 				<DropdownButton menuAlign='right' title='' id='dropdown-menu-align-right'>

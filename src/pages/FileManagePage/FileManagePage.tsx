@@ -26,6 +26,7 @@ import { useDropzone } from "react-dropzone";
 import ReactLoading from "react-loading";
 import streamsaver from "streamsaver";
 import { Mutex } from "async-mutex"
+import { useMediaQuery } from 'react-responsive'
 import UploadingNotification from "../../components/UploadingNotification/UploadingNotification"
 streamsaver.mitm = "/resources/streamsaver/mitm.html"
 Object.assign(streamsaver, { WritableStream })
@@ -42,6 +43,7 @@ import { FileManagementStatus } from "../../context";
 const logo = require("../../assets/logo2.png");
 
 const FileManagePage = ({ history }) => {
+  const isMobile = useMediaQuery({ maxWidth: 768 })
   const fileManaging = React.useContext(FileManagementStatus)
   const cryptoMiddleware = React.useMemo(() => new WebAccountMiddleware({ asymmetricKey: hexToBytes(localStorage.getItem('key')) }), []);
   const netMiddleware = React.useMemo(() => new WebNetworkMiddleware(), []);
@@ -735,7 +737,7 @@ const FileManagePage = ({ history }) => {
                   <Table.Header>
                     <tr>
                       <th style={{ width: "50%" }}>Name</th>
-                      <th>Created</th>
+                      { !isMobile && <th>Created</th> }
                       <th>Size</th>
                       <th></th>
                     </tr>
