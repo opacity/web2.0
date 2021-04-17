@@ -494,7 +494,7 @@ const FileManagePage = ({ history }) => {
   }, [currentPath])
   const handleSelectFile = (file) => {
     let temp = selectedFiles.slice();
-    let i = selectedFiles.findIndex(item => item.name === file.name)
+    let i = selectedFiles.findIndex(item => item.handle === file.handle)
     if (i !== -1) {
       temp.splice(i, 1)
     } else {
