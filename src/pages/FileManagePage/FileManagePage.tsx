@@ -599,7 +599,7 @@ const FileManagePage = ({ history }) => {
               <ProgressBar now={accountInfo ? 100 * accountInfo.account.storageUsed / accountInfo.account.storageLimit : 0} />
               <div className='upgrade text-right'>UPGRADE NOW</div>
               <div className='renew'>
-                <p>Your account expires within 30 days</p>
+                <p>Your account expires within 1 year</p>
                 <div className='d-flex'>
                   <div className='account-icon'></div>
                   <span className='ml-3'>Renew account</span>
