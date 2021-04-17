@@ -5,12 +5,11 @@ import { Form } from "tabler-react";
 import { injectStripe, CardElement } from "react-stripe-elements";
 import { CountryDropdown, RegionDropdown, CountryRegionData } from 'react-country-region-selector';
 import axios from "axios";
-import { getPayload } from "../../../ts-client-library/packages/util/src/payload"
-const axiosInstance = axios.create({ timeout: 200000 });
 
 const UsdPaymentForm = ({
   plan,
   stripe,
+  onStripeSuccess,
 }) => {
   const [billingCountry, setBillingCountry] = useState(null)
   const [firstName, setFirstName] = useState(null)
@@ -32,18 +31,7 @@ const UsdPaymentForm = ({
           const {
             token: { id: token }
           } = result;
-          // onSubmit(token);
-          const signedPayload = getPayload({
-            payload: {
-              stripeToken: token
-            }
-          });
-
-          axiosInstance
-            .post(`http://18.191.166.234:3000/api/v1/stripe/create`, signedPayload)
-            .then(({ data: { available } }: any) => {
-              console.log(available)
-            });
+          onStripeSuccess(result.token.id)
         }
       })
       .catch(e => {

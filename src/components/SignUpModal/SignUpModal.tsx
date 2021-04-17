@@ -294,6 +294,10 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account }) 
     })
   }, [])
 
+  const handleStripeSuccess = async (stripeToken) => {
+    const res = await account.createSubscription({ stripeToken })
+  }
+
   return (
     <div className='SendPayment'>
       <div className='card-body'>
@@ -366,7 +370,7 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account }) 
           paymentMethod === 'usd' &&
           <StripeProvider apiKey={STRIPE_API_KEY}>
             <Elements>
-              <UsdPaymentForm plan={plan} />
+              <UsdPaymentForm plan={plan} onStripeSuccess={handleStripeSuccess} />
             </Elements>
           </StripeProvider>
         }
