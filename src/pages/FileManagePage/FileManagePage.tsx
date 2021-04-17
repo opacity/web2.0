@@ -548,7 +548,7 @@ const FileManagePage = ({ history }) => {
             : "navbar navbar-vertical navbar-expand-lg navbar-transparent custom-sidebar"
         }
       >
-        <div className='container-fluid collapse navbar-collapse'id='navbar-menu'>
+        <div className='container-fluid collapse navbar-collapse' id='navbar-menu'>
           <h1 className='navbar-brand navbar-brand-autodark cursor-point' onClick={() => history.push('/')}>
             <Link to='/'>
               <img src={logo} width='60' height='60' alt='Opacity' className='navbar-brand-image' />
@@ -599,7 +599,7 @@ const FileManagePage = ({ history }) => {
               <ProgressBar now={accountInfo ? 100 * accountInfo.account.storageUsed / accountInfo.account.storageLimit : 0} />
               <div className='upgrade text-right'>UPGRADE NOW</div>
               <div className='renew'>
-                <p>Your account expires within 1 year</p>
+                {accountInfo && <p>Your account expires within {moment(accountInfo.account.expirationDate).diff(moment(Date.now()), 'days')} days</p>}
                 <div className='d-flex'>
                   <div className='account-icon'></div>
                   <span className='ml-3'>Renew account</span>
@@ -737,7 +737,7 @@ const FileManagePage = ({ history }) => {
                   <Table.Header>
                     <tr>
                       <th style={{ width: "50%" }}>Name</th>
-                      { !isMobile && <th>Created</th> }
+                      {!isMobile && <th>Created</th>}
                       <th>Size</th>
                       <th></th>
                     </tr>
