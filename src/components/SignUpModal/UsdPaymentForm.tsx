@@ -117,7 +117,7 @@ const UsdPaymentForm = ({
             </div>
           </Col>
           <Col md='12' className='mb-3 text-md-right' >
-            <Field type='checkbox' name='termsCheck' className='form-check-input' onChange={(e) => setTermChecked(!termChecked)} value={termChecked} />
+            <Field type='checkbox' name='termsCheck' className='form-check-input' onChange={(e) => setTermChecked(!termChecked)} checked={termChecked}/>
             <span className='custom-control-label'>
               I agree to the <span>Terms of Service</span> and Privacy Policy
             </span>
