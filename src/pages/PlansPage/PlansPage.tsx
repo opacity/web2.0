@@ -6,6 +6,7 @@ import "./PlansPage.scss";
 import { PlanType, PLANS } from "../../config";
 
 const PlansPage = ({ history }) => {
+  const loggedIn = localStorage.getItem('key') ? true : false;
   const [showSignUpModal, setShowSignUpModal] = React.useState(false);
   const [plan, setPlan] = React.useState<PlanType>();
   const handleCloseSignUpModal = () => {
@@ -18,8 +19,10 @@ const PlansPage = ({ history }) => {
   const [plans, setPlans] = React.useState<PlanType[]>([]);
 
   React.useEffect(() => {
-    setPlans(PLANS.filter((p) => !p.isCustom));
+    const filteredPlan = PLANS.filter((p) => !p.isCustom && (loggedIn ? p.specialPricing !== 'Free' : !p.isCustom))
+    setPlans(filteredPlan)
   }, []);
+  
   return (
     <SiteWrapper showSignUpModal={showSignUpModal} handleCloseSignUpModal={handleCloseSignUpModal} history={history} plan={plan}>
       <Container fluid='xl plans'>

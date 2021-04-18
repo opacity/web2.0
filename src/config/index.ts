@@ -37,7 +37,7 @@ const DEFAULT_STORAGE_NODE_IP =
 
 export const STORAGE_NODE = `${PROTOCOL}://${DEFAULT_STORAGE_NODE_IP}:3000`
 
-export const FILE_MAX_SIZE = 2000 * 1000 * 1000;
+export const FILE_MAX_SIZE = 2 * 1024 *1024 *1024;
 
 export const AGREEMENT_TYPES = Object.freeze({
   TERMS_OF_SERVICE: "TERMS_OF_SERVICE",

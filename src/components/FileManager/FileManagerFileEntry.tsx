@@ -75,7 +75,7 @@ export const FileManagerFileEntryGrid = ({
 
 	React.useEffect(() => {
 		if (fileMeta) {
-			if (selectedFiles.filter(ele => ele.name === fileMeta.name).length > 0) {
+			if (selectedFiles.filter(ele => ele.handle === fileMeta.handle).length > 0) {
 				setSelected(true)
 			} else {
 				setSelected(false)
@@ -137,7 +137,7 @@ export const FileManagerFileEntryList = ({
 
 	React.useEffect(() => {
 		if (fileMeta) {
-			if (selectedFiles.filter(ele => ele.name === fileMeta.name).length > 0) {
+			if (selectedFiles.filter(ele => ele.handle === fileMeta.handle).length > 0) {
 				setSelected(true)
 			} else {
 				setSelected(false)
