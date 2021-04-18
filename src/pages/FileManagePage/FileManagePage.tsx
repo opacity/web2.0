@@ -423,7 +423,7 @@ const FileManagePage = ({ history }) => {
   const deleteFile = React.useCallback(async (file: FolderFileEntry) => {
     try {
       const status = await accountSystem.removeFile(file.location);
-      toast(`${file.name} was successfully deleted.`);
+      // toast(`${file.name} was successfully deleted.`);
       setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
       setFileToDelete(null)
     } catch (e) {
@@ -436,7 +436,7 @@ const FileManagePage = ({ history }) => {
     const name = posix.basename(folder.path)
     try {
       const status = await accountSystem.removeFolderByPath(folder.path);
-      toast(`Folder ${folder.path} was successfully deleted.`);
+      // toast(`Folder ${folder.path} was successfully deleted.`);
       setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
       setFolderToDelete(null);
     } catch (e) {
@@ -482,6 +482,7 @@ const FileManagePage = ({ history }) => {
   }, [])
 
   const handleDelete = async () => {
+    setPageLoading(true)
     if (selectedFiles.length === 0) {
       if (folderToDelete) deleteFolder(folderToDelete)
       else deleteFile(fileToDelete)
