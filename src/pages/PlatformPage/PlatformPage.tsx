@@ -109,8 +109,7 @@ const PlatformPage = ({ history }) => {
               <img className='align-self-center mr-md-3' src={ourcode} />
               <Media.Body>
                 <p>
-                  Wondering how things work? Take a peek under the hood! All of Opacity’s codebase is completely open source for anyone wondering how
-                  our system works.
+                  Wondering how things work? Take a peek under the hood! All of Opacity’s codebase is source available for anyone wondering how our system works.
                 </p>
                 <NavLink>Explore our code</NavLink>
               </Media.Body>
