@@ -159,14 +159,14 @@ const FileManagePage = ({ history }) => {
       setAccountInfo(accountInfo);
 
       const usedStorage = accountInfo.account.storageUsed
-      const limitStorage = accountInfo.account.storageLimit 
+      const limitStorage = accountInfo.account.storageLimit
       const remainDays = moment(accountInfo.account.expirationDate).diff(moment(Date.now()), 'days')
 
       if ((limitStorage / 10 * 9) < usedStorage) {
         setAlertShow(true)
         setAlertText('Your storage usage is over 90%.')
       }
-      if ( remainDays < 30) {
+      if (remainDays < 30) {
         setAlertShow(true)
         setAlertText(`Your account expires within ${remainDays} days.`)
       }
@@ -498,11 +498,24 @@ const FileManagePage = ({ history }) => {
   const onDrop = React.useCallback(files => {
     selectFiles(files)
   }, [currentPath]);
-  const { isDragActive, getRootProps } = useDropzone({
+
+  const maxFileValidator = (file) => {
+    if (file.size > FILE_MAX_SIZE) {
+      alert("Some files are greater then 2GB.");
+
+      return {
+        code: "size-too-large",
+        message: `Some files are greater then 2GB!`
+      };
+    }
+  }
+
+  const { isDragActive, fileRejections, getRootProps } = useDropzone({
     onDrop,
     minSize: 0,
     maxSize: FILE_MAX_SIZE,
-    multiple: true
+    multiple: true,
+    validator: maxFileValidator,
   });
 
   const handleSelectFolder = React.useCallback((folder) => {
@@ -534,6 +547,11 @@ const FileManagePage = ({ history }) => {
   }
   return (
     <div className='page'>
+      <div>
+      <Alert variant='danger' show={alertShow} onClose={() => setAlertShow(false)} className="limit-alert" dismissible>
+        {alertText}<Alert.Link onClick={() => history.push('/plans')}>Please renew the account.</Alert.Link>
+      </Alert>
+      </div>
       {
         pageLoading && <div className='loading'>
           <ReactLoading type="spinningBubbles" color="#2e6dde" />
@@ -613,14 +631,11 @@ const FileManagePage = ({ history }) => {
               <div className='storage-info'>
                 <span>{formatGbs(accountInfo ? accountInfo.account.storageUsed : 0)} </span> of {formatGbs(accountInfo ? accountInfo.account.storageLimit : "...")} used
               </div>
-              <Alert variant='danger' show={alertShow} onClose={() => setAlertShow(false)}>
-                  {alertText}<Alert.Link onClick={() => history.push('/plans')}>Please renew the account.</Alert.Link>
-              </Alert>
               <ProgressBar now={accountInfo ? 100 * accountInfo.account.storageUsed / accountInfo.account.storageLimit : 0} />
               <div className='upgrade text-right' onClick={() => history.push('/plans')}>UPGRADE NOW</div>
               <div className='renew'>
                 {accountInfo && <p>Your account expires within {moment(accountInfo.account.expirationDate).diff(moment(Date.now()), 'days')} days</p>}
-                <div className='d-flex'>
+                <div className='d-flex' onClick={() => history.push('/plans')}>
                   <div className='account-icon'></div>
                   <span className='ml-3'>Renew account</span>
                 </div>
