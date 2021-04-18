@@ -2,7 +2,7 @@ import * as React from "react";
 import { Table } from "tabler-react";
 import { Link } from "react-router-dom"
 import { ToastContainer, toast } from "react-toastify";
-import { Row, Col, Container, Media, Button, Nav, ProgressBar, Breadcrumb, DropdownButton, Dropdown } from "react-bootstrap";
+import { Row, Col, Container, Media, Button, Nav, ProgressBar, Breadcrumb, DropdownButton, Dropdown, Alert } from "react-bootstrap";
 import TreeMenu, { TreeMenuProps, ItemComponent } from "react-simple-tree-menu";
 import { Account, AccountGetRes, AccountCreationInvoice } from "../../../ts-client-library/packages/account-management"
 import { AccountSystem, MetadataAccess, FileMetadata, FolderMetadata, FolderFileEntry, FoldersIndexEntry } from "../../../ts-client-library/packages/account-system"
@@ -80,6 +80,10 @@ const FileManagePage = ({ history }) => {
   const [uploadingList, setUploadingList] = React.useState([]);
   const currentUploadingList = React.useRef([])
   const [selectedFiles, setSelectedFiles] = React.useState<FileMetadata[]>([])
+  const [alertText, setAlertText] = React.useState('Your account expires within 30 days. ')
+  const [alertShow, setAlertShow] = React.useState(false)
+
+
   const handleShowSidebar = React.useCallback(() => {
     setShowSidebar(!showSidebar);
   }, [showSidebar]);
@@ -153,6 +157,19 @@ const FileManagePage = ({ history }) => {
     try {
       const accountInfo = await account.info();
       setAccountInfo(accountInfo);
+
+      const usedStorage = accountInfo.account.storageUsed
+      const limitStorage = accountInfo.account.storageLimit 
+      const remainDays = moment(accountInfo.account.expirationDate).diff(moment(Date.now()), 'days')
+
+      if ((limitStorage / 10 * 9) < usedStorage) {
+        setAlertShow(true)
+        setAlertText('Your storage usage is over 90%.')
+      }
+      if ( remainDays < 30) {
+        setAlertShow(true)
+        setAlertText(`Your account expires within ${remainDays} days.`)
+      }
     } catch (e) {
       localStorage.clear();
       history.push('/')
@@ -596,8 +613,11 @@ const FileManagePage = ({ history }) => {
               <div className='storage-info'>
                 <span>{formatGbs(accountInfo ? accountInfo.account.storageUsed : 0)} </span> of {formatGbs(accountInfo ? accountInfo.account.storageLimit : "...")} used
               </div>
+              <Alert variant='danger' show={alertShow} onClose={() => setAlertShow(false)}>
+                  {alertText}<Alert.Link onClick={() => history.push('/plans')}>Please renew the account.</Alert.Link>
+              </Alert>
               <ProgressBar now={accountInfo ? 100 * accountInfo.account.storageUsed / accountInfo.account.storageLimit : 0} />
-              <div className='upgrade text-right'>UPGRADE NOW</div>
+              <div className='upgrade text-right' onClick={() => history.push('/plans')}>UPGRADE NOW</div>
               <div className='renew'>
                 {accountInfo && <p>Your account expires within {moment(accountInfo.account.expirationDate).diff(moment(Date.now()), 'days')} days</p>}
                 <div className='d-flex'>
