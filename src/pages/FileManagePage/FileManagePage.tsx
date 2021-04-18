@@ -22,6 +22,7 @@ import { HTML5Backend, NativeTypes } from 'react-dnd-html5-backend'
 import { FileManagerFileEntryGrid, FileManagerFileEntryList } from "../../components/FileManager/FileManagerFileEntry"
 import { posix } from "path-browserify"
 import { FileManagerFolderEntryGrid, FileManagerFolderEntryList } from "../../components/FileManager/FileManagerFolderEntry"
+import FileShareModal from "../../components/FileManager/FileShareModal"
 import { useDropzone } from "react-dropzone";
 import ReactLoading from "react-loading";
 import streamsaver from "streamsaver";
@@ -82,7 +83,8 @@ const FileManagePage = ({ history }) => {
   const [selectedFiles, setSelectedFiles] = React.useState<FileMetadata[]>([])
   const [alertText, setAlertText] = React.useState('Your account expires within 30 days. ')
   const [alertShow, setAlertShow] = React.useState(false)
-
+  const [openShareModal, setOpenShareModal] = React.useState(false)
+  const [shareFile, setShareFile] = React.useState(null)
 
   const handleShowSidebar = React.useCallback(() => {
     setShowSidebar(!showSidebar);
@@ -362,6 +364,8 @@ const FileManagePage = ({ history }) => {
 
   const fileShare = async (file: FolderFileEntry) => {
     try {
+      setOpenShareModal(true)
+      setShareFile(file)
     } catch (e) {
       toast.error(`An error occurred while sharing ${file.name}.`)
     }
@@ -548,11 +552,19 @@ const FileManagePage = ({ history }) => {
   }
   return (
     <div className='page'>
-      <div>
       <Alert variant='danger' show={alertShow} onClose={() => setAlertShow(false)} className="limit-alert" dismissible>
         {alertText}<Alert.Link onClick={() => history.push('/plans')}>Please renew the account.</Alert.Link>
       </Alert>
-      </div>
+
+      <FileShareModal
+        open={openShareModal}
+        onClose={() => {
+          setOpenShareModal(false)
+          setShareFile(null)
+        }}
+        file={shareFile}
+      />
+
       {
         pageLoading && <div className='loading'>
           <ReactLoading type="spinningBubbles" color="#2e6dde" />
