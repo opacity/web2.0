@@ -35,7 +35,7 @@ const uploadImage = require("../../assets/upload.png");
 const empty = require("../../assets/empty.png");
 
 import { STORAGE_NODE as storageNode } from "../../config"
-import { bytesToB64 } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/b64"
+import { bytesToB64URL } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/b64"
 import { isPathChild } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/path"
 import { arraysEqual } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/arrayEquality"
 import { FileManagementStatus } from "../../context";
@@ -745,7 +745,7 @@ const FileManagePage = ({ history }) => {
                 <div className='grid-view'>
                   {folderList.map((item) => item && (
                     <FileManagerFolderEntryGrid
-                      key={bytesToB64(item.location)}
+                      key={bytesToB64URL(item.location)}
                       accountSystem={accountSystem}
                       folderEntry={item}
                       handleDeleteItem={handleDeleteItem}
@@ -755,7 +755,7 @@ const FileManagePage = ({ history }) => {
                   ))}
                   {fileList.map((item) => item && (
                     <FileManagerFileEntryGrid
-                      key={bytesToB64(item.location)}
+                      key={bytesToB64URL(item.location)}
                       accountSystem={accountSystem}
                       fileEntry={item}
                       fileShare={fileShare}
@@ -781,7 +781,7 @@ const FileManagePage = ({ history }) => {
                   <Table.Body>
                     {folderList.map((item) => item && (
                       <FileManagerFolderEntryList
-                        key={bytesToB64(item.location)}
+                        key={bytesToB64URL(item.location)}
                         accountSystem={accountSystem}
                         folderEntry={item}
                         handleDeleteItem={handleDeleteItem}
@@ -791,7 +791,7 @@ const FileManagePage = ({ history }) => {
                     ))}
                     {fileList.map((item) => item && (
                       <FileManagerFileEntryList
-                        key={bytesToB64(item.location)}
+                        key={bytesToB64URL(item.location)}
                         accountSystem={accountSystem}
                         fileEntry={item}
                         fileShare={fileShare}
