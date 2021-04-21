@@ -364,8 +364,8 @@ const FileManagePage = ({ history }) => {
 
   const fileShare = async (file: FolderFileEntry) => {
     try {
-      setOpenShareModal(true)
       setShareFile(file)
+      setOpenShareModal(true)
     } catch (e) {
       toast.error(`An error occurred while sharing ${file.name}.`)
     }

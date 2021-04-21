@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Modal, Button, Row, Col } from "react-bootstrap";
 import { Field } from "formik";
 import { Form } from "tabler-react";
 import logo from "../../assets/logo2.png"
 import copyImage from "../../assets/copies_white.svg"
-import closeImg from "../../assets/close.svg"
+import closeImage from "../../assets/close-button.svg"
 import "./FileShareModal.scss";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { FRONT_END_URL } from '../../config'
@@ -16,12 +16,12 @@ const FileShareModal = ({
   file,
 }) => {
   const [isCopied, setIsCopied] = useState(false)
-  const handleValue = `${FRONT_END_URL}/share#handle=${file && bytesToHex(file.handle)}`
-  
+  const handleValue = file && `${FRONT_END_URL}/share#handle=${bytesToHex(file.handle)}`
+
   return (
     <Modal show={open} onHide={onClose} size='lg' centered dialogClassName='share'>
       <Modal.Body>
-        <img onClick={onClose} src={closeImg} alt='close' className="share-close-button" />
+        <img onClick={onClose} src={closeImage} alt='close-btn' className="share-close-button" />
         <form autoComplete='off'>
           <Row className='align-items-center '>
             <Col className='text-center'>
@@ -44,10 +44,12 @@ const FileShareModal = ({
             </Col>
             <Col md='3' className='mt-3'></Col>
             <Col md='6' className='mt-3'>
-              <Button onClick={() => file && setIsCopied(true)} variant='primary btn-pill' size='lg'>
-                <img src={copyImage} alt="copy-image" style={{ marginRight: '16px' }} />
-								COPY URL
-							</Button>
+              <CopyToClipboard text={handleValue} onCopy={() => file && setIsCopied(true)}>
+                <Button variant='primary btn-pill' size='lg'>
+                  <img src={copyImage} alt="copy-image" style={{ marginRight: '16px' }} />
+                  COPY URL
+                </Button>
+              </CopyToClipboard>
             </Col>
           </Row>
         </form>

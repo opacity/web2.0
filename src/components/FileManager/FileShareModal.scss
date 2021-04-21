@@ -122,19 +122,18 @@
       }
     }
   }
-}
+  .copy-feedback {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 30px;
+    color: #8c8c8c;
+    float: right;
+  }
 
-.copy-feedback {
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 30px;
-  color: #8c8c8c;
-  float: right;
-}
-
-.share-close-button {
-  width: 20px;
-  margin-top: 20px;
-  margin-left: calc(100% - 40px);
-  cursor: pointer;
+  .share-close-button {
+    width: 20px;
+    margin-top: 20px;
+    margin-left: calc(100% - 40px);
+    cursor: pointer;
+  }
 }
