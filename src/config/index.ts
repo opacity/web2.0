@@ -20,7 +20,7 @@ export const STRIPE_API_KEY = process.env.STORAGE_NODE_VERSION == STORAGE_NODE_V
 
 export const HOST =
   process.env.NODE_ENV == NODE_ENV.DEVELOPMENT
-    ? "localhost:3001"
+    ? "127.0.0.1:4444"
     : process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
     ? "dev2.opacity.io"
     : "opacity.io";

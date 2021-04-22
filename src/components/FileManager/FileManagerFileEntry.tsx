@@ -177,7 +177,12 @@ export const FileManagerFileEntryList = ({
 				<DropdownButton menuAlign='right' title='' id='dropdown-menu-align-right'>
 					<Dropdown.Item disabled={!fileMeta} eventKey='1' onClick={() => fileShare(fileMeta)}>
 						<i className='icon-share'></i>
-						Share
+						Private Share
+					</Dropdown.Item>
+					<Dropdown.Divider />
+					<Dropdown.Item disabled={!fileMeta} eventKey='1' onClick={() => fileShare(fileMeta)}>
+						<i className='icon-link'></i>
+						Public Share
 					</Dropdown.Item>
 					<Dropdown.Divider />
 					<Dropdown.Item disabled={!fileMeta} eventKey='2' onClick={() => downloadItem(fileMeta)}>

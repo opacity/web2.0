@@ -8,6 +8,7 @@ import PlansPage from "./pages/PlansPage/PlansPage";
 import CommunityPage from "./pages/CommunityPage/CommunityPage";
 import FileManagePage from "./pages/FileManagePage/FileManagePage";
 import ForgotPage from "./pages/ForgotPage/ForgotPage";
+import SharePage from "./pages/SharePage/SharePage";
 import history from "./redux/history";
 import { PrivateRoute } from "./PrivateRoute";
 import "./index.scss";
@@ -79,6 +80,7 @@ function App() {
           />
           <PrivateRoute exact path='/file-manager/:folderName' component={FileManagePage} />
           <Route exact path='/forgot' component={ForgotPage} />
+          <Route path="/share" component={SharePage} />
         </Switch>
       </Router>
     </FileManagementStatusProvider>

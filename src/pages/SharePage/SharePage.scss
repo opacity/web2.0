@@ -1,0 +1,121 @@
+.share {
+  margin-top: 100px;
+  margin-bottom: 100px;
+  .preview-area {
+    background: #FFFFFF;
+    box-shadow: 0px 4px 33px rgba(0, 0, 0, 0.17);
+    border-radius: 5px;
+    min-height: 300px;
+    min-width: 300px;
+  }
+  .center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  .control-area {
+    h2 {
+      font-weight: 600;
+      font-size: 24px;
+      line-height: 30px;
+      color: #2e6dde;
+      margin-bottom: 35px;
+      position: relative;
+      margin-top: 30px;
+      &::after {
+        content: "";
+        width: 184px;
+        height: 3px;
+        background-color: #2e6dde;
+        position: absolute;
+        bottom: -10px;
+        margin-left: auto;
+        margin-right: auto;
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      @media (max-width: 767.9px) {
+        font-size: 20px;
+        line-height: 30px;
+        margin-top: 20px;
+        margin-bottom: 40px;
+      }
+    }
+    .btn-download {
+      &:hover {
+        opacity: 0.8;
+      }
+      font-weight: 600;
+      font-size: 15px;
+      line-height: 26px;
+      color: #084bc3;
+      border: 2px solid #4680E8;
+      padding-left: 0.5rem;
+      float: right;
+      span {
+        width: 40px;
+        height: 40px;
+        border: 2px solid #4680E8;
+        background-color: #fff;
+        border-radius: 50%;
+        margin-right: 15px;
+        background-image: url("../../assets/share-download-button.svg");
+        background-repeat: no-repeat;
+        background-size: 18px;
+        background-position: center;
+      }
+    }
+    .btn-preview {
+      &:hover {
+        opacity: 0.8;
+        border-color: #084bc4 !important;
+      }
+      font-weight: 600;
+      font-size: 15px;
+      line-height: 26px;
+      color: white;
+      padding-left: 0.5rem;
+      background-color: #084bc4;
+      float: left;
+      span {
+        width: 40px;
+        height: 40px;
+        background-color: #fff;
+        border-radius: 50%;
+        margin-right: 15px;
+        background-image: url("../../assets/share-preview-button.svg");
+        background-repeat: no-repeat;
+        background-size: 18px;
+        background-position: center;
+      }
+    }
+    .text-filename {
+      font-weight: 500;
+      font-size: 18px;
+      line-height: 27px;
+      color: #000000;
+    }
+    .text-filesize {
+      font-style: normal;
+      font-weight: normal;
+      font-size: 15px;
+      line-height: 22px;
+      color: #484848;
+      margin-top: 10px;
+      margin-bottom: 35px;
+    }
+    .text-commment {
+      font-style: normal;
+      font-weight: normal;
+      font-size: 16px;
+      line-height: 26px;
+      text-align: center;
+      color: #000000;
+      padding: 20px;
+    }
+  }
+}
