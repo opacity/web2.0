@@ -17,14 +17,14 @@ import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex"
 
 const SharePage = ({ history }) => {
   const location = useLocation()
-  //const [handle ,setHandle] = useState(null)
-  const cryptoMiddleware = useMemo(() => new WebAccountMiddleware({ asymmetricKey: hexToBytes(localStorage.getItem('key')) }), []);
+  const [handle ,setHandle] = useState(null)
+  const cryptoMiddleware = useMemo(() => new WebAccountMiddleware(), []);
   const netMiddleware = useMemo(() => new WebNetworkMiddleware(), []);
   
 
   useEffect(() => {
     const code = location.hash.split('=')[1]
-    fileDownload(hexToBytes(code))
+    setHandle(hexToBytes(code))
   }, [location])
 
   const fileDownload = async (handle) => {
@@ -32,6 +32,7 @@ const SharePage = ({ history }) => {
       const d = new Download({
         handle: handle,
         config: {
+          crypto: cryptoMiddleware,
           net: netMiddleware,
           storageNode,
         }
@@ -94,7 +95,7 @@ const SharePage = ({ history }) => {
                 <div className='text-filesize'>fileSize KB</div>
                 <div className='row mb-3'>
                   <div className='col-md-5' style={{ width: '50%' }}>
-                    <button className='btn btn-pill btn-download'>
+                    <button className='btn btn-pill btn-download' onClick={() => fileDownload(handle)}>
                       <span></span>
                         Download File
                     </button>
