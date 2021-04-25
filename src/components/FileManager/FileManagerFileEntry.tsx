@@ -43,6 +43,7 @@ export type FileManagerFileEntryProps = {
 	accountSystem: AccountSystem
 	fileEntry: FolderFileEntry
 	fileShare: (f: FolderFileEntry) => Promise<void>
+	filePublicShare: (f: FolderFileEntry) => Promise<void>
 	handleDeleteItem: (f: FolderFileEntry | FoldersIndexEntry, isFile: boolean) => void
 	handleOpenRenameModal: (f: FolderFileEntry | FoldersIndexEntry, isFile: boolean) => void
 	downloadItem: (f: FileMetadata) => Promise<void>
@@ -54,6 +55,7 @@ export const FileManagerFileEntryGrid = ({
 	accountSystem,
 	fileEntry,
 	fileShare,
+	filePublicShare,
 	handleDeleteItem,
 	handleOpenRenameModal,
 	handleSelectFile,
@@ -115,6 +117,7 @@ export const FileManagerFileEntryList = ({
 	accountSystem,
 	fileEntry,
 	fileShare,
+	filePublicShare,
 	handleDeleteItem,
 	handleOpenRenameModal,
 	downloadItem,
@@ -180,7 +183,7 @@ export const FileManagerFileEntryList = ({
 						Private Share
 					</Dropdown.Item>
 					<Dropdown.Divider />
-					<Dropdown.Item disabled={!fileMeta} eventKey='1' onClick={() => fileShare(fileMeta)}>
+					<Dropdown.Item disabled={!fileMeta} eventKey='1' onClick={() => filePublicShare(fileMeta)}>
 						<i className='icon-link'></i>
 						Public Share
 					</Dropdown.Item>
