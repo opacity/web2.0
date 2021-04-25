@@ -371,6 +371,14 @@ const FileManagePage = ({ history }) => {
     }
   }
 
+  const filePublicShare = async (file: FolderFileEntry) => {
+    try {
+      setShareFile(file)
+    } catch (e) {
+      toast.error(`An error occurred while sharing ${file.name}.`)
+    }
+  }
+
   const fileDownload = React.useCallback(async (file: FileMetadata) => {
     try {
       const d = new Download({
@@ -771,6 +779,7 @@ const FileManagePage = ({ history }) => {
                       accountSystem={accountSystem}
                       fileEntry={item}
                       fileShare={fileShare}
+                      filePublicShare={filePublicShare}
                       handleDeleteItem={handleDeleteItem}
                       handleOpenRenameModal={handleOpenRenameModal}
                       downloadItem={fileDownload}
@@ -807,6 +816,7 @@ const FileManagePage = ({ history }) => {
                         accountSystem={accountSystem}
                         fileEntry={item}
                         fileShare={fileShare}
+                        filePublicShare={filePublicShare}
                         handleDeleteItem={handleDeleteItem}
                         handleOpenRenameModal={handleOpenRenameModal}
                         downloadItem={fileDownload}

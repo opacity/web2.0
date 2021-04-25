@@ -380,6 +380,9 @@
         position: absolute;
         left: 15px;
       }
+      @media (max-width: 769px) {
+       display: none;
+      }
     }
     .header-item {
       align-items: center;
@@ -513,6 +516,7 @@
           &.file-name {
             font-weight: 500;
             font-size: 14px;
+            height: 20px;
             color: #3f3e3e;
             .d-flex {
               align-items: center;
