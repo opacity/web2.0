@@ -185,10 +185,9 @@ const LandingPage = ({ history }) => {
             <div className='col-md-6 pl-4 '>
               <h1>Your Handle, Your Rules.</h1>
               <h4>
-                Your unique Opacity Account Handle is the single point of access to your storage account. Only you know this Handle, and only you have
-                access to your files unless you decide to share the Handle. Opacity applies zero-knowledge principles, meaning we do not track
-                anything you upload or download. You may also choose to share individual files with a unique File Handle that others may use to
-                privately download or view files on the Opacity platform.
+                Your unique Opacity Account Handle is the single point of access to your storage account. Like a private encryption key,
+                only you know this Handle, and only you have access to your files unless you decide to share the Handle.
+                You may also choose to only share individual files with a unique File Handle that others may use to privately download or view files on the Opacity platform.
               </h4>
             </div>
           </div>
@@ -216,8 +215,7 @@ const LandingPage = ({ history }) => {
               </div>
               <h2> Community for Opacity</h2>
               <h3>
-                We are a group of privacy enthusiasts looking to build a true zero-knowledge storage solution. Take a peek at the team behind the
-                Opacity platform.
+                We are a group of privacy enthusiasts looking to build a truly private data storage solution. Take a look at some of the applications our community has created
               </h3>
               <NavLink>READ MORE</NavLink>
             </div>
