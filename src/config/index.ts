@@ -248,7 +248,7 @@ export const PLANS: PlanType[] = [
     content: "Secure and access your files anywhere",
     discountedUsdCost: 79.99,
     durationInMonths: 12,
-    opctCost: 16,
+    opctCost: 32,
     includesDesktopApp: true,
     isAvailable: true,
     isHighlighted: true,
