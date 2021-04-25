@@ -81,10 +81,11 @@ const FileManagePage = ({ history }) => {
   const [uploadingList, setUploadingList] = React.useState([]);
   const currentUploadingList = React.useRef([])
   const [selectedFiles, setSelectedFiles] = React.useState<FileMetadata[]>([])
-  const [alertText, setAlertText] = React.useState('Your account expires within 30 days. ')
+  const [alertText, setAlertText] = React.useState('30 days remaining.')
   const [alertShow, setAlertShow] = React.useState(false)
   const [openShareModal, setOpenShareModal] = React.useState(false)
   const [shareFile, setShareFile] = React.useState(null)
+  const [storageWarning, setIsStorageWarning] = React.useState(false)
 
   const handleShowSidebar = React.useCallback(() => {
     setShowSidebar(!showSidebar);
@@ -166,11 +167,12 @@ const FileManagePage = ({ history }) => {
 
       if ((limitStorage / 10 * 9) < usedStorage) {
         setAlertShow(true)
-        setAlertText('Your storage usage is over 90%.')
+        setIsStorageWarning(true)
+        setAlertText('You have used 90% of your plan. Upgrade now to get more space.')
       }
       if (remainDays < 30) {
         setAlertShow(true)
-        setAlertText(`Your account expires within ${remainDays} days.`)
+        setAlertText(`${remainDays} days remaining.`)
       }
     } catch (e) {
       localStorage.clear();
@@ -652,7 +654,7 @@ const FileManagePage = ({ history }) => {
               <div className='storage-info'>
                 <span>{formatGbs(accountInfo ? accountInfo.account.storageUsed : 0)} </span> of {formatGbs(accountInfo ? accountInfo.account.storageLimit : "...")} used
               </div>
-              <ProgressBar now={accountInfo ? 100 * accountInfo.account.storageUsed / accountInfo.account.storageLimit : 0} />
+              <ProgressBar now={accountInfo ? 100 * accountInfo.account.storageUsed / accountInfo.account.storageLimit : 0} variant={storageWarning && "danger"} className={storageWarning && "danger"}/>
               <div className='upgrade text-right' onClick={() => history.push('/plans')}>UPGRADE NOW</div>
               <div className='renew'>
                 {accountInfo && <p>Your account expires within {moment(accountInfo.account.expirationDate).diff(moment(Date.now()), 'days')} days</p>}

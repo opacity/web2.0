@@ -268,6 +268,9 @@
       color: #2e6dde;
     }
   }
+  .danger {
+    border: 1px solid #e53e3e !important;
+  }
   .progress {
     height: 12px;
     background: #d3e3ff;
@@ -760,6 +763,7 @@
   margin-left: calc(100% / 2 - 250px);
   margin-top: 21px;
   position: absolute;
+  text-align: center;
   button {
     background: transparent;
     border: none;
