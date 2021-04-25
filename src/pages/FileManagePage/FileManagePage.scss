@@ -426,6 +426,13 @@
           width: 17px;
           height: 17px;
         }
+        &.file-cancel {
+          mask: url("../../assets/cancel.svg") no-repeat center;
+          -webkit-mask: url("../../assets/cancel.svg") no-repeat center;
+          -webkit-mask-size: contain;
+          width: 40px;
+          height: 23px;
+        }
         &.new-folder {
           mask: url("../../assets/add-folder.svg") no-repeat center;
           -webkit-mask: url("../../assets/add-folder.svg") no-repeat center;

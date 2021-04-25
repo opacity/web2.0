@@ -655,7 +655,7 @@ const FileManagePage = ({ history }) => {
                 <span>{formatGbs(accountInfo ? accountInfo.account.storageUsed : 0)} </span> of {formatGbs(accountInfo ? accountInfo.account.storageLimit : "...")} used
               </div>
               <ProgressBar now={accountInfo ? 100 * accountInfo.account.storageUsed / accountInfo.account.storageLimit : 0} variant={storageWarning && "danger"} className={storageWarning && "danger"}/>
-              <div className='upgrade text-right' onClick={() => history.push('/plans')}>UPGRADE NOW</div>
+              <div className='upgrade text-right' onClick={() => history.push('/plans')}>GET MORE SPACE</div>
               <div className='renew'>
                 {accountInfo && <p>Your account expires within {moment(accountInfo.account.expirationDate).diff(moment(Date.now()), 'days')} days</p>}
                 <div className='d-flex' onClick={() => history.push('/plans')}>
@@ -716,11 +716,12 @@ const FileManagePage = ({ history }) => {
         {
           selectedFiles.length > 0 && (
             <div className='file-header selected-info'>
-              <div className='selected-info'>
-                <span className='circle-check'></span>
-                <span>{selectedFiles.length}&nbsp;items({getSelectedFileSize()})</span>
-              </div>
+              <div ></div>
               <div className='d-flex align-items-center'>
+                <div className='selected-info'>
+                  <span className='circle-check'></span>
+                  <span>{selectedFiles.length}&nbsp;items({getSelectedFileSize()})</span>
+                </div>
                 <div className=' d-flex header-item ml-3' onClick={() => handleMultiDownload()}>
                   <span className='item-icon file-download'></span>
                   <span>DOWNLOAD</span>
@@ -729,8 +730,9 @@ const FileManagePage = ({ history }) => {
                   <span className='item-icon file-delete'></span>
                   <span>DELETE</span>
                 </div>
-                <div className=' d-flex header-item ml-5' onClick={() => setSelectedFiles([])}>
-                  <span className='item-icon file-close'></span>
+                <div className=' d-flex header-item ml-3' onClick={() => setSelectedFiles([])}>
+                  <span className='item-icon file-cancel'></span>
+                  <span>CANCEL</span>
                 </div>
               </div>
 
