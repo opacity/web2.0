@@ -22,14 +22,14 @@ const SharePage = ({ history }) => {
   const [mnemonic, setMnemonic] = useState(null)
   const [handlemnhandle, setHandlemnhandle] = useState(null)
 
-  const cryptoMiddleware = useMemo(() => new WebAccountMiddleware(), []);
-  const netMiddleware = useMemo(() => new WebNetworkMiddleware(), []);
-  const metadataAccess = useMemo(() => new MetadataAccess({
+  const cryptoMiddleware = new WebAccountMiddleware();
+  const netMiddleware = new WebNetworkMiddleware();
+  const metadataAccess = new MetadataAccess({
     net: netMiddleware,
     crypto: cryptoMiddleware,
     metadataNode: storageNode,
-  }), [netMiddleware, cryptoMiddleware, storageNode]);
-  const accountSystem = useMemo(() => new AccountSystem({ metadataAccess }), [metadataAccess]);
+  });
+  const accountSystem = new AccountSystem({ metadataAccess });
 
   useEffect(() => {
     const init = async () => {

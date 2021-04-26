@@ -29,6 +29,8 @@ import streamsaver from "streamsaver";
 import { Mutex } from "async-mutex"
 import { useMediaQuery } from 'react-responsive'
 import UploadingNotification from "../../components/UploadingNotification/UploadingNotification"
+import downArrowImg from "../../assets/down.svg"
+
 streamsaver.mitm = "/resources/streamsaver/mitm.html"
 Object.assign(streamsaver, { WritableStream })
 
@@ -368,6 +370,12 @@ const FileManagePage = ({ history }) => {
     try {
       setShareFile(file)
       setOpenShareModal(true)
+
+      const locationKey = file.handle.slice(0, 32)
+      const encryptionKey = file.handle.slice(32, 64)
+
+      const shared = await accountSystem.getShared(locationKey, encryptionKey)
+      console.log(shared, '--------')
     } catch (e) {
       toast.error(`An error occurred while sharing ${file.name}.`)
     }
@@ -613,6 +621,13 @@ const FileManagePage = ({ history }) => {
             </Link>
             Opacity <span>v2.0.0</span>
           </h1>
+          <div className='account-info'>
+              <div className='storage-info'>
+                <span>{formatGbs(accountInfo ? accountInfo.account.storageUsed : 0)} </span> of {formatGbs(accountInfo ? accountInfo.account.storageLimit : "...")} used
+              </div>
+              <ProgressBar now={accountInfo ? 100 * accountInfo.account.storageUsed / accountInfo.account.storageLimit : 0} variant={storageWarning && "danger"} className={storageWarning && "danger"}/>
+              <div className='upgrade text-right' onClick={() => history.push('/plans')}>GET MORE SPACE</div>
+            </div>
           <div style={{ width: '100%' }}>
             <ul className='navbar-nav'>
               <li className='nav-item'>
@@ -637,7 +652,7 @@ const FileManagePage = ({ history }) => {
               </li>
             </ul>
             <div className='folder-tree'>
-              <h3>Folders</h3>
+              <h3>All files</h3>
               <TreeMenu data={treeData} hasSearch={false}>
                 {({ search, items }) => (
                   <ul className='tree-menu'>
@@ -649,20 +664,6 @@ const FileManagePage = ({ history }) => {
                   </ul>
                 )}
               </TreeMenu>
-            </div>
-            <div className='account-info'>
-              <div className='storage-info'>
-                <span>{formatGbs(accountInfo ? accountInfo.account.storageUsed : 0)} </span> of {formatGbs(accountInfo ? accountInfo.account.storageLimit : "...")} used
-              </div>
-              <ProgressBar now={accountInfo ? 100 * accountInfo.account.storageUsed / accountInfo.account.storageLimit : 0} variant={storageWarning && "danger"} className={storageWarning && "danger"}/>
-              <div className='upgrade text-right' onClick={() => history.push('/plans')}>GET MORE SPACE</div>
-              <div className='renew'>
-                {accountInfo && <p>Your account expires within {moment(accountInfo.account.expirationDate).diff(moment(Date.now()), 'days')} days</p>}
-                <div className='d-flex' onClick={() => history.push('/plans')}>
-                  <div className='account-icon'></div>
-                  <span className='ml-3'>Renew account</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -796,8 +797,14 @@ const FileManagePage = ({ history }) => {
               {tableView && (
                 <Table highlightRowOnHover hasOutline verticalAlign='center' className='text-nowrap'>
                   <Table.Header>
-                    <tr>
-                      <th style={{ width: "50%" }}>Name</th>
+                    <tr className="file-table-header">
+                      <th style={{ width: "50%", display: 'flex' }}>
+                        Name
+                        {/* <div>
+                        <img src={downArrowImg} alt='d' />
+                        <img src={downArrowImg} alt='d' />
+                        </div> */}
+                        </th>
                       {!isMobile && <th>Created</th>}
                       <th>Size</th>
                       <th></th>
