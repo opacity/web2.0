@@ -718,22 +718,22 @@ const FileManagePage = ({ history }) => {
           selectedFiles.length > 0 && (
             <div className='file-header selected-info'>
               <div ></div>
-              <div className='d-flex align-items-center'>
+              <div className='d-flex align-items-center selected-area'>
                 <div className='selected-info'>
                   <span className='circle-check'></span>
-                  <span>{selectedFiles.length}&nbsp;items({getSelectedFileSize()})</span>
+                  <span>{selectedFiles.length}&nbsp;items ({getSelectedFileSize()})</span>
                 </div>
                 <div className=' d-flex header-item ml-3' onClick={() => handleMultiDownload()}>
                   <span className='item-icon file-download'></span>
-                  <span>DOWNLOAD</span>
+                  <span className='item-text'>DOWNLOAD</span>
                 </div>
                 <div className=' d-flex header-item ml-3' onClick={() => handleMultiDelete()}>
                   <span className='item-icon file-delete'></span>
-                  <span>DELETE</span>
+                  <span className='item-text'>DELETE</span>
                 </div>
                 <div className=' d-flex header-item ml-3' onClick={() => setSelectedFiles([])}>
                   <span className='item-icon file-cancel'></span>
-                  <span>CANCEL</span>
+                  <span className='item-text'>CANCEL</span>
                 </div>
               </div>
 
