@@ -40,7 +40,7 @@ const UploadingNotification = ({ notifications, uploadFinish, setUploadingList }
                 {
                     notifications.map((item, i) => (
                         <div className='notification-item' key={i}>
-                            <div className="d-flex align-items-center"><i className="icon-document"></i>{item.fileName}</div>
+                            <div className="d-flex align-items-center"><i className="icon-document"></i><div className='text-field'>{item.fileName}</div></div>
                             <div className="percent">
                                 <CircularProgressbar value={item.percent} strokeWidth={20} />
                             </div>

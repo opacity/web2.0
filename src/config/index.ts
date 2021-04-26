@@ -276,7 +276,7 @@ export const PLANS: PlanType[] = [
     content: "Secure file management for your organization",
     discountedUsdCost: null,
     durationInMonths: 12,
-    opctCost: 32,
+    opctCost: 16,
     includesDesktopApp: true,
     isAvailable: true,
     isHighlighted: false,

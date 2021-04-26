@@ -39,7 +39,7 @@ export const FileManagerFolderEntryGrid = ({
 
 	return (
 		<div className='grid-item'>
-			<div className='items' onDoubleClick={() => setCurrentPath(folderEntry.path)}>
+			<div className='items' onClick={() => setCurrentPath(folderEntry.path)}>
 				{/* <i className='icon-folder'></i> */}
 				<div style={{ width: '40px' }}>
 					<FileIcon
@@ -87,7 +87,7 @@ export const FileManagerFolderEntryList = ({
 
 	return (
 		<Table.Row >
-			<Table.Col className='file-name' onDoubleClick={() => setCurrentPath(folderEntry.path)}>
+			<Table.Col className='file-name' onClick={() => setCurrentPath(folderEntry.path)}>
 				<div className='d-flex' ref={ref}>
 					<i className='icon-folder'></i>
 					{briefFolderName(posix.basename(folderEntry.path))}
