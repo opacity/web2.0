@@ -21,6 +21,14 @@ const UploadingNotification = ({ notifications, uploadFinish, setUploadingList }
         }
     }, [notifications])
 
+    const briefName = (name) => {
+		let resName = name;
+		if (name.length > 30) {
+			resName = name.slice(0, 30) + ' ...';
+		}
+		return resName
+    }
+    
     return (
         <div className={minimize ? 'notifications minimize' : 'notifications'}>
             <div className='notifications-header'>
@@ -40,7 +48,7 @@ const UploadingNotification = ({ notifications, uploadFinish, setUploadingList }
                 {
                     notifications.map((item, i) => (
                         <div className='notification-item' key={i}>
-                            <div className="d-flex align-items-center"><i className="icon-document"></i><div className='text-field'>{item.fileName}</div></div>
+                            <div className="d-flex align-items-center"><i className="icon-document"></i><div className='text-field'>{briefName(item.fileName)}</div></div>
                             <div className="percent">
                                 <CircularProgressbar value={item.percent} strokeWidth={20} />
                             </div>
