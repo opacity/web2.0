@@ -827,3 +827,26 @@
     text-decoration-line: underline;
   }
 }
+
+.file-table-sort-up-arrow {
+  display: inline !important;
+  transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+}
+.file-table-sort-down-arrow {
+  display: inline !important;
+}
+
+.file-table-header {
+  th {
+    img {
+      display: none;
+    }
+  }
+  th:hover {
+    img {
+      display: inline;
+    }
+  }
+}
