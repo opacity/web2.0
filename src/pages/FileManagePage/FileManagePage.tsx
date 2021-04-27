@@ -29,7 +29,7 @@ import streamsaver from "streamsaver";
 import { Mutex } from "async-mutex"
 import { useMediaQuery } from 'react-responsive'
 import UploadingNotification from "../../components/UploadingNotification/UploadingNotification"
-import downArrowImg from "../../assets/down.svg"
+import downArrowImg from "../../assets/sort-arrow.svg"
 
 streamsaver.mitm = "/resources/streamsaver/mitm.html"
 Object.assign(streamsaver, { WritableStream })
@@ -42,6 +42,8 @@ import { bytesToB64URL } from "../../../ts-client-library/packages/account-manag
 import { isPathChild } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/path"
 import { arraysEqual } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/arrayEquality"
 import { FileManagementStatus } from "../../context";
+import { isInteger } from 'formik';
+import { bytesToHex } from "../../../ts-client-library/packages/util/src/hex"
 
 const logo = require("../../assets/logo2.png");
 
@@ -65,8 +67,10 @@ const FileManagePage = ({ history }) => {
   const [currentPath, setCurrentPath] = React.useState('/')
   const currentPathRef = React.useRef("/")
   const [folderList, setFolderList] = React.useState<FoldersIndexEntry[]>([]);
+  const [folderMetaList, setFolderMetaList] = React.useState([])
   const folderListRef = React.useRef<FoldersIndexEntry[]>([])
   const [fileList, setFileList] = React.useState<FolderFileEntry[]>([])
+  const [fileMetaList, setFileMetaList] = React.useState([])
   const fileListRef = React.useRef<FolderFileEntry[]>([])
   const [treeData, setTreeData] = React.useState([]);
   const [pageLoading, setPageLoading] = React.useState(true)
@@ -88,6 +92,7 @@ const FileManagePage = ({ history }) => {
   const [openShareModal, setOpenShareModal] = React.useState(false)
   const [shareFile, setShareFile] = React.useState(null)
   const [storageWarning, setIsStorageWarning] = React.useState(false)
+  const [sortable, setSortable] = React.useState({ column: 'null', method: 'down' })
 
   const handleShowSidebar = React.useCallback(() => {
     setShowSidebar(!showSidebar);
@@ -170,7 +175,7 @@ const FileManagePage = ({ history }) => {
       if ((limitStorage / 10 * 9) < usedStorage) {
         setAlertShow(true)
         setIsStorageWarning(true)
-        setAlertText('You have used 90% of your plan. Upgrade now to get more space.')
+        setAlertText(`You have used ${usedStorage}% of your plan. Upgrade now to get more space.`)
       }
       if (remainDays < 30) {
         setAlertShow(true)
@@ -568,6 +573,94 @@ const FileManagePage = ({ history }) => {
   const handleMultiDelete = () => {
     setShowDeleteModal(true)
   }
+
+  const compareName = (a, b, mode, type) => {
+    var nameA = type === 'file' ? a.name.toUpperCase() : a.path.toUpperCase();
+    var nameB = type === 'file' ? b.name.toUpperCase() : b.path.toUpperCase();
+    if (nameA < nameB) {
+      return mode === 'down' ? 1 : -1;
+    }
+    if (nameA > nameB) {
+      return mode === 'down' ? -1 : 1;
+    }
+    return 0;
+  }
+
+  const compareDate = (a, b, mode, type) => {
+    const sourceList = type === 'file' ? fileMetaList : folderMetaList
+    const Ameta = sourceList.find(meta => bytesToHex(meta.location) === bytesToHex(a.location))
+    const Bmeta = sourceList.find(meta => bytesToHex(meta.location) === bytesToHex(b.location))
+
+    if (moment(Ameta.modified).isBefore(moment(Bmeta.modified))) {
+      return mode === 'down' ? 1 : -1;
+    }
+    if (moment(Ameta.modified).isAfter(moment(Bmeta.modified))) {
+      return mode === 'down' ? -1 : 1;
+    }
+    return 0;
+  }
+
+  const compareSize = (a, b, mode, type) => {
+    const sourceList = type === 'file' ? fileMetaList : folderMetaList
+    const Ameta = sourceList.find(meta => bytesToHex(meta.location) === bytesToHex(a.location))
+    const Bmeta = sourceList.find(meta => bytesToHex(meta.location) === bytesToHex(b.location))
+
+    if (Ameta.size < Bmeta.size) {
+      return mode === 'down' ? 1 : -1;
+    }
+    if (Ameta.size > Bmeta.size) {
+      return mode === 'down' ? -1 : 1;
+    }
+    return 0;
+  }
+
+  const handleSortTable = async (mode, method) => {
+    setSortable({ column: mode, method })
+
+    switch (mode) {
+      case 'name':
+        fileList.sort((a, b) => compareName(a, b, method, 'file'))
+        folderList.sort((a, b) => compareName(a, b, method, 'folder'))
+        break;
+      case 'created':
+        fileList.sort((a, b) => compareDate(a, b, method, 'file'))
+        folderList.sort((a, b) => compareName(a, b, method, 'folder'))
+        break;
+      case 'size':
+        fileList.sort((a, b) => compareSize(a, b, method, 'file'))
+        folderList.sort((a, b) => compareSize(a, b, method, 'folder'))
+        break;
+      default:
+        break;
+    }
+  }
+
+  React.useEffect(() => {
+    const init = async () => {
+      const metaList = fileList.map(async file => {
+        return await accountSystem._getFileMetadata(file.location).then((f) => {
+          return f;
+        })
+      })
+      const tmp = await Promise.all(metaList)
+      setFileMetaList(tmp)
+    }
+    init();
+  }, [fileList])
+
+  React.useEffect(() => {
+    const init = async () => {
+      const metaList = folderList.map(async folder => {
+        return await accountSystem._getFolderMetadataByLocation(folder.location).then((f) => {
+          return f;
+        })
+      })
+      const tmp = await Promise.all(metaList)
+      setFolderMetaList(tmp)
+    }
+    init();
+  }, [folderList])
+
   return (
     <div className='page'>
       <Alert variant='danger' show={alertShow} onClose={() => setAlertShow(false)} className="limit-alert" dismissible>
@@ -614,7 +707,7 @@ const FileManagePage = ({ history }) => {
             : "navbar navbar-vertical navbar-expand-lg navbar-transparent custom-sidebar"
         }
       >
-        <div className='container-fluid collapse navbar-collapse' id='navbar-menu'>
+        <div className='container-fluid collapse navbar-collapse' id='navbar-menu' style={{ position: 'relative' }}>
           <h1 className='navbar-brand navbar-brand-autodark cursor-point' onClick={() => history.push('/')}>
             <Link to='/'>
               <img src={logo} width='60' height='60' alt='Opacity' className='navbar-brand-image' />
@@ -622,12 +715,12 @@ const FileManagePage = ({ history }) => {
             Opacity <span>v2.0.0</span>
           </h1>
           <div className='account-info'>
-              <div className='storage-info'>
-                <span>{formatGbs(accountInfo ? accountInfo.account.storageUsed : 0)} </span> of {formatGbs(accountInfo ? accountInfo.account.storageLimit : "...")} used
+            <div className='storage-info'>
+              <span>{formatGbs(accountInfo ? accountInfo.account.storageUsed : 0)} </span> of {formatGbs(accountInfo ? accountInfo.account.storageLimit : "...")} used
               </div>
-              <ProgressBar now={accountInfo ? 100 * accountInfo.account.storageUsed / accountInfo.account.storageLimit : 0} variant={storageWarning && "danger"} className={storageWarning && "danger"}/>
-              <div className='upgrade text-right' onClick={() => history.push('/plans')}>GET MORE SPACE</div>
-            </div>
+            <ProgressBar now={accountInfo ? 100 * accountInfo.account.storageUsed / accountInfo.account.storageLimit : 0} variant={storageWarning && "danger"} className={storageWarning && "danger"} />
+            <div className='upgrade text-right' onClick={() => history.push('/plans')}>GET MORE SPACE</div>
+          </div>
           <div style={{ width: '100%' }}>
             <ul className='navbar-nav'>
               <li className='nav-item'>
@@ -666,6 +759,11 @@ const FileManagePage = ({ history }) => {
               </TreeMenu>
             </div>
           </div>
+          <div className="side-bar-footer">
+            <div>@Opacity v2.1.0</div>
+            <div><span>Privacy Policy</span> and <span>Terms of Service</span></div>
+          </div>
+
         </div>
       </aside>
 
@@ -798,15 +896,33 @@ const FileManagePage = ({ history }) => {
                 <Table highlightRowOnHover hasOutline verticalAlign='center' className='text-nowrap'>
                   <Table.Header>
                     <tr className="file-table-header">
-                      <th style={{ width: "50%", display: 'flex' }}>
+                      <th onClick={() => handleSortTable('name',
+                        sortable.column === 'name' ? (sortable.method === 'down' ? 'up' : 'down') : 'down')
+                      }>
                         Name
-                        {/* <div>
-                        <img src={downArrowImg} alt='d' />
-                        <img src={downArrowImg} alt='d' />
-                        </div> */}
-                        </th>
-                      {!isMobile && <th>Created</th>}
-                      <th>Size</th>
+                        <img src={downArrowImg} alt='d' className={
+                          sortable.column === 'name' && (
+                            sortable.method === 'up' ? "file-table-sort-up-arrow" : "file-table-sort-down-arrow"
+                          )} />
+                      </th>
+                      {!isMobile && <th onClick={() => handleSortTable('created',
+                        sortable.column === 'created' ? (sortable.method === 'down' ? 'up' : 'down') : 'down')
+                      }>
+                        Created
+                        <img src={downArrowImg} alt='d' className={
+                          sortable.column === 'created' && (
+                            sortable.method === 'up' ? "file-table-sort-up-arrow" : "file-table-sort-down-arrow"
+                          )} />
+                      </th>}
+                      <th onClick={() => handleSortTable('size',
+                        sortable.column === 'size' ? (sortable.method === 'down' ? 'up' : 'down') : 'down')
+                      }>
+                        Size
+                        <img src={downArrowImg} alt='d' className={
+                          sortable.column === 'size' && (
+                            sortable.method === 'up' ? "file-table-sort-up-arrow" : "file-table-sort-down-arrow"
+                          )} />
+                      </th>
                       <th></th>
                     </tr>
                   </Table.Header>
@@ -854,7 +970,7 @@ const FileManagePage = ({ history }) => {
         position="bottom-right"
         hideProgressBar
       />
-      {uploadingList.length > 0 && <UploadingNotification setUploadingList={() => { setUploadingList([]) }} notifications={uploadingList} uploadFinish={() => setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)} />}
+      { uploadingList.length > 0 && <UploadingNotification setUploadingList={() => { setUploadingList([]) }} notifications={uploadingList} uploadFinish={() => setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)} />}
     </div >
   );
 };
