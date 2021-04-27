@@ -809,3 +809,21 @@
     }
   }
 }
+
+.side-bar-footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: #3F77DB;
+  height: 60px;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 17px;
+  text-align: center;
+  color: white;
+  padding: 15px;
+
+  span {
+    text-decoration-line: underline;
+  }
+}

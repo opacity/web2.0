@@ -614,7 +614,7 @@ const FileManagePage = ({ history }) => {
             : "navbar navbar-vertical navbar-expand-lg navbar-transparent custom-sidebar"
         }
       >
-        <div className='container-fluid collapse navbar-collapse' id='navbar-menu'>
+        <div className='container-fluid collapse navbar-collapse' id='navbar-menu' style={{ position: 'relative' }}>
           <h1 className='navbar-brand navbar-brand-autodark cursor-point' onClick={() => history.push('/')}>
             <Link to='/'>
               <img src={logo} width='60' height='60' alt='Opacity' className='navbar-brand-image' />
@@ -622,12 +622,12 @@ const FileManagePage = ({ history }) => {
             Opacity <span>v2.0.0</span>
           </h1>
           <div className='account-info'>
-              <div className='storage-info'>
-                <span>{formatGbs(accountInfo ? accountInfo.account.storageUsed : 0)} </span> of {formatGbs(accountInfo ? accountInfo.account.storageLimit : "...")} used
+            <div className='storage-info'>
+              <span>{formatGbs(accountInfo ? accountInfo.account.storageUsed : 0)} </span> of {formatGbs(accountInfo ? accountInfo.account.storageLimit : "...")} used
               </div>
-              <ProgressBar now={accountInfo ? 100 * accountInfo.account.storageUsed / accountInfo.account.storageLimit : 0} variant={storageWarning && "danger"} className={storageWarning && "danger"}/>
-              <div className='upgrade text-right' onClick={() => history.push('/plans')}>GET MORE SPACE</div>
-            </div>
+            <ProgressBar now={accountInfo ? 100 * accountInfo.account.storageUsed / accountInfo.account.storageLimit : 0} variant={storageWarning && "danger"} className={storageWarning && "danger"} />
+            <div className='upgrade text-right' onClick={() => history.push('/plans')}>GET MORE SPACE</div>
+          </div>
           <div style={{ width: '100%' }}>
             <ul className='navbar-nav'>
               <li className='nav-item'>
@@ -666,6 +666,11 @@ const FileManagePage = ({ history }) => {
               </TreeMenu>
             </div>
           </div>
+          <div className="side-bar-footer">
+            <div>@Opacity v2.1.0</div>
+            <div><span>Privacy Policy</span> and <span>Terms of Service</span></div>
+          </div>
+
         </div>
       </aside>
 
@@ -804,7 +809,7 @@ const FileManagePage = ({ history }) => {
                         <img src={downArrowImg} alt='d' />
                         <img src={downArrowImg} alt='d' />
                         </div> */}
-                        </th>
+                      </th>
                       {!isMobile && <th>Created</th>}
                       <th>Size</th>
                       <th></th>
