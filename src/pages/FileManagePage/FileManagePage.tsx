@@ -9,7 +9,7 @@ import { AccountSystem, MetadataAccess, FileMetadata, FolderMetadata, FolderFile
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web"
 import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex"
 import { polyfillReadableStreamIfNeeded, polyfillWritableStreamIfNeeded, ReadableStream, TransformStream, WritableStream } from "../../../ts-client-library/packages/util/src/streams"
-import { Upload, bindUploadToAccountSystem, Download, bindDownloadToAccountSystem, UploadEvents } from "../../../ts-client-library/packages/opaque"
+import { Upload, bindUploadToAccountSystem, Download, bindDownloadToAccountSystem, UploadEvents, UploadProgressEvent } from "../../../ts-client-library/packages/opaque"
 import { theme, FILE_MAX_SIZE } from "../../config";
 import RenameModal from "../../components/RenameModal/RenameModal";
 import DeleteModal from "../../components/DeleteModal/DeleteModal";
@@ -29,13 +29,13 @@ import streamsaver from "streamsaver";
 import { Mutex } from "async-mutex"
 import { useMediaQuery } from 'react-responsive'
 import UploadingNotification from "../../components/UploadingNotification/UploadingNotification"
-import downArrowImg from "../../assets/sort-arrow.svg"
 
 streamsaver.mitm = "/resources/streamsaver/mitm.html"
 Object.assign(streamsaver, { WritableStream })
 
 const uploadImage = require("../../assets/upload.png");
 const empty = require("../../assets/empty.png");
+const downArrowImg = require("../../assets/sort-arrow.svg");
 
 import { STORAGE_NODE as storageNode } from "../../config"
 import { bytesToB64URL } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/b64"
@@ -90,7 +90,7 @@ const FileManagePage = ({ history }) => {
   const [alertText, setAlertText] = React.useState('30 days remaining.')
   const [alertShow, setAlertShow] = React.useState(false)
   const [openShareModal, setOpenShareModal] = React.useState(false)
-  const [shareFile, setShareFile] = React.useState(null)
+  const [shareFile, setShareFile] = React.useState<FileMetadata>(null)
   const [storageWarning, setIsStorageWarning] = React.useState(false)
   const [sortable, setSortable] = React.useState({ column: 'null', method: 'down' })
 
@@ -281,7 +281,7 @@ const FileManagePage = ({ history }) => {
           setPageLoading(false)
         }
       })
-      upload.addEventListener(UploadEvents.PROGRESS, (e) => {
+      upload.addEventListener(UploadEvents.PROGRESS, (e: UploadProgressEvent) => {
         let templist = currentUploadingList.current.slice();
         let index = templist.findIndex(ele => ele.id === toastID);
         if (index > -1) {
@@ -371,22 +371,16 @@ const FileManagePage = ({ history }) => {
     }
   }, [accountSystem, currentPath, updateCurrentFolderSwitch])
 
-  const fileShare = async (file: FolderFileEntry) => {
+  const fileShare = async (file: FileMetadata) => {
     try {
       setShareFile(file)
       setOpenShareModal(true)
-
-      const locationKey = file.handle.slice(0, 32)
-      const encryptionKey = file.handle.slice(32, 64)
-
-      const shared = await accountSystem.getShared(locationKey, encryptionKey)
-      console.log(shared, '--------')
     } catch (e) {
       toast.error(`An error occurred while sharing ${file.name}.`)
     }
   }
 
-  const filePublicShare = async (file: FolderFileEntry) => {
+  const filePublicShare = async (file: FileMetadata) => {
     try {
       setShareFile(file)
     } catch (e) {
@@ -395,55 +389,60 @@ const FileManagePage = ({ history }) => {
   }
 
   const fileDownload = React.useCallback(async (file: FileMetadata) => {
-    try {
-      const d = new Download({
-        handle: file.handle,
-        config: {
-          crypto: cryptoMiddleware,
-          net: netMiddleware,
-          storageNode,
+    if (file.private.handle) {
+      try {
+        const d = new Download({
+          handle: file.private.handle,
+          config: {
+            crypto: cryptoMiddleware,
+            net: netMiddleware,
+            storageNode,
+          }
+        })
+
+        // side effects
+        bindDownloadToAccountSystem(accountSystem, d)
+
+        const fileStream = polyfillWritableStreamIfNeeded<Uint8Array>(streamsaver.createWriteStream(file.name, { size: file.size }))
+        const s = await d.start()
+        isFileManaging()
+
+        d.finish().then(() => {
+          console.log("finish")
+          OnfinishFileManaging()
+        })
+
+        // more optimized
+        if ("WritableStream" in window && s.pipeTo) {
+          console.log("pipe")
+          s.pipeTo(fileStream as WritableStream<Uint8Array>)
+            .then(() => {
+              console.log("done")
+            })
+            .catch(err => {
+              console.log(err)
+              throw err
+            })
+        } else {
+          console.log("pump")
+          const writer = fileStream.getWriter();
+          const reader = s.getReader();
+
+          const pump = () => reader.read()
+            .then(res => res.done
+              ? writer.close()
+              : writer.write(res.value).then(pump))
+
+          pump()
         }
-      })
-
-      // side effects
-      bindDownloadToAccountSystem(accountSystem, d)
-
-      const fileStream = polyfillWritableStreamIfNeeded<Uint8Array>(streamsaver.createWriteStream(file.name, { size: file.size }))
-      const s = await d.start()
-      isFileManaging()
-
-      d.finish().then(() => {
-        console.log("finish")
+      } catch (e) {
+        console.error(e)
         OnfinishFileManaging()
-      })
-
-      // more optimized
-      if ("WritableStream" in window && s.pipeTo) {
-        console.log("pipe")
-        s.pipeTo(fileStream as WritableStream<Uint8Array>)
-          .then(() => {
-            console.log("done")
-          })
-          .catch(err => {
-            console.log(err)
-            throw err
-          })
-      } else {
-        console.log("pump")
-        const writer = fileStream.getWriter();
-        const reader = s.getReader();
-
-        const pump = () => reader.read()
-          .then(res => res.done
-            ? writer.close()
-            : writer.write(res.value).then(pump))
-
-        pump()
+        toast.error(`An error occurred while downloading ${file.name}.`)
       }
-    } catch (e) {
-      console.error(e)
-      OnfinishFileManaging()
-      toast.error(`An error occurred while downloading ${file.name}.`)
+    } else {
+      console.error("Public download is not yet available")
+      toast.error("Public download is not yet available")
     }
   }, [cryptoMiddleware, netMiddleware, storageNode])
 
@@ -552,7 +551,7 @@ const FileManagePage = ({ history }) => {
   }, [currentPath])
   const handleSelectFile = (file) => {
     let temp = selectedFiles.slice();
-    let i = selectedFiles.findIndex(item => item.handle === file.handle)
+    let i = selectedFiles.findIndex(item => arraysEqual(item.location, file.location))
     if (i !== -1) {
       temp.splice(i, 1)
     } else {
@@ -674,6 +673,7 @@ const FileManagePage = ({ history }) => {
           setShareFile(null)
         }}
         file={shareFile}
+        accountSystem={accountSystem}
       />
 
       {

@@ -7,6 +7,7 @@ import { AccountSystem, FileMetadata, FolderFileEntry, FoldersIndexEntry } from 
 import { formatBytes } from "../../helpers"
 import { FileIcon, defaultStyles } from 'react-file-icon';
 import { useMediaQuery } from 'react-responsive'
+import { arraysEqual } from "../../../ts-client-library/packages/util/src/arrayEquality"
 
 const typeList = {
 	"text/plain": 'document',
@@ -63,7 +64,7 @@ export const FileManagerFileEntryGrid = ({
 }: FileManagerFileEntryProps) => {
 	const [fileMeta, setFileMeta] = React.useState<FileMetadata>()
 	const [isSelected, setSelected] = React.useState(false);
-	
+
 	const [ref, unobserve] = useIntersectionObserver(() => {
 		if (fileEntry) {
 			unobserve()
@@ -77,7 +78,7 @@ export const FileManagerFileEntryGrid = ({
 
 	React.useEffect(() => {
 		if (fileMeta) {
-			if (selectedFiles.filter(ele => ele.handle === fileMeta.handle).length > 0) {
+			if (selectedFiles.filter(ele => arraysEqual(ele.location, fileMeta.location)).length > 0) {
 				setSelected(true)
 			} else {
 				setSelected(false)
@@ -105,7 +106,7 @@ export const FileManagerFileEntryGrid = ({
 				<div className='file-info' ref={ref}>{fileMeta ? formatBytes(fileMeta.size) : "..."}</div>
 			</div>
 			{
-				isSelected && 
+				isSelected &&
 				<div className='grid-selected-icon'>
 				</div>
 			}
@@ -140,7 +141,7 @@ export const FileManagerFileEntryList = ({
 
 	React.useEffect(() => {
 		if (fileMeta) {
-			if (selectedFiles.filter(ele => ele.handle === fileMeta.handle).length > 0) {
+			if (selectedFiles.filter(ele => arraysEqual(ele.location, fileMeta.location)).length > 0) {
 				setSelected(true)
 			} else {
 				setSelected(false)
@@ -148,7 +149,7 @@ export const FileManagerFileEntryList = ({
 		}
 
 	}, [selectedFiles])
-	
+
 	const briefName = (name) => {
 		let resName = name;
 		if (isMobile && name.length > 10) {
@@ -156,7 +157,7 @@ export const FileManagerFileEntryList = ({
 		}
 		return resName
 	}
-	
+
 	return (
 		<Table.Row  className={isSelected ? 'selected' : ''}>
 			<Table.Col className='file-name' onClick={() => fileMeta && handleSelectFile(fileMeta)}>

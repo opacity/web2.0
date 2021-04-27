@@ -2,21 +2,76 @@ import React, { useState, useEffect } from 'react'
 import { Modal, Button, Row, Col } from "react-bootstrap";
 import { Field } from "formik";
 import { Form } from "tabler-react";
-import logo from "../../assets/logo2.png"
-import copyImage from "../../assets/copies_white.svg"
-import closeImage from "../../assets/close-button.svg"
 import "./FileShareModal.scss";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { FRONT_END_URL } from '../../config'
-import { bytesToHex } from "../../../ts-client-library/packages/util/src/hex"
+import { bytesToB64URL } from "../../../ts-client-library/packages/util/src/b64"
+import { AccountSystem, FileMetadata } from '../../../ts-client-library/packages/account-system'
+
+const logo = require("../../assets/logo2.png")
+const copyImage = require("../../assets/copies_white.svg")
+const closeImage = require("../../assets/close-button.svg")
+
+type FileShareModalProps = {
+  open: any
+  onClose: any
+  file: FileMetadata
+  accountSystem: AccountSystem
+}
 
 const FileShareModal = ({
   open,
   onClose,
   file,
-}) => {
+  accountSystem,
+}: FileShareModalProps) => {
   const [isCopied, setIsCopied] = useState(false)
-  const handleValue = file && `${FRONT_END_URL}/share#handle=${bytesToHex(file.handle)}`
+
+  const [shareURL, setShareURL] = useState("")
+
+  React.useEffect(() => {
+    if (!file) {
+      setShareURL("")
+
+      return
+    }
+
+    if (file.private.handle) {
+      accountSystem.getSharesByHandle(file.private.handle).then(async (shares) => {
+        if (shares[0]) {
+          const shareHandle = bytesToB64URL(accountSystem.getShareHandle(shares[0]))
+          setShareURL(`${FRONT_END_URL}/share#key=${shareHandle}`)
+        }
+        else {
+          const shareMeta = await accountSystem.share([
+            {
+              location: file.location,
+              path: "/",
+            }
+          ]).catch((err) => {
+            setShareURL("")
+            console.error("Error starting share:", err)
+
+            // do something with the error
+          })
+
+          if (!shareMeta) {
+            return
+          }
+
+          const shareHandle = bytesToB64URL(accountSystem.getShareHandle(shareMeta))
+          setShareURL(`${FRONT_END_URL}/share#key=${shareHandle}`)
+        }
+      }).catch((err) => {
+        setShareURL("")
+        console.error("Error getting existing share:", err)
+
+        // do something with the error
+      })
+    } else {
+      console.error("Public files not yet supported")
+    }
+  }, [file])
 
   return (
     <Modal show={open} onHide={onClose} size='lg' centered dialogClassName='share'>
@@ -35,8 +90,8 @@ const FileShareModal = ({
           <Row>
             <Col md='12'>
               <Form.Group>
-                <div className='account-handle mb-0'>{handleValue}</div>
-                <CopyToClipboard text={handleValue} onCopy={() => file && setIsCopied(true)}>
+                <div className='account-handle mb-0'>{shareURL}</div>
+                <CopyToClipboard text={shareURL} onCopy={() => file && setIsCopied(true)}>
                   <span className='handle'></span>
                 </CopyToClipboard>
                 {isCopied && <div className='copy-feedback'>Copied to clipboard!</div>}
@@ -44,7 +99,7 @@ const FileShareModal = ({
             </Col>
             <Col md='3' className='mt-3'></Col>
             <Col md='6' className='mt-3'>
-              <CopyToClipboard text={handleValue} onCopy={() => file && setIsCopied(true)}>
+              <CopyToClipboard text={shareURL} onCopy={() => file && setIsCopied(true)}>
                 <Button variant='primary btn-pill' size='lg'>
                   <img src={copyImage} alt="copy-image" style={{ marginRight: '16px' }} />
                   COPY URL
