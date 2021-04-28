@@ -10,7 +10,6 @@
     margin-bottom: 50px;
   }
   h1 {
-    font-family: Playfair Display;
     font-style: normal;
     font-weight: bold;
     font-size: 42px;
@@ -47,7 +46,7 @@
     .d-flex {
       img {
         margin-right: 20px;
-        height: fit-content;
+        height: 100%;
       }
       p {
         font-weight: 500;

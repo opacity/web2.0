@@ -50,12 +50,13 @@
       opacity: 0.8;
     }
     font-weight: 600;
-    font-size: 15px;
+    font-size: 15px !important;
     line-height: 26px;
     color: #084bc3;
     padding-left: 0.5rem;
     span {
       width: 40px;
+      font-size: 15px !important;
       height: 40px;
       background-color: #084bc3;
       border-radius: 50%;
@@ -72,7 +73,7 @@
       border-color: #084bc4 !important;
     }
     font-weight: 600;
-    font-size: 15px;
+    font-size: 15px !important;
     line-height: 26px;
     color: white;
     padding-left: 0.5rem;
@@ -81,6 +82,7 @@
       width: 40px;
       height: 40px;
       background-color: #fff;
+      font-size: 15px !important;
       border-radius: 50%;
       margin-right: 15px;
       background-image: url("../../assets/upload.svg");
@@ -583,7 +585,7 @@
     }
   }
   .card-item {
-    width: 280px;
+    width: 300px;
     margin: auto;
     padding: 20px;
     border: 1px solid #f4f4f4;

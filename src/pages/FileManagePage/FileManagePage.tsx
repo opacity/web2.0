@@ -9,7 +9,7 @@ import { AccountSystem, MetadataAccess, FileMetadata, FolderMetadata, FolderFile
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web"
 import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex"
 import { polyfillReadableStreamIfNeeded, polyfillWritableStreamIfNeeded, ReadableStream, TransformStream, WritableStream } from "../../../ts-client-library/packages/util/src/streams"
-import { Upload, bindUploadToAccountSystem, Download, bindDownloadToAccountSystem, UploadEvents } from "../../../ts-client-library/packages/opaque"
+import { Upload, bindUploadToAccountSystem, Download, bindDownloadToAccountSystem, UploadEvents, UploadProgressEvent } from "../../../ts-client-library/packages/opaque"
 import { theme, FILE_MAX_SIZE } from "../../config";
 import RenameModal from "../../components/RenameModal/RenameModal";
 import DeleteModal from "../../components/DeleteModal/DeleteModal";
@@ -29,17 +29,21 @@ import streamsaver from "streamsaver";
 import { Mutex } from "async-mutex"
 import { useMediaQuery } from 'react-responsive'
 import UploadingNotification from "../../components/UploadingNotification/UploadingNotification"
+
 streamsaver.mitm = "/resources/streamsaver/mitm.html"
 Object.assign(streamsaver, { WritableStream })
 
 const uploadImage = require("../../assets/upload.png");
 const empty = require("../../assets/empty.png");
+const downArrowImg = require("../../assets/sort-arrow.svg");
 
 import { STORAGE_NODE as storageNode } from "../../config"
 import { bytesToB64URL } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/b64"
 import { isPathChild } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/path"
 import { arraysEqual } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/arrayEquality"
 import { FileManagementStatus } from "../../context";
+import { isInteger } from 'formik';
+import { bytesToHex } from "../../../ts-client-library/packages/util/src/hex"
 
 const logo = require("../../assets/logo2.png");
 
@@ -63,8 +67,10 @@ const FileManagePage = ({ history }) => {
   const [currentPath, setCurrentPath] = React.useState('/')
   const currentPathRef = React.useRef("/")
   const [folderList, setFolderList] = React.useState<FoldersIndexEntry[]>([]);
+  const [folderMetaList, setFolderMetaList] = React.useState([])
   const folderListRef = React.useRef<FoldersIndexEntry[]>([])
   const [fileList, setFileList] = React.useState<FolderFileEntry[]>([])
+  const [fileMetaList, setFileMetaList] = React.useState([])
   const fileListRef = React.useRef<FolderFileEntry[]>([])
   const [treeData, setTreeData] = React.useState([]);
   const [pageLoading, setPageLoading] = React.useState(true)
@@ -81,10 +87,12 @@ const FileManagePage = ({ history }) => {
   const [uploadingList, setUploadingList] = React.useState([]);
   const currentUploadingList = React.useRef([])
   const [selectedFiles, setSelectedFiles] = React.useState<FileMetadata[]>([])
-  const [alertText, setAlertText] = React.useState('Your account expires within 30 days. ')
+  const [alertText, setAlertText] = React.useState('30 days remaining.')
   const [alertShow, setAlertShow] = React.useState(false)
   const [openShareModal, setOpenShareModal] = React.useState(false)
-  const [shareFile, setShareFile] = React.useState(null)
+  const [shareFile, setShareFile] = React.useState<FileMetadata>(null)
+  const [storageWarning, setIsStorageWarning] = React.useState(false)
+  const [sortable, setSortable] = React.useState({ column: 'null', method: 'down' })
 
   const handleShowSidebar = React.useCallback(() => {
     setShowSidebar(!showSidebar);
@@ -166,11 +174,12 @@ const FileManagePage = ({ history }) => {
 
       if ((limitStorage / 10 * 9) < usedStorage) {
         setAlertShow(true)
-        setAlertText('Your storage usage is over 90%.')
+        setIsStorageWarning(true)
+        setAlertText(`You have used ${usedStorage}% of your plan. Upgrade now to get more space.`)
       }
       if (remainDays < 30) {
         setAlertShow(true)
-        setAlertText(`Your account expires within ${remainDays} days.`)
+        setAlertText(`${remainDays} days remaining.`)
       }
     } catch (e) {
       localStorage.clear();
@@ -272,7 +281,7 @@ const FileManagePage = ({ history }) => {
           setPageLoading(false)
         }
       })
-      upload.addEventListener(UploadEvents.PROGRESS, (e) => {
+      upload.addEventListener(UploadEvents.PROGRESS, (e: UploadProgressEvent) => {
         let templist = currentUploadingList.current.slice();
         let index = templist.findIndex(ele => ele.id === toastID);
         if (index > -1) {
@@ -362,7 +371,7 @@ const FileManagePage = ({ history }) => {
     }
   }, [accountSystem, currentPath, updateCurrentFolderSwitch])
 
-  const fileShare = async (file: FolderFileEntry) => {
+  const fileShare = async (file: FileMetadata) => {
     try {
       setShareFile(file)
       setOpenShareModal(true)
@@ -371,56 +380,69 @@ const FileManagePage = ({ history }) => {
     }
   }
 
-  const fileDownload = React.useCallback(async (file: FileMetadata) => {
+  const filePublicShare = async (file: FileMetadata) => {
     try {
-      const d = new Download({
-        handle: file.handle,
-        config: {
-          crypto: cryptoMiddleware,
-          net: netMiddleware,
-          storageNode,
-        }
-      })
-
-      // side effects
-      bindDownloadToAccountSystem(accountSystem, d)
-
-      const fileStream = polyfillWritableStreamIfNeeded<Uint8Array>(streamsaver.createWriteStream(file.name, { size: file.size }))
-      const s = await d.start()
-      isFileManaging()
-
-      d.finish().then(() => {
-        console.log("finish")
-        OnfinishFileManaging()
-      })
-
-      // more optimized
-      if ("WritableStream" in window && s.pipeTo) {
-        console.log("pipe")
-        s.pipeTo(fileStream as WritableStream<Uint8Array>)
-          .then(() => {
-            console.log("done")
-          })
-          .catch(err => {
-            console.log(err)
-            throw err
-          })
-      } else {
-        console.log("pump")
-        const writer = fileStream.getWriter();
-        const reader = s.getReader();
-
-        const pump = () => reader.read()
-          .then(res => res.done
-            ? writer.close()
-            : writer.write(res.value).then(pump))
-
-        pump()
-      }
+      setShareFile(file)
     } catch (e) {
-      console.error(e)
-      OnfinishFileManaging()
-      toast.error(`An error occurred while downloading ${file.name}.`)
+      toast.error(`An error occurred while sharing ${file.name}.`)
+    }
+  }
+
+  const fileDownload = React.useCallback(async (file: FileMetadata) => {
+    if (file.private.handle) {
+      try {
+        const d = new Download({
+          handle: file.private.handle,
+          config: {
+            crypto: cryptoMiddleware,
+            net: netMiddleware,
+            storageNode,
+          }
+        })
+
+        // side effects
+        bindDownloadToAccountSystem(accountSystem, d)
+
+        const fileStream = polyfillWritableStreamIfNeeded<Uint8Array>(streamsaver.createWriteStream(file.name, { size: file.size }))
+        const s = await d.start()
+        isFileManaging()
+
+        d.finish().then(() => {
+          console.log("finish")
+          OnfinishFileManaging()
+        })
+
+        // more optimized
+        if ("WritableStream" in window && s.pipeTo) {
+          console.log("pipe")
+          s.pipeTo(fileStream as WritableStream<Uint8Array>)
+            .then(() => {
+              console.log("done")
+            })
+            .catch(err => {
+              console.log(err)
+              throw err
+            })
+        } else {
+          console.log("pump")
+          const writer = fileStream.getWriter();
+          const reader = s.getReader();
+
+          const pump = () => reader.read()
+            .then(res => res.done
+              ? writer.close()
+              : writer.write(res.value).then(pump))
+
+          pump()
+        }
+      } catch (e) {
+        console.error(e)
+        OnfinishFileManaging()
+        toast.error(`An error occurred while downloading ${file.name}.`)
+      }
+    } else {
+      console.error("Public download is not yet available")
+      toast.error("Public download is not yet available")
     }
   }, [cryptoMiddleware, netMiddleware, storageNode])
 
@@ -529,7 +551,7 @@ const FileManagePage = ({ history }) => {
   }, [currentPath])
   const handleSelectFile = (file) => {
     let temp = selectedFiles.slice();
-    let i = selectedFiles.findIndex(item => item.handle === file.handle)
+    let i = selectedFiles.findIndex(item => arraysEqual(item.location, file.location))
     if (i !== -1) {
       temp.splice(i, 1)
     } else {
@@ -550,6 +572,94 @@ const FileManagePage = ({ history }) => {
   const handleMultiDelete = () => {
     setShowDeleteModal(true)
   }
+
+  const compareName = (a, b, mode, type) => {
+    var nameA = type === 'file' ? a.name.toUpperCase() : a.path.toUpperCase();
+    var nameB = type === 'file' ? b.name.toUpperCase() : b.path.toUpperCase();
+    if (nameA < nameB) {
+      return mode === 'down' ? 1 : -1;
+    }
+    if (nameA > nameB) {
+      return mode === 'down' ? -1 : 1;
+    }
+    return 0;
+  }
+
+  const compareDate = (a, b, mode, type) => {
+    const sourceList = type === 'file' ? fileMetaList : folderMetaList
+    const Ameta = sourceList.find(meta => bytesToHex(meta.location) === bytesToHex(a.location))
+    const Bmeta = sourceList.find(meta => bytesToHex(meta.location) === bytesToHex(b.location))
+
+    if (moment(Ameta.modified).isBefore(moment(Bmeta.modified))) {
+      return mode === 'down' ? 1 : -1;
+    }
+    if (moment(Ameta.modified).isAfter(moment(Bmeta.modified))) {
+      return mode === 'down' ? -1 : 1;
+    }
+    return 0;
+  }
+
+  const compareSize = (a, b, mode, type) => {
+    const sourceList = type === 'file' ? fileMetaList : folderMetaList
+    const Ameta = sourceList.find(meta => bytesToHex(meta.location) === bytesToHex(a.location))
+    const Bmeta = sourceList.find(meta => bytesToHex(meta.location) === bytesToHex(b.location))
+
+    if (Ameta.size < Bmeta.size) {
+      return mode === 'down' ? 1 : -1;
+    }
+    if (Ameta.size > Bmeta.size) {
+      return mode === 'down' ? -1 : 1;
+    }
+    return 0;
+  }
+
+  const handleSortTable = async (mode, method) => {
+    setSortable({ column: mode, method })
+
+    switch (mode) {
+      case 'name':
+        fileList.sort((a, b) => compareName(a, b, method, 'file'))
+        folderList.sort((a, b) => compareName(a, b, method, 'folder'))
+        break;
+      case 'created':
+        fileList.sort((a, b) => compareDate(a, b, method, 'file'))
+        folderList.sort((a, b) => compareName(a, b, method, 'folder'))
+        break;
+      case 'size':
+        fileList.sort((a, b) => compareSize(a, b, method, 'file'))
+        folderList.sort((a, b) => compareSize(a, b, method, 'folder'))
+        break;
+      default:
+        break;
+    }
+  }
+
+  React.useEffect(() => {
+    const init = async () => {
+      const metaList = fileList.map(async file => {
+        return await accountSystem._getFileMetadata(file.location).then((f) => {
+          return f;
+        })
+      })
+      const tmp = await Promise.all(metaList)
+      setFileMetaList(tmp)
+    }
+    init();
+  }, [fileList])
+
+  React.useEffect(() => {
+    const init = async () => {
+      const metaList = folderList.map(async folder => {
+        return await accountSystem._getFolderMetadataByLocation(folder.location).then((f) => {
+          return f;
+        })
+      })
+      const tmp = await Promise.all(metaList)
+      setFolderMetaList(tmp)
+    }
+    init();
+  }, [folderList])
+
   return (
     <div className='page'>
       <Alert variant='danger' show={alertShow} onClose={() => setAlertShow(false)} className="limit-alert" dismissible>
@@ -563,6 +673,7 @@ const FileManagePage = ({ history }) => {
           setShareFile(null)
         }}
         file={shareFile}
+        accountSystem={accountSystem}
       />
 
       {
@@ -596,13 +707,20 @@ const FileManagePage = ({ history }) => {
             : "navbar navbar-vertical navbar-expand-lg navbar-transparent custom-sidebar"
         }
       >
-        <div className='container-fluid collapse navbar-collapse' id='navbar-menu'>
+        <div className='container-fluid collapse navbar-collapse' id='navbar-menu' style={{ position: 'relative' }}>
           <h1 className='navbar-brand navbar-brand-autodark cursor-point' onClick={() => history.push('/')}>
             <Link to='/'>
               <img src={logo} width='60' height='60' alt='Opacity' className='navbar-brand-image' />
             </Link>
             Opacity <span>v2.0.0</span>
           </h1>
+          <div className='account-info'>
+            <div className='storage-info'>
+              <span>{formatGbs(accountInfo ? accountInfo.account.storageUsed : 0)} </span> of {formatGbs(accountInfo ? accountInfo.account.storageLimit : "...")} used
+              </div>
+            <ProgressBar now={accountInfo ? 100 * accountInfo.account.storageUsed / accountInfo.account.storageLimit : 0} variant={storageWarning && "danger"} className={storageWarning && "danger"} />
+            <div className='upgrade text-right' onClick={() => history.push('/plans')}>GET MORE SPACE</div>
+          </div>
           <div style={{ width: '100%' }}>
             <ul className='navbar-nav'>
               <li className='nav-item'>
@@ -627,7 +745,7 @@ const FileManagePage = ({ history }) => {
               </li>
             </ul>
             <div className='folder-tree'>
-              <h3>Folders</h3>
+              <h3>All files</h3>
               <TreeMenu data={treeData} hasSearch={false}>
                 {({ search, items }) => (
                   <ul className='tree-menu'>
@@ -640,21 +758,12 @@ const FileManagePage = ({ history }) => {
                 )}
               </TreeMenu>
             </div>
-            <div className='account-info'>
-              <div className='storage-info'>
-                <span>{formatGbs(accountInfo ? accountInfo.account.storageUsed : 0)} </span> of {formatGbs(accountInfo ? accountInfo.account.storageLimit : "...")} used
-              </div>
-              <ProgressBar now={accountInfo ? 100 * accountInfo.account.storageUsed / accountInfo.account.storageLimit : 0} />
-              <div className='upgrade text-right' onClick={() => history.push('/plans')}>UPGRADE NOW</div>
-              <div className='renew'>
-                {accountInfo && <p>Your account expires within {moment(accountInfo.account.expirationDate).diff(moment(Date.now()), 'days')} days</p>}
-                <div className='d-flex' onClick={() => history.push('/plans')}>
-                  <div className='account-icon'></div>
-                  <span className='ml-3'>Renew account</span>
-                </div>
-              </div>
-            </div>
           </div>
+          <div className="side-bar-footer">
+            <div>@Opacity v2.1.0</div>
+            <div><span>Privacy Policy</span> and <span>Terms of Service</span></div>
+          </div>
+
         </div>
       </aside>
 
@@ -706,21 +815,23 @@ const FileManagePage = ({ history }) => {
         {
           selectedFiles.length > 0 && (
             <div className='file-header selected-info'>
-              <div className='selected-info'>
-                <span className='circle-check'></span>
-                <span>{selectedFiles.length}&nbsp;items({getSelectedFileSize()})</span>
-              </div>
-              <div className='d-flex align-items-center'>
+              <div ></div>
+              <div className='d-flex align-items-center selected-area'>
+                <div className='selected-info'>
+                  <span className='circle-check'></span>
+                  <span>{selectedFiles.length}&nbsp;items ({getSelectedFileSize()})</span>
+                </div>
                 <div className=' d-flex header-item ml-3' onClick={() => handleMultiDownload()}>
                   <span className='item-icon file-download'></span>
-                  <span>DOWNLOAD</span>
+                  <span className='item-text'>DOWNLOAD</span>
                 </div>
                 <div className=' d-flex header-item ml-3' onClick={() => handleMultiDelete()}>
                   <span className='item-icon file-delete'></span>
-                  <span>DELETE</span>
+                  <span className='item-text'>DELETE</span>
                 </div>
-                <div className=' d-flex header-item ml-5' onClick={() => setSelectedFiles([])}>
-                  <span className='item-icon file-close'></span>
+                <div className=' d-flex header-item ml-3' onClick={() => setSelectedFiles([])}>
+                  <span className='item-icon file-cancel'></span>
+                  <span className='item-text'>CANCEL</span>
                 </div>
               </div>
 
@@ -771,6 +882,7 @@ const FileManagePage = ({ history }) => {
                       accountSystem={accountSystem}
                       fileEntry={item}
                       fileShare={fileShare}
+                      filePublicShare={filePublicShare}
                       handleDeleteItem={handleDeleteItem}
                       handleOpenRenameModal={handleOpenRenameModal}
                       downloadItem={fileDownload}
@@ -783,10 +895,34 @@ const FileManagePage = ({ history }) => {
               {tableView && (
                 <Table highlightRowOnHover hasOutline verticalAlign='center' className='text-nowrap'>
                   <Table.Header>
-                    <tr>
-                      <th style={{ width: "50%" }}>Name</th>
-                      {!isMobile && <th>Created</th>}
-                      <th>Size</th>
+                    <tr className="file-table-header">
+                      <th onClick={() => handleSortTable('name',
+                        sortable.column === 'name' ? (sortable.method === 'down' ? 'up' : 'down') : 'down')
+                      }>
+                        Name
+                        <img src={downArrowImg} alt='d' className={
+                          sortable.column === 'name' && (
+                            sortable.method === 'up' ? "file-table-sort-up-arrow" : "file-table-sort-down-arrow"
+                          )} />
+                      </th>
+                      {!isMobile && <th onClick={() => handleSortTable('created',
+                        sortable.column === 'created' ? (sortable.method === 'down' ? 'up' : 'down') : 'down')
+                      }>
+                        Created
+                        <img src={downArrowImg} alt='d' className={
+                          sortable.column === 'created' && (
+                            sortable.method === 'up' ? "file-table-sort-up-arrow" : "file-table-sort-down-arrow"
+                          )} />
+                      </th>}
+                      <th onClick={() => handleSortTable('size',
+                        sortable.column === 'size' ? (sortable.method === 'down' ? 'up' : 'down') : 'down')
+                      }>
+                        Size
+                        <img src={downArrowImg} alt='d' className={
+                          sortable.column === 'size' && (
+                            sortable.method === 'up' ? "file-table-sort-up-arrow" : "file-table-sort-down-arrow"
+                          )} />
+                      </th>
                       <th></th>
                     </tr>
                   </Table.Header>
@@ -807,6 +943,7 @@ const FileManagePage = ({ history }) => {
                         accountSystem={accountSystem}
                         fileEntry={item}
                         fileShare={fileShare}
+                        filePublicShare={filePublicShare}
                         handleDeleteItem={handleDeleteItem}
                         handleOpenRenameModal={handleOpenRenameModal}
                         downloadItem={fileDownload}
@@ -833,7 +970,7 @@ const FileManagePage = ({ history }) => {
         position="bottom-right"
         hideProgressBar
       />
-      {uploadingList.length > 0 && <UploadingNotification setUploadingList={() => { setUploadingList([]) }} notifications={uploadingList} uploadFinish={() => setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)} />}
+      { uploadingList.length > 0 && <UploadingNotification setUploadingList={() => { setUploadingList([]) }} notifications={uploadingList} uploadFinish={() => setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)} />}
     </div >
   );
 };
