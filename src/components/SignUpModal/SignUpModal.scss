@@ -17,9 +17,8 @@
       position: relative;
       margin-bottom: 28px;
       text-overflow: ellipsis;
-      overflow: auto;
+      overflow: hidden;
       padding-right: 50px;
-      white-space: nowrap;
       @media (max-width: 767.7px) {
         text-overflow: ellipsis;
         overflow: hidden;

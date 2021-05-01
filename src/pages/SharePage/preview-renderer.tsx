@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Spinner from "../../components/shared/spinner";
+// import Spinner from "../../components/shared/spinner";
 
 type PreviewRendererProps = {
   url: string,
@@ -37,7 +37,7 @@ const PreviewRenderer = ({
 
   return (
     <>
-      <Spinner isActive={!text} />
+      {/* <Spinner isActive={!text} /> */}
       {text && render(text)}
     </>
   );

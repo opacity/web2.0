@@ -666,15 +666,17 @@ const FileManagePage = ({ history }) => {
         {alertText}<Alert.Link onClick={() => history.push('/plans')}>Please renew the account.</Alert.Link>
       </Alert>
 
-      <FileShareModal
-        open={openShareModal}
-        onClose={() => {
-          setOpenShareModal(false)
-          setShareFile(null)
-        }}
-        file={shareFile}
-        accountSystem={accountSystem}
-      />
+      {
+        openShareModal && <FileShareModal
+          open={openShareModal}
+          onClose={() => {
+            setOpenShareModal(false)
+            setShareFile(null)
+          }}
+          file={shareFile}
+          accountSystem={accountSystem}
+        />
+      }
 
       {
         pageLoading && <div className='loading'>
