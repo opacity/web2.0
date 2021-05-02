@@ -52,8 +52,6 @@ const SharePage = ({ history }) => {
       const shared = await accountSystem.getShared(locationKey, encryptionKey)
       setHandle(shared.files[0].private.handle)
       setFile(shared.files[0])
-
-      console.log(shared)
     }
     init()
   }, [location])
@@ -139,7 +137,7 @@ const SharePage = ({ history }) => {
         <Row>
           <Col md={6} className='center' >
             <Row style={{ padding: '20px' }}>
-              <div className='preview-area'>
+              <div className='preview-area center'>
                 {
                   (previewOpen && previewPath) ?
                     <Preview

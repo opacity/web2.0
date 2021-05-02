@@ -4,6 +4,7 @@
   }
   // top: 100px;
   .modal-body {
+    position: relative;
     padding: 0;
     h2 {
       font-weight: 600;
@@ -136,4 +137,16 @@
     margin-left: calc(100% - 40px);
     cursor: pointer;
   }
+}
+
+.loading {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 15px;
 }
