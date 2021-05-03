@@ -144,6 +144,7 @@ const SharePage = ({ history }) => {
                       url={previewPath}
                       ext={file.name}
                       type={file.type}
+                      className='preview-content'
                     />
                     :
                     <FileIcon

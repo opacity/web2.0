@@ -10,6 +10,12 @@
     padding: 50px;
     margin-bottom: 30px;
   }
+  .preview-content {
+    width: 500px;
+    @media (max-width: 767.9px) {
+      width: 350;
+    }
+  }
   .center {
     display: flex;
     justify-content: center;
