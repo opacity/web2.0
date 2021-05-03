@@ -16,6 +16,7 @@ import "./SharePage.scss";
 import { formatBytes } from "../../helpers"
 import { FileIcon, defaultStyles } from 'react-file-icon';
 import { Preview, getTypeFromExt } from "./preview";
+import ReactLoading from "react-loading";
 
 const shareImg = require("../../assets/share-download.svg");
 
@@ -25,6 +26,7 @@ const SharePage = ({ history }) => {
   const [file, setFile] = useState(null)
   const [previewPath, setPreviewPath] = useState(null)
   const [previewOpen, setPreviewOpen] = useState(false)
+  const [downloading, setDownloading] = useState(false)
 
   const cryptoMiddleware = React.useMemo(() => new WebAccountMiddleware(), []);
   const netMiddleware = React.useMemo(() => new WebNetworkMiddleware(), []);
@@ -77,12 +79,13 @@ const SharePage = ({ history }) => {
           storageNode,
         }
       })
-
+      setDownloading(true)
       const s = await d.start()
 
       const fileStream = polyfillWritableStreamIfNeeded<Uint8Array>(streamsaver.createWriteStream(file.name, { size: file.size }))
 
       d.finish().then(() => {
+        setDownloading(false)
         console.log("finish")
       })
 
@@ -98,7 +101,7 @@ const SharePage = ({ history }) => {
             })
         } else if (mode === 'preview' && s.getReader) {
 
-          let blobArray= new Uint8Array([]);
+          let blobArray = new Uint8Array([]);
 
           const reader = s.getReader();
           const pump = () => reader.read()
@@ -132,65 +135,72 @@ const SharePage = ({ history }) => {
   }
 
   return (
-    <SiteWrapper history={history} page='share' >
-      <Container fluid='xl share'>
-        <Row>
-          <Col md={6} className='center' >
-            <Row style={{ padding: '20px' }}>
-              <div className='preview-area center'>
-                {
-                  (previewOpen && previewPath) ?
-                    <Preview
-                      url={previewPath}
-                      ext={file.name}
-                      type={file.type}
-                      className='preview-content'
-                    />
-                    :
-                    <FileIcon
-                      color="#A8A8A8"
-                      glyphColor="#ffffff"
-                      {...defaultStyles[file && getFileExtension(file.name)]}
-                      extension={file && getFileExtension(file.name)}
-                    />
-                }
+    <>
+      {
+        downloading && <div className='loading'>
+          <ReactLoading type="spinningBubbles" color="#2e6dde" />
+        </div>
+      }
+      <SiteWrapper history={history} page='share' >
+        <Container fluid='xl share'>
 
-              </div>
-            </Row>
-          </Col>
-          <Col md={6} className="control-area">
-            <Row className='align-items-center'>
-              <Col className='text-center'>
-                <img width='88' src={shareImg} />
-                <h2>You have been invited to view a file!</h2>
-                <div className='text-filename'>{file && file.name}</div>
-                <div className='text-filesize'>{file && formatBytes(file.size)}</div>
-                <div className='row mb-3' style={{ justifyContent: 'center' }}>
-                  <div className='col-md-5'>
-                    <button className='btn btn-pill btn-download' onClick={() => fileDownload(handle)}>
-                      <span></span>
+          <Row>
+            <Col md={6} className='center' >
+              <Row style={{ padding: '20px' }}>
+                <div className='preview-area center'>
+                  {
+                    (previewOpen && previewPath) ?
+                      <Preview
+                        url={previewPath}
+                        ext={file.name}
+                        type={file.type}
+                        className='preview-content'
+                      />
+                      :
+                      <FileIcon
+                        color="#A8A8A8"
+                        glyphColor="#ffffff"
+                        {...defaultStyles[file && getFileExtension(file.name)]}
+                        extension={file && getFileExtension(file.name)}
+                      />
+                  }
+                </div>
+              </Row>
+            </Col>
+            <Col md={6} className="control-area">
+              <Row className='align-items-center'>
+                <Col className='text-center'>
+                  <img width='88' src={shareImg} />
+                  <h2>You have been invited to view a file!</h2>
+                  <div className='text-filename'>{file && file.name}</div>
+                  <div className='text-filesize'>{file && formatBytes(file.size)}</div>
+                  <div className='row mb-3' style={{ justifyContent: 'center' }}>
+                    <div className='col-md-5'>
+                      <button className='btn btn-pill btn-download' onClick={() => fileDownload(handle)}>
+                        <span></span>
                         Download File
                     </button>
-                  </div>
-                  <div className='col-md-5'>
-                    <button className='btn btn-pill btn-preview' onClick={() => filePreview(handle)}>
-                      <span></span>
-                      {previewOpen ? 'Hide' : 'Show'}  Preview
+                    </div>
+                    <div className='col-md-5'>
+                      <button className='btn btn-pill btn-preview' onClick={() => filePreview(handle)}>
+                        <span></span>
+                        {previewOpen ? 'Hide' : 'Show'}  Preview
                     </button>
+                    </div>
                   </div>
+                  <div className='text-comment' style={{ marginTop: '50px' }}>
+                    Get 10GB file storage and file sharing for free
                 </div>
-                <div className='text-comment' style={{ marginTop: '50px' }}>
-                  Get 10GB file storage and file sharing for free
+                  <div className='text-comment'>
+                    Free to share ideas. Free to be protected. Free to be you.
                 </div>
-                <div className='text-comment'>
-                  Free to share ideas. Free to be protected. Free to be you.
-                </div>
-              </Col>
-            </Row>
-          </Col>
-        </Row>
-      </Container>
-    </SiteWrapper >
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+        </Container>
+      </SiteWrapper >
+    </>
   )
 }
 
