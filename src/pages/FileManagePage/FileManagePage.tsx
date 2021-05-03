@@ -35,7 +35,6 @@ Object.assign(streamsaver, { WritableStream })
 
 const uploadImage = require("../../assets/upload.png");
 const empty = require("../../assets/empty.png");
-const downArrowImg = require("../../assets/sort-arrow.svg");
 
 import { STORAGE_NODE as storageNode } from "../../config"
 import { bytesToB64URL } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/b64"
@@ -898,32 +897,37 @@ const FileManagePage = ({ history }) => {
                 <Table highlightRowOnHover hasOutline verticalAlign='center' className='text-nowrap'>
                   <Table.Header>
                     <tr className="file-table-header">
-                      <th onClick={() => handleSortTable('name',
-                        sortable.column === 'name' ? (sortable.method === 'down' ? 'up' : 'down') : 'down')
-                      }>
+                      <th
+                        onClick={() => handleSortTable('name',
+                          sortable.column === 'name' ? (sortable.method === 'down' ? 'up' : 'down') : 'down')
+                        }
+                        className={`sortable ${sortable.column === 'name' && (
+                          sortable.method === 'up' ? "asc" : "desc"
+                        )}`}
+                      >
                         Name
-                        <img src={downArrowImg} alt='d' className={
-                          sortable.column === 'name' && (
-                            sortable.method === 'up' ? "file-table-sort-up-arrow" : "file-table-sort-down-arrow"
-                          )} />
                       </th>
-                      {!isMobile && <th onClick={() => handleSortTable('created',
-                        sortable.column === 'created' ? (sortable.method === 'down' ? 'up' : 'down') : 'down')
-                      }>
-                        Created
-                        <img src={downArrowImg} alt='d' className={
-                          sortable.column === 'created' && (
-                            sortable.method === 'up' ? "file-table-sort-up-arrow" : "file-table-sort-down-arrow"
-                          )} />
+                      {
+                        !isMobile &&
+                        <th
+                          onClick={() => handleSortTable('created',
+                            sortable.column === 'created' ? (sortable.method === 'down' ? 'up' : 'down') : 'down')
+                          }
+                          className={`sortable ${sortable.column === 'created' && (
+                            sortable.method === 'up' ? "asc" : "desc"
+                          )}`}
+                        >
+                          Created
                       </th>}
-                      <th onClick={() => handleSortTable('size',
-                        sortable.column === 'size' ? (sortable.method === 'down' ? 'up' : 'down') : 'down')
-                      }>
+                      <th
+                        onClick={() => handleSortTable('size',
+                          sortable.column === 'size' ? (sortable.method === 'down' ? 'up' : 'down') : 'down')
+                        }
+                        className={`sortable ${sortable.column === 'size' && (
+                          sortable.method === 'up' ? "asc" : "desc"
+                        )}`}
+                      >
                         Size
-                        <img src={downArrowImg} alt='d' className={
-                          sortable.column === 'size' && (
-                            sortable.method === 'up' ? "file-table-sort-up-arrow" : "file-table-sort-down-arrow"
-                          )} />
                       </th>
                       <th></th>
                     </tr>

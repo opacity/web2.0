@@ -828,25 +828,29 @@
   }
 }
 
-.file-table-sort-up-arrow {
-  display: inline !important;
-  transform: rotate(180deg);
-  -webkit-transform: rotate(180deg);
-  -ms-transform: rotate(180deg);
-}
-.file-table-sort-down-arrow {
-  display: inline !important;
-}
-
 .file-table-header {
-  th {
-    img {
-      display: none;
-    }
+    
+  th.sortable {
+    position: relative;
+    cursor: pointer;
   }
-  th:hover {
-    img {
-      display: inline;
-    }
+
+  th.sortable::after {
+    margin-left: 14px;
+    color: #999;
+    content: url("../../assets/sortable.svg");
   }
+
+  th.sortable.asc::after {
+    content: url("../../assets/sort_up.svg");
+  }
+
+  th.sortable.desc::after {
+    content: url("../../assets/sort_down.svg");
+  }
+
+  th.sortable:hover::after {
+    color: #333;
+  }
+
 }
