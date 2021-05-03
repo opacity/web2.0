@@ -21,6 +21,10 @@ import Redeem from "./Redeem"
 import UsdPaymentForm from './UsdPaymentForm'
 import { Elements, StripeProvider } from "react-stripe-elements";
 import QRCode from "qrcode.react";
+import MetamaskButton from "./metamask-button";
+import Metamask from "../../services/metamask";
+import { connect } from "react-redux";
+import metamaskActions from "../../redux/actions/metamask-actions";
 
 const logo = require("../../assets/logo2.png");
 const loginSchema = Yup.object().shape({
@@ -32,6 +36,7 @@ type OtherProps = {
   handleClose: Function;
   plan?: PlanType;
   openLoginModal: Function;
+  openMetamask: Function;
 };
 type SignUpProps = {
   plan?: PlanType;
@@ -42,11 +47,13 @@ type SignUpProps = {
   handleClose?: Function;
   openLoginModal?: Function;
   createAccount?: Function;
+  openMetamask?: Function;
   mnemonic?: string[];
   invoice?: AccountCreationInvoice;
   account?: Account;
 };
-const SignUpModal: React.FC<OtherProps> = ({ show, handleClose, plan, openLoginModal }) => {
+
+const SignUpModal: React.FC<OtherProps> = ({ show, handleClose, plan, openLoginModal, openMetamask }) => {
   const [handle, setHandle] = useState("");
   const [mnemonic, setMnemonic] = useState<string[]>([]);
   const [currentStep, setStep] = React.useState<number>(1);
@@ -140,7 +147,7 @@ const SignUpModal: React.FC<OtherProps> = ({ show, handleClose, plan, openLoginM
           </div>
         )}
         {currentStep === 1 && <AccountHandle plan={plan} handle={handle} mnemonic={mnemonic} goBack={goBack} goNext={goNext} />}
-        {currentStep === 2 && <SendPayment plan={plan} account={account} invoice={invoiceData} goBack={goBack} goNext={goNext} />}
+        {currentStep === 2 && <SendPayment plan={plan} account={account} invoice={invoiceData} goBack={goBack} goNext={goNext} openMetamask={openMetamask} />}
         {currentStep === 3 && <ConfirmPayment plan={plan} handle={handle} goBack={goBack} goNext={goNext} handleOpenLoginModal={handleOpenLoginModal} />}
       </Modal.Body>
     </Modal>
@@ -284,7 +291,7 @@ const AccountHandle: React.FC<SignUpProps> = ({ plan, goBack, goNext, mnemonic, 
   );
 };
 
-const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account }) => {
+const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, openMetamask }) => {
   const [isCopied, setIsCopied] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('crypto')
 
@@ -346,6 +353,11 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account }) 
             <div className='row qrcode'>
               <Col>
                 <h1>Other Ways To Pay</h1>
+                {Metamask.isInstalled &&
+                  <MetamaskButton
+                    onClick={() => openMetamask(invoice)}
+                  />
+                }
                 <Redeem storageLimit={plan.storageLimit} ethAddress={invoice.ethAddress} />
               </Col>
               <Col>
@@ -409,4 +421,13 @@ const ConfirmPayment: React.FC<SignUpProps> = ({ plan, handle, handleOpenLoginMo
     </div>
   );
 };
-export default SignUpModal;
+
+const mapDispatchToProps = dispatch => ({
+  openMetamask: ({ cost, ethAddress, gasPrice }) =>
+    dispatch(metamaskActions.createTransaction({ cost, ethAddress, gasPrice })),
+});
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(SignUpModal);

@@ -14,6 +14,9 @@ import { PrivateRoute } from "./PrivateRoute";
 import "./index.scss";
 import 'react-toastify/dist/ReactToastify.css';
 import { FileManagementStatusProvider, FileManagementStatus } from "./context";
+import { Provider } from "react-redux";
+import { store, persistor } from "./redux";
+import { PersistGate } from "redux-persist/lib/integration/react";
 
 function App() {
   const status = React.useContext(FileManagementStatus)
@@ -26,7 +29,7 @@ function App() {
   }, [status])
 
   const logout = () => {
-    if(status.isManaging === true) { return }
+    if (status.isManaging === true) { return }
     console.log('You have been loged out');
     localStorage.clear();
     history.push('/');
@@ -61,29 +64,33 @@ function App() {
 
     setTimeouts();
     return () => {
-      for(let i in events){
+      for (let i in events) {
         window.removeEventListener(events[i], resetTimeout);
         clearTimeouts();
       }
     }
-  },[]);
+  }, []);
 
   return (
-    <FileManagementStatusProvider >
-      <Router history={history}>
-        <Switch>
-          <Route exact path='/' component={LandingPage} />
-          <Route exact path='/platform' component={PlatformPage} />
-          <Route exact path='/plans' component={PlansPage} />
-          <Route exact path='/community' component={CommunityPage} />
-          <PrivateRoute exact path='/file-manager' component={FileManagePage}
-          />
-          <PrivateRoute exact path='/file-manager/:folderName' component={FileManagePage} />
-          <Route exact path='/forgot' component={ForgotPage} />
-          <Route path="/share" component={SharePage} />
-        </Switch>
-      </Router>
-    </FileManagementStatusProvider>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <FileManagementStatusProvider >
+          <Router history={history}>
+            <Switch>
+              <Route exact path='/' component={LandingPage} />
+              <Route exact path='/platform' component={PlatformPage} />
+              <Route exact path='/plans' component={PlansPage} />
+              <Route exact path='/community' component={CommunityPage} />
+              <PrivateRoute exact path='/file-manager' component={FileManagePage}
+              />
+              <PrivateRoute exact path='/file-manager/:folderName' component={FileManagePage} />
+              <Route exact path='/forgot' component={ForgotPage} />
+              <Route path="/share" component={SharePage} />
+            </Switch>
+          </Router>
+        </FileManagementStatusProvider>
+      </PersistGate>
+    </Provider>
   );
 }
 ReactDOM.render(<App />, document.getElementById("root"));
