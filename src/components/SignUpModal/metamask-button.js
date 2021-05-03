@@ -8,7 +8,7 @@ const MetamaskButton = ({ onClick }) => (
     padding: 0,
     border: 'none',
     background: 'none',
-    // width: '180px'
+    width: '180px'
   }}>
     <img src={PAY_WITH_METAMASK_IMG} style={{ width: '180px' }}/>
   </button>

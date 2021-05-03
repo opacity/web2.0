@@ -352,17 +352,20 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, op
             </div>
             <div className='row qrcode'>
               <Col>
-                <h1>Other Ways To Pay</h1>
+                <h1 className='subtitle-bottom-effect'>Other Ways To Pay</h1>
                 {Metamask.isInstalled &&
-                  <MetamaskButton
-                    onClick={() => openMetamask(invoice)}
-                  />
+                  <div className="center">
+                    <MetamaskButton
+                      onClick={() => openMetamask(invoice)}
+                    />
+                    <span className='or'>or</span>
+                  </div>
                 }
                 <Redeem storageLimit={plan.storageLimit} ethAddress={invoice.ethAddress} />
               </Col>
               <Col>
                 <div className='scan'>
-                  <h3>Scan QR code to pay</h3>
+                  <h3 className='subtitle-bottom-effect'>Scan QR code to pay</h3>
                   <QRCode
                     value={'ethAddress'}
                     size={200}

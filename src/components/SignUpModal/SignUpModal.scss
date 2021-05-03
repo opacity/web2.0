@@ -421,12 +421,25 @@
         @media (max-width: 767.7px) {
           padding: 0;
         }
+        .subtitle-bottom-effect {
+          &::after {
+            content: "";
+            width: 100px;
+            height: 3px;
+            background-color: #2e6dde;
+            margin-top: 8px;
+            margin-left: 110px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+        }
+        
         h1 {
           font-weight: 600;
           font-size: 18px;
           line-height: 27px;
           color: #000000;
-          margin-bottom: 38px;
           @media (max-width: 767.7px) {
             font-size: 20px;
             line-height: 30px;
@@ -635,4 +648,21 @@
   text-align: center;
   margin-top: 28px;
   margin-bottom: 22px;
+}
+
+.or {
+  display: flex;
+  flex-direction: row;
+  color: #778291;
+  margin: 10px auto;
+  width: 100%;
+  &::before,
+  &::after {
+    content: "";
+    flex: 1 1;
+    border-bottom: 2px solid #778291;
+    margin: auto;
+    margin-left: 10px;
+    margin-right: 10px;
+  }
 }
