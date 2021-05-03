@@ -9,11 +9,14 @@
     min-width: 300px;
     padding: 50px;
     margin-bottom: 30px;
+    @media (max-width: 767.9px) {
+      padding: 10px;
+    }
   }
   .preview-content {
     width: 500px;
     @media (max-width: 767.9px) {
-      width: 350;
+      width: 300px;
     }
   }
   .center {
