@@ -14,8 +14,10 @@
   }
   .preview-content {
     width: 500px;
+    min-height: 200px;
     @media (max-width: 767.9px) {
       width: 300px;
+      min-height: 200px;
     }
   }
   .center {

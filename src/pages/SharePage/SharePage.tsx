@@ -157,12 +157,14 @@ const SharePage = ({ history }) => {
                         className='preview-content'
                       />
                       :
-                      <FileIcon
-                        color="#A8A8A8"
-                        glyphColor="#ffffff"
-                        {...defaultStyles[file && getFileExtension(file.name)]}
-                        extension={file && getFileExtension(file.name)}
-                      />
+                      <div style={{ width: '300px' }}>
+                        <FileIcon
+                          color="#A8A8A8"
+                          glyphColor="#ffffff"
+                          {...defaultStyles[file && getFileExtension(file.name)]}
+                          extension={file && getFileExtension(file.name)}
+                        />
+                      </div>
                   }
                 </div>
               </Row>
