@@ -67,6 +67,8 @@ const FileShareModal = ({
           }
 
           const shareHandle = bytesToB64URL(accountSystem.getShareHandle(shareMeta))
+          const tmpUrl = shareHandle.replace('-', '').slice(0, 40)
+          setShareShowURL(`${FRONT_END_URL}/share#key=${tmpUrl}`)
           setShareURL(`${FRONT_END_URL}/share#key=${shareHandle}`)
           setPageLoading(false)
         }

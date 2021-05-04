@@ -21,6 +21,9 @@ const PreviewRenderer = ({
           selection.addRange(range);
         }
       }}
+      style={{
+        textAlign: 'left',
+      }}
     >
       {text.split(/\n+/).map((paragraph, i) => <p key={i}>{paragraph}</p>)}
     </div>
