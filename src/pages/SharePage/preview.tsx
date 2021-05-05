@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { PreviewRenderer } from "./preview-renderer";
+import ReactMarkdown from "react-markdown";
 
 const getTypeFromExt = (ext?: string) => {
   ext = ("" + ext).replace(/^\./, "");
@@ -45,6 +46,7 @@ const getTypeFromExt = (ext?: string) => {
 
   if ([
     "txt",
+    "md",
   ].includes(ext)) {
     return "text";
   }
@@ -76,7 +78,7 @@ const Preview = ({
       onUnload && onUnload();
     };
   });
-console.log(type, getTypeFromExt(ext))
+
   const newType = "" + (type || getTypeFromExt(ext));
 
   switch (newType.split("/")[0]) {
@@ -109,6 +111,7 @@ console.log(type, getTypeFromExt(ext))
             <div className={className}>
               <PreviewRenderer
                 url={url}
+                render={text => <ReactMarkdown source={text} />}
               />
             </div>
           );
@@ -120,7 +123,6 @@ console.log(type, getTypeFromExt(ext))
           );
       }
     default:
-      console.log('33333')
       return <div className={className}>Unsupported file format</div>;
   }
 };
