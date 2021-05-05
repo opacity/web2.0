@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Modal, Button, Row, Col, Input } from "react-bootstrap";
+import { Modal, Button, Row, Col } from "react-bootstrap";
 import { Field } from "formik";
 import { Form } from "tabler-react";
 import "./FileShareModal.scss";

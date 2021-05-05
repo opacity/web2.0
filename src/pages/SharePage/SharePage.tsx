@@ -89,43 +89,30 @@ const SharePage = ({ history }) => {
         console.log("finish")
       })
 
-      if ("WritableStream" in window) {
-        if (mode === 'download' && s.pipeTo) {
-          s.pipeTo(fileStream as WritableStream<Uint8Array>)
-            .then(() => {
-              console.log("done")
-            })
-            .catch(err => {
-              console.log(err)
-              throw err
-            })
-        } else if (mode === 'preview' && s.getReader) {
+      if (mode === 'download' && s.pipeTo) {
+        s.pipeTo(fileStream as WritableStream<Uint8Array>)
+          .then(() => {
+            console.log("done")
+          })
+          .catch(err => {
+            console.log(err)
+            throw err
+          })
+      } else if (mode === 'preview' && s.getReader) {
 
-          let blobArray = new Uint8Array([]);
+        let blobArray = new Uint8Array([]);
 
-          const reader = s.getReader();
-          const pump = () => reader.read()
-            .then(({ done, value }) => {
-              if (done) {
-                const blob = new Blob([blobArray], { type: file.type });
-                setPreviewPath(URL.createObjectURL(blob));
-              } else {
-                blobArray = new Uint8Array([...blobArray, ...value]);
-                pump();
-              }
-            })
-          pump()
-        }
-      } else {
-        console.log("pump")
-        const writer = fileStream.getWriter();
         const reader = s.getReader();
-
         const pump = () => reader.read()
-          .then(res => res.done
-            ? writer.close()
-            : writer.write(res.value).then(pump))
-
+          .then(({ done, value }) => {
+            if (done) {
+              const blob = new Blob([blobArray], { type: file.type });
+              setPreviewPath(URL.createObjectURL(blob));
+            } else {
+              blobArray = new Uint8Array([...blobArray, ...value]);
+              pump();
+            }
+          })
         pump()
       }
     } catch (e) {
