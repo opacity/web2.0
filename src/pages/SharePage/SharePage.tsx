@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import SiteWrapper from "../../SiteWrapper";
 import { useLocation } from 'react-router-dom'
 import { Row, Col, Container, Media, Button, Carousel, CarouselItem } from "react-bootstrap";
-import { Download } from "../../../ts-client-library/packages/opaque"
+import { OpaqueDownload } from "../../../ts-client-library/packages/opaque"
 import { polyfillWritableStreamIfNeeded, WritableStream } from "../../../ts-client-library/packages/util/src/streams"
 import { AccountSystem, MetadataAccess } from "../../../ts-client-library/packages/account-system"
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web"
@@ -71,13 +71,14 @@ const SharePage = ({ history }) => {
 
   const fileControl = async (handle, mode) => {
     try {
-      const d = new Download({
+      const d = new OpaqueDownload({
         handle: handle,
         config: {
           crypto: cryptoMiddleware,
           net: netMiddleware,
           storageNode,
-        }
+        },
+        name: file.name,
       })
       setDownloading(true)
       const s = await d.start()
