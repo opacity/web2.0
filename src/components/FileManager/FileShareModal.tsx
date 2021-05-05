@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Modal, Button, Row, Col } from "react-bootstrap";
+import { Modal, Button, Row, Col, Input } from "react-bootstrap";
 import { Field } from "formik";
 import { Form } from "tabler-react";
 import "./FileShareModal.scss";
@@ -30,7 +30,6 @@ const FileShareModal = ({
   const [pageLoading, setPageLoading] = useState(false)
 
   const [shareURL, setShareURL] = useState("")
-  const [shareShowURL, setShareShowURL] = useState("")
 
   React.useEffect(() => {
     if (!file) {
@@ -44,8 +43,6 @@ const FileShareModal = ({
       accountSystem.getSharesByHandle(file.private.handle).then(async (shares) => {
         if (shares[0]) {
           const shareHandle = bytesToB64URL(accountSystem.getShareHandle(shares[0]))
-          const tmpUrl = shareHandle.replace('-', '').slice(0, 40)
-          setShareShowURL(`${FRONT_END_URL}/share#key=${tmpUrl}`)
           setShareURL(`${FRONT_END_URL}/share#key=${shareHandle}`)
           setPageLoading(false)
         }
@@ -67,8 +64,6 @@ const FileShareModal = ({
           }
 
           const shareHandle = bytesToB64URL(accountSystem.getShareHandle(shareMeta))
-          const tmpUrl = shareHandle.replace('-', '').slice(0, 40)
-          setShareShowURL(`${FRONT_END_URL}/share#key=${tmpUrl}`)
           setShareURL(`${FRONT_END_URL}/share#key=${shareHandle}`)
           setPageLoading(false)
         }
@@ -105,7 +100,7 @@ const FileShareModal = ({
           <Row>
             <Col md='12'>
               <Form.Group>
-                <div className='account-handle mb-0'>{shareShowURL}</div>
+                <input className='account-handle mb-0 manual-copy' value={shareURL} readOnly/>
                 <CopyToClipboard text={shareURL} onCopy={() => file && setIsCopied(true)}>
                   <span className='handle'></span>
                 </CopyToClipboard>

@@ -149,3 +149,13 @@
     cursor: pointer;
   }
 }
+
+.manual-copy {
+  width: 100%;
+  border: none;
+  
+  &:active,
+  &:focus {
+    border: none  !important;
+  }
+}
