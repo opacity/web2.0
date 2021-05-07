@@ -17,6 +17,7 @@ import { formatBytes } from "../../helpers"
 import { FileIcon, defaultStyles } from 'react-file-icon';
 import { Preview, getTypeFromExt } from "./preview";
 import ReactLoading from "react-loading";
+import { PLANS } from "../../config";
 
 const shareImg = require("../../assets/share-download.svg");
 
@@ -27,6 +28,8 @@ const SharePage = ({ history }) => {
   const [previewPath, setPreviewPath] = useState(null)
   const [previewOpen, setPreviewOpen] = useState(false)
   const [downloading, setDownloading] = useState(false)
+  const [showSignUpModal, setShowSignUpModal] = useState(false)
+  const [plan, setPlan] = useState()
 
   const cryptoMiddleware = React.useMemo(() => new WebAccountMiddleware(), []);
   const netMiddleware = React.useMemo(() => new WebNetworkMiddleware(), []);
@@ -36,6 +39,10 @@ const SharePage = ({ history }) => {
     metadataNode: storageNode,
   }), [netMiddleware, cryptoMiddleware, storageNode]);
   const accountSystem = React.useMemo(() => new AccountSystem({ metadataAccess }), [metadataAccess]);
+
+  const handleCloseSignUpModal = () => {
+    setShowSignUpModal(false);
+  };
 
   const getFileExtension = (name) => {
     const lastDot = name.lastIndexOf('.');
@@ -67,6 +74,12 @@ const SharePage = ({ history }) => {
 
   const fileDownload = async (handle) => {
     await fileControl(handle, 'download')
+  }
+
+  const clickFreeSignup = () => {
+    const freePlan = PLANS.find(p => !p.isCustom && p.specialPricing === 'Free')
+    setPlan(freePlan)
+    setShowSignUpModal(true)
   }
 
   const fileControl = async (handle, mode) => {
@@ -128,7 +141,7 @@ const SharePage = ({ history }) => {
           <ReactLoading type="spinningBubbles" color="#2e6dde" />
         </div>
       }
-      <SiteWrapper history={history} page='share' >
+      <SiteWrapper history={history} page='share' showSignUpModal={showSignUpModal} handleCloseSignUpModal={handleCloseSignUpModal} plan={plan}>
         <Container fluid='xl share'>
 
           <Row>
@@ -177,12 +190,13 @@ const SharePage = ({ history }) => {
                     </button>
                     </div>
                   </div>
-                  <div className='text-comment' style={{ marginTop: '50px' }}>
-                    Get 10GB file storage and file sharing for free
-                </div>
-                  <div className='text-comment'>
-                    Free to share ideas. Free to be protected. Free to be you.
-                </div>
+                  <div onClick={clickFreeSignup} className='free-signup-text' >
+                    Get 10GB file storage and file sharing for free<br />
+                      Free to share ideas. Free to be protected. Free to be you.
+                  </div>
+                  <a className='learn-more' href="https://dev2.opacity.io/platform" target="_blank">
+                    Learn More
+                  </a>
                 </Col>
               </Row>
             </Col>
