@@ -1,4 +1,4 @@
 [submodule "ts-client-library"]
 	path = ts-client-library
 	url = https://github.com/opacity/ts-client-library.git
-	branch = feature/public
+	branch = dev
