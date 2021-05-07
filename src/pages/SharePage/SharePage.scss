@@ -144,6 +144,21 @@
       color: #000000;
       padding: 20px;
     }
+    .free-signup-text {
+      margin-top: 50px;
+      cursor: pointer;
+      &:hover {
+        text-decoration-line: underline;
+      }
+    }
+    .learn-more {
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 26px;
+      float: right;
+      text-decoration-line: underline;
+      color: #000000;
+    }
   }
 }
 
