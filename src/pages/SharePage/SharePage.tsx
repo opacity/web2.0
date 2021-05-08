@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
 import SiteWrapper from "../../SiteWrapper";
 import { useLocation } from 'react-router-dom'
-import { Row, Col, Container, Media, Button, Carousel, CarouselItem } from "react-bootstrap";
-import { Download } from "../../../ts-client-library/packages/opaque"
+import { Row, Col, Container, Media, Button, Carousel, CarouselItem, ProgressBar } from "react-bootstrap";
+import { Download, DownloadEvents, DownloadProgressEvent } from "../../../ts-client-library/packages/opaque"
 import { polyfillWritableStreamIfNeeded, WritableStream } from "../../../ts-client-library/packages/util/src/streams"
 import { AccountSystem, MetadataAccess } from "../../../ts-client-library/packages/account-system"
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web"
@@ -30,6 +30,7 @@ const SharePage = ({ history }) => {
   const [downloading, setDownloading] = useState(false)
   const [showSignUpModal, setShowSignUpModal] = useState(false)
   const [plan, setPlan] = useState()
+  const [percent, setPercent] = useState(0)
 
   const cryptoMiddleware = React.useMemo(() => new WebAccountMiddleware(), []);
   const netMiddleware = React.useMemo(() => new WebNetworkMiddleware(), []);
@@ -94,8 +95,14 @@ const SharePage = ({ history }) => {
       })
       setDownloading(true)
       const s = await d.start()
+      setPercent(0)
 
       const fileStream = polyfillWritableStreamIfNeeded<Uint8Array>(streamsaver.createWriteStream(file.name, { size: file.size }))
+
+      d.addEventListener(DownloadEvents.PROGRESS, (e: DownloadProgressEvent) => {
+        
+        setPercent((e.detail.progress * 100).toFixed(0))
+      })
 
       d.finish().then(() => {
         setDownloading(false)
@@ -135,75 +142,77 @@ const SharePage = ({ history }) => {
   }
 
   return (
-    <>
-      {
-        downloading && <div className='loading'>
-          <ReactLoading type="spinningBubbles" color="#2e6dde" />
-        </div>
-      }
-      <SiteWrapper history={history} page='share' showSignUpModal={showSignUpModal} handleCloseSignUpModal={handleCloseSignUpModal} plan={plan}>
-        <Container fluid='xl share'>
 
-          <Row>
-            <Col md={6} className='center' >
-              <Row style={{ padding: '20px' }}>
-                <div className='preview-area center'>
-                  {
-                    (previewOpen && previewPath) ?
-                      <Preview
-                        url={previewPath}
-                        ext={file.name}
-                        type={file.type}
-                        className='preview-content'
-                      />
-                      :
-                      <div style={{ width: '300px' }}>
-                        <FileIcon
-                          color="#A8A8A8"
-                          glyphColor="#ffffff"
-                          {...defaultStyles[file && getFileExtension(file.name)]}
-                          extension={file && getFileExtension(file.name)}
+    <SiteWrapper history={history} page='share' showSignUpModal={showSignUpModal} handleCloseSignUpModal={handleCloseSignUpModal} plan={plan}>
+      <Container fluid='xl share'>
+        <Row>
+          <Col md={6} className='center' >
+            <Row style={{ padding: '20px' }}>
+              {
+                downloading
+                  ?
+                  <div className="download-progress">
+                    <ProgressBar now={100} animated />
+                    <div className="percentage-text">{percent}%</div>
+                  </div>
+                  :
+                  <div className='preview-area center'>
+                    {
+                      (previewOpen && previewPath) ?
+                        <Preview
+                          url={previewPath}
+                          ext={file.name}
+                          type={file.type}
+                          className='preview-content'
                         />
-                      </div>
-                  }
-                </div>
-              </Row>
-            </Col>
-            <Col md={6} className="control-area">
-              <Row className='align-items-center'>
-                <Col className='text-center'>
-                  <img width='88' src={shareImg} />
-                  <h2>You have been invited to view a file!</h2>
-                  <div className='text-filename'>{file && file.name}</div>
-                  <div className='text-filesize'>{file && formatBytes(file.size)}</div>
-                  <div className='row mb-3' style={{ justifyContent: 'center' }}>
-                    <div className='col-md-5'>
-                      <button className='btn btn-pill btn-download' onClick={() => fileDownload(handle)}>
-                        <span></span>
+                        :
+                        <div style={{ width: '300px' }}>
+                          <FileIcon
+                            color="#A8A8A8"
+                            glyphColor="#ffffff"
+                            {...defaultStyles[file && getFileExtension(file.name)]}
+                            extension={file && getFileExtension(file.name)}
+                          />
+                        </div>
+                    }
+                  </div>
+              }
+            </Row>
+          </Col>
+          <Col md={6} className="control-area">
+            <Row className='align-items-center'>
+              <Col className='text-center'>
+                <img width='88' src={shareImg} />
+                <h2>You have been invited to view a file!</h2>
+                <div className='text-filename'>{file && file.name}</div>
+                <div className='text-filesize'>{file && formatBytes(file.size)}</div>
+                <div className='row mb-3' style={{ justifyContent: 'center' }}>
+                  <div className='col-md-5'>
+                    <button className='btn btn-pill btn-download' onClick={() => fileDownload(handle)}>
+                      <span></span>
                         Download File
                     </button>
-                    </div>
-                    <div className='col-md-5'>
-                      <button className='btn btn-pill btn-preview' onClick={() => filePreview(handle)}>
-                        <span></span>
-                        {previewOpen ? 'Hide' : 'Show'}  Preview
-                    </button>
-                    </div>
                   </div>
-                  <div onClick={clickFreeSignup} className='free-signup-text' >
-                    Get 10GB file storage and file sharing for free<br />
+                  <div className='col-md-5'>
+                    <button className='btn btn-pill btn-preview' onClick={() => filePreview(handle)}>
+                      <span></span>
+                      {previewOpen ? 'Hide' : 'Show'}  Preview
+                    </button>
+                  </div>
+                </div>
+                <div onClick={clickFreeSignup} className='free-signup-text' >
+                  Get 10GB file storage and file sharing for free<br />
                       Free to share ideas. Free to be protected. Free to be you.
                   </div>
-                  <a className='learn-more' href="https://dev2.opacity.io/platform" target="_blank">
-                    Learn More
+                <a className='learn-more' href="https://dev2.opacity.io/platform" target="_blank">
+                  Learn More
                   </a>
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-        </Container>
-      </SiteWrapper >
-    </>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </Container>
+    </SiteWrapper >
   )
 }
 
