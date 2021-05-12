@@ -13,6 +13,7 @@ import { Upload, bindUploadToAccountSystem, Download, bindDownloadToAccountSyste
 import { theme, FILE_MAX_SIZE } from "../../config";
 import RenameModal from "../../components/RenameModal/RenameModal";
 import DeleteModal from "../../components/DeleteModal/DeleteModal";
+import WarningModal from "../../components/WarningModal/WarningModal";
 import AddNewFolderModal from "../../components/NewFolderModal/NewFolderModal"
 import "./FileManagePage.scss";
 import { formatBytes, formatGbs } from "../../helpers"
@@ -82,6 +83,7 @@ const FileManagePage = ({ history }) => {
   const [folderToDelete, setFolderToDelete] = React.useState<FoldersIndexEntry>()
   const [oldName, setOldName] = React.useState();
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
+  const [showWarningModal, setShowWarningModal] = React.useState(false);
   const [showNewFolderModal, setShowNewFolderModal] = React.useState(false);
   const [uploadingList, setUploadingList] = React.useState([]);
   const currentUploadingList = React.useRef([])
@@ -527,8 +529,8 @@ const FileManagePage = ({ history }) => {
 
   const maxFileValidator = (file) => {
     if (file.size > FILE_MAX_SIZE) {
-      alert("Some files are greater then 2GB.");
-
+      setShowWarningModal(true)
+      
       return {
         code: "size-too-large",
         message: `Some files are greater then 2GB!`
@@ -967,6 +969,7 @@ const FileManagePage = ({ history }) => {
 
       { oldName && <RenameModal show={showRenameModal} handleClose={() => setShowRenameModal(false)} oldName={oldName} setNewName={handleChangeRename} />}
       <DeleteModal show={showDeleteModal} handleClose={() => setShowDeleteModal(false)} setDelete={() => handleDelete()} />
+      <WarningModal show={showWarningModal} handleClose={() => setShowWarningModal(false)} />
       <AddNewFolderModal show={showNewFolderModal} handleClose={() => setShowNewFolderModal(false)} addNewFolder={addNewFolder} />
       <ToastContainer
         pauseOnHover={false}
@@ -997,7 +1000,7 @@ const UploadForm = ({ children, onSelected, isDirectory }) => {
     uploadForm.current!.reset();
     if (files.length > 0) {
       files = files.filter(file => file.size <= FILE_MAX_SIZE);
-      files.length !== filesLength && alert("Some files are greater then 2GB.");
+      files.length !== filesLength && setShowWarningModal(true);
       onSelected(files);
     }
   };

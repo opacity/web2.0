@@ -178,7 +178,7 @@ export const FileManagerFileEntryList = ({
 			{ !isMobile && <Table.Col onClick={() => fileMeta && handleSelectFile(fileMeta)}>{fileMeta ? moment(fileMeta.uploaded).calendar() : "..."}</Table.Col> }
 			<Table.Col onClick={() => fileMeta && handleSelectFile(fileMeta)}>{fileMeta ? formatBytes(fileMeta.size) : "..."}</Table.Col>
 			<Table.Col className='text-nowrap'>
-				<DropdownButton menuAlign='right' title='' id='dropdown-menu-align-right'>
+				<DropdownButton menuAlign='right' title='' id='dropdown-menu-align-right' className={isSelected ? "file-selected" : ""}>
 					<Dropdown.Item disabled={!fileMeta} eventKey='1' onClick={() => fileShare(fileMeta)}>
 						<i className='icon-share'></i>
 						Private Share
