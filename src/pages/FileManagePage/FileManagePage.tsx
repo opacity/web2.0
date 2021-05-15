@@ -44,6 +44,8 @@ import { arraysEqual } from "../../../ts-client-library/packages/account-managem
 import { FileManagementStatus } from "../../context";
 import { isInteger } from 'formik';
 import { bytesToHex } from "../../../ts-client-library/packages/util/src/hex"
+import * as fflate from 'fflate'
+import { saveAs } from 'file-saver'
 
 const logo = require("../../assets/logo2.png");
 
@@ -94,6 +96,7 @@ const FileManagePage = ({ history }) => {
   const [shareFile, setShareFile] = React.useState<FileMetadata>(null)
   const [storageWarning, setIsStorageWarning] = React.useState(false)
   const [sortable, setSortable] = React.useState({ column: 'null', method: 'down' })
+  const [filesForZip, setFilesForZip] = React.useState([])
 
   const handleShowSidebar = React.useCallback(() => {
     setShowSidebar(!showSidebar);
@@ -163,6 +166,22 @@ const FileManagePage = ({ history }) => {
       }
     }
   }, []);
+
+  React.useEffect(() => {
+    if (filesForZip.length !== 0 && filesForZip.length === selectedFiles.length) {
+      let zipableFiles = {}
+      filesForZip.forEach(item => {
+        zipableFiles = Object.assign(zipableFiles, { [item.name]: item.data })
+      })
+      const zipped = fflate.zipSync(zipableFiles, {
+        level: 0,
+      })
+
+      const blob = new Blob([zipped]);
+      saveAs(blob, `opacity_files.zip`)
+      setPageLoading(false)
+    }
+  }, [filesForZip])
 
   const getFolderData = React.useCallback(async () => {
     try {
@@ -389,7 +408,7 @@ const FileManagePage = ({ history }) => {
     }
   }
 
-  const fileDownload = React.useCallback(async (file: FileMetadata) => {
+  const fileDownload = React.useCallback(async (file: FileMetadata, isMultiple) => {
     if (file.private.handle) {
       try {
         const d = new Download({
@@ -414,26 +433,35 @@ const FileManagePage = ({ history }) => {
         })
 
         // more optimized
-        if ("WritableStream" in window && s.pipeTo) {
+        if ("WritableStream" in window && s.pipeTo && !isMultiple) {
           console.log("pipe")
           s.pipeTo(fileStream as WritableStream<Uint8Array>)
             .then(() => {
+              setPageLoading(false)
               console.log("done")
             })
             .catch(err => {
               console.log(err)
               throw err
             })
-        } else {
-          console.log("pump")
-          const writer = fileStream.getWriter();
+        } else if (isMultiple && s.getReader) {
+
+          let blobArray = new Uint8Array([]);
+
           const reader = s.getReader();
-
           const pump = () => reader.read()
-            .then(res => res.done
-              ? writer.close()
-              : writer.write(res.value).then(pump))
-
+            .then(({ done, value }) => {
+              if (done) {
+                setFilesForZip(prev => [...prev, {
+                  name: file.name,
+                  type: file.type,
+                  data: blobArray
+                }])
+              } else {
+                blobArray = new Uint8Array([...blobArray, ...value]);
+                pump();
+              }
+            })
           pump()
         }
       } catch (e) {
@@ -530,7 +558,7 @@ const FileManagePage = ({ history }) => {
   const maxFileValidator = (file) => {
     if (file.size > FILE_MAX_SIZE) {
       setShowWarningModal(true)
-      
+
       return {
         code: "size-too-large",
         message: `Some files are greater then 2GB!`
@@ -566,8 +594,10 @@ const FileManagePage = ({ history }) => {
     return formatBytes(size);
   }
   const handleMultiDownload = () => {
+    setFilesForZip([])
+    setPageLoading(true)
     selectedFiles.forEach(file => {
-      fileDownload(file)
+      fileDownload(file, selectedFiles.length > 1 ? true : false)
     })
   }
   const handleMultiDelete = () => {
@@ -852,8 +882,8 @@ const FileManagePage = ({ history }) => {
                   i === subPaths.length - 1 ? (
                     <Breadcrumb.Item active key={i}>{text}</Breadcrumb.Item>
                   ) : (
-                      <Breadcrumb.Item key={i} onClick={() => setCurrentPath(path)}>{text}</Breadcrumb.Item>
-                    )
+                    <Breadcrumb.Item key={i} onClick={() => setCurrentPath(path)}>{text}</Breadcrumb.Item>
+                  )
               )}
             </Breadcrumb>
           </div>
