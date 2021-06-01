@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo } from "react";
 import SiteWrapper from "../../SiteWrapper";
 import { useLocation } from 'react-router-dom'
 import { Row, Col, Container, Media, Button, Carousel, CarouselItem, ProgressBar } from "react-bootstrap";
-import { Download, DownloadEvents, DownloadProgressEvent } from "../../../ts-client-library/packages/opaque"
+import { OpaqueUpload, OpaqueDownload, OpaqueUploadEvents } from "../../../ts-client-library/packages/opaque"
+import { DownloadEvents, DownloadProgressEvent } from "../../../ts-client-library/packages/filesystem-access/src/events"
 import { polyfillWritableStreamIfNeeded, WritableStream } from "../../../ts-client-library/packages/util/src/streams"
 import { AccountSystem, MetadataAccess } from "../../../ts-client-library/packages/account-system"
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web"
@@ -85,7 +86,7 @@ const SharePage = ({ history }) => {
 
   const fileControl = async (handle, mode) => {
     try {
-      const d = new Download({
+      const d = new OpaqueDownload({
         handle: handle,
         config: {
           crypto: cryptoMiddleware,
@@ -100,7 +101,6 @@ const SharePage = ({ history }) => {
       const fileStream = polyfillWritableStreamIfNeeded<Uint8Array>(streamsaver.createWriteStream(file.name, { size: file.size }))
 
       d.addEventListener(DownloadEvents.PROGRESS, (e: DownloadProgressEvent) => {
-        
         setPercent((e.detail.progress * 100).toFixed(0))
       })
 

@@ -25,7 +25,7 @@ type LoginFormProps = {
 }
 
 const LoginModal: React.FC<OtherProps> = ({ show, handleClose, recoveryHandle, handleSignup }) => {
-  const [privateKey, setPrivateKey] = useState(recoveryHandle);
+  const [privateKey, setPrivateKey] = useState(recoveryHandle ? recoveryHandle : "");
   const [validatePrivateKey, setValidatePrivateKey] = useState(true);
   const [account, setAccount] = React.useState<Account>();
 

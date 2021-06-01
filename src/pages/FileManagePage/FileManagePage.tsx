@@ -9,7 +9,9 @@ import { AccountSystem, MetadataAccess, FileMetadata, FolderMetadata, FolderFile
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web"
 import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex"
 import { polyfillReadableStreamIfNeeded, polyfillWritableStreamIfNeeded, ReadableStream, TransformStream, WritableStream } from "../../../ts-client-library/packages/util/src/streams"
-import { Upload, bindUploadToAccountSystem, Download, bindDownloadToAccountSystem, UploadEvents, UploadProgressEvent } from "../../../ts-client-library/packages/opaque"
+import { OpaqueUpload, OpaqueDownload, OpaqueUploadEvents } from "../../../ts-client-library/packages/opaque"
+import { UploadEvents, UploadProgressEvent } from "../../../ts-client-library/packages/filesystem-access/src/events"
+import { bindUploadToAccountSystem, bindDownloadToAccountSystem } from "../../../ts-client-library/packages/filesystem-access/src/account-system-binding"
 import { theme, FILE_MAX_SIZE } from "../../config";
 import RenameModal from "../../components/RenameModal/RenameModal";
 import DeleteModal from "../../components/DeleteModal/DeleteModal";
@@ -93,6 +95,7 @@ const FileManagePage = ({ history }) => {
   const [alertText, setAlertText] = React.useState('30 days remaining.')
   const [alertShow, setAlertShow] = React.useState(false)
   const [openShareModal, setOpenShareModal] = React.useState(false)
+  const [shareMode, setShareMode] = React.useState('private')
   const [shareFile, setShareFile] = React.useState<FileMetadata>(null)
   const [storageWarning, setIsStorageWarning] = React.useState(false)
   const [sortable, setSortable] = React.useState({ column: 'null', method: 'down' })
@@ -272,7 +275,7 @@ const FileManagePage = ({ history }) => {
   const fileUploadMutex = React.useMemo(() => new Mutex(), [])
   const uploadFile = React.useCallback(async (file: File, path: string) => {
     try {
-      const upload = new Upload({
+      const upload = new OpaqueUpload({
         config: {
           crypto: cryptoMiddleware,
           net: netMiddleware,
@@ -315,6 +318,7 @@ const FileManagePage = ({ history }) => {
       const release = await fileUploadMutex.acquire()
       try {
         const stream = await upload.start()
+        console.log('uploading,,,,,,')
         isFileManaging()
 
         // let templist = currentUploadingList.current.slice();
@@ -393,6 +397,7 @@ const FileManagePage = ({ history }) => {
 
   const fileShare = async (file: FileMetadata) => {
     try {
+      setShareMode('private')
       setShareFile(file)
       setOpenShareModal(true)
     } catch (e) {
@@ -402,7 +407,9 @@ const FileManagePage = ({ history }) => {
 
   const filePublicShare = async (file: FileMetadata) => {
     try {
+      setShareMode('public')
       setShareFile(file)
+      setOpenShareModal(true)
     } catch (e) {
       toast.error(`An error occurred while sharing ${file.name}.`)
     }
@@ -411,7 +418,7 @@ const FileManagePage = ({ history }) => {
   const fileDownload = React.useCallback(async (file: FileMetadata, isMultiple) => {
     if (file.private.handle) {
       try {
-        const d = new Download({
+        const d = new OpaqueDownload({
           handle: file.private.handle,
           config: {
             crypto: cryptoMiddleware,
@@ -706,6 +713,8 @@ const FileManagePage = ({ history }) => {
           }}
           file={shareFile}
           accountSystem={accountSystem}
+          mode={shareMode}
+          metadataAccess={metadataAccess}
         />
       }
 
