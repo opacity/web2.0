@@ -12,9 +12,12 @@ import { FileSystemObject } from "../../../ts-client-library/packages/filesystem
 import ReactLoading from "react-loading";
 import { CryptoMiddleware } from '../../../ts-client-library/packages/util/node_modules/@opacity/middleware/src'
 import { NetworkMiddleware } from '../../../ts-client-library/packages/util/node_modules/@opacity/middleware/src'
+import _ from 'lodash'
+import { toast } from "react-toastify";
 
 const logo = require("../../assets/logo2.png")
 const copyImage = require("../../assets/copies_white.svg")
+const revokeImage = require("../../assets/revoke.svg")
 const closeImage = require("../../assets/close-button.svg")
 
 type FileShareModalProps = {
@@ -41,12 +44,6 @@ const FileShareModal = ({
   const [isCopied, setIsCopied] = useState(false)
   const [pageLoading, setPageLoading] = useState(false)
   const [shareURL, setShareURL] = useState("")
-
-  // const fileSystemShare = React.useMemo(() => new FileSystemShare({
-  //   shortLink: '',
-  //   fileLocation: file.location,
-  //   config: { ...metadataAccess.config, storageNode: metadataAccess.config.metadataNode }
-  // }), [metadataAccess, file]);
 
   React.useEffect(() => {
     const getFileExtension = (name) => {
@@ -90,15 +87,16 @@ const FileShareModal = ({
             }
           }).catch((err) => {
             setShareURL("")
-            console.error("Error getting existing share:", err)
-
-            // do something with the error
+            toast.error("Error getting existing share:", err)
+            onClose()
           })
         } else {
-          console.error("Public files not yet supported")
+          toast.error("Public files not yet supported")
+          onClose()
         }
       } else if (mode === 'public') {
-        if (file.public.shortLinks[0]) {
+        console.log(file, '---------')
+        if (file.public.shortLinks[0] || !_.isEmpty(file.public.location)) {
           setShareURL(`${PUBLIC_SHARE_URL}/${file.public.shortLinks[0]}`)
           setPageLoading(false)
 
@@ -127,7 +125,7 @@ const FileShareModal = ({
           }
         })
 
-        // bindPublicShareToAccountSystem(accountSystem, fileSystemShare)
+        bindPublicShareToAccountSystem(accountSystem, fileSystemShare)
         await fileSystemShare.publicShare({
           title: file.name,
           description: "This file is opacity public file, Everyone can use this file!",
@@ -143,15 +141,34 @@ const FileShareModal = ({
     file && doAction()
   }, [file, mode, accountSystem, cryptoMiddleware, netMiddleware, storageNode])
 
+  const handleRevokeShortlink = async () => {
+    setPageLoading(true)
+
+    const fileSystemShare = new FileSystemShare({
+      shortLink: file.public.shortLinks,
+      fileLocation: file.public.location,
+      config: {
+        crypto: cryptoMiddleware,
+        net: netMiddleware,
+        storageNode: storageNode,
+      }
+    })
+
+    await fileSystemShare.publicShareRevoke()
+    setPageLoading(false)
+    onClose()
+  }
+
+
   return (
-    <Modal show={open} onHide={onClose} size='lg' centered dialogClassName='share'>
+    <Modal show={open} onHide={() => !pageLoading && onClose()} size='lg' centered dialogClassName='share'>
       <Modal.Body>
         {
           pageLoading && <div className='loading'>
             <ReactLoading type="spinningBubbles" color="#2e6dde" />
           </div>
         }
-        <img onClick={onClose} src={closeImage} alt='close-btn' className="share-close-button" />
+        <img onClick={() => !pageLoading && onClose()} src={closeImage} alt='close-btn' className="share-close-button" />
         <form autoComplete='off'>
           <Row className='align-items-center '>
             <Col className='text-center'>
@@ -172,15 +189,39 @@ const FileShareModal = ({
                 {isCopied && <div className='copy-feedback'>Copied to clipboard!</div>}
               </Form.Group>
             </Col>
-            <Col md='3' className='mt-3'></Col>
-            <Col md='6' className='mt-3'>
-              <CopyToClipboard text={shareURL} onCopy={() => file && setIsCopied(true)}>
-                <Button variant='primary btn-pill' size='lg'>
-                  <img src={copyImage} alt="copy-image" style={{ marginRight: '16px' }} />
-                  COPY URL
-                </Button>
-              </CopyToClipboard>
-            </Col>
+            {
+              mode === 'private'
+                ?
+                <>
+                  <Col md='3' className='mt-3'></Col>
+                  <Col md='6' className='mt-3'>
+                    <CopyToClipboard text={shareURL} onCopy={() => file && setIsCopied(true)}>
+                      <Button variant='primary btn-pill' size='lg'>
+                        <img src={copyImage} alt="copy-image" style={{ marginRight: '16px' }} />
+                        COPY URL
+                      </Button>
+                    </CopyToClipboard>
+                  </Col>
+                </>
+                :
+                <>
+                  <Col md='1' className='mt-3'></Col>
+                  <Col md='5' className='mt-3'>
+                    <CopyToClipboard text={shareURL} onCopy={() => file && setIsCopied(true)}>
+                      <Button variant='primary btn-pill' size='lg'>
+                        <img src={copyImage} alt="copy-image" style={{ marginRight: '16px' }} />
+                        COPY URL
+                      </Button>
+                    </CopyToClipboard>
+                  </Col>
+                  <Col md='5' className='mt-3'>
+                    <Button variant='white btn-pill' size='lg' onClick={handleRevokeShortlink} style={{ color: '#E23B2A' }}>
+                      <img src={revokeImage} alt="revoke-image" style={{ marginRight: '16px' }} />
+                      Invoke
+                    </Button>
+                  </Col>
+                </>
+            }
           </Row>
         </form>
       </Modal.Body>
