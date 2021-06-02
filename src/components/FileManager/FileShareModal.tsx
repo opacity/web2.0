@@ -7,9 +7,11 @@ import { FRONT_END_URL, PUBLIC_SHARE_URL } from '../../config'
 import { bytesToB64URL } from "../../../ts-client-library/packages/util/src/b64"
 import { AccountSystem, FileMetadata } from '../../../ts-client-library/packages/account-system'
 import { FileSystemShare } from "../../../ts-client-library/packages/filesystem-access/src/public-share"
-import { bindPublicShareToAccountSystem } from "../../../ts-client-library/packages/filesystem-access/src/account-system-binding"
+import { bindFileSystemObjectToAccountSystem, bindPublicShareToAccountSystem } from "../../../ts-client-library/packages/filesystem-access/src/account-system-binding"
 import { FileSystemObject } from "../../../ts-client-library/packages/filesystem-access/src/filesystem-object"
 import ReactLoading from "react-loading";
+import { CryptoMiddleware } from '../../../ts-client-library/packages/util/node_modules/@opacity/middleware/src'
+import { NetworkMiddleware } from '../../../ts-client-library/packages/util/node_modules/@opacity/middleware/src'
 
 const logo = require("../../assets/logo2.png")
 const copyImage = require("../../assets/copies_white.svg")
@@ -20,6 +22,10 @@ type FileShareModalProps = {
   onClose: any
   file: FileMetadata
   accountSystem: AccountSystem
+  cryptoMiddleware: CryptoMiddleware
+  netMiddleware: NetworkMiddleware
+  storageNode: string
+  mode: "private" | "public"
 }
 
 const FileShareModal = ({
@@ -27,8 +33,10 @@ const FileShareModal = ({
   onClose,
   file,
   accountSystem,
+  cryptoMiddleware,
+  netMiddleware,
+  storageNode,
   mode = 'private',
-  metadataAccess
 }: FileShareModalProps) => {
   const [isCopied, setIsCopied] = useState(false)
   const [pageLoading, setPageLoading] = useState(false)
@@ -90,25 +98,32 @@ const FileShareModal = ({
           console.error("Public files not yet supported")
         }
       } else if (mode === 'public') {
+        if (file.public.shortLinks[0]) {
+          setShareURL(`${PUBLIC_SHARE_URL}/${file.public.shortLinks[0]}`)
+          setPageLoading(false)
+
+          return
+        }
+
         const fileSystemObject = new FileSystemObject({
           handle: file.private.handle || undefined,
           location: file.public.location || undefined,
           config: {
-            crypto: metadataAccess.config.crypto,
-            net: metadataAccess.config.net,
-            storageNode: metadataAccess.config.metadataNode,
+            crypto: cryptoMiddleware,
+            net: netMiddleware,
+            storageNode: storageNode,
           }
         })
 
-        bindPublicShareToAccountSystem(accountSystem, fileSystemObject)
+        bindFileSystemObjectToAccountSystem(accountSystem, fileSystemObject)
         await fileSystemObject.convertToPublic()
 
         const fileSystemShare = new FileSystemShare({
           fileLocation: fileSystemObject.location,
           config: {
-            crypto: metadataAccess.config.crypto,
-            net: metadataAccess.config.net,
-            storageNode: metadataAccess.config.metadataNode,
+            crypto: cryptoMiddleware,
+            net: netMiddleware,
+            storageNode: storageNode,
           }
         })
 
@@ -126,7 +141,7 @@ const FileShareModal = ({
     }
 
     file && doAction()
-  }, [file, mode, accountSystem, metadataAccess])
+  }, [file, mode, accountSystem, cryptoMiddleware, netMiddleware, storageNode])
 
   return (
     <Modal show={open} onHide={onClose} size='lg' centered dialogClassName='share'>

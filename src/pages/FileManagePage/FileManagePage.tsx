@@ -95,7 +95,7 @@ const FileManagePage = ({ history }) => {
   const [alertText, setAlertText] = React.useState('30 days remaining.')
   const [alertShow, setAlertShow] = React.useState(false)
   const [openShareModal, setOpenShareModal] = React.useState(false)
-  const [shareMode, setShareMode] = React.useState('private')
+  const [shareMode, setShareMode] = React.useState<"private" | "public">('private')
   const [shareFile, setShareFile] = React.useState<FileMetadata>(null)
   const [storageWarning, setIsStorageWarning] = React.useState(false)
   const [sortable, setSortable] = React.useState({ column: 'null', method: 'down' })
@@ -714,7 +714,9 @@ const FileManagePage = ({ history }) => {
           file={shareFile}
           accountSystem={accountSystem}
           mode={shareMode}
-          metadataAccess={metadataAccess}
+          cryptoMiddleware={cryptoMiddleware}
+          netMiddleware={netMiddleware}
+          storageNode={storageNode}
         />
       }
 
