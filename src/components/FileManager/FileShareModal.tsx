@@ -95,17 +95,19 @@ const FileShareModal = ({
           onClose()
         }
       } else if (mode === 'public') {
-        console.log(file, '---------')
-        if (file.public.shortLinks[0] || !_.isEmpty(file.public.location)) {
-          setShareURL(`${PUBLIC_SHARE_URL}/${file.public.shortLinks[0]}`)
+        const curFileMetadata = await accountSystem.getFileMetadata(file.location)
+
+        console.log(curFileMetadata, '---------')
+        if (curFileMetadata.public.shortLinks[0] || !_.isEmpty(curFileMetadata.public.location)) {
+          setShareURL(`${PUBLIC_SHARE_URL}/${curFileMetadata.public.shortLinks[0]}`)
           setPageLoading(false)
 
           return
         }
 
         const fileSystemObject = new FileSystemObject({
-          handle: file.private.handle || undefined,
-          location: file.public.location || undefined,
+          handle: curFileMetadata.private.handle || undefined,
+          location: curFileMetadata.public.location || undefined,
           config: {
             crypto: cryptoMiddleware,
             net: netMiddleware,
@@ -127,10 +129,10 @@ const FileShareModal = ({
 
         bindPublicShareToAccountSystem(accountSystem, fileSystemShare)
         await fileSystemShare.publicShare({
-          title: file.name,
+          title: curFileMetadata.name,
           description: "This file is opacity public file, Everyone can use this file!",
-          fileExtension: getFileExtension(file.name),
-          mimeType: file.type,
+          fileExtension: getFileExtension(curFileMetadata.name),
+          mimeType: curFileMetadata.type,
         })
 
         setShareURL(`${PUBLIC_SHARE_URL}/${fileSystemShare.shortlink}`)
@@ -144,9 +146,11 @@ const FileShareModal = ({
   const handleRevokeShortlink = async () => {
     setPageLoading(true)
 
+    const curFileMetadata = await accountSystem.getFileMetadata(file.location)
+
     const fileSystemShare = new FileSystemShare({
-      shortLink: file.public.shortLinks,
-      fileLocation: file.public.location,
+      shortLink: curFileMetadata.public.shortLinks[0],
+      fileLocation: curFileMetadata.public.location,
       config: {
         crypto: cryptoMiddleware,
         net: netMiddleware,
@@ -154,7 +158,10 @@ const FileShareModal = ({
       }
     })
 
+    bindPublicShareToAccountSystem(accountSystem, fileSystemShare)
+
     await fileSystemShare.publicShareRevoke()
+
     setPageLoading(false)
     onClose()
   }
@@ -217,7 +224,7 @@ const FileShareModal = ({
                   <Col md='5' className='mt-3'>
                     <Button variant='white btn-pill' size='lg' onClick={handleRevokeShortlink} style={{ color: '#E23B2A' }}>
                       <img src={revokeImage} alt="revoke-image" style={{ marginRight: '16px' }} />
-                      Invoke
+                      Revoke
                     </Button>
                   </Col>
                 </>
