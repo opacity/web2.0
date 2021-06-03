@@ -804,7 +804,7 @@ const FileManagePage = ({ history }) => {
             </div>
           </div>
           <div className="side-bar-footer">
-            <div>@Opacity v2.1.0</div>
+            <div>@Opacity v2.0.0</div>
             <div><span>Privacy Policy</span> and <span>Terms of Service</span></div>
           </div>
 

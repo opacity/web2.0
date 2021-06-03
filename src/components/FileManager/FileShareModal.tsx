@@ -57,7 +57,7 @@ const FileShareModal = ({
       setPageLoading(true)
 
       if (mode === 'private') {
-        if (file.private.handle) {
+        if (file.private.handle &&  _.isEmpty(file.public.location)) {
           accountSystem.getSharesByHandle(file.private.handle).then(async (shares) => {
             if (shares[0]) {
               const shareHandle = bytesToB64URL(accountSystem.getShareHandle(shares[0]))
