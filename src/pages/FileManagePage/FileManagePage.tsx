@@ -623,6 +623,19 @@ const FileManagePage = ({ history }) => {
     return 0;
   }
 
+  const compareType = (a, b, mode, type) => {
+    
+    var nameA = type === 'file' ? (a.public.location ? 'PUBLIC' : 'PRIVATE') : a.path.toUpperCase();
+    var nameB = type === 'file' ? (b.public.location ? 'PUBLIC' : 'PRIVATE') : b.path.toUpperCase();
+    if (nameA < nameB) {
+      return mode === 'down' ? 1 : -1;
+    }
+    if (nameA > nameB) {
+      return mode === 'down' ? -1 : 1;
+    }
+    return 0;
+  }
+
   const compareDate = (a, b, mode, type) => {
     const sourceList = type === 'file' ? fileMetaList : folderMetaList
     const Ameta = sourceList.find(meta => bytesToHex(meta.location) === bytesToHex(a.location))
@@ -658,6 +671,10 @@ const FileManagePage = ({ history }) => {
       case 'name':
         fileList.sort((a, b) => compareName(a, b, method, 'file'))
         folderList.sort((a, b) => compareName(a, b, method, 'folder'))
+        break;
+      case 'type':
+        fileList.sort((a, b) => compareType(a, b, method, 'file'))
+        // folderList.sort((a, b) => compareName(a, b, method, 'folder'))
         break;
       case 'created':
         fileList.sort((a, b) => compareDate(a, b, method, 'file'))
@@ -950,6 +967,18 @@ const FileManagePage = ({ history }) => {
                       >
                         Name
                       </th>
+                      {
+                        !isMobile &&
+                        <th
+                          onClick={() => handleSortTable('type',
+                            sortable.column === 'type' ? (sortable.method === 'down' ? 'up' : 'down') : 'down')
+                          }
+                          className={`sortable ${sortable.column === 'type' && (
+                            sortable.method === 'up' ? "asc" : "desc"
+                          )}`}
+                        >
+                          Type
+                      </th>}
                       {
                         !isMobile &&
                         <th
