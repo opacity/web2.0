@@ -15,6 +15,7 @@ import { UploadEvents, UploadProgressEvent } from "../../../ts-client-library/pa
 import { theme, FILE_MAX_SIZE } from "../../config";
 import RenameModal from "../../components/RenameModal/RenameModal";
 import DeleteModal from "../../components/DeleteModal/DeleteModal";
+import WarningModal from "../../components/WarningModal/WarningModal";
 import AddNewFolderModal from "../../components/NewFolderModal/NewFolderModal"
 import "./FileManagePage.scss";
 import { formatBytes, formatGbs } from "../../helpers"
@@ -45,6 +46,8 @@ import { arraysEqual } from "../../../ts-client-library/packages/account-managem
 import { FileManagementStatus } from "../../context";
 import { isInteger } from 'formik';
 import { bytesToHex } from "../../../ts-client-library/packages/util/src/hex"
+import * as fflate from 'fflate'
+import { saveAs } from 'file-saver'
 
 const logo = require("../../assets/logo2.png");
 
@@ -84,6 +87,7 @@ const FileManagePage = ({ history }) => {
   const [folderToDelete, setFolderToDelete] = React.useState<FoldersIndexEntry>()
   const [oldName, setOldName] = React.useState();
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
+  const [showWarningModal, setShowWarningModal] = React.useState(false);
   const [showNewFolderModal, setShowNewFolderModal] = React.useState(false);
   const [uploadingList, setUploadingList] = React.useState([]);
   const currentUploadingList = React.useRef([])
@@ -91,9 +95,11 @@ const FileManagePage = ({ history }) => {
   const [alertText, setAlertText] = React.useState('30 days remaining.')
   const [alertShow, setAlertShow] = React.useState(false)
   const [openShareModal, setOpenShareModal] = React.useState(false)
+  const [shareMode, setShareMode] = React.useState<"private" | "public">('private')
   const [shareFile, setShareFile] = React.useState<FileMetadata>(null)
   const [storageWarning, setIsStorageWarning] = React.useState(false)
   const [sortable, setSortable] = React.useState({ column: 'null', method: 'down' })
+  const [filesForZip, setFilesForZip] = React.useState([])
 
   const handleShowSidebar = React.useCallback(() => {
     setShowSidebar(!showSidebar);
@@ -163,6 +169,22 @@ const FileManagePage = ({ history }) => {
       }
     }
   }, []);
+
+  React.useEffect(() => {
+    if (filesForZip.length !== 0 && filesForZip.length === selectedFiles.length) {
+      let zipableFiles = {}
+      filesForZip.forEach(item => {
+        zipableFiles = Object.assign(zipableFiles, { [item.name]: item.data })
+      })
+      const zipped = fflate.zipSync(zipableFiles, {
+        level: 0,
+      })
+
+      const blob = new Blob([zipped]);
+      saveAs(blob, `opacity_files.zip`)
+      setPageLoading(false)
+    }
+  }, [filesForZip])
 
   const getFolderData = React.useCallback(async () => {
     try {
@@ -296,6 +318,7 @@ const FileManagePage = ({ history }) => {
       const release = await fileUploadMutex.acquire()
       try {
         const stream = await upload.start()
+        console.log('uploading,,,,,,')
         isFileManaging()
 
         // let templist = currentUploadingList.current.slice();
@@ -374,6 +397,7 @@ const FileManagePage = ({ history }) => {
 
   const fileShare = async (file: FileMetadata) => {
     try {
+      setShareMode('private')
       setShareFile(file)
       setOpenShareModal(true)
     } catch (e) {
@@ -383,13 +407,15 @@ const FileManagePage = ({ history }) => {
 
   const filePublicShare = async (file: FileMetadata) => {
     try {
+      setShareMode('public')
       setShareFile(file)
+      setOpenShareModal(true)
     } catch (e) {
       toast.error(`An error occurred while sharing ${file.name}.`)
     }
   }
 
-  const fileDownload = React.useCallback(async (file: FileMetadata) => {
+  const fileDownload = React.useCallback(async (file: FileMetadata, isMultiple) => {
     if (file.private.handle) {
       try {
         const d = new OpaqueDownload({
@@ -415,26 +441,35 @@ const FileManagePage = ({ history }) => {
         })
 
         // more optimized
-        if ("WritableStream" in window && s.pipeTo) {
+        if ("WritableStream" in window && s.pipeTo && !isMultiple) {
           console.log("pipe")
           s.pipeTo(fileStream as WritableStream<Uint8Array>)
             .then(() => {
+              setPageLoading(false)
               console.log("done")
             })
             .catch(err => {
               console.log(err)
               throw err
             })
-        } else {
-          console.log("pump")
-          const writer = fileStream.getWriter();
+        } else if (isMultiple && s.getReader) {
+
+          let blobArray = new Uint8Array([]);
+
           const reader = s.getReader();
-
           const pump = () => reader.read()
-            .then(res => res.done
-              ? writer.close()
-              : writer.write(res.value).then(pump))
-
+            .then(({ done, value }) => {
+              if (done) {
+                setFilesForZip(prev => [...prev, {
+                  name: file.name,
+                  type: file.type,
+                  data: blobArray
+                }])
+              } else {
+                blobArray = new Uint8Array([...blobArray, ...value]);
+                pump();
+              }
+            })
           pump()
         }
       } catch (e) {
@@ -530,7 +565,7 @@ const FileManagePage = ({ history }) => {
 
   const maxFileValidator = (file) => {
     if (file.size > FILE_MAX_SIZE) {
-      alert("Some files are greater then 2GB.");
+      setShowWarningModal(true)
 
       return {
         code: "size-too-large",
@@ -567,8 +602,10 @@ const FileManagePage = ({ history }) => {
     return formatBytes(size);
   }
   const handleMultiDownload = () => {
+    setFilesForZip([])
+    setPageLoading(true)
     selectedFiles.forEach(file => {
-      fileDownload(file)
+      fileDownload(file, selectedFiles.length > 1 ? true : false)
     })
   }
   const handleMultiDelete = () => {
@@ -578,6 +615,19 @@ const FileManagePage = ({ history }) => {
   const compareName = (a, b, mode, type) => {
     var nameA = type === 'file' ? a.name.toUpperCase() : a.path.toUpperCase();
     var nameB = type === 'file' ? b.name.toUpperCase() : b.path.toUpperCase();
+    if (nameA < nameB) {
+      return mode === 'down' ? 1 : -1;
+    }
+    if (nameA > nameB) {
+      return mode === 'down' ? -1 : 1;
+    }
+    return 0;
+  }
+
+  const compareType = (a, b, mode, type) => {
+    
+    var nameA = type === 'file' ? (a.public.location ? 'PUBLIC' : 'PRIVATE') : a.path.toUpperCase();
+    var nameB = type === 'file' ? (b.public.location ? 'PUBLIC' : 'PRIVATE') : b.path.toUpperCase();
     if (nameA < nameB) {
       return mode === 'down' ? 1 : -1;
     }
@@ -622,6 +672,10 @@ const FileManagePage = ({ history }) => {
       case 'name':
         fileList.sort((a, b) => compareName(a, b, method, 'file'))
         folderList.sort((a, b) => compareName(a, b, method, 'folder'))
+        break;
+      case 'type':
+        fileList.sort((a, b) => compareType(a, b, method, 'file'))
+        // folderList.sort((a, b) => compareName(a, b, method, 'folder'))
         break;
       case 'created':
         fileList.sort((a, b) => compareDate(a, b, method, 'file'))
@@ -677,6 +731,10 @@ const FileManagePage = ({ history }) => {
           }}
           file={shareFile}
           accountSystem={accountSystem}
+          mode={shareMode}
+          cryptoMiddleware={cryptoMiddleware}
+          netMiddleware={netMiddleware}
+          storageNode={storageNode}
         />
       }
 
@@ -727,10 +785,6 @@ const FileManagePage = ({ history }) => {
           </div>
           <div style={{ width: '100%' }}>
             <ul className='navbar-nav'>
-              <li className='nav-item'>
-                <span className='nav-icon nav-icon-pro'>P</span>
-                <Nav.Link>UPGRADE TO PRO</Nav.Link>
-              </li>
               <UploadForm isDirectory={true} onSelected={selectFiles}>
                 <li className='nav-item'>
                   <span className='nav-icon nav-icon-folder'></span>
@@ -764,7 +818,7 @@ const FileManagePage = ({ history }) => {
             </div>
           </div>
           <div className="side-bar-footer">
-            <div>@Opacity v2.1.0</div>
+            <div>@Opacity v2.0.0</div>
             <div><span>Privacy Policy</span> and <span>Terms of Service</span></div>
           </div>
 
@@ -853,8 +907,8 @@ const FileManagePage = ({ history }) => {
                   i === subPaths.length - 1 ? (
                     <Breadcrumb.Item active key={i}>{text}</Breadcrumb.Item>
                   ) : (
-                      <Breadcrumb.Item key={i} onClick={() => setCurrentPath(path)}>{text}</Breadcrumb.Item>
-                    )
+                    <Breadcrumb.Item key={i} onClick={() => setCurrentPath(path)}>{text}</Breadcrumb.Item>
+                  )
               )}
             </Breadcrumb>
           </div>
@@ -910,6 +964,18 @@ const FileManagePage = ({ history }) => {
                       >
                         Name
                       </th>
+                      {
+                        !isMobile &&
+                        <th
+                          onClick={() => handleSortTable('type',
+                            sortable.column === 'type' ? (sortable.method === 'down' ? 'up' : 'down') : 'down')
+                          }
+                          className={`sortable ${sortable.column === 'type' && (
+                            sortable.method === 'up' ? "asc" : "desc"
+                          )}`}
+                        >
+                          Type
+                      </th>}
                       {
                         !isMobile &&
                         <th
@@ -970,6 +1036,7 @@ const FileManagePage = ({ history }) => {
 
       { oldName && <RenameModal show={showRenameModal} handleClose={() => setShowRenameModal(false)} oldName={oldName} setNewName={handleChangeRename} />}
       <DeleteModal show={showDeleteModal} handleClose={() => setShowDeleteModal(false)} setDelete={() => handleDelete()} />
+      <WarningModal show={showWarningModal} handleClose={() => setShowWarningModal(false)} />
       <AddNewFolderModal show={showNewFolderModal} handleClose={() => setShowNewFolderModal(false)} addNewFolder={addNewFolder} />
       <ToastContainer
         pauseOnHover={false}
@@ -1000,7 +1067,7 @@ const UploadForm = ({ children, onSelected, isDirectory }) => {
     uploadForm.current!.reset();
     if (files.length > 0) {
       files = files.filter(file => file.size <= FILE_MAX_SIZE);
-      files.length !== filesLength && alert("Some files are greater then 2GB.");
+      files.length !== filesLength && setShowWarningModal(true);
       onSelected(files);
     }
   };

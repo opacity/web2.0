@@ -1,5 +1,6 @@
 import * as React from "react";
 import { NavLink } from "tabler-react";
+import { Link } from 'react-router-dom'
 import "./footer.scss";
 const logo = require("../../assets/logo.svg");
 const github = require("../../assets/github.svg");
@@ -41,28 +42,28 @@ const Footer = () => {
         <div className=' footer-links'>
           <div className='link-wrapper'>
             <span className='title'> Company</span>
-            <NavLink to='https://telegram.me/opacitystorage'>About us</NavLink>
-            <NavLink to='https://medium.com/opacity-storage'>Blog</NavLink>
+            <NavLink href='https://telegram.me/opacitystorage' target="_blank">About us</NavLink>
+            <NavLink href='https://medium.com/opacity-storage' target="_blank">Blog</NavLink>
             <NavLink>Press</NavLink>
           </div>
           <div className='link-wrapper'>
             <span className='title'> Resources</span>
             <NavLink>Products</NavLink>
-            <NavLink to='https://dev2.opacity.io/community'>Downloads</NavLink>
+            <Link className="nav-link" to='/community'>Downloads</Link>
             <NavLink>Learn</NavLink>
-            <NavLink to='https://api.opacity.io:3000/swagger/index.html'>API for Developers</NavLink>
+            <NavLink href='https://api.opacity.io:3000/swagger/index.html' target="_blank">API for Developers</NavLink>
           </div>
           <div className='link-wrapper'>
             <span className='title'> Help</span>
-            <NavLink to='https://telegram.me/opacitystorage'>Contact us</NavLink>
-            <NavLink to='https://telegram.me/opacitystorage'>Telegram</NavLink>
-            <NavLink to='http://discord.opacity.io/'>Discord</NavLink>
+            <NavLink href='https://telegram.me/opacitystorage' target="_blank">Contact us</NavLink>
+            <NavLink href='https://telegram.me/opacitystorage' target="_blank">Telegram</NavLink>
+            <NavLink href='http://discord.opacity.io/' target="_blank">Discord</NavLink>
           </div>
           <div className='link-wrapper'>
             <span className='title'> Legal</span>
-            <NavLink to='https://www.opacity.io/terms-of-service'>Terms of Service</NavLink>
-            <NavLink to='https://www.opacity.io/privacy-policy'>Privacy Policy</NavLink>
-            <NavLink to='https://www.opacity.io/code-review-license'>Code License</NavLink>
+            <Link className="nav-link" to='/terms-of-service'>Terms of Service</Link>
+            <Link className="nav-link" to='/privacy-policy'>Privacy Policy</Link>
+            <Link className="nav-link" to='/code-review-license'>Code License</Link>
           </div>
         </div>
         <div className='divider'></div>

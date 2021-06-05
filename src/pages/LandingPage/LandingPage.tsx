@@ -164,7 +164,7 @@ const LandingPage = ({ history }) => {
               </h4>
             </div>
             <div className='col-md-6 pl-4'>
-              <Lottie options={defaultOptions} width={"100%"} />
+              <Lottie options={defaultOptions} width={"100%"} isClickToPauseDisabled/>
               {/* <img src={secure} />
               <img className="d-none" src={securem} /> */}
               {/* <div className="circle-primary"></div> */}
@@ -176,7 +176,7 @@ const LandingPage = ({ history }) => {
         <div className='container-xl'>
           <div className='row justify-content-center'>
             <div className='col-md-6 pr-4 mt-7'>
-              <Lottie options={defaultOptions2} width={"100%"} />
+              <Lottie options={defaultOptions2} width={"100%"} isClickToPauseDisabled/>
 
               {/* <img src={rules} />
               <img className="d-none" src={rulesm} />

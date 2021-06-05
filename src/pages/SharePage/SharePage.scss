@@ -173,3 +173,29 @@
   background: rgba(0, 0, 0, 0.2);
   border-radius: 15px;
 }
+
+.download-progress {
+  .progress {
+    height: 25px;
+    width: 350px;
+    margin-bottom: 5px;
+    padding: 0px;
+    .progress-bar-striped {
+      background-size: 6.5rem 6.5rem;
+      background-color: #2e6dde;
+      background-image: url("../../assets/progress.svg");
+      background-position: center;
+    }
+  }
+  .progress-bar-animated {
+    -webkit-animation: 1s linear infinite progress-bar-stripes;
+    animation: 2s linear infinite progress-bar-stripes;
+  }
+
+  .percentage-text {
+    font-weight: bold;
+    font-size: 26px;
+    line-height: 39px;
+    color: #2E6DDE;
+  }
+}

@@ -598,6 +598,13 @@
           margin-right: 20px;
         }
       }
+      .file-selected{
+        .dropdown-toggle {
+          &::after {
+            filter: invert(80%) sepia(100%) saturate(500%) hue-rotate(200deg) brightness(104%) contrast(97%);
+          }
+        }
+      }
     }
     .grid-view {
       display: inline-block;

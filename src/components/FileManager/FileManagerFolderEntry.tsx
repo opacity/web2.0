@@ -93,6 +93,7 @@ export const FileManagerFolderEntryList = ({
 					{briefFolderName(posix.basename(folderEntry.path))}
 				</div>
 			</Table.Col>
+			{ !isMobile && <Table.Col>{' '}</Table.Col>}
 			{ !isMobile && <Table.Col>{folderMeta ? moment(folderMeta.uploaded).calendar() : "..."}</Table.Col>}
 			{/* <Table.Col>{moment(item.created).format("MM/DD/YYYY")}</Table.Col> */}
 			<Table.Col>{folderMeta ? folderMeta.files.length : "..."} items</Table.Col>
