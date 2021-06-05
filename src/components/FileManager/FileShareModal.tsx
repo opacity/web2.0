@@ -168,7 +168,7 @@ const FileShareModal = ({
 
 
   return (
-    <Modal show={open} onHide={() => !pageLoading && onClose()} size='lg' centered dialogClassName='share'>
+    <Modal show={open} onHide={() => !pageLoading && onClose()} size='lg' centered >
       <Modal.Body>
         {
           pageLoading && <div className='loading'>
@@ -180,7 +180,7 @@ const FileShareModal = ({
           <Row className='align-items-center '>
             <Col className='text-center'>
               <img width='70' src={logo} />
-              <h2>Share Your File with another</h2>
+              <h2>Share Your File</h2>
               <h3>
                 <span>ANYONE WITH THIS LINK CAN VIEW THE FILE</span>
               </h3>

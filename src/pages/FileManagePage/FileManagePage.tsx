@@ -784,10 +784,6 @@ const FileManagePage = ({ history }) => {
           </div>
           <div style={{ width: '100%' }}>
             <ul className='navbar-nav'>
-              <li className='nav-item'>
-                <span className='nav-icon nav-icon-pro'>P</span>
-                <Nav.Link>UPGRADE TO PRO</Nav.Link>
-              </li>
               <UploadForm isDirectory={true} onSelected={selectFiles}>
                 <li className='nav-item'>
                   <span className='nav-icon nav-icon-folder'></span>
