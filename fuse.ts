@@ -17,15 +17,13 @@ class Context {
       cache: true,
       devServer: this.runServer,
       plugins: [
-        pluginReplace(/node_modules\/bn\.js\/.*/, {
-          "require('buffer')": "require('" + require.resolve("./node_modules/buffer") + "')",
+        pluginReplace(/(?:.*[\/\\])?node_modules[\/\\]bn\.js[\/\\].*/, {
+          "require('buffer')": "require('" + require.resolve("./node_modules/buffer").replace(/\\/g, "\\\\") + "')",
         }),
-        pluginReplace(/node_modules\/readable-stream\/.*/, {
-          "require('util')": "require('" + require.resolve("./node_modules/util") + "')",
+        pluginReplace(/(?:.*[\/\\])?node_modules[\/\\]readable-stream[\/\\].*/, {
+          "require('util')": "require('" + require.resolve("./node_modules/util").replace(/\\/g, "\\\\") + "')",
+          "require('stream')": "require('" + require.resolve("./node_modules/stream-browserify").replace(/\\/g, "\\\\") + "')",
         }),
-        pluginReplace(/node_modules\/readable-stream\/.*/, {
-          "require('stream')": "require('" + require.resolve("./node_modules/stream-browserify") + "')",
-        })
       ],
       env: this.env
     });

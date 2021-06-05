@@ -9,9 +9,9 @@ import { AccountSystem, MetadataAccess, FileMetadata, FolderMetadata, FolderFile
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web"
 import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex"
 import { polyfillReadableStreamIfNeeded, polyfillWritableStreamIfNeeded, ReadableStream, TransformStream, WritableStream } from "../../../ts-client-library/packages/util/src/streams"
-import { OpaqueUpload, OpaqueDownload, OpaqueUploadEvents } from "../../../ts-client-library/packages/opaque"
+import { OpaqueUpload, OpaqueDownload } from "../../../ts-client-library/packages/opaque"
+import { bindDownloadToAccountSystem, bindUploadToAccountSystem } from "../../../ts-client-library/packages/filesystem-access/src/account-system-binding"
 import { UploadEvents, UploadProgressEvent } from "../../../ts-client-library/packages/filesystem-access/src/events"
-import { bindUploadToAccountSystem, bindDownloadToAccountSystem } from "../../../ts-client-library/packages/filesystem-access/src/account-system-binding"
 import { theme, FILE_MAX_SIZE } from "../../config";
 import RenameModal from "../../components/RenameModal/RenameModal";
 import DeleteModal from "../../components/DeleteModal/DeleteModal";
@@ -424,7 +424,8 @@ const FileManagePage = ({ history }) => {
             crypto: cryptoMiddleware,
             net: netMiddleware,
             storageNode,
-          }
+          },
+          name: file.name,
         })
 
         // side effects

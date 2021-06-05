@@ -12,7 +12,7 @@ import { PlanType } from "../../config";
 import { createMnemonic, mnemonicToHandle } from "../../../ts-client-library/packages/util/src/mnemonic";
 import { Account, AccountGetRes, AccountCreationInvoice } from "../../../ts-client-library/packages/account-management"
 import { AccountSystem, MetadataAccess } from "../../../ts-client-library/packages/account-system"
-import { Upload, bindUploadToAccountSystem } from "../../../ts-client-library/packages/opaque"
+import { OpaqueUpload } from "../../../ts-client-library/packages/opaque"
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web"
 import { bytesToHex, hexToBytes } from "../../../ts-client-library/packages/util/src/hex"
 import { STORAGE_NODE as storageNode } from "../../config"

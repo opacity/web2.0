@@ -92,7 +92,8 @@ const SharePage = ({ history }) => {
           crypto: cryptoMiddleware,
           net: netMiddleware,
           storageNode,
-        }
+        },
+        name: file.name,
       })
       setDownloading(true)
       const s = await d.start()
