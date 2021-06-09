@@ -426,6 +426,7 @@ const FileManagePage = ({ history }) => {
             storageNode,
           },
           name: file.name,
+          fileMeta: file,
         })
 
         // side effects
