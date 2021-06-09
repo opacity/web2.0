@@ -9,7 +9,7 @@ phases:
     commands:
       - npm install -g npm@7.15.0
       - npm install -g lerna
-      - git submodule update --init --recursive
+      - git submodule update --init --recursive --remote
       - cd ts-client-library
       - rm package-lock.json
       - npx lerna bootstrap
