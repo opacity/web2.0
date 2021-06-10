@@ -62,10 +62,15 @@ const LandingPage = ({ history }) => {
               </div>
               <div className="row mb-3">
                 <div className="col-md-5">
-                  <button className="btn btn-pill btn-cart">
-                    <span></span>
-                    Purchase OPCT
-                  </button>
+                  <NavLink
+                    href="https://www.kucoin.com/trade/OPCT-USDT"
+                    target="_blank"
+                  >
+                    <button className="btn btn-pill btn-cart">
+                      <span></span>
+                      Purchase OPCT
+                    </button>
+                  </NavLink>
                 </div>
                 <div className="col-md-5">
                   <button
@@ -320,20 +325,35 @@ const LandingPage = ({ history }) => {
         <div className="row text-center align-items-center">
           <div className="col-md-4">
             <div className="card-item">
-              <img src={uniswap} />
-              <NavLink>Buy OPCT on UNISWAP</NavLink>
-            </div>
-          </div>
-          <div className="col-md-4">
-            <div className="card-item">
               <img src={kucoin} />
-              <NavLink>Buy OPCT on KUCOIN</NavLink>
+              <NavLink
+                href="https://www.kucoin.com/trade/OPCT-USDT"
+                target="_blank"
+              >
+                Buy OPCT on KUCOIN
+              </NavLink>
             </div>
           </div>
+
           <div className="col-md-4">
             <div className="card-item">
-              <img src={mercatox} />
-              <NavLink>Buy OPCT on MERCATOX</NavLink>
+              <coingecko-coin-ticker-widget
+                currency="usd"
+                coin-id="opacity"
+                locale="en"
+              ></coingecko-coin-ticker-widget>
+            </div>
+          </div>
+
+          <div className="col-md-4">
+            <div className="card-item">
+              <img src={uniswap} />
+              <NavLink
+                href="https://v2.info.uniswap.org/pair/0xd07d843cd1d769cdf918be8a3c2c0b708889f7fc"
+                target="_blank"
+              >
+                Buy OPCT on UNISWAP
+              </NavLink>
             </div>
           </div>
         </div>

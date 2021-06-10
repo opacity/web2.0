@@ -51,15 +51,15 @@ const Footer = () => {
             <NavLink href="https://medium.com/opacity-storage" target="_blank">
               Blog
             </NavLink>
-            <NavLink>Press</NavLink>
           </div>
           <div className="link-wrapper">
             <span className="title"> Resources</span>
-            <NavLink>Products</NavLink>
             <Link className="nav-link" to="/community">
               Downloads
             </Link>
-            <NavLink>Learn</NavLink>
+            <NavLink href="https://medium.com/opacity-storage" target="_blank">
+              Learn
+            </NavLink>
             <NavLink
               href="https://api.opacity.io:3000/swagger/index.html"
               target="_blank"
