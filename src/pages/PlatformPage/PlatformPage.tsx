@@ -4,6 +4,7 @@ import { Row, Col, Container, Media, Button } from "react-bootstrap";
 import SiteWrapper from "../../SiteWrapper";
 import "./PlatformPage.scss";
 import { Link } from "react-router-dom";
+
 const fullControl = require("../../assets/full-control.png");
 const handle = require("../../assets/handle-access.png");
 const encryptt = require("../../assets/encrypt.png");
@@ -110,7 +111,15 @@ const PlatformPage = ({ history }) => {
               <Col md="4">
                 <div className="card-item">
                   <img src={lastpass} />
-                  <span className="card1-title">Bitwarden</span>
+                  <span className="card1-title">
+                    <a
+                      href="https://bitwarden.com/"
+                      target="_blank"
+                      style={{ textDecoration: "none" }}
+                    >
+                      Bitwarden
+                    </a>
+                  </span>
                   <p>
                     Password manager with end to end encryption to help keep
                     your Opacity account handle safe
@@ -120,7 +129,15 @@ const PlatformPage = ({ history }) => {
               <Col md="4">
                 <div className="card-item">
                   <img src={password} />
-                  <span className="card1-title">Metamask</span>
+                  <span className="card1-title">
+                    <a
+                      href="https://metamask.io/"
+                      target="_blank"
+                      style={{ textDecoration: "none" }}
+                    >
+                      Metamask
+                    </a>
+                  </span>
                   <p>
                     In browser digital wallet to help pay for your account and
                     store your crypto
@@ -130,7 +147,15 @@ const PlatformPage = ({ history }) => {
               <Col md="4">
                 <div className="card-item">
                   <img src={keepass} />
-                  <span className="card1-title">Tor Browser</span>
+                  <span className="card1-title">
+                    <a
+                      href="https://www.torproject.org/"
+                      target="_blank"
+                      style={{ textDecoration: "none" }}
+                    >
+                      Tor Browser
+                    </a>
+                  </span>
                   <p>
                     Defend yourself. Protect yourself against tracking,
                     surveillance, and censorship.
