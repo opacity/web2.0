@@ -13,13 +13,13 @@ footer {
       opacity: 0.8;
     }
     @media (max-width: 767.9px) {
-        justify-content: center;
-        margin-bottom: 20px;
+      justify-content: center;
+      margin-bottom: 20px;
     }
   }
-  .footer-third >div{
+  .footer-third > div {
     @media (max-width: 767.9px) {
-        justify-content: center !important;
+      justify-content: center !important;
     }
   }
   .nav-link {
@@ -67,4 +67,8 @@ footer {
     line-height: 24px;
     color: #e4ecfc;
   }
+}
+
+.social-link {
+  margin-right: 20px;
 }

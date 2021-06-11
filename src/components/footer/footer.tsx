@@ -23,16 +23,25 @@ const Footer = () => {
               className="d-flex h-100 align-items-center"
               style={{ justifyContent: "flex-end" }}
             >
-              <NavLink to="https://github.com/opacity">
+              <NavLink to="https://github.com/opacity" className="social-link">
                 <img width="43" src={github} />
               </NavLink>
-              <NavLink to="https://www.reddit.com/r/Opacity/">
+              <NavLink
+                to="https://www.reddit.com/r/Opacity/"
+                className="social-link"
+              >
                 <img width="43" src={reddit} />
               </NavLink>
-              <NavLink to="https://telegram.me/opacitystorage">
+              <NavLink
+                to="https://telegram.me/opacitystorage"
+                className="social-link"
+              >
                 <img width="43" src={telegram} />
               </NavLink>
-              <NavLink to="https://twitter.com/Opacity_Storage">
+              <NavLink
+                to="https://twitter.com/Opacity_Storage"
+                className="social-link"
+              >
                 <img width="43" src={twitter} />
               </NavLink>
               <NavLink to="https://www.youtube.com/opacitystorage">
