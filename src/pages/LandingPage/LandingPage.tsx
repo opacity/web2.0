@@ -177,11 +177,11 @@ const LandingPage = ({ history }) => {
         <div className="container-xl">
           <h1>What can Opacity help you do?</h1>
           <h3>
-            Not only can you enjoy 100% private data storage, we use client side
-            end-to-end encryption you won’t find on most other file hosting
-            sites. We’re always expanding our capabilities to remain one step
-            ahead of our competitors, making our file upload system the best
-            choice for your day to day needs
+            Opacity provides 100% private data storage. But we also use client
+            side encryption you won’t find on other file hosting sites. Our
+            private file sharing capability ensures only authorized users you
+            share with can access your files. Mobile and desktop applications
+            make it easy to access and share files anywhere!
           </h3>
           <button
             className="btn btn-pill btn-primary"
