@@ -4,6 +4,7 @@ node_modules/
 .language-cache/
 .vscode/
 yarn.lock
+package-lock.json
 build/*
 !build/index.html
 out.js
