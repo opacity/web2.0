@@ -10,6 +10,7 @@ import FileManagePage from "./pages/FileManagePage/FileManagePage";
 import ForgotPage from "./pages/ForgotPage/ForgotPage";
 import SharePage from "./pages/SharePage/SharePage";
 import LegalPage from "./pages/LegalPages/LegalPage";
+import MigrationPage from "./pages/MigrationPage/MigrationPage";
 import history from "./redux/history";
 import { PrivateRoute } from "./PrivateRoute";
 import "./index.scss";
@@ -117,6 +118,7 @@ function App() {
               />
               <Route exact path="/forgot" component={ForgotPage} />
               <Route path="/share" component={SharePage} />
+              <Route path='/migration' component={MigrationPage} />
             </Switch>
           </Router>
         </FileManagementStatusProvider>
