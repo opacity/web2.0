@@ -133,11 +133,11 @@ const UsdPaymentForm = ({ plan, stripe, onStripeSuccess }) => {
             />
             <span className="custom-control-label">
               I agree to the{" "}
-              <a href="https://www.opacity.io/terms-of-service">
+              <a href="/terms-of-service">
                 <span>Terms of Service</span>
               </a>{" "}
               and{" "}
-              <a href="https://www.opacity.io/privacy-policy">
+              <a href="/privacy-policy">
                 <span>Privacy Policy</span>
               </a>
             </span>
