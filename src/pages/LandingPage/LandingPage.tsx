@@ -62,10 +62,15 @@ const LandingPage = ({ history }) => {
               </div>
               <div className="row mb-3">
                 <div className="col-md-5">
-                  <button className="btn btn-pill btn-cart">
-                    <span></span>
-                    Purchase OPCT
-                  </button>
+                  <NavLink
+                    href="https://www.kucoin.com/trade/OPCT-USDT"
+                    target="_blank"
+                  >
+                    <button className="btn btn-pill btn-cart">
+                      <span></span>
+                      Purchase OPCT
+                    </button>
+                  </NavLink>
                 </div>
                 <div className="col-md-5">
                   <button
@@ -172,11 +177,11 @@ const LandingPage = ({ history }) => {
         <div className="container-xl">
           <h1>What can Opacity help you do?</h1>
           <h3>
-            Not only can you enjoy 100% private data storage, we use client side
-            end-to-end encryption you won’t find on most other file hosting
-            sites. We’re always expanding our capabilities to remain one step
-            ahead of our competitors, making our file upload system the best
-            choice for your day to day needs
+            Opacity provides 100% private data storage. But we also use client
+            side encryption you won’t find on other file hosting sites. Our
+            private file sharing capability ensures only authorized users you
+            share with can access your files. Mobile and desktop applications
+            make it easy to access and share files anywhere!
           </h3>
           <button
             className="btn btn-pill btn-primary"
@@ -320,20 +325,35 @@ const LandingPage = ({ history }) => {
         <div className="row text-center align-items-center">
           <div className="col-md-4">
             <div className="card-item">
-              <img src={uniswap} />
-              <NavLink>Buy OPCT on UNISWAP</NavLink>
-            </div>
-          </div>
-          <div className="col-md-4">
-            <div className="card-item">
               <img src={kucoin} />
-              <NavLink>Buy OPCT on KUCOIN</NavLink>
+              <NavLink
+                href="https://www.kucoin.com/trade/OPCT-USDT"
+                target="_blank"
+              >
+                Buy OPCT on KUCOIN
+              </NavLink>
             </div>
           </div>
+
           <div className="col-md-4">
             <div className="card-item">
-              <img src={mercatox} />
-              <NavLink>Buy OPCT on MERCATOX</NavLink>
+              <coingecko-coin-ticker-widget
+                currency="usd"
+                coin-id="opacity"
+                locale="en"
+              ></coingecko-coin-ticker-widget>
+            </div>
+          </div>
+
+          <div className="col-md-4">
+            <div className="card-item">
+              <img src={uniswap} />
+              <NavLink
+                href="https://v2.info.uniswap.org/pair/0xd07d843cd1d769cdf918be8a3c2c0b708889f7fc"
+                target="_blank"
+              >
+                Buy OPCT on UNISWAP
+              </NavLink>
             </div>
           </div>
         </div>

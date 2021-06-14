@@ -1,0 +1,13 @@
+.title {
+  font-weight: 600;
+  font-size: 30px;
+  line-height: 45px;
+  color: #000000;
+  @media (max-width: 767.9px) {
+    font-weight: 600;
+    font-size: 17px;
+    line-height: 25px;
+    margin-bottom: 10px !important;
+    margin-top: 10px;
+  }
+}
