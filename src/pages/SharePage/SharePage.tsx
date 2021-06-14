@@ -94,9 +94,12 @@ const SharePage = ({ history }) => {
           storageNode,
         },
         name: file.name,
+        fileMeta: file,
       })
+      console.log(d, 'new')
       setDownloading(true)
       const s = await d.start()
+      console.log(s, 'start')
       setPercent(0)
 
       const fileStream = polyfillWritableStreamIfNeeded<Uint8Array>(streamsaver.createWriteStream(file.name, { size: file.size }))
