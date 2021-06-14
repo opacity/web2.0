@@ -90,24 +90,15 @@ const Footer = () => {
           </div>
           <div className="link-wrapper">
             <span className="title"> Legal</span>
-            <NavLink
-              href="https://www.opacity.io/terms-of-service"
-              target="_blank"
-            >
+            <NavLink href="/terms-of-service" target="_blank">
               Terms of Service
             </NavLink>
 
-            <NavLink
-              href="https://www.opacity.io/privacy-policy"
-              target="_blank"
-            >
+            <NavLink href="/privacy-policy" target="_blank">
               Privacy Policy
             </NavLink>
 
-            <NavLink
-              href="https://www.opacity.io/code-review-license"
-              target="_blank"
-            >
+            <NavLink href="/code-review-license" target="_blank">
               Code License
             </NavLink>
           </div>
