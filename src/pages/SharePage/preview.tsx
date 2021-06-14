@@ -46,7 +46,7 @@ const getTypeFromExt = (ext?: string) => {
 
   if ([
     "txt",
-    "md"
+    "md",
   ].includes(ext)) {
     return "text";
   }

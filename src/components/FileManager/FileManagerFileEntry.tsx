@@ -154,6 +154,8 @@ export const FileManagerFileEntryList = ({
 		let resName = name;
 		if (isMobile && name.length > 10) {
 			resName = name.slice(0, 10) + ' ...';
+		} else if (name.length > 50){
+			resName = name.slice(0, 50) + ' ...';
 		}
 		return resName
 	}
@@ -175,10 +177,11 @@ export const FileManagerFileEntryList = ({
 					{fileMeta && !fileMeta.finished && <span style={{ display: "inline-block", background: "rgba(0,0,0,.1)", padding: "4px 6px", borderRadius: 4, marginInline: "1em" }}>Pending</span>}
 				</div>
 			</Table.Col>
+			{ !isMobile && <Table.Col onClick={() => fileMeta && handleSelectFile(fileMeta)}>{fileMeta ? (fileMeta.public.location ? 'Public' : 'Private') : "..."}</Table.Col> }
 			{ !isMobile && <Table.Col onClick={() => fileMeta && handleSelectFile(fileMeta)}>{fileMeta ? moment(fileMeta.uploaded).calendar() : "..."}</Table.Col> }
 			<Table.Col onClick={() => fileMeta && handleSelectFile(fileMeta)}>{fileMeta ? formatBytes(fileMeta.size) : "..."}</Table.Col>
 			<Table.Col className='text-nowrap'>
-				<DropdownButton menuAlign='right' title='' id='dropdown-menu-align-right'>
+				<DropdownButton menuAlign='right' title='' id='dropdown-menu-align-right' className={isSelected ? "file-selected" : ""}>
 					<Dropdown.Item disabled={!fileMeta} eventKey='1' onClick={() => fileShare(fileMeta)}>
 						<i className='icon-share'></i>
 						Private Share

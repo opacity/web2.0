@@ -1,0 +1,19 @@
+version: 0.0
+os: linux
+files:
+  - source: /dist
+    destination: /home/ubuntu/website
+    runas: root
+file_exists_behavior: OVERWRITE
+
+permissions:
+  - object: /
+    pattern: "**"
+    owner: root
+    group: root
+
+hooks:
+  BeforeInstall:
+    - location: deploy_scripts/before_install.sh
+      timeout: 300
+      runas: root

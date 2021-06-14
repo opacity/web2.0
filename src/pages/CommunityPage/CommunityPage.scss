@@ -61,7 +61,7 @@
           position: relative;
           &::before {
             content: url("../../assets/download-button.svg");
-            position: absolute;       
+            position: absolute;
             left: 0;
           }
           font-weight: normal;
@@ -101,4 +101,8 @@
       color: #414141;
     }
   }
+}
+
+.nav-link {
+  padding: 0;
 }
