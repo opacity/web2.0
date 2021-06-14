@@ -41,6 +41,7 @@
     "react-dom": "^16.8.6",
     "react-dropzone": "^11.3.1",
     "react-file-icon": "^1.0.0",
+    "react-google-tag-manager": "^2.2.1",
     "react-loading": "^2.0.3",
     "react-lottie": "^1.2.3",
     "react-markdown": "^4.0.6",
@@ -68,7 +69,7 @@
     "@types/react": "^16.9.2",
     "@types/streamsaver": "^2.0.0",
     "fuse-box": "^4.0.0-next.132",
-    "node-sass": "^4.12.0",
+    "node-sass": "^6.0.0",
     "ts-node": "^8.1.0",
     "typescript": "^3.7.5",
     "uglify-js": "^3.0.15"
