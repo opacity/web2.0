@@ -9,6 +9,7 @@ import CommunityPage from "./pages/CommunityPage/CommunityPage";
 import FileManagePage from "./pages/FileManagePage/FileManagePage";
 import ForgotPage from "./pages/ForgotPage/ForgotPage";
 import SharePage from "./pages/SharePage/SharePage";
+import LegalPage from "./pages/LegalPages/LegalPage";
 import history from "./redux/history";
 import { PrivateRoute } from "./PrivateRoute";
 import "./index.scss";
@@ -83,6 +84,27 @@ function App() {
               <Route exact path="/platform" component={PlatformPage} />
               <Route exact path="/plans" component={PlansPage} />
               <Route exact path="/community" component={CommunityPage} />
+              <Route
+                path="/terms-of-service"
+                render={() => (
+                  <LegalPage title="Terms Of Service" type="terms-of-service" />
+                )}
+              />
+              <Route
+                path="/privacy-policy"
+                render={() => (
+                  <LegalPage title="Privacy Policy" type="privacy-policy" />
+                )}
+              />
+              <Route
+                path="/code-review-license"
+                render={() => (
+                  <LegalPage
+                    title="Code Review License"
+                    type="code-review-license"
+                  />
+                )}
+              />
               <PrivateRoute
                 exact
                 path="/file-manager"
