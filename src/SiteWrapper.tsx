@@ -19,6 +19,7 @@ import LoginModal from "./components/LoginModal/LoginModal";
 import SignUpModal from "./components/SignUpModal/SignUpModal";
 import "aos/dist/aos.css";
 import { PlanType } from "./config";
+import GoogleTagManager from "./components/GoogleTagManager/GoogleTagManager";
 
 AOS.init({
   once: true,
@@ -76,6 +77,7 @@ class SiteWrapper extends React.Component<Props, State> {
     const loggedIn = localStorage.getItem("key") ? true : false;
     return (
       <div className="page">
+        <GoogleTagManager gtmId={"GTM-WBG5C67"} />
         <header
           className={
             this.props.isHome

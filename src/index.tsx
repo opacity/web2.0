@@ -12,28 +12,30 @@ import SharePage from "./pages/SharePage/SharePage";
 import history from "./redux/history";
 import { PrivateRoute } from "./PrivateRoute";
 import "./index.scss";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 import { FileManagementStatusProvider, FileManagementStatus } from "./context";
 import { Provider } from "react-redux";
 import { store, persistor } from "./redux";
 import { PersistGate } from "redux-persist/lib/integration/react";
 
 function App() {
-  const status = React.useContext(FileManagementStatus)
+  const status = React.useContext(FileManagementStatus);
   let logoutTimeout;
 
   React.useEffect(() => {
     if (status.isManaging === true) {
-      clearTimeouts()
+      clearTimeouts();
     }
-  }, [status])
+  }, [status]);
 
   const logout = () => {
-    if (status.isManaging === true) { return }
-    console.log('You have been loged out');
+    if (status.isManaging === true) {
+      return;
+    }
+    console.log("You have been loged out");
     localStorage.clear();
-    history.push('/');
-  }
+    history.push("/");
+  };
 
   const setTimeouts = () => {
     logoutTimeout = setTimeout(logout, 1000 * 60 * 30);
@@ -45,12 +47,12 @@ function App() {
 
   React.useEffect(() => {
     const events = [
-      'load',
-      'mousemove',
-      'mousedown',
-      'click',
-      'scroll',
-      'keypress'
+      "load",
+      "mousemove",
+      "mousedown",
+      "click",
+      "scroll",
+      "keypress",
     ];
 
     const resetTimeout = () => {
@@ -68,23 +70,30 @@ function App() {
         window.removeEventListener(events[i], resetTimeout);
         clearTimeouts();
       }
-    }
+    };
   }, []);
 
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <FileManagementStatusProvider >
+        <FileManagementStatusProvider>
           <Router history={history}>
             <Switch>
-              <Route exact path='/' component={LandingPage} />
-              <Route exact path='/platform' component={PlatformPage} />
-              <Route exact path='/plans' component={PlansPage} />
-              <Route exact path='/community' component={CommunityPage} />
-              <PrivateRoute exact path='/file-manager' component={FileManagePage}
+              <Route exact path="/" component={LandingPage} />
+              <Route exact path="/platform" component={PlatformPage} />
+              <Route exact path="/plans" component={PlansPage} />
+              <Route exact path="/community" component={CommunityPage} />
+              <PrivateRoute
+                exact
+                path="/file-manager"
+                component={FileManagePage}
               />
-              <PrivateRoute exact path='/file-manager/:folderName' component={FileManagePage} />
-              <Route exact path='/forgot' component={ForgotPage} />
+              <PrivateRoute
+                exact
+                path="/file-manager/:folderName"
+                component={FileManagePage}
+              />
+              <Route exact path="/forgot" component={ForgotPage} />
               <Route path="/share" component={SharePage} />
             </Switch>
           </Router>
