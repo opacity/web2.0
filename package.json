@@ -22,6 +22,7 @@
     "axios": "^0.21.1",
     "buffer": "^6.0.3",
     "connected-react-router": "^6.9.1",
+    "crypto-browserify": "^3.12.0",
     "fflate": "^0.6.10",
     "file-saver": "^2.0.5",
     "formik": "^2.2.6",
@@ -60,16 +61,17 @@
     "streamsaver": "^2.0.5",
     "tabler-react": "^2.0.0-alpha.1",
     "tslib": "^1.14.1",
-    "util": "^0.12.3",
+    "util": "^0.12.4",
     "web-streams-polyfill": "^3.0.2",
     "yup": "^0.32.8"
   },
   "devDependencies": {
+    "@types/crypto-js": "^4.0.1",
     "@types/react": "^16.9.2",
     "@types/streamsaver": "^2.0.0",
-    "fuse-box": "^4.0.0-next.132",
+    "fuse-box": "^4.0.0",
     "node-sass": "^4.12.0",
-    "ts-node": "^8.1.0",
+    "ts-node": "^8.10.2",
     "typescript": "^3.7.5",
     "uglify-js": "^3.0.15"
   }

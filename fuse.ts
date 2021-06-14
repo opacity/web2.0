@@ -20,6 +20,9 @@ class Context {
         pluginReplace(/(?:.*[\/\\])?node_modules[\/\\]bn\.js[\/\\].*/, {
           "require('buffer')": "require('" + require.resolve("./node_modules/buffer").replace(/\\/g, "\\\\") + "')",
         }),
+        pluginReplace(/node_modules\/hdkey\/.*/, {
+          "require('crypto')": "require('" + require.resolve("./node_modules/crypto-browserify") + "')",
+        }),
         pluginReplace(/(?:.*[\/\\])?node_modules[\/\\]readable-stream[\/\\].*/, {
           "require('util')": "require('" + require.resolve("./node_modules/util").replace(/\\/g, "\\\\") + "')",
           "require('stream')": "require('" + require.resolve("./node_modules/stream-browserify").replace(/\\/g, "\\\\") + "')",

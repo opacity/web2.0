@@ -9,6 +9,7 @@ import CommunityPage from "./pages/CommunityPage/CommunityPage";
 import FileManagePage from "./pages/FileManagePage/FileManagePage";
 import ForgotPage from "./pages/ForgotPage/ForgotPage";
 import SharePage from "./pages/SharePage/SharePage";
+import MigrationPage from "./pages/MigrationPage/MigrationPage";
 import history from "./redux/history";
 import { PrivateRoute } from "./PrivateRoute";
 import "./index.scss";
@@ -81,11 +82,11 @@ function App() {
               <Route exact path='/platform' component={PlatformPage} />
               <Route exact path='/plans' component={PlansPage} />
               <Route exact path='/community' component={CommunityPage} />
-              <PrivateRoute exact path='/file-manager' component={FileManagePage}
-              />
+              <PrivateRoute exact path='/file-manager' component={FileManagePage}/>
               <PrivateRoute exact path='/file-manager/:folderName' component={FileManagePage} />
               <Route exact path='/forgot' component={ForgotPage} />
               <Route path="/share" component={SharePage} />
+              <Route path='/migration' component={MigrationPage} />
             </Switch>
           </Router>
         </FileManagementStatusProvider>

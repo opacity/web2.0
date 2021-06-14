@@ -2,3 +2,7 @@
 	path = ts-client-library
 	url = https://github.com/opacity/ts-client-library.git
 	branch = dev
+[submodule "opaque"]
+	path = opaque
+	url = https://github.com/opacity/opaque
+	branch = dev
