@@ -22,13 +22,22 @@ const PlatformPage = ({ history }) => {
   };
 
   const paperURLs = [
-    { language: "Chinese", link: "" },
     {
-      language: "Korean",
+      language: "Chinese 🇨🇳 ",
+      link: "https://opacitystora.ge/GalaxyWhitepaperV1Chinese",
+    },
+    {
+      language: "한국어 🇰🇷 ",
       link: "https://opacitystora.ge/GalaxyWhitepaperV1Korean",
     },
-    { language: "German", link: "" },
-    { language: "Russian", link: "" },
+    {
+      language: "Deutsch 🇩🇪 ",
+      link: "https://opacitystora.ge/GalaxyWhitepaperV1German",
+    },
+    {
+      language: "Pусский 🇷🇺 ",
+      link: "https://opacitystora.ge/GalaxyWhitepaperV1Russian",
+    },
   ];
 
   return (
@@ -200,7 +209,7 @@ const PlatformPage = ({ history }) => {
                       <a href={link} target="_blank">
                         {language}
                       </a>
-                      {idx !== paperURLs.length - 1 ? ", " : "!"}
+                      {idx !== paperURLs.length - 1 ? ", " : " !"}
                     </>
                   ))}
                 </p>
