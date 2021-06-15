@@ -548,7 +548,7 @@ const FileManagePage = ({ history }) => {
             config: {
               crypto: cryptoMiddleware,
               net: netMiddleware,
-              // storageNode: STORAGE_NODE_V1,
+              storageNodeV1: STORAGE_NODE_V1,
               storageNode,
             },
             name: file.name,

@@ -12,7 +12,7 @@ import { b64URLToBytes } from "../../../ts-client-library/packages/account-manag
 import { bytesToHex } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/hex"
 streamsaver.mitm = "/resources/streamsaver/mitm.html"
 Object.assign(streamsaver, { WritableStream })
-import { STORAGE_NODE as storageNode } from "../../config"
+import { STORAGE_NODE as storageNode, STORAGE_NODE_V1 } from "../../config"
 import "./SharePage.scss";
 import { formatBytes } from "../../helpers"
 import { FileIcon, defaultStyles } from 'react-file-icon';
@@ -91,6 +91,7 @@ const SharePage = ({ history }) => {
         config: {
           crypto: cryptoMiddleware,
           net: netMiddleware,
+          storageNodeV1: STORAGE_NODE_V1,
           storageNode,
         },
         name: file.name,
