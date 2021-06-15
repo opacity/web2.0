@@ -79,7 +79,6 @@ const PlansPage = ({ history }) => {
                 <img src={logo} />
                 <span>
                   <p className="item-link">Opacity Desktop Application</p>
-                  <p>Developer</p>
                   <p className="download">
                     <NavLink
                       href="https://github.com/Mavahu/opacity-electron"
