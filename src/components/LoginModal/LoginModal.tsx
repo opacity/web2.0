@@ -9,7 +9,7 @@ import "./LoginModal.scss";
 import { Account, AccountGetRes, AccountCreationInvoice } from "../../../ts-client-library/packages/account-management"
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web"
 import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex"
-import { STORAGE_NODE as storageNode } from "../../config"
+import { STORAGE_NODE as storageNode, DEFAULT_STORAGE_NODE_V1 } from "../../config"
 import { Link } from 'react-router-dom'
 
 const logo = require("../../assets/logo2.png");
@@ -63,8 +63,18 @@ const LoginModal: React.FC<OtherProps> = ({ show, handleClose, recoveryHandle, h
         history.push('file-manager')
       }
     }).catch((err: Error) => {
-      setErrors({
-        privateKey: err.message
+      const account = new Account({ crypto: cryptoMiddleware, net: netMiddleware, storageNode: `https://${DEFAULT_STORAGE_NODE_V1}:3000` });
+      account.needsMigration().then(res => {
+        if(res) {
+          setErrors({
+            privateKey: <>Ths account handle is old. <Link to='/migration'>Upgrade</Link> your account to Opacity V2.0</>
+          })
+          return
+        }
+      }).catch((error: Error) => {
+        setErrors({
+          privateKey: err.message
+        })
       })
     })
   }

@@ -32,8 +32,8 @@ export const PUBLIC_SHARE_URL = `https://public.opacity.io`;
 
 export const EXCHANGE_LINK = "https://www.kucoin.com/trade/OPCT-BTC";
 
-const DEFAULT_STORAGE_NODE_V1 = "broker-1.opacitynodes.com"
-const DEFAULT_STORAGE_NODE_V2 = "beta-broker.opacitynodes.com"
+export const DEFAULT_STORAGE_NODE_V1 = "broker-1.opacitynodes.com"
+export const DEFAULT_STORAGE_NODE_V2 = "beta-broker.opacitynodes.com"
 
 const DEFAULT_STORAGE_NODE_IP =
   process.env.NODE_ENV == NODE_ENV.DEVELOPMENT
@@ -43,6 +43,8 @@ const DEFAULT_STORAGE_NODE_IP =
     : DEFAULT_STORAGE_NODE_V1;
 
 export const STORAGE_NODE = `${PROTOCOL}://${DEFAULT_STORAGE_NODE_IP}:3000`;
+export const STORAGE_NODE_V1 = `https://${DEFAULT_STORAGE_NODE_V1}:3000`;
+export const STORAGE_NODE_V2 = `https://${DEFAULT_STORAGE_NODE_V2}:3000`;
 
 export const FILE_MAX_SIZE = 2 * 1024 * 1024 * 1024;
 

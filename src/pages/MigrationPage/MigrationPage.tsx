@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Field, Formik, FormikHelpers } from "formik";
 import { Form } from "tabler-react";
-import * as Yup from "yup";
-import { Account, AccountGetRes, AccountCreationInvoice } from "../../../ts-client-library/packages/account-management"
-import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web"
 import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex"
 import { AccountMigrator } from "../../../ts-client-library/packages/account-management/src/accountMigrator"
 import { MigratorEvents } from "../../../ts-client-library/packages/account-management/src/migrateEvents"
@@ -12,6 +9,7 @@ import "./MigrationPage.scss";
 import SiteWrapper from "../../SiteWrapper";
 import { Row, Col, Container, Media, Button, Carousel, CarouselItem, ProgressBar } from "react-bootstrap";
 import classNames from 'classnames'
+import { STORAGE_NODE as storageNode, DEFAULT_STORAGE_NODE_V1 } from "../../config"
 
 type MigrationFormProps = {
   privateKey: string
@@ -46,8 +44,8 @@ const MigrationPage = ({ history }) => {
     const migrator = new AccountMigrator(
       accountHandle,
       {
-        storageNodeV1: "https://broker-1.opacitynodes.com:3000",
-        storageNodeV2: "https://beta-broker.opacitynodes.com:3000",
+        storageNodeV1: `https://${DEFAULT_STORAGE_NODE_V1}:3000`,
+        storageNodeV2: storageNode,
       }
     )
 
