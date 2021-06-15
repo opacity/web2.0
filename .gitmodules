@@ -5,4 +5,4 @@
 [submodule "opaque"]
 	path = opaque
 	url = https://github.com/opacity/opaque
-	branch = dev
+	branch = master
