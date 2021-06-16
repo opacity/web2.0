@@ -7,6 +7,9 @@ git submodule update --init --recursive
 cd ts-client-library
 npx lerna bootstrap
 cd ..
+cd opaque
+npm install
+cd ..
 
 npm install
 npm run start
@@ -17,7 +20,7 @@ npm run start
 ```sh
 cd ts-client-library
 git fetch --all
-git reset --hard origin/dev
+git reset --hard origin/main
 npx lerna bootstrap
 cd ..
 ```
