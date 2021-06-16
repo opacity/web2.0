@@ -63,7 +63,7 @@ const Footer = () => {
           </div>
           <div className="link-wrapper">
             <span className="title"> Resources</span>
-            <Link className="nav-link" to="/community">
+            <Link className="nav-link" to="/downloads">
               Downloads
             </Link>
             <NavLink href="https://medium.com/opacity-storage" target="_blank">

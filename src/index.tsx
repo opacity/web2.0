@@ -84,7 +84,7 @@ function App() {
               <Route exact path="/" component={LandingPage} />
               <Route exact path="/platform" component={PlatformPage} />
               <Route exact path="/plans" component={PlansPage} />
-              <Route exact path="/community" component={CommunityPage} />
+              <Route exact path="/downloads" component={CommunityPage} />
               <Route
                 path="/terms-of-service"
                 render={() => (

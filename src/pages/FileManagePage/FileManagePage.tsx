@@ -1049,11 +1049,11 @@ const FileManagePage = ({ history }) => {
           <div className="side-bar-footer">
             <div>@Opacity v2.0.0</div>
             <div>
-              <a href="/privacy-policy">
+              <a href="/privacy-policy" target="_blank">
                 <span className="text-white">Privacy Policy</span>
               </a>{" "}
               and{" "}
-              <a href="/terms-of-service">
+              <a href="/terms-of-service" target="_blank">
                 <span className="text-white">Terms of Service</span>
               </a>
             </div>

@@ -361,11 +361,11 @@ const AccountHandle: React.FC<SignUpProps> = ({
               />
               <span className="custom-control-label">
                 I agree to the{" "}
-                <a href="/terms-of-service">
+                <a href="/terms-of-service" target="_blank">
                   <span>Terms of Service</span>
                 </a>{" "}
                 and{" "}
-                <a href="/privacy-policy">
+                <a href="/privacy-policy" target="_blank">
                   <span>Privacy Policy</span>
                 </a>
               </span>
