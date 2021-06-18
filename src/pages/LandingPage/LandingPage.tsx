@@ -61,7 +61,7 @@ const LandingPage = ({ history }) => {
                 Free to share ideas. Free to be private. Free to be you.
               </div>
               <div className="row mb-3">
-                <div className="col-md-5">
+                <div className="col-md-5 btn-cart-container">
                   <NavLink
                     href="https://www.kucoin.com/trade/OPCT-USDT"
                     target="_blank"

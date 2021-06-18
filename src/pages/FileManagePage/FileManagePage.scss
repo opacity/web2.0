@@ -397,67 +397,74 @@
         }
       }
     }
-    .header-item {
-      align-items: center;
-      font-weight: 500;
-      font-size: 13px;
-      line-height: 19px;
-      color: #eaf1ff;
-      cursor: pointer;
-      &:hover {
-        opacity: 0.8;
+  }
+  .header-item {
+    align-items: center;
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 19px;
+    color: #eaf1ff;
+    cursor: pointer;
+    &:hover {
+      opacity: 0.8;
+    }
+    .item-text {
+      @media (max-width: 769px) {
+        display: none;
       }
-      .item-text {
-        @media (max-width: 769px) {
-          display: none;
-        }
+    }
+    .item-icon {
+      background-color: #eaf1ff;
+      width: 40px;
+      height: 40px;
+      &.file-upload {
+        mask: url("../../assets/direct-download.svg") no-repeat center;
+        -webkit-mask: url("../../assets/direct-download.svg") no-repeat center;
       }
-      .item-icon {
-        background-color: #eaf1ff;
+      &.file-download {
+        mask: url("../../assets/direct-download1.svg") no-repeat center;
+        -webkit-mask: url("../../assets/direct-download1.svg") no-repeat center;
+        -webkit-mask-size: contain;
         width: 40px;
-        height: 40px;
-        &.file-upload {
-          mask: url("../../assets/direct-download.svg") no-repeat center;
-          -webkit-mask: url("../../assets/direct-download.svg") no-repeat center;
-        }
-        &.file-download {
-          mask: url("../../assets/direct-download1.svg") no-repeat center;
-          -webkit-mask: url("../../assets/direct-download1.svg") no-repeat center;
-          -webkit-mask-size: contain;
-          width: 40px;
-          height: 23px;
-        }
-        &.file-delete {
-          mask: url("../../assets/delete.svg") no-repeat center;
-          -webkit-mask: url("../../assets/delete.svg") no-repeat center;
-          -webkit-mask-size: contain;
-          width: 40px;
-          height: 23px;
-        }
-        &.file-close {
-          mask: url("../../assets/close.svg") no-repeat center;
-          -webkit-mask: url("../../assets/close.svg") no-repeat center;
-          -webkit-mask-size: contain;
-          width: 17px;
-          height: 17px;
-        }
-        &.file-cancel {
-          mask: url("../../assets/cancel.svg") no-repeat center;
-          -webkit-mask: url("../../assets/cancel.svg") no-repeat center;
-          -webkit-mask-size: contain;
-          width: 40px;
-          height: 23px;
-        }
-        &.new-folder {
-          mask: url("../../assets/add-folder.svg") no-repeat center;
-          -webkit-mask: url("../../assets/add-folder.svg") no-repeat center;
-        }
-        &.grid-view {
-          background: url("../../assets/grid-view.png") no-repeat center;
-        }
-        &.table-view {
-          background: url("../../assets/table-view.png") no-repeat center;
-        }
+        height: 23px;
+      }
+      &.file-delete {
+        mask: url("../../assets/delete.svg") no-repeat center;
+        -webkit-mask: url("../../assets/delete.svg") no-repeat center;
+        -webkit-mask-size: contain;
+        width: 40px;
+        height: 23px;
+      }
+      &.file-close {
+        mask: url("../../assets/close.svg") no-repeat center;
+        -webkit-mask: url("../../assets/close.svg") no-repeat center;
+        -webkit-mask-size: contain;
+        width: 17px;
+        height: 17px;
+      }
+      &.file-cancel {
+        mask: url("../../assets/cancel.svg") no-repeat center;
+        -webkit-mask: url("../../assets/cancel.svg") no-repeat center;
+        -webkit-mask-size: contain;
+        width: 40px;
+        height: 23px;
+      }
+      &.new-folder {
+        mask: url("../../assets/add-folder.svg") no-repeat center;
+        -webkit-mask: url("../../assets/add-folder.svg") no-repeat center;
+      }
+      &.grid-view {
+        background: url("../../assets/grid-view.png") no-repeat center;
+      }
+      &.table-view {
+        background: url("../../assets/table-view.png") no-repeat center;
+      }
+    }
+    &.header-item-absolute {
+      margin-top: -4px;
+      margin-right: 62px;
+      @media (max-width: 769px) {
+        margin-right: 25px;
       }
     }
   }
@@ -466,7 +473,9 @@
     flex: 1 1;
     overflow: auto;
     display: flex;
+    width: 100%;
     flex-direction: column;
+    max-width: none;
     .breadcrumb-content {
       border-bottom: 2px solid #e2e2e2;
       margin-bottom: 20px;
@@ -598,10 +607,11 @@
           margin-right: 20px;
         }
       }
-      .file-selected{
+      .file-selected {
         .dropdown-toggle {
           &::after {
-            filter: invert(80%) sepia(100%) saturate(500%) hue-rotate(200deg) brightness(104%) contrast(97%);
+            filter: invert(80%) sepia(100%) saturate(500%) hue-rotate(200deg)
+              brightness(104%) contrast(97%);
           }
         }
       }
@@ -625,7 +635,7 @@
           margin-right: 10px;
         }
         .grid-item-selected {
-          border: 1px solid #E4DEDE;
+          border: 1px solid #e4dede;
           border-radius: 2px;
         }
         .grid-selected-icon {
@@ -634,7 +644,7 @@
           left: 8px;
           width: 26px;
           height: 26px;
-          background: #E6Efff;
+          background: #e6efff;
           border-radius: 13px;
           padding: 6px;
           content: url("../../assets/check.svg");
@@ -800,7 +810,7 @@
     top: 0;
     right: 0;
     z-index: 2;
-    padding: .25rem 1.00rem;
+    padding: 0.25rem 1rem;
     color: inherit;
     font-size: 25px;
     .sr-only {
@@ -810,7 +820,7 @@
       padding: 0;
       margin: -1px;
       overflow: hidden;
-      clip: rect(0,0,0,0);
+      clip: rect(0, 0, 0, 0);
       white-space: nowrap;
       border: 0;
     }
@@ -821,7 +831,7 @@
   position: absolute;
   bottom: 0;
   width: 100%;
-  background: #3F77DB;
+  background: #3f77db;
   height: 60px;
   font-weight: 500;
   font-size: 12px;
@@ -836,7 +846,6 @@
 }
 
 .file-table-header {
-    
   th.sortable {
     position: relative;
     cursor: pointer;
@@ -859,5 +868,4 @@
   th.sortable:hover::after {
     color: #333;
   }
-
 }

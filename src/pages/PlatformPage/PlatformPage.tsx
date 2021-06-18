@@ -54,9 +54,9 @@ const PlatformPage = ({ history }) => {
             </h1>
             <h3 className="page1-description mb-5">
               Unlike other storage solutions, Opacity relies on client-side
-              encryption to ensure that you, and only you have access to your
-              files. Our backend services keep zero knowledge regarding your
-              file uploads.
+              encryption to ensure that you, and only you, have access to your
+              files. Our service has zero knowledge regarding your account
+              activity and usage.
             </h3>
             <img src={fullControl} />
           </Col>
@@ -217,7 +217,6 @@ const PlatformPage = ({ history }) => {
                   href="https://opacitystora.ge/GalaxyWhitepaperV1"
                   target="_blank"
                 >
-                  <img src={uploadButton} />
                   Download Whitepaper
                 </NavLink>
               </Media.Body>

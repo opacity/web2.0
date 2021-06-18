@@ -32,24 +32,29 @@ const PlansPage = ({ history }) => {
           <Col md={6}>
             <div className="site-item">
               <div className="d-flex">
-                <img src={storgeImage} />
+                <img src={logo} />
                 <span>
-                  <p className="item-link">opacitystora.ge</p>
-                  <p>
-                    <NavLink href="https://opacitystora.ge/" target="_blank">
-                      Visit
+                  <p className="item-link">Opacity Drive</p>
+                  <p className="download">
+                    <NavLink
+                      href="https://github.com/Mavahu/opacity-electron/releases"
+                      target="_blank"
+                    >
+                      Download
                     </NavLink>
                   </p>
                 </span>
               </div>
 
-              <h4>Description</h4>
-              <h5>
-                Opacitystora.ge allows you to easily shorten shared links (aka
-                handles) from the Opacity Storage web services.
+              <h5 className="mt-4">
+                This Windows desktop application allows you to interact with
+                your Opacity account. It supports all features and even offers
+                you the possibility to rename folders or move files/folders
+                around.
               </h5>
             </div>
           </Col>
+
           <Col md={6}>
             <div className="site-item">
               <div className="d-flex">
@@ -64,8 +69,7 @@ const PlansPage = ({ history }) => {
                 </span>
               </div>
 
-              <h4>Description</h4>
-              <h5>
+              <h5 className="mt-4">
                 imgOPCT is a public imageboard platform to share your images
                 uploaded on Opacity. It's hosted for the community by the
                 community. You can upload images and share them with the public
@@ -73,29 +77,24 @@ const PlansPage = ({ history }) => {
               </h5>
             </div>
           </Col>
+
           <Col md={6}>
             <div className="site-item">
               <div className="d-flex">
-                <img src={logo} />
+                <img src={storgeImage} />
                 <span>
-                  <p className="item-link">Opacity Desktop Application</p>
-                  <p className="download">
-                    <NavLink
-                      href="https://github.com/Mavahu/opacity-electron"
-                      target="_blank"
-                    >
-                      Link to Download
+                  <p className="item-link">opacitystora.ge</p>
+                  <p>
+                    <NavLink href="https://opacitystora.ge/" target="_blank">
+                      Visit
                     </NavLink>
                   </p>
                 </span>
               </div>
 
-              <h4>Description</h4>
-              <h5>
-                This Windows desktop application allows you to interact with
-                your Opacity account. It supports all features and even offers
-                you the possibility to rename folders or move files/folders
-                around.
+              <h5 className="mt-4">
+                Opacitystora.ge allows you to easily shorten shared links (aka
+                handles) from the Opacity Storage web services.
               </h5>
             </div>
           </Col>
