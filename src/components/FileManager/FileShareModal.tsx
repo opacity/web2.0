@@ -7,11 +7,18 @@ import { FRONT_END_URL, PUBLIC_SHARE_URL } from '../../config'
 import { bytesToB64URL } from "../../../ts-client-library/packages/util/src/b64"
 import { AccountSystem, FileMetadata } from '../../../ts-client-library/packages/account-system'
 import { FileSystemShare } from "../../../ts-client-library/packages/filesystem-access/src/public-share"
-import { bindFileSystemObjectToAccountSystem, bindPublicShareToAccountSystem } from "../../../ts-client-library/packages/filesystem-access/src/account-system-binding"
+import {
+  bindFileSystemObjectToAccountSystem,
+  bindPublicShareToAccountSystem
+} from "../../../ts-client-library/packages/filesystem-access/src/account-system-binding"
 import { FileSystemObject } from "../../../ts-client-library/packages/filesystem-access/src/filesystem-object"
 import ReactLoading from "react-loading";
-import { CryptoMiddleware } from '../../../ts-client-library/packages/util/node_modules/@opacity/middleware/src'
-import { NetworkMiddleware } from '../../../ts-client-library/packages/util/node_modules/@opacity/middleware/src'
+import {
+  WebNetworkMiddleware,
+} from "../../../ts-client-library/packages/middleware-web"
+import {
+  CryptoMiddleware,
+} from "../../../ts-client-library/packages/middleware";
 import _ from 'lodash'
 import { toast } from "react-toastify";
 
@@ -26,7 +33,7 @@ type FileShareModalProps = {
   file: FileMetadata
   accountSystem: AccountSystem
   cryptoMiddleware: CryptoMiddleware
-  netMiddleware: NetworkMiddleware
+  netMiddleware: WebNetworkMiddleware
   storageNode: string
   mode: "private" | "public"
 }
@@ -57,7 +64,7 @@ const FileShareModal = ({
       setPageLoading(true)
 
       if (mode === 'private') {
-        if (file.private.handle &&  _.isEmpty(file.public.location)) {
+        if (file.private.handle && _.isEmpty(file.public.location)) {
           accountSystem.getSharesByHandle(file.private.handle).then(async (shares) => {
             if (shares[0]) {
               const shareHandle = bytesToB64URL(accountSystem.getShareHandle(shares[0]))
