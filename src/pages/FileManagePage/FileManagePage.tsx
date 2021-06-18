@@ -1086,7 +1086,7 @@ const FileManagePage = ({ history }) => {
               <span className="item-icon new-folder"></span>
               <span>NEW FOLDER</span>
             </div>
-            {tableView && (
+            {/* {tableView && (
               <div className=" d-flex header-item ml-3">
                 <span
                   className="item-icon grid-view"
@@ -1105,7 +1105,7 @@ const FileManagePage = ({ history }) => {
                   }}
                 ></span>
               </div>
-            )}
+            )} */}
           </div>
         )}
         {selectedFiles.length > 0 && (
@@ -1180,6 +1180,27 @@ const FileManagePage = ({ history }) => {
           )}
           {(fileList.length > 0 || folderList.length > 0) && (
             <div>
+              {tableView && (
+                <div className="d-flex header-item header-item-absolute ml-3 justify-content-end position-absolute left-0 right-0">
+                  <span
+                    className="item-icon grid-view"
+                    onClick={() => {
+                      setTableView(false);
+                    }}
+                  ></span>
+                </div>
+              )}
+              {!tableView && (
+                <div className="d-flex header-item header-item-absolute ml-3 justify-content-end position-absolute left-0 right-0">
+                  <span
+                    className="item-icon table-view"
+                    onClick={() => {
+                      setTableView(true);
+                    }}
+                  ></span>
+                </div>
+              )}
+
               {!tableView && (
                 <div className="grid-view">
                   {folderList.map(
@@ -1214,6 +1235,7 @@ const FileManagePage = ({ history }) => {
                   )}
                 </div>
               )}
+
               {tableView && (
                 <Table
                   highlightRowOnHover
