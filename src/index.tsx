@@ -119,13 +119,6 @@ function App() {
           content="Opacity provides encrypted cloud storage that never stores your personal data. Powered by OPCT crypto token."
         />
         <meta name="twitter:image" content="assets/logo.svg" />
-        <link
-          rel="stylesheet"
-          href="https://unpkg.com/@tabler/core@1.0.0-alpha.13/dist/css/tabler.min.css"
-        />
-        <script src="https://js.stripe.com/v3/"></script>
-        <script src="https://widgets.coingecko.com/coingecko-coin-ticker-widget.js"></script>
-        $css
       </Helmet>
 
       <Provider store={store}>
