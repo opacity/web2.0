@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Router, Route, Switch, Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import { Application } from "./components/application/Application";
 import LandingPage from "./pages/LandingPage/LandingPage";
 import PlatformPage from "./pages/PlatformPage/PlatformPage";
@@ -76,54 +77,102 @@ function App() {
   }, []);
 
   return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <FileManagementStatusProvider>
-          <Router history={history}>
-            <Switch>
-              <Route exact path="/" component={LandingPage} />
-              <Route exact path="/platform" component={PlatformPage} />
-              <Route exact path="/plans" component={PlansPage} />
-              <Route exact path="/downloads" component={CommunityPage} />
-              <Route
-                path="/terms-of-service"
-                render={() => (
-                  <LegalPage title="Terms Of Service" type="terms-of-service" />
-                )}
-              />
-              <Route
-                path="/privacy-policy"
-                render={() => (
-                  <LegalPage title="Privacy Policy" type="privacy-policy" />
-                )}
-              />
-              <Route
-                path="/code-review-license"
-                render={() => (
-                  <LegalPage
-                    title="Code Review License"
-                    type="code-review-license"
-                  />
-                )}
-              />
-              <PrivateRoute
-                exact
-                path="/file-manager"
-                component={FileManagePage}
-              />
-              <PrivateRoute
-                exact
-                path="/file-manager/:folderName"
-                component={FileManagePage}
-              />
-              <Route exact path="/forgot" component={ForgotPage} />
-              <Route path="/share" component={SharePage} />
-              <Route path='/migration' component={MigrationPage} />
-            </Switch>
-          </Router>
-        </FileManagementStatusProvider>
-      </PersistGate>
-    </Provider>
+    <>
+      <Helmet>
+        <meta charset="utf-8" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <meta
+          http-equiv="Content-Security-Policy"
+          content="worker-src 'self'"
+        />
+        <meta
+          name="description"
+          content="Opacity provides encrypted cloud storage that never stores your personal data. Powered by OPCT crypto token."
+        />
+        <meta name="googlebot" content="index,follow,snippet,archive" />
+        <meta name="robots" content="all,index,follow" />
+        <meta name="author" content="opacity.io" />
+        <meta name="copyright" content="2019 opacity.io" />
+        <title>Private Cloud Storage and File Sharing | Opacity</title>
+        <meta itemprop="name" content="Opacity Storage" />
+        <meta
+          itemprop="description"
+          content="Opacity provides encrypted cloud storage that never stores your personal data. Powered by OPCT crypto token."
+        />
+        <meta itemprop="image" content="assets/logo.svg" />
+        <meta property="og:url" content="https://dev2.opacity.io" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Opacity Storage" />
+        <meta
+          property="og:description"
+          content="Opacity provides encrypted cloud storage that never stores your personal data. Powered by OPCT crypto token."
+        />
+        <meta property="og:image" content="assets/logo.svg" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Opacity Storage" />
+        <meta
+          name="twitter:description"
+          content="Opacity provides encrypted cloud storage that never stores your personal data. Powered by OPCT crypto token."
+        />
+        <meta name="twitter:image" content="assets/logo.svg" />
+      </Helmet>
+
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <FileManagementStatusProvider>
+            <Router history={history}>
+              <Switch>
+                <Route exact path="/" component={LandingPage} />
+                <Route exact path="/platform" component={PlatformPage} />
+                <Route exact path="/plans" component={PlansPage} />
+                <Route exact path="/downloads" component={CommunityPage} />
+                <Route
+                  path="/terms-of-service"
+                  render={() => (
+                    <LegalPage
+                      title="Terms Of Service"
+                      type="terms-of-service"
+                    />
+                  )}
+                />
+                <Route
+                  path="/privacy-policy"
+                  render={() => (
+                    <LegalPage title="Privacy Policy" type="privacy-policy" />
+                  )}
+                />
+                <Route
+                  path="/code-review-license"
+                  render={() => (
+                    <LegalPage
+                      title="Code Review License"
+                      type="code-review-license"
+                    />
+                  )}
+                />
+                <PrivateRoute
+                  exact
+                  path="/file-manager"
+                  component={FileManagePage}
+                />
+                <PrivateRoute
+                  exact
+                  path="/file-manager/:folderName"
+                  component={FileManagePage}
+                />
+                <Route exact path="/forgot" component={ForgotPage} />
+                <Route path="/share" component={SharePage} />
+                <Route path="/migration" component={MigrationPage} />
+              </Switch>
+            </Router>
+          </FileManagementStatusProvider>
+        </PersistGate>
+      </Provider>
+    </>
   );
 }
 ReactDOM.render(<App />, document.getElementById("root"));
