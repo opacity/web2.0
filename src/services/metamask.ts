@@ -1,61 +1,46 @@
-import opacityABI from "../contracts/opacity.abi.json";
+// import opacityABI from "../contracts/opacity.abi.json";
 
 const CONTRACT_ADDRESS = "0xDb05EA0877A2622883941b939f0bb11d1ac7c400";
 
 declare global {
   interface Window {
     ethereum: any;
-    web3: any;
-    Web3: any;
   }
 }
 
 const isNewVersion = !!window.ethereum;
-const isLegacyVersion = !!window.web3;
-const isInstalled = isNewVersion || isLegacyVersion;
+const isInstalled = isNewVersion ;
 
-const fetchDefaultMetamaskAccount = () => {
+const fetchDefaultMetamaskAccount = async () => {
   if (isNewVersion) {
-    return window.ethereum.enable().then(accounts => accounts[0]);
-  } else if (isLegacyVersion) {
-    const account = window.web3.eth.getAccounts(accounts => accounts[0]);
-    return Promise.resolve(account);
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    return accounts[0]
   } else {
     return Promise.reject(new Error("MetaMask error fetching address"));
   }
 };
 
-const getTransactionNonce = account =>
+const sendTransaction = ({ cost, from, to, gasPrice }) =>
   new Promise((resolve, reject) => {
-    window.web3.eth.getTransactionCount(account, (err, nonce) => {
-      err ? reject(err) : resolve(nonce);
-    });
-  });
-
-const sendTransaction = ({ cost, from, to, gasPrice, nonce }) =>
-  new Promise((resolve, reject) => {
-    const web3 = new window.Web3(
-      isNewVersion ? window.ethereum : window.web3.currentProvider
-    );
-    const opacityContract = web3.eth.contract(opacityABI).at(CONTRACT_ADDRESS);
-
-    opacityContract.transfer(
-      to,
-      web3.toWei(cost, "ether"),
-      {
-        from,
-        gas: 60000,
-        gasPrice: web3.toWei(gasPrice, "gwei")
-      },
-      (err, res) => {
-        err ? reject(err) : resolve(res);
-      }
-    );
+    window.ethereum
+    .request({
+      method: 'eth_sendTransaction',
+      params: [
+        {
+          from,
+          to,
+          value: window.ethereum.Web3.Web3.Convert.ToWei(gasPrice, "ether"),
+          gasPrice: window.ethereum.Web3.Web3.Convert.ToWei(gasPrice, "gwei"),
+          gas: '6000',
+        },
+      ],
+    })
+    .then((txHash) => resolve(txHash))
+    .catch((error) => reject(error));
   });
 
 export default {
   isInstalled,
   sendTransaction,
   fetchDefaultMetamaskAccount,
-  getTransactionNonce
 };

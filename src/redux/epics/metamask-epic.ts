@@ -31,27 +31,12 @@ const metamaskTransactionEpic = action$ =>
     ofType(metamaskActions.PAYMENT_PENDING),
     mergeMap(({ payload }) => {
       const { from, to, cost, gasPrice } = payload;
-      return fromPromise(MetamaskService.getTransactionNonce(from)).pipe(
-        map(nonce => {
-          return {
-            to,
-            from,
-            cost,
-            gasPrice,
-            nonce
-          };
-        }),
-        catchError(error => of(metamaskActions.paymentError({ error })))
-      );
-    }),
-    mergeMap(({ cost, to, from, gasPrice, nonce }) => {
       return fromPromise(
         MetamaskService.sendTransaction({
           cost,
           to,
           from,
           gasPrice,
-          nonce: nonce + 1
         })
       ).pipe(
         map(() => metamaskActions.paymentSuccess()),
