@@ -119,6 +119,7 @@ const SignUpModal: React.FC<OtherProps> = ({
     openLoginModal();
   };
   const createAccount = async () => {
+    console.log('go to next account')
     const cryptoMiddleware = new WebAccountMiddleware({
       asymmetricKey: hexToBytes(handle),
     });
@@ -361,11 +362,11 @@ const AccountHandle: React.FC<SignUpProps> = ({
               />
               <span className="custom-control-label">
                 I agree to the{" "}
-                <a href="/terms-of-service">
+                <a href="/terms-of-service" target="_blank">
                   <span>Terms of Service</span>
                 </a>{" "}
                 and{" "}
-                <a href="/privacy-policy">
+                <a href="/privacy-policy" target="_blank">
                   <span>Privacy Policy</span>
                 </a>
               </span>
@@ -484,13 +485,13 @@ const SendPayment: React.FC<SignUpProps> = ({
             <h3>Send Payment with OPCT</h3>
             <div className="payment-content">
               Use the Opacity Storage Token, OPCT, to pay for your storage
-              account. Send your total amount of 16 OPCT to the address below or
+              account. Send your total amount of {plan.opctCost} OPCT to the address below or
               you may use MetaMask to easily make your payment right in your
               browser.
             </div>
             <div className="important-content">
               IMPORTANT: Do not send any other coin or token to this account
-              address as it may result in a loss of funds. Only send 16 OPCT.
+              address as it may result in a loss of funds. Only send {plan.opctCost} OPCT.
               Sending more may also result in loss of funds.
             </div>
             <div className="payment-content">

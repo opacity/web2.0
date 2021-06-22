@@ -61,7 +61,7 @@ const LandingPage = ({ history }) => {
                 Free to share ideas. Free to be private. Free to be you.
               </div>
               <div className="row mb-3">
-                <div className="col-md-5">
+                <div className="col-md-5 btn-cart-container">
                   <NavLink
                     href="https://www.kucoin.com/trade/OPCT-USDT"
                     target="_blank"
@@ -261,65 +261,7 @@ const LandingPage = ({ history }) => {
           </button>
         </div>
       </div>
-      <div className="card-items container-xl" data-aos="fade-up">
-        <h1>More Info? No Problem.</h1>
-        <div className="row" style={{ justifyContent: "space-around" }}>
-          <div className="col-md-3 ">
-            <div className="card-item">
-              <div className="rectangle">
-                <img src={community} />
-              </div>
-              <h2> Community for Opacity</h2>
-              <h3>
-                We are a group of privacy enthusiasts looking to build a truly
-                private data storage solution. Take a look at some of the
-                applications our community has created
-              </h3>
-              <NavLink>READ MORE</NavLink>
-            </div>
-          </div>
-          {/* <div className='col-md-3 '>
-            <div className='card-item'>
-              <div className='rectangle'>
-                <img src={privacy} />
-              </div>
-              <h2> Privacy in File - Sharing Networks</h2>
-              <h3>
-                Not many storage providers offer a true, zero-knowledge solution. Learn exactly what zero-knowledge means and how it can be of benefit
-                to you.
-              </h3>
-              <NavLink>READ MORE</NavLink>
-            </div>
-          </div> */}
-          <div className="col-md-3 ">
-            <div className="card-item">
-              <div className="rectangle">
-                <img src={stand} />
-              </div>
-              <h2> Why Opacity Stands Out</h2>
-              <h3>
-                We do things differently than most storage providers. Learn
-                exactly what makes us stand out from the competition.
-              </h3>
-              <NavLink>READ MORE</NavLink>
-            </div>
-          </div>
-          <div className="col-md-3 ">
-            <div className="card-item">
-              <div className="rectangle">
-                <img src={crypto} />
-              </div>
-              <h2> New to Cryptocurrency?</h2>
-              <h3>
-                Cryptocurrency can be a little confusing, but it doesn’t have to
-                be. Take a look at this video to learn how you can get started
-                with cryptocurrency.
-              </h3>
-              <NavLink>READ MORE</NavLink>
-            </div>
-          </div>
-        </div>
-      </div>
+
       <div className="container-xl opct" data-aos="fade-up">
         <h1>Where to Buy OPCT</h1>
         <div className="row text-center align-items-center">
