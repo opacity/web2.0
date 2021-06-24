@@ -75,9 +75,7 @@ const Footer = () => {
           </div>
           <div className="link-wrapper">
             <span className="title"> Resources</span>
-            <Link className="nav-link" to="/downloads">
-              Downloads
-            </Link>
+            <NavLink href="/downloads">Downloads</NavLink>
             <NavLink href="https://medium.com/opacity-storage" target="_blank">
               Learn
             </NavLink>
