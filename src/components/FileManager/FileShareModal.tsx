@@ -30,6 +30,7 @@ const closeImage = require("../../assets/close-button.svg")
 type FileShareModalProps = {
   open: any
   onClose: any
+  doRefresh: any
   file: FileMetadata
   accountSystem: AccountSystem
   cryptoMiddleware: CryptoMiddleware
@@ -41,6 +42,7 @@ type FileShareModalProps = {
 const FileShareModal = ({
   open,
   onClose,
+  doRefresh,
   file,
   accountSystem,
   cryptoMiddleware,
@@ -91,6 +93,7 @@ const FileShareModal = ({
               const shareHandle = bytesToB64URL(accountSystem.getShareHandle(shareMeta))
               setShareURL(`${FRONT_END_URL}/share#key=${shareHandle}`)
               setPageLoading(false)
+              doRefresh()
             }
           }).catch((err) => {
             setShareURL("")
@@ -104,7 +107,6 @@ const FileShareModal = ({
       } else if (mode === 'public') {
         const curFileMetadata = await accountSystem.getFileMetadata(file.location)
 
-        console.log(curFileMetadata, '---------')
         if (curFileMetadata.public.shortLinks[0] || !_.isEmpty(curFileMetadata.public.location)) {
           setShareURL(`${PUBLIC_SHARE_URL}/${curFileMetadata.public.shortLinks[0]}`)
           setPageLoading(false)
@@ -126,6 +128,7 @@ const FileShareModal = ({
         await fileSystemObject.convertToPublic()
 
         const fileSystemShare = new FileSystemShare({
+          handle: curFileMetadata.private.handle,
           fileLocation: fileSystemObject.location,
           config: {
             crypto: cryptoMiddleware,
@@ -144,6 +147,7 @@ const FileShareModal = ({
 
         setShareURL(`${PUBLIC_SHARE_URL}/${fileSystemShare.shortlink}`)
         setPageLoading(false)
+        doRefresh()
       }
     }
 
@@ -158,6 +162,7 @@ const FileShareModal = ({
     const fileSystemShare = new FileSystemShare({
       shortLink: curFileMetadata.public.shortLinks[0],
       fileLocation: curFileMetadata.public.location,
+      handle: curFileMetadata.location,
       config: {
         crypto: cryptoMiddleware,
         net: netMiddleware,
@@ -170,6 +175,7 @@ const FileShareModal = ({
     await fileSystemShare.publicShareRevoke()
 
     setPageLoading(false)
+    doRefresh()
     onClose()
   }
 
