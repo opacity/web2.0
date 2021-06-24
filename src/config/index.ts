@@ -32,8 +32,8 @@ export const PUBLIC_SHARE_URL = `https://public.opacity.io`;
 
 export const EXCHANGE_LINK = "https://www.kucoin.com/trade/OPCT-BTC";
 
-export const DEFAULT_STORAGE_NODE_V1 = "broker-1.opacitynodes.com"
-export const DEFAULT_STORAGE_NODE_V2 = "beta-broker.opacitynodes.com"
+export const DEFAULT_STORAGE_NODE_V1 = "broker-1.opacitynodes.com";
+export const DEFAULT_STORAGE_NODE_V2 = "beta-broker.opacitynodes.com";
 
 const DEFAULT_STORAGE_NODE_IP =
   process.env.NODE_ENV == NODE_ENV.DEVELOPMENT
@@ -212,7 +212,7 @@ export const PLANS: PlanType[] = [
     specialPricing: "Free",
     storageInGB: 10,
     storageLimit: "10 GB",
-    title: "Free",
+    title: "Starter",
     usdCost: 0,
     zIndex: 0,
     features: [
@@ -239,7 +239,7 @@ export const PLANS: PlanType[] = [
     specialPricing: null,
     storageInGB: 128,
     storageLimit: "128 GB",
-    title: "Basic",
+    title: "Plus",
     usdCost: 39.99,
     zIndex: 1,
     features: [
@@ -307,28 +307,28 @@ export const PLANS: PlanType[] = [
       "Desktop Sync",
     ],
   },
-  {
-    isCustom: false,
-    borderColor: "#8ADB75",
-    content: "All the secure file storage you need ",
-    discountedUsdCost: null,
-    durationInMonths: 12,
-    opctCost: 0,
-    includesDesktopApp: false,
-    isAvailable: false,
-    isHighlighted: false,
-    permalink: "enterprise",
-    shadow: SHADOW.RIGHT,
-    specialPricing: "Custom Pricing",
-    storageInGB: 10000,
-    storageLimit: "Custom",
-    title: "Enterprise",
-    usdCost: 0,
-    zIndex: 0,
-    features: [
-      "Opacity can provide the storage and services your business needs. S3 compliant API integrates easily with most existing implementations.",
-    ],
-  },
+  // {
+  //   isCustom: false,
+  //   borderColor: "#8ADB75",
+  //   content: "All the secure file storage you need ",
+  //   discountedUsdCost: null,
+  //   durationInMonths: 12,
+  //   opctCost: 0,
+  //   includesDesktopApp: false,
+  //   isAvailable: false,
+  //   isHighlighted: false,
+  //   permalink: "enterprise",
+  //   shadow: SHADOW.RIGHT,
+  //   specialPricing: "Custom Pricing",
+  //   storageInGB: 10000,
+  //   storageLimit: "Custom",
+  //   title: "Enterprise",
+  //   usdCost: 0,
+  //   zIndex: 0,
+  //   features: [
+  //     "Opacity can provide the storage and services your business needs. S3 compliant API integrates easily with most existing implementations.",
+  //   ],
+  // },
   // {
   //   isCustom: true,
   //   borderColor: "#918DEA",
