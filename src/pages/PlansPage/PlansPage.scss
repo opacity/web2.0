@@ -63,7 +63,7 @@
       border: 1px solid #dddedf;
       box-sizing: border-box;
       border-radius: 10px;
-      width: 224px;
+      width: 300px;
       min-height: 843px;
       padding: 45px 22px;
       position: relative;
@@ -75,16 +75,28 @@
         padding: 25px 50px;
         min-height: 550px;
       }
+      .pricing-wrapper {
+        margin: 24px 0;
+        min-height: 156px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
       &:hover {
         // filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
         box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
       }
+      .content {
+        margin-top: 40px;
+        text-align: center;
+        min-height: 40px;
+      }
       .button-wrapper {
-        // margin: 0 22px;
+        margin: 20px 0;
         // position: absolute;
-        bottom: 40px;
-        left: 0;
-        right: 0;
+        // bottom: 40px;
+        // left: 0;
+        // right: 0;
         .btn-primary {
           width: 100%;
           background: #ffffff;
@@ -141,9 +153,9 @@
       }
 
       .price {
-        display: flex;
         align-items: center;
         color: #000000;
+        justify-content: center;
         @media (max-width: 767.8px) {
           // justify-content: center;
         }
@@ -151,11 +163,14 @@
           text-decoration: line-through;
         }
         p {
-          margin-bottom: 0;
-          margin-left: 5px;
+          margin-bottom: 10px;
+          margin-top: 5px;
+          text-align: center;
         }
         h2 {
           margin-bottom: 0;
+          font-size: 28px;
+          text-align: center;
         }
       }
       .includes {
@@ -185,7 +200,7 @@
             background: #ffffff;
             border-radius: 6px;
             border-color: #fff;
-            margin-top: 37px;
+            // margin-top: 37px;
             &:hover {
               box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.2);
             }
@@ -203,6 +218,7 @@
           }
         }
         .price {
+          justify-content: center;
           color: #99daff;
           &.discount {
             h2 {

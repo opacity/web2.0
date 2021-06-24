@@ -119,7 +119,7 @@ const SignUpModal: React.FC<OtherProps> = ({
     openLoginModal();
   };
   const createAccount = async () => {
-    console.log('go to next account')
+    console.log("go to next account");
     const cryptoMiddleware = new WebAccountMiddleware({
       asymmetricKey: hexToBytes(handle),
     });
@@ -162,6 +162,16 @@ const SignUpModal: React.FC<OtherProps> = ({
       dialogClassName="signup"
     >
       <Modal.Body>
+        <div className="close" onClick={ModalClose}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 18 18"
+          >
+            <path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z" />
+          </svg>
+        </div>
         {plan && (
           <div className="signup-process">
             <div className="process-item">
@@ -485,14 +495,15 @@ const SendPayment: React.FC<SignUpProps> = ({
             <h3>Send Payment with OPCT</h3>
             <div className="payment-content">
               Use the Opacity Storage Token, OPCT, to pay for your storage
-              account. Send your total amount of {plan.opctCost} OPCT to the address below or
-              you may use MetaMask to easily make your payment right in your
-              browser.
+              account. Send your total amount of {plan.opctCost} OPCT to the
+              address below or you may use MetaMask to easily make your payment
+              right in your browser.
             </div>
             <div className="important-content">
               IMPORTANT: Do not send any other coin or token to this account
-              address as it may result in a loss of funds. Only send {plan.opctCost} OPCT.
-              Sending more may also result in loss of funds.
+              address as it may result in a loss of funds. Only send{" "}
+              {plan.opctCost} OPCT. Sending more may also result in loss of
+              funds.
             </div>
             <div className="payment-content">
               Once your payment is sent, it may take some time to confirm your

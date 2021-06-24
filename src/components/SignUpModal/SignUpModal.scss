@@ -434,7 +434,7 @@
             justify-content: center;
           }
         }
-        
+
         h1 {
           font-weight: 600;
           font-size: 18px;
@@ -666,4 +666,10 @@
     margin-left: 10px;
     margin-right: 10px;
   }
+}
+
+.close {
+  position: absolute;
+  right: 12px;
+  top: 5px;
 }
