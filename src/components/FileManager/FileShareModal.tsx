@@ -7,11 +7,18 @@ import { FRONT_END_URL, PUBLIC_SHARE_URL } from '../../config'
 import { bytesToB64URL } from "../../../ts-client-library/packages/util/src/b64"
 import { AccountSystem, FileMetadata } from '../../../ts-client-library/packages/account-system'
 import { FileSystemShare } from "../../../ts-client-library/packages/filesystem-access/src/public-share"
-import { bindFileSystemObjectToAccountSystem, bindPublicShareToAccountSystem } from "../../../ts-client-library/packages/filesystem-access/src/account-system-binding"
+import {
+  bindFileSystemObjectToAccountSystem,
+  bindPublicShareToAccountSystem
+} from "../../../ts-client-library/packages/filesystem-access/src/account-system-binding"
 import { FileSystemObject } from "../../../ts-client-library/packages/filesystem-access/src/filesystem-object"
 import ReactLoading from "react-loading";
-import { CryptoMiddleware } from '../../../ts-client-library/packages/util/node_modules/@opacity/middleware/src'
-import { NetworkMiddleware } from '../../../ts-client-library/packages/util/node_modules/@opacity/middleware/src'
+import {
+  WebNetworkMiddleware,
+} from "../../../ts-client-library/packages/middleware-web"
+import {
+  CryptoMiddleware,
+} from "../../../ts-client-library/packages/middleware";
 import _ from 'lodash'
 import { toast } from "react-toastify";
 
@@ -23,10 +30,11 @@ const closeImage = require("../../assets/close-button.svg")
 type FileShareModalProps = {
   open: any
   onClose: any
+  doRefresh: any
   file: FileMetadata
   accountSystem: AccountSystem
   cryptoMiddleware: CryptoMiddleware
-  netMiddleware: NetworkMiddleware
+  netMiddleware: WebNetworkMiddleware
   storageNode: string
   mode: "private" | "public"
 }
@@ -34,6 +42,7 @@ type FileShareModalProps = {
 const FileShareModal = ({
   open,
   onClose,
+  doRefresh,
   file,
   accountSystem,
   cryptoMiddleware,
@@ -57,7 +66,7 @@ const FileShareModal = ({
       setPageLoading(true)
 
       if (mode === 'private') {
-        if (file.private.handle &&  _.isEmpty(file.public.location)) {
+        if (file.private.handle && _.isEmpty(file.public.location)) {
           accountSystem.getSharesByHandle(file.private.handle).then(async (shares) => {
             if (shares[0]) {
               const shareHandle = bytesToB64URL(accountSystem.getShareHandle(shares[0]))
@@ -84,6 +93,7 @@ const FileShareModal = ({
               const shareHandle = bytesToB64URL(accountSystem.getShareHandle(shareMeta))
               setShareURL(`${FRONT_END_URL}/share#key=${shareHandle}`)
               setPageLoading(false)
+              doRefresh()
             }
           }).catch((err) => {
             setShareURL("")
@@ -97,7 +107,6 @@ const FileShareModal = ({
       } else if (mode === 'public') {
         const curFileMetadata = await accountSystem.getFileMetadata(file.location)
 
-        console.log(curFileMetadata, '---------')
         if (curFileMetadata.public.shortLinks[0] || !_.isEmpty(curFileMetadata.public.location)) {
           setShareURL(`${PUBLIC_SHARE_URL}/${curFileMetadata.public.shortLinks[0]}`)
           setPageLoading(false)
@@ -119,6 +128,7 @@ const FileShareModal = ({
         await fileSystemObject.convertToPublic()
 
         const fileSystemShare = new FileSystemShare({
+          handle: curFileMetadata.private.handle,
           fileLocation: fileSystemObject.location,
           config: {
             crypto: cryptoMiddleware,
@@ -137,6 +147,7 @@ const FileShareModal = ({
 
         setShareURL(`${PUBLIC_SHARE_URL}/${fileSystemShare.shortlink}`)
         setPageLoading(false)
+        doRefresh()
       }
     }
 
@@ -151,6 +162,7 @@ const FileShareModal = ({
     const fileSystemShare = new FileSystemShare({
       shortLink: curFileMetadata.public.shortLinks[0],
       fileLocation: curFileMetadata.public.location,
+      handle: curFileMetadata.location,
       config: {
         crypto: cryptoMiddleware,
         net: netMiddleware,
@@ -163,6 +175,7 @@ const FileShareModal = ({
     await fileSystemShare.publicShareRevoke()
 
     setPageLoading(false)
+    doRefresh()
     onClose()
   }
 

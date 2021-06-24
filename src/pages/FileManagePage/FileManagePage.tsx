@@ -131,14 +131,9 @@ const FileManagePage = ({ history }) => {
       }),
     [cryptoMiddleware, netMiddleware, storageNode]
   );
-  const [updateCurrentFolderSwitch, setUpdateCurrentFolderSwitch] =
-    React.useState(false);
-  const [updateFolderEntrySwitch, setUpdateFolderEntrySwitch] = React.useState<{
-    [key: string]: boolean;
-  }>({});
-  const [updateFileEntrySwitch, setUpdateFileEntrySwitch] = React.useState<{
-    [key: string]: boolean;
-  }>({});
+  const [updateCurrentFolderSwitch, setUpdateCurrentFolderSwitch] = React.useState(false);
+  const [updateFolderEntrySwitch, setUpdateFolderEntrySwitch] = React.useState(false);
+  const [updateFileEntrySwitch, setUpdateFileEntrySwitch] = React.useState(false);
   const [showSidebar, setShowSidebar] = React.useState(false);
   const [tableView, setTableView] = React.useState(true);
   const [currentPath, setCurrentPath] = React.useState("/");
@@ -242,15 +237,6 @@ const FileManagePage = ({ history }) => {
         toast.error(`folder "${currentPath}" not found`);
       });
   }, [currentPath, updateCurrentFolderSwitch]);
-
-  React.useEffect(() => {
-    if (window.performance) {
-      if (performance.navigation.type == 1) {
-        // localStorage.clear();
-      } else {
-      }
-    }
-  }, []);
 
   React.useEffect(() => {
     if (
@@ -422,21 +408,12 @@ const FileManagePage = ({ history }) => {
           console.log("uploading,,,,,,");
           isFileManaging();
 
-          // let templist = currentUploadingList.current.slice();
-          // templist.push({ id: toastID, fileName: file.name, percent: 0 });
-          // setUploadingList(templist);
-          // toast(`${file.name} is uploading. Please wait...`, { toastId: toastID, autoClose: false, });
-          // if there is no error
           if (stream) {
             // TODO: Why does it do this?
             fileStream.pipeThrough(
               stream as TransformStream<Uint8Array, Uint8Array> as any
             );
           } else {
-            // toast.update(toastID, {
-            //   render: `An error occurred while uploading ${file.name}.`,
-            //   type: toast.TYPE.ERROR,
-            // })
           }
           await upload.finish();
           OnfinishFileManaging();
@@ -447,22 +424,12 @@ const FileManagePage = ({ history }) => {
             templistdone[index].percent = 100;
             setUploadingList(templistdone);
           }
-          // toast.update(toastID, { render: `${file.name} has finished uploading.` })
-          // setUpdateStatus(!updateStatus);
-          // setTimeout(() => {
-          //   toast.dismiss(toastID);
-          // }, 3000);
-          // setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
         } finally {
           release();
         }
       } catch (e) {
         console.error(e);
         OnfinishFileManaging();
-        // toast.update(file.size + file.name, {
-        //   render: `An error occurred while uploading ${file.name}.`,
-        //   type: toast.TYPE.ERROR,
-        // })
       }
     },
     [
@@ -486,15 +453,15 @@ const FileManagePage = ({ history }) => {
         file.name === (file.path || file.webkitRelativePath || file.name)
           ? uploadFile(file, currentPath)
           : uploadFile(
-              file,
-              currentPath === "/"
-                ? file.webkitRelativePath
-                  ? currentPath + relativePath(file.webkitRelativePath)
-                  : relativePath(file.path)
-                : file.webkitRelativePath
+            file,
+            currentPath === "/"
+              ? file.webkitRelativePath
+                ? currentPath + relativePath(file.webkitRelativePath)
+                : relativePath(file.path)
+              : file.webkitRelativePath
                 ? currentPath + "/" + relativePath(file.webkitRelativePath)
                 : currentPath + relativePath(file.path)
-            );
+          );
       });
       setUploadingList(templist);
     },
@@ -866,6 +833,7 @@ const FileManagePage = ({ history }) => {
 
   React.useEffect(() => {
     const init = async () => {
+      setPageLoading(true)
       const metaList = fileList.map(async (file) => {
         return await accountSystem._getFileMetadata(file.location).then((f) => {
           return f;
@@ -873,12 +841,14 @@ const FileManagePage = ({ history }) => {
       });
       const tmp = await Promise.all(metaList);
       setFileMetaList(tmp);
+      setPageLoading(false)
     };
     init();
   }, [fileList]);
 
   React.useEffect(() => {
     const init = async () => {
+      setPageLoading(true)
       const metaList = folderList.map(async (folder) => {
         return await accountSystem
           ._getFolderMetadataByLocation(folder.location)
@@ -888,6 +858,7 @@ const FileManagePage = ({ history }) => {
       });
       const tmp = await Promise.all(metaList);
       setFolderMetaList(tmp);
+      setPageLoading(false)
     };
     init();
   }, [folderList]);
@@ -913,6 +884,10 @@ const FileManagePage = ({ history }) => {
           onClose={() => {
             setOpenShareModal(false);
             setShareFile(null);
+          }}
+          doRefresh={() => {
+            setFileList([])
+            setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
           }}
           file={shareFile}
           accountSystem={accountSystem}
@@ -995,7 +970,7 @@ const FileManagePage = ({ history }) => {
               now={
                 accountInfo
                   ? (100 * accountInfo.account.storageUsed) /
-                    accountInfo.account.storageLimit
+                  accountInfo.account.storageLimit
                   : 0
               }
               variant={storageWarning && "danger"}
@@ -1257,10 +1232,9 @@ const FileManagePage = ({ history }) => {
                               : "down"
                           )
                         }
-                        className={`sortable ${
-                          sortable.column === "name" &&
+                        className={`sortable ${sortable.column === "name" &&
                           (sortable.method === "up" ? "asc" : "desc")
-                        }`}
+                          }`}
                       >
                         Name
                       </th>
@@ -1276,10 +1250,9 @@ const FileManagePage = ({ history }) => {
                                 : "down"
                             )
                           }
-                          className={`sortable ${
-                            sortable.column === "type" &&
+                          className={`sortable ${sortable.column === "type" &&
                             (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                            }`}
                         >
                           Type
                         </th>
@@ -1296,10 +1269,9 @@ const FileManagePage = ({ history }) => {
                                 : "down"
                             )
                           }
-                          className={`sortable ${
-                            sortable.column === "created" &&
+                          className={`sortable ${sortable.column === "created" &&
                             (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                            }`}
                         >
                           Created
                         </th>
@@ -1315,10 +1287,9 @@ const FileManagePage = ({ history }) => {
                               : "down"
                           )
                         }
-                        className={`sortable ${
-                          sortable.column === "size" &&
+                        className={`sortable ${sortable.column === "size" &&
                           (sortable.method === "up" ? "asc" : "desc")
-                        }`}
+                          }`}
                       >
                         Size
                       </th>

@@ -160,6 +160,15 @@ export const FileManagerFileEntryList = ({
 		return resName
 	}
 
+	const typeCheck = (meta) => {
+		if (meta.private.handle) {
+			return  'Private'
+		} else if (meta.public.location && meta.public.shortLinks.length > 0) {
+			return  'Public'
+		}
+		return 'Unknown'
+	}
+
 	return (
 		<Table.Row  className={isSelected ? 'selected' : ''}>
 			<Table.Col className='file-name' onClick={() => fileMeta && handleSelectFile(fileMeta)}>
@@ -177,17 +186,17 @@ export const FileManagerFileEntryList = ({
 					{fileMeta && !fileMeta.finished && <span style={{ display: "inline-block", background: "rgba(0,0,0,.1)", padding: "4px 6px", borderRadius: 4, marginInline: "1em" }}>Pending</span>}
 				</div>
 			</Table.Col>
-			{ !isMobile && <Table.Col onClick={() => fileMeta && handleSelectFile(fileMeta)}>{fileMeta ? (fileMeta.public.location ? 'Public' : 'Private') : "..."}</Table.Col> }
+			{ !isMobile && <Table.Col onClick={() => fileMeta && handleSelectFile(fileMeta)}>{fileMeta ? typeCheck(fileMeta) : "..."}</Table.Col> }
 			{ !isMobile && <Table.Col onClick={() => fileMeta && handleSelectFile(fileMeta)}>{fileMeta ? moment(fileMeta.uploaded).calendar() : "..."}</Table.Col> }
 			<Table.Col onClick={() => fileMeta && handleSelectFile(fileMeta)}>{fileMeta ? formatBytes(fileMeta.size) : "..."}</Table.Col>
 			<Table.Col className='text-nowrap'>
 				<DropdownButton menuAlign='right' title='' id='dropdown-menu-align-right' className={isSelected ? "file-selected" : ""}>
-					<Dropdown.Item disabled={!fileMeta} eventKey='1' onClick={() => fileShare(fileMeta)}>
+					<Dropdown.Item disabled={!fileMeta || !fileMeta.private.handle} eventKey='1' onClick={() => fileShare(fileMeta)}>
 						<i className='icon-share'></i>
 						Private Share
 					</Dropdown.Item>
 					<Dropdown.Divider />
-					<Dropdown.Item disabled={!fileMeta} eventKey='1' onClick={() => filePublicShare(fileMeta)}>
+					<Dropdown.Item disabled={!fileMeta || (!fileMeta.private.handle && (!fileMeta.public.location || !fileMeta.public.shortLinks.length)) } eventKey='1' onClick={() => filePublicShare(fileMeta)}>
 						<i className='icon-link'></i>
 						Public Share
 					</Dropdown.Item>

@@ -28,7 +28,7 @@ export const HOST =
     ? "dev2.opacity.io"
     : "opacity.io";
 export const FRONT_END_URL = `${PROTOCOL}://${HOST}`;
-export const PUBLIC_SHARE_URL = `https://public.opacity.io`;
+export const PUBLIC_SHARE_URL = `https://public-share.opacitynodes.com`;
 
 export const EXCHANGE_LINK = "https://www.kucoin.com/trade/OPCT-BTC";
 
