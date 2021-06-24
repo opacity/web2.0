@@ -15,36 +15,48 @@ const Footer = () => {
       <div className="container-xl">
         <div className="row">
           <div className="col-md-6 footer-logo">
-            <img width="78" src={logo} />
-            <span className="ml-3">OPACITY</span>
+            <NavLink href="/">
+              <img width="78" src={logo} />
+              <span className="ml-3">OPACITY</span>
+            </NavLink>
           </div>
           <div className="col-md-6 footer-third">
             <div
               className="d-flex h-100 align-items-center"
               style={{ justifyContent: "flex-end" }}
             >
-              <NavLink to="https://github.com/opacity" className="social-link">
+              <NavLink
+                href="https://github.com/opacity"
+                target="_blank"
+                className="social-link"
+              >
                 <img width="43" src={github} />
               </NavLink>
               <NavLink
-                to="https://www.reddit.com/r/Opacity/"
+                href="https://www.reddit.com/r/Opacity/"
+                target="_blank"
                 className="social-link"
               >
                 <img width="43" src={reddit} />
               </NavLink>
               <NavLink
-                to="https://telegram.me/opacitystorage"
+                href="https://telegram.me/opacitystorage"
                 className="social-link"
+                target="_blank"
               >
                 <img width="43" src={telegram} />
               </NavLink>
               <NavLink
-                to="https://twitter.com/Opacity_Storage"
+                href="https://twitter.com/Opacity_Storage"
                 className="social-link"
+                target="_blank"
               >
                 <img width="43" src={twitter} />
               </NavLink>
-              <NavLink to="https://www.youtube.com/opacitystorage">
+              <NavLink
+                href="https://www.youtube.com/opacitystorage"
+                target="_blank"
+              >
                 <img width="43" src={youtube} />
               </NavLink>
             </div>
