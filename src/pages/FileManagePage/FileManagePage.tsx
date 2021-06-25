@@ -131,9 +131,12 @@ const FileManagePage = ({ history }) => {
       }),
     [cryptoMiddleware, netMiddleware, storageNode]
   );
-  const [updateCurrentFolderSwitch, setUpdateCurrentFolderSwitch] = React.useState(false);
-  const [updateFolderEntrySwitch, setUpdateFolderEntrySwitch] = React.useState(false);
-  const [updateFileEntrySwitch, setUpdateFileEntrySwitch] = React.useState(false);
+  const [updateCurrentFolderSwitch, setUpdateCurrentFolderSwitch] =
+    React.useState(false);
+  const [updateFolderEntrySwitch, setUpdateFolderEntrySwitch] =
+    React.useState(false);
+  const [updateFileEntrySwitch, setUpdateFileEntrySwitch] =
+    React.useState(false);
   const [showSidebar, setShowSidebar] = React.useState(false);
   const [tableView, setTableView] = React.useState(true);
   const [currentPath, setCurrentPath] = React.useState("/");
@@ -165,8 +168,9 @@ const FileManagePage = ({ history }) => {
   const [alertText, setAlertText] = React.useState("30 days remaining.");
   const [alertShow, setAlertShow] = React.useState(false);
   const [openShareModal, setOpenShareModal] = React.useState(false);
-  const [shareMode, setShareMode] =
-    React.useState<"private" | "public">("private");
+  const [shareMode, setShareMode] = React.useState<"private" | "public">(
+    "private"
+  );
   const [shareFile, setShareFile] = React.useState<FileMetadata>(null);
   const [storageWarning, setIsStorageWarning] = React.useState(false);
   const [sortable, setSortable] = React.useState({
@@ -273,7 +277,9 @@ const FileManagePage = ({ history }) => {
         setAlertShow(true);
         setIsStorageWarning(true);
         setAlertText(
-          `You have used ${usedStorage}% of your plan. Upgrade now to get more space.`
+          `You have used ${((usedStorage / limitStorage) * 100).toFixed(
+            2
+          )}% of your plan. Upgrade now to get more space.`
         );
       }
       if (remainDays < 30) {
@@ -453,15 +459,15 @@ const FileManagePage = ({ history }) => {
         file.name === (file.path || file.webkitRelativePath || file.name)
           ? uploadFile(file, currentPath)
           : uploadFile(
-            file,
-            currentPath === "/"
-              ? file.webkitRelativePath
-                ? currentPath + relativePath(file.webkitRelativePath)
-                : relativePath(file.path)
-              : file.webkitRelativePath
+              file,
+              currentPath === "/"
+                ? file.webkitRelativePath
+                  ? currentPath + relativePath(file.webkitRelativePath)
+                  : relativePath(file.path)
+                : file.webkitRelativePath
                 ? currentPath + "/" + relativePath(file.webkitRelativePath)
                 : currentPath + relativePath(file.path)
-          );
+            );
       });
       setUploadingList(templist);
     },
@@ -833,7 +839,7 @@ const FileManagePage = ({ history }) => {
 
   React.useEffect(() => {
     const init = async () => {
-      setPageLoading(true)
+      setPageLoading(true);
       const metaList = fileList.map(async (file) => {
         return await accountSystem._getFileMetadata(file.location).then((f) => {
           return f;
@@ -841,14 +847,14 @@ const FileManagePage = ({ history }) => {
       });
       const tmp = await Promise.all(metaList);
       setFileMetaList(tmp);
-      setPageLoading(false)
+      setPageLoading(false);
     };
     init();
   }, [fileList]);
 
   React.useEffect(() => {
     const init = async () => {
-      setPageLoading(true)
+      setPageLoading(true);
       const metaList = folderList.map(async (folder) => {
         return await accountSystem
           ._getFolderMetadataByLocation(folder.location)
@@ -858,7 +864,7 @@ const FileManagePage = ({ history }) => {
       });
       const tmp = await Promise.all(metaList);
       setFolderMetaList(tmp);
-      setPageLoading(false)
+      setPageLoading(false);
     };
     init();
   }, [folderList]);
@@ -886,7 +892,7 @@ const FileManagePage = ({ history }) => {
             setShareFile(null);
           }}
           doRefresh={() => {
-            setFileList([])
+            setFileList([]);
             setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
           }}
           file={shareFile}
@@ -970,7 +976,7 @@ const FileManagePage = ({ history }) => {
               now={
                 accountInfo
                   ? (100 * accountInfo.account.storageUsed) /
-                  accountInfo.account.storageLimit
+                    accountInfo.account.storageLimit
                   : 0
               }
               variant={storageWarning && "danger"}
@@ -1232,9 +1238,10 @@ const FileManagePage = ({ history }) => {
                               : "down"
                           )
                         }
-                        className={`sortable ${sortable.column === "name" &&
+                        className={`sortable ${
+                          sortable.column === "name" &&
                           (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                        }`}
                       >
                         Name
                       </th>
@@ -1250,9 +1257,10 @@ const FileManagePage = ({ history }) => {
                                 : "down"
                             )
                           }
-                          className={`sortable ${sortable.column === "type" &&
+                          className={`sortable ${
+                            sortable.column === "type" &&
                             (sortable.method === "up" ? "asc" : "desc")
-                            }`}
+                          }`}
                         >
                           Type
                         </th>
@@ -1269,9 +1277,10 @@ const FileManagePage = ({ history }) => {
                                 : "down"
                             )
                           }
-                          className={`sortable ${sortable.column === "created" &&
+                          className={`sortable ${
+                            sortable.column === "created" &&
                             (sortable.method === "up" ? "asc" : "desc")
-                            }`}
+                          }`}
                         >
                           Created
                         </th>
@@ -1287,9 +1296,10 @@ const FileManagePage = ({ history }) => {
                               : "down"
                           )
                         }
-                        className={`sortable ${sortable.column === "size" &&
+                        className={`sortable ${
+                          sortable.column === "size" &&
                           (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                        }`}
                       >
                         Size
                       </th>
