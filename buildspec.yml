@@ -3,13 +3,16 @@ version: 0.2
 env:
   git-credential-helper: yes
 
+environment_variables:
+  plaintext:
+    LC_ALL: C.UTF-8
+    ENV LANG: en_US.UTF-8
+    ENV LANGUAGE: en_US.UTF-8
+
 phases:
   pre_build:
     on-failure: ABORT
     commands:
-      - export LC_ALL="en_US.UTF-8"
-      - locale-gen en_US en_US.UTF-8
-      - dpkg-reconfigure locales
       - npm install -g npm@7.15.0
       - npm install -g lerna
       - git submodule update --init --recursive --remote
