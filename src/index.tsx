@@ -2,7 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Router, Route, Switch, Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
-import { Application } from "./components/application/Application";
+// import { Application } from "./components/application/Application";
 import LandingPage from "./pages/LandingPage/LandingPage";
 import PlatformPage from "./pages/PlatformPage/PlatformPage";
 import PlansPage from "./pages/PlansPage/PlansPage";
@@ -97,12 +97,12 @@ function App() {
         <meta name="author" content="opacity.io" />
         <meta name="copyright" content="2019 opacity.io" />
         <title>Private Cloud Storage and File Sharing | Opacity</title>
-        <meta itemprop="name" content="Opacity Storage" />
+        <meta itemProp="name" content="Opacity Storage" />
         <meta
-          itemprop="description"
+          itemProp="description"
           content="Opacity provides encrypted cloud storage that never stores your personal data. Powered by OPCT crypto token."
         />
-        <meta itemprop="image" content="assets/logo.svg" />
+        <meta itemProp="image" content="assets/logo.svg" />
         <meta property="og:url" content="https://dev2.opacity.io" />
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Opacity Storage" />

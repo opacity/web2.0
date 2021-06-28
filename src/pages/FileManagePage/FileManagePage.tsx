@@ -3,29 +3,29 @@ import { Table } from "tabler-react";
 import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import {
-  Row,
-  Col,
-  Container,
-  Media,
-  Button,
+  // Row,
+  // Col,
+  // Container,
+  // Media,
+  // Button,
   Nav,
   ProgressBar,
   Breadcrumb,
-  DropdownButton,
-  Dropdown,
+  // DropdownButton,
+  // Dropdown,
   Alert,
 } from "react-bootstrap";
-import TreeMenu, { TreeMenuProps, ItemComponent } from "react-simple-tree-menu";
+import TreeMenu, { ItemComponent } from "react-simple-tree-menu";
 import {
   Account,
   AccountGetRes,
-  AccountCreationInvoice,
+  // AccountCreationInvoice,
 } from "../../../ts-client-library/packages/account-management";
 import {
   AccountSystem,
   MetadataAccess,
   FileMetadata,
-  FolderMetadata,
+  // FolderMetadata,
   FolderFileEntry,
   FoldersIndexEntry,
 } from "../../../ts-client-library/packages/account-system";
@@ -37,8 +37,8 @@ import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex";
 import {
   polyfillReadableStreamIfNeeded,
   polyfillWritableStreamIfNeeded,
-  ReadableStream,
-  TransformStream,
+  // ReadableStream,
+  // TransformStream,
   WritableStream,
 } from "../../../ts-client-library/packages/util/src/streams";
 import {
@@ -53,7 +53,7 @@ import {
   UploadEvents,
   UploadProgressEvent,
 } from "../../../ts-client-library/packages/filesystem-access/src/events";
-import { theme, FILE_MAX_SIZE } from "../../config";
+import { FILE_MAX_SIZE } from "../../config";
 import RenameModal from "../../components/RenameModal/RenameModal";
 import DeleteModal from "../../components/DeleteModal/DeleteModal";
 import WarningModal from "../../components/WarningModal/WarningModal";
@@ -61,8 +61,8 @@ import AddNewFolderModal from "../../components/NewFolderModal/NewFolderModal";
 import "./FileManagePage.scss";
 import { formatBytes, formatGbs } from "../../helpers";
 import * as moment from "moment";
-import { DndProvider, useDrop, DropTargetMonitor } from "react-dnd";
-import { HTML5Backend, NativeTypes } from "react-dnd-html5-backend";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import {
   FileManagerFileEntryGrid,
   FileManagerFileEntryList,
@@ -131,9 +131,12 @@ const FileManagePage = ({ history }) => {
       }),
     [cryptoMiddleware, netMiddleware, storageNode]
   );
-  const [updateCurrentFolderSwitch, setUpdateCurrentFolderSwitch] = React.useState(false);
-  const [updateFolderEntrySwitch, setUpdateFolderEntrySwitch] = React.useState(false);
-  const [updateFileEntrySwitch, setUpdateFileEntrySwitch] = React.useState(false);
+  const [updateCurrentFolderSwitch, setUpdateCurrentFolderSwitch] =
+    React.useState(false);
+  const [updateFolderEntrySwitch, setUpdateFolderEntrySwitch] =
+    React.useState(false);
+  const [updateFileEntrySwitch, setUpdateFileEntrySwitch] =
+    React.useState(false);
   const [showSidebar, setShowSidebar] = React.useState(false);
   const [tableView, setTableView] = React.useState(true);
   const [currentPath, setCurrentPath] = React.useState("/");
@@ -165,8 +168,9 @@ const FileManagePage = ({ history }) => {
   const [alertText, setAlertText] = React.useState("30 days remaining.");
   const [alertShow, setAlertShow] = React.useState(false);
   const [openShareModal, setOpenShareModal] = React.useState(false);
-  const [shareMode, setShareMode] =
-    React.useState<"private" | "public">("private");
+  const [shareMode, setShareMode] = React.useState<"private" | "public">(
+    "private"
+  );
   const [shareFile, setShareFile] = React.useState<FileMetadata>(null);
   const [storageWarning, setIsStorageWarning] = React.useState(false);
   const [sortable, setSortable] = React.useState({
@@ -453,15 +457,15 @@ const FileManagePage = ({ history }) => {
         file.name === (file.path || file.webkitRelativePath || file.name)
           ? uploadFile(file, currentPath)
           : uploadFile(
-            file,
-            currentPath === "/"
-              ? file.webkitRelativePath
-                ? currentPath + relativePath(file.webkitRelativePath)
-                : relativePath(file.path)
-              : file.webkitRelativePath
+              file,
+              currentPath === "/"
+                ? file.webkitRelativePath
+                  ? currentPath + relativePath(file.webkitRelativePath)
+                  : relativePath(file.path)
+                : file.webkitRelativePath
                 ? currentPath + "/" + relativePath(file.webkitRelativePath)
                 : currentPath + relativePath(file.path)
-          );
+            );
       });
       setUploadingList(templist);
     },
@@ -833,7 +837,7 @@ const FileManagePage = ({ history }) => {
 
   React.useEffect(() => {
     const init = async () => {
-      setPageLoading(true)
+      setPageLoading(true);
       const metaList = fileList.map(async (file) => {
         return await accountSystem._getFileMetadata(file.location).then((f) => {
           return f;
@@ -841,14 +845,14 @@ const FileManagePage = ({ history }) => {
       });
       const tmp = await Promise.all(metaList);
       setFileMetaList(tmp);
-      setPageLoading(false)
+      setPageLoading(false);
     };
     init();
   }, [fileList]);
 
   React.useEffect(() => {
     const init = async () => {
-      setPageLoading(true)
+      setPageLoading(true);
       const metaList = folderList.map(async (folder) => {
         return await accountSystem
           ._getFolderMetadataByLocation(folder.location)
@@ -858,7 +862,7 @@ const FileManagePage = ({ history }) => {
       });
       const tmp = await Promise.all(metaList);
       setFolderMetaList(tmp);
-      setPageLoading(false)
+      setPageLoading(false);
     };
     init();
   }, [folderList]);
@@ -886,7 +890,7 @@ const FileManagePage = ({ history }) => {
             setShareFile(null);
           }}
           doRefresh={() => {
-            setFileList([])
+            setFileList([]);
             setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
           }}
           file={shareFile}
@@ -970,7 +974,7 @@ const FileManagePage = ({ history }) => {
               now={
                 accountInfo
                   ? (100 * accountInfo.account.storageUsed) /
-                  accountInfo.account.storageLimit
+                    accountInfo.account.storageLimit
                   : 0
               }
               variant={storageWarning && "danger"}
@@ -1232,9 +1236,10 @@ const FileManagePage = ({ history }) => {
                               : "down"
                           )
                         }
-                        className={`sortable ${sortable.column === "name" &&
+                        className={`sortable ${
+                          sortable.column === "name" &&
                           (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                        }`}
                       >
                         Name
                       </th>
@@ -1250,9 +1255,10 @@ const FileManagePage = ({ history }) => {
                                 : "down"
                             )
                           }
-                          className={`sortable ${sortable.column === "type" &&
+                          className={`sortable ${
+                            sortable.column === "type" &&
                             (sortable.method === "up" ? "asc" : "desc")
-                            }`}
+                          }`}
                         >
                           Type
                         </th>
@@ -1269,9 +1275,10 @@ const FileManagePage = ({ history }) => {
                                 : "down"
                             )
                           }
-                          className={`sortable ${sortable.column === "created" &&
+                          className={`sortable ${
+                            sortable.column === "created" &&
                             (sortable.method === "up" ? "asc" : "desc")
-                            }`}
+                          }`}
                         >
                           Created
                         </th>
@@ -1287,9 +1294,10 @@ const FileManagePage = ({ history }) => {
                               : "down"
                           )
                         }
-                        className={`sortable ${sortable.column === "size" &&
+                        className={`sortable ${
+                          sortable.column === "size" &&
                           (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                        }`}
                       >
                         Size
                       </th>

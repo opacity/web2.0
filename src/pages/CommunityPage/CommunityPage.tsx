@@ -1,20 +1,12 @@
 import * as React from "react";
 import { NavLink } from "tabler-react";
-import {
-  Row,
-  Col,
-  Container,
-  Media,
-  Button,
-  Carousel,
-  CarouselItem,
-} from "react-bootstrap";
+import { Row, Col, Container } from "react-bootstrap";
 import SiteWrapper from "../../SiteWrapper";
 import "./CommunityPage.scss";
 const storgeImage = require("../../assets/storage.png");
-const gitImage = require("../../assets/github.png");
+// const gitImage = require("../../assets/github.png");
 const opqImage = require("../../assets/imgopq.png");
-const olelog = require("../../assets/OcelotLogo.png");
+// const olelog = require("../../assets/OcelotLogo.png");
 const logo = require("../../assets/logo2.png");
 const PlansPage = ({ history }) => {
   return (
