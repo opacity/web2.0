@@ -3,12 +3,6 @@ version: 0.2
 env:
   git-credential-helper: yes
 
-environment_variables:
-  plaintext:
-    LC_ALL: C.UTF-8
-    ENV LANG: en_US.UTF-8
-    ENV LANGUAGE: en_US.UTF-8
-
 phases:
   pre_build:
     on-failure: ABORT
