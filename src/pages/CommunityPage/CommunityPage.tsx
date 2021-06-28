@@ -100,20 +100,21 @@ const PlansPage = ({ history }) => {
           </Col>
         </Row>
         <Row>
-          <h1>
-            <a
-              href="https://api.opacity.io:3000/swagger/index.html"
-              target="_blank"
-            >
-              Developers: Build Your App on Opacity
-            </a>
-          </h1>
+          <h1>Developers: Build Your App on Opacity</h1>
           <h3>
             The Opacity API is provided for developers to build and integrate
             solutions with the Opacity Storage platform. Opacity’s developer
             platform is a core part of our mission to empower developers to grow
             and monetize their services using the OPCT token.
           </h3>
+          <h2 className="text-center">
+            <a
+              href="https://api.opacity.io:3000/swagger/index.html"
+              target="_blank"
+            >
+              API for Developers
+            </a>
+          </h2>
         </Row>
       </Container>
     </SiteWrapper>
