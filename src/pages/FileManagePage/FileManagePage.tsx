@@ -3,29 +3,29 @@ import { Table } from "tabler-react";
 import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import {
-  Row,
-  Col,
-  Container,
-  Media,
-  Button,
+  // Row,
+  // Col,
+  // Container,
+  // Media,
+  // Button,
   Nav,
   ProgressBar,
   Breadcrumb,
-  DropdownButton,
-  Dropdown,
+  // DropdownButton,
+  // Dropdown,
   Alert,
 } from "react-bootstrap";
-import TreeMenu, { TreeMenuProps, ItemComponent } from "react-simple-tree-menu";
+import TreeMenu, { ItemComponent } from "react-simple-tree-menu";
 import {
   Account,
   AccountGetRes,
-  AccountCreationInvoice,
+  // AccountCreationInvoice,
 } from "../../../ts-client-library/packages/account-management";
 import {
   AccountSystem,
   MetadataAccess,
   FileMetadata,
-  FolderMetadata,
+  // FolderMetadata,
   FolderFileEntry,
   FoldersIndexEntry,
 } from "../../../ts-client-library/packages/account-system";
@@ -37,8 +37,8 @@ import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex";
 import {
   polyfillReadableStreamIfNeeded,
   polyfillWritableStreamIfNeeded,
-  ReadableStream,
-  TransformStream,
+  // ReadableStream,
+  // TransformStream,
   WritableStream,
 } from "../../../ts-client-library/packages/util/src/streams";
 import {
@@ -53,7 +53,7 @@ import {
   UploadEvents,
   UploadProgressEvent,
 } from "../../../ts-client-library/packages/filesystem-access/src/events";
-import { theme, FILE_MAX_SIZE } from "../../config";
+import { FILE_MAX_SIZE } from "../../config";
 import RenameModal from "../../components/RenameModal/RenameModal";
 import DeleteModal from "../../components/DeleteModal/DeleteModal";
 import WarningModal from "../../components/WarningModal/WarningModal";
@@ -61,8 +61,8 @@ import AddNewFolderModal from "../../components/NewFolderModal/NewFolderModal";
 import "./FileManagePage.scss";
 import { formatBytes, formatGbs } from "../../helpers";
 import * as moment from "moment";
-import { DndProvider, useDrop, DropTargetMonitor } from "react-dnd";
-import { HTML5Backend, NativeTypes } from "react-dnd-html5-backend";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import {
   FileManagerFileEntryGrid,
   FileManagerFileEntryList,

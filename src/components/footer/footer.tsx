@@ -1,6 +1,6 @@
 import * as React from "react";
 import { NavLink } from "tabler-react";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import "./footer.scss";
 const logo = require("../../assets/logo.svg");
 const github = require("../../assets/github.svg");
@@ -16,7 +16,7 @@ const Footer = () => {
         <div className="row">
           <div className="col-md-6 footer-logo">
             <NavLink href="/">
-              <img width="78" src={logo} />
+              <img width={78} height={78} src={logo} />
               <span className="ml-3">OPACITY</span>
             </NavLink>
           </div>
@@ -30,34 +30,34 @@ const Footer = () => {
                 target="_blank"
                 className="social-link"
               >
-                <img width="43" src={github} />
+                <img width={43} height={43} src={github} />
               </NavLink>
               <NavLink
                 href="https://www.reddit.com/r/Opacity/"
                 target="_blank"
                 className="social-link"
               >
-                <img width="43" src={reddit} />
+                <img width={43} height={43} src={reddit} />
               </NavLink>
               <NavLink
                 href="https://telegram.me/opacitystorage"
                 className="social-link"
                 target="_blank"
               >
-                <img width="43" src={telegram} />
+                <img width={43} height={43} src={telegram} />
               </NavLink>
               <NavLink
                 href="https://twitter.com/Opacity_Storage"
                 className="social-link"
                 target="_blank"
               >
-                <img width="43" src={twitter} />
+                <img width={43} height={43} src={twitter} />
               </NavLink>
               <NavLink
                 href="https://www.youtube.com/opacitystorage"
                 target="_blank"
               >
-                <img width="43" src={youtube} />
+                <img width={43} height={43} src={youtube} />
               </NavLink>
             </div>
           </div>

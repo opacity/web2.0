@@ -12,7 +12,7 @@ const lastpass = require("../../assets/lastpass.png");
 const password = require("../../assets/password.png");
 const keepass = require("../../assets/keepass.png");
 const ourcode = require("../../assets/our-code.png");
-const uploadButton = require("../../assets/upload.png");
+// const uploadButton = require("../../assets/upload.png");
 const whitepapper = require("../../assets/whitepapper.png");
 
 const PlatformPage = ({ history }) => {

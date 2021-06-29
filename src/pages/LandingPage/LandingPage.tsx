@@ -12,11 +12,11 @@ const bannerImage = require("../../assets/banner.png");
 const opacitym = require("../../assets/opacity-m.png");
 const dashboard = require("../../assets/dashboard.png");
 const share = require("../../assets/share.png");
-const community = require("../../assets/community.png");
-const stand = require("../../assets/stand.png");
-const crypto = require("../../assets/crypto.png");
+// const community = require("../../assets/community.png");
+// const stand = require("../../assets/stand.png");
+// const crypto = require("../../assets/crypto.png");
 const uniswap = require("../../assets/uniswap.png");
-const mercatox = require("../../assets/mercatox.png");
+// const mercatox = require("../../assets/mercatox.png");
 const kucoin = require("../../assets/kucoin.png");
 
 const LandingPage = ({ history }) => {
@@ -88,8 +88,13 @@ const LandingPage = ({ history }) => {
               </div>
             </div>
             <div className="col-md-6">
-              <img src={bannerImage}></img>
-              <img className="d-none" src={opacitym}></img>
+              <img src={bannerImage} width={640} height={400}></img>
+              <img
+                className="d-none"
+                src={opacitym}
+                width={320}
+                height={520}
+              ></img>
             </div>
           </div>
         </div>
@@ -125,7 +130,12 @@ const LandingPage = ({ history }) => {
           <div className="col-md-12" data-aos="fade-up">
             <div className="row justify-content-center">
               <div className="col-md-5 pr-4">
-                <img className="mt-4" src={dashboard} />
+                <img
+                  className="mt-4"
+                  src={dashboard}
+                  width={507}
+                  height={330}
+                />
               </div>
               <div className="col-md-5 pl-4">
                 <h1 className="title mb-4">
@@ -167,7 +177,7 @@ const LandingPage = ({ history }) => {
                 </div>
               </div>
               <div className="col-md-5 pl-4">
-                <img className="mt-4" src={share} />
+                <img className="mt-4" src={share} width={507} height={285} />
               </div>
             </div>
           </div>
@@ -267,7 +277,7 @@ const LandingPage = ({ history }) => {
         <div className="row text-center align-items-center">
           <div className="col-md-4">
             <div className="card-item">
-              <img src={kucoin} />
+              <img src={kucoin} width={119} height={111} />
               <NavLink
                 href="https://www.kucoin.com/trade/OPCT-USDT"
                 target="_blank"
@@ -289,7 +299,7 @@ const LandingPage = ({ history }) => {
 
           <div className="col-md-4">
             <div className="card-item">
-              <img src={uniswap} />
+              <img src={uniswap} width={107} height={109} />
               <NavLink
                 href="https://v2.info.uniswap.org/pair/0xd07d843cd1d769cdf918be8a3c2c0b708889f7fc"
                 target="_blank"

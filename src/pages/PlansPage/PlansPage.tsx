@@ -2,9 +2,9 @@ import * as React from "react";
 import { NavLink } from "tabler-react";
 import {
   Row,
-  Col,
+  // Col,
   Container,
-  Media,
+  // Media,
   Button,
   Carousel,
   CarouselItem,
