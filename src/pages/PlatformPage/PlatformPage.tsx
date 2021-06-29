@@ -203,13 +203,15 @@ const PlatformPage = ({ history }) => {
                   Whitepaper!
                 </p>
                 <p>
-                  The Opacity Whitepaper is now available in
+                  The Opacity Whitepaper is now available in these languages:
+                </p>
+                <p>
                   {paperURLs.map(({ language, link }, idx) => (
                     <>
                       <a href={link} target="_blank">
                         {language}
                       </a>
-                      {idx !== paperURLs.length - 1 ? ", " : " !"}
+                      {idx === 1 && <br />}
                     </>
                   ))}
                 </p>
