@@ -79,6 +79,7 @@ import streamsaver from "streamsaver";
 import { Mutex } from "async-mutex";
 import { useMediaQuery } from "react-responsive";
 import UploadingNotification from "../../components/UploadingNotification/UploadingNotification";
+import { FileSystemObject } from "../../../ts-client-library/packages/filesystem-access/src/filesystem-object"
 
 streamsaver.mitm = "/resources/streamsaver/mitm.html";
 Object.assign(streamsaver, { WritableStream });
@@ -109,6 +110,19 @@ const FileManagePage = ({ history }) => {
     []
   );
   const netMiddleware = React.useMemo(() => new WebNetworkMiddleware(), []);
+  const fileSystemObject = React.useMemo(
+    () =>
+      new FileSystemObject({
+        handle: undefined,
+        location: undefined,
+        config: {
+          net: netMiddleware,
+          crypto: cryptoMiddleware,
+          storageNode: storageNode,
+        }
+      }),
+    [netMiddleware, cryptoMiddleware, storageNode]
+  );
   const metadataAccess = React.useMemo(
     () =>
       new MetadataAccess({
@@ -232,7 +246,7 @@ const FileManagePage = ({ history }) => {
       .then(([folders, folderMeta]) => {
         setFolderList(folders);
         setFileList(folderMeta.files);
-        console.log(folderMeta.files);
+        // console.log(folderMeta.files);
         setPageLoading(false);
       })
       .catch((err) => {
@@ -292,7 +306,7 @@ const FileManagePage = ({ history }) => {
     }
 
     const t = await accountSystem.getFoldersIndex();
-    console.log("---folder indexes", t);
+
     function filesToTreeNodes(arr) {
       var tree = {};
       function addnode(obj) {
@@ -376,7 +390,7 @@ const FileManagePage = ({ history }) => {
         bindUploadToAccountSystem(accountSystem, upload);
 
         upload.addEventListener(UploadEvents.START, async () => {
-          console.log(currentPathRef.current, path);
+          // console.log(currentPathRef.current, path);
 
           if (isPathChild(currentPathRef.current, path)) {
             // setPageLoading(true)
@@ -459,15 +473,15 @@ const FileManagePage = ({ history }) => {
         file.name === (file.path || file.webkitRelativePath || file.name)
           ? uploadFile(file, currentPath)
           : uploadFile(
-              file,
-              currentPath === "/"
-                ? file.webkitRelativePath
-                  ? currentPath + relativePath(file.webkitRelativePath)
-                  : relativePath(file.path)
-                : file.webkitRelativePath
+            file,
+            currentPath === "/"
+              ? file.webkitRelativePath
+                ? currentPath + relativePath(file.webkitRelativePath)
+                : relativePath(file.path)
+              : file.webkitRelativePath
                 ? currentPath + "/" + relativePath(file.webkitRelativePath)
                 : currentPath + relativePath(file.path)
-            );
+          );
       });
       setUploadingList(templist);
     },
@@ -476,6 +490,7 @@ const FileManagePage = ({ history }) => {
 
   const addNewFolder = React.useCallback(
     async (folderName) => {
+      setPageLoading(true)
       try {
         setShowNewFolderModal(false);
         const status = await accountSystem.addFolder(
@@ -484,8 +499,10 @@ const FileManagePage = ({ history }) => {
             : currentPath + "/" + folderName
         );
         toast(`Folder ${folderName} was successfully created.`);
+        setPageLoading(false)
         setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
       } catch (e) {
+        setPageLoading(false)
         toast.error(`An error occurred while creating new folder.`);
       }
     },
@@ -606,12 +623,21 @@ const FileManagePage = ({ history }) => {
 
   const deleteFolder = React.useCallback(
     async (folder: FoldersIndexEntry) => {
-      const name = posix.basename(folder.path);
       try {
-        const status = await accountSystem.removeFolderByPath(folder.path);
-        // toast(`Folder ${folder.path} was successfully deleted.`);
-        setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
-        setFolderToDelete(null);
+        const folders = await accountSystem.getFoldersInFolderByPath(folder.path)
+        const folderMeta = await accountSystem.getFolderMetadataByPath(folder.path)
+
+        for (const file of folderMeta.files) {
+          await accountSystem.removeFile(file.location);
+        }
+
+        folderMeta.files.length && await fileSystemObject.deleteMultiFile(folderMeta.files)
+
+        for (const folderItem of folders) {
+          await deleteFolder(folderItem)
+        }
+
+        await accountSystem.removeFolderByPath(folder.path);
       } catch (e) {
         console.error(e);
         setFolderToDelete(null);
@@ -670,16 +696,21 @@ const FileManagePage = ({ history }) => {
 
   const handleDelete = async () => {
     setPageLoading(true);
+    setShowDeleteModal(false);
     if (selectedFiles.length === 0) {
-      if (folderToDelete) deleteFolder(folderToDelete);
-      else deleteFile(fileToDelete);
+      if (folderToDelete) {
+        await deleteFolder(folderToDelete);
+        setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
+        setFolderToDelete(null);
+      } else {
+        deleteFile(fileToDelete);
+      }
     } else {
       selectedFiles.forEach((file) => {
         deleteFile(file);
       });
       setSelectedFiles([]);
     }
-    setShowDeleteModal(false);
   };
 
   const onDrop = React.useCallback(
@@ -976,7 +1007,7 @@ const FileManagePage = ({ history }) => {
               now={
                 accountInfo
                   ? (100 * accountInfo.account.storageUsed) /
-                    accountInfo.account.storageLimit
+                  accountInfo.account.storageLimit
                   : 0
               }
               variant={storageWarning && "danger"}
@@ -1238,10 +1269,9 @@ const FileManagePage = ({ history }) => {
                               : "down"
                           )
                         }
-                        className={`sortable ${
-                          sortable.column === "name" &&
+                        className={`sortable ${sortable.column === "name" &&
                           (sortable.method === "up" ? "asc" : "desc")
-                        }`}
+                          }`}
                       >
                         Name
                       </th>
@@ -1257,10 +1287,9 @@ const FileManagePage = ({ history }) => {
                                 : "down"
                             )
                           }
-                          className={`sortable ${
-                            sortable.column === "type" &&
+                          className={`sortable ${sortable.column === "type" &&
                             (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                            }`}
                         >
                           Type
                         </th>
@@ -1277,10 +1306,9 @@ const FileManagePage = ({ history }) => {
                                 : "down"
                             )
                           }
-                          className={`sortable ${
-                            sortable.column === "created" &&
+                          className={`sortable ${sortable.column === "created" &&
                             (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                            }`}
                         >
                           Created
                         </th>
@@ -1296,10 +1324,9 @@ const FileManagePage = ({ history }) => {
                               : "down"
                           )
                         }
-                        className={`sortable ${
-                          sortable.column === "size" &&
+                        className={`sortable ${sortable.column === "size" &&
                           (sortable.method === "up" ? "asc" : "desc")
-                        }`}
+                          }`}
                       >
                         Size
                       </th>
