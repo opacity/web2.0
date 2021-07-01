@@ -211,8 +211,8 @@ const SharePage = ({ history }) => {
           <Col md={6} className="control-area">
             <Row className="align-items-center">
               <Col className="text-center">
-                <img width="88" src={shareImg} />
-                <h2>You have been invited to view a file!</h2>
+                {/* <img width="88" src={shareImg} />
+                <h2>You have been invited to view a file!</h2> */}
                 <div className="text-filename">{file && file.name}</div>
                 <div className="text-filesize">
                   {file && formatBytes(file.size)}
@@ -237,18 +237,22 @@ const SharePage = ({ history }) => {
                     </button>
                   </div>
                 </div>
+
+                <h2>Easily share your files with Opacity</h2>
+
                 <div onClick={clickFreeSignup} className="free-signup-text">
-                  Get 10GB file storage and file sharing for free
-                  <br />
+                  <a>Get 10GB file storage and file sharing for free</a>
+                </div>
+                <div style={{ fontSize: "1.1rem" }}>
                   Free to share ideas. Free to be protected. Free to be you.
                 </div>
-                <a
+                {/* <a
                   className="learn-more"
                   href="https://dev2.opacity.io/platform"
                   target="_blank"
                 >
                   Learn More
-                </a>
+                </a> */}
               </Col>
             </Row>
           </Col>
