@@ -23,7 +23,7 @@ const PlatformPage = ({ history }) => {
 
   const paperURLs = [
     {
-      language: "Chinese 🇨🇳 ",
+      language: "中文 🇨🇳 ",
       link: "https://opacitystora.ge/GalaxyWhitepaperV1Chinese",
     },
     {
