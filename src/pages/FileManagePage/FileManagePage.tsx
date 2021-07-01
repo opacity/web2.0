@@ -79,7 +79,7 @@ import streamsaver from "streamsaver";
 import { Mutex } from "async-mutex";
 import { useMediaQuery } from "react-responsive";
 import UploadingNotification from "../../components/UploadingNotification/UploadingNotification";
-import { FileSystemObject } from "../../../ts-client-library/packages/filesystem-access/src/filesystem-object"
+import { FileSystemObject } from "../../../ts-client-library/packages/filesystem-access/src/filesystem-object";
 
 streamsaver.mitm = "/resources/streamsaver/mitm.html";
 Object.assign(streamsaver, { WritableStream });
@@ -119,7 +119,7 @@ const FileManagePage = ({ history }) => {
           net: netMiddleware,
           crypto: cryptoMiddleware,
           storageNode: storageNode,
-        }
+        },
       }),
     [netMiddleware, cryptoMiddleware, storageNode]
   );
@@ -473,15 +473,15 @@ const FileManagePage = ({ history }) => {
         file.name === (file.path || file.webkitRelativePath || file.name)
           ? uploadFile(file, currentPath)
           : uploadFile(
-            file,
-            currentPath === "/"
-              ? file.webkitRelativePath
-                ? currentPath + relativePath(file.webkitRelativePath)
-                : relativePath(file.path)
-              : file.webkitRelativePath
+              file,
+              currentPath === "/"
+                ? file.webkitRelativePath
+                  ? currentPath + relativePath(file.webkitRelativePath)
+                  : relativePath(file.path)
+                : file.webkitRelativePath
                 ? currentPath + "/" + relativePath(file.webkitRelativePath)
                 : currentPath + relativePath(file.path)
-          );
+            );
       });
       setUploadingList(templist);
     },
@@ -490,7 +490,7 @@ const FileManagePage = ({ history }) => {
 
   const addNewFolder = React.useCallback(
     async (folderName) => {
-      setPageLoading(true)
+      setPageLoading(true);
       try {
         setShowNewFolderModal(false);
         const status = await accountSystem.addFolder(
@@ -499,10 +499,10 @@ const FileManagePage = ({ history }) => {
             : currentPath + "/" + folderName
         );
         toast(`Folder ${folderName} was successfully created.`);
-        setPageLoading(false)
+        setPageLoading(false);
         setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
       } catch (e) {
-        setPageLoading(false)
+        setPageLoading(false);
         toast.error(`An error occurred while creating new folder.`);
       }
     },
@@ -624,17 +624,22 @@ const FileManagePage = ({ history }) => {
   const deleteFolder = React.useCallback(
     async (folder: FoldersIndexEntry) => {
       try {
-        const folders = await accountSystem.getFoldersInFolderByPath(folder.path)
-        const folderMeta = await accountSystem.getFolderMetadataByPath(folder.path)
+        const folders = await accountSystem.getFoldersInFolderByPath(
+          folder.path
+        );
+        const folderMeta = await accountSystem.getFolderMetadataByPath(
+          folder.path
+        );
 
         for (const file of folderMeta.files) {
           await accountSystem.removeFile(file.location);
         }
 
-        folderMeta.files.length && await fileSystemObject.deleteMultiFile(folderMeta.files)
+        folderMeta.files.length &&
+          (await fileSystemObject.deleteMultiFile(folderMeta.files));
 
         for (const folderItem of folders) {
-          await deleteFolder(folderItem)
+          await deleteFolder(folderItem);
         }
 
         await accountSystem.removeFolderByPath(folder.path);
@@ -993,6 +998,17 @@ const FileManagePage = ({ history }) => {
             Opacity <span>v2.0.0</span>
           </h1>
           <div className="account-info">
+            <ProgressBar
+              now={
+                accountInfo
+                  ? (100 * accountInfo.account.storageUsed) /
+                    accountInfo.account.storageLimit
+                  : 0
+              }
+              variant={storageWarning && "danger"}
+              className={storageWarning && "danger"}
+            />
+
             <div className="storage-info">
               <span>
                 {formatGbs(accountInfo ? accountInfo.account.storageUsed : 0)}{" "}
@@ -1003,16 +1019,7 @@ const FileManagePage = ({ history }) => {
               )}{" "}
               used
             </div>
-            <ProgressBar
-              now={
-                accountInfo
-                  ? (100 * accountInfo.account.storageUsed) /
-                  accountInfo.account.storageLimit
-                  : 0
-              }
-              variant={storageWarning && "danger"}
-              className={storageWarning && "danger"}
-            />
+
             <div
               className="upgrade text-right"
               onClick={() => history.push("/plans")}
@@ -1269,9 +1276,10 @@ const FileManagePage = ({ history }) => {
                               : "down"
                           )
                         }
-                        className={`sortable ${sortable.column === "name" &&
+                        className={`sortable ${
+                          sortable.column === "name" &&
                           (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                        }`}
                       >
                         Name
                       </th>
@@ -1287,9 +1295,10 @@ const FileManagePage = ({ history }) => {
                                 : "down"
                             )
                           }
-                          className={`sortable ${sortable.column === "type" &&
+                          className={`sortable ${
+                            sortable.column === "type" &&
                             (sortable.method === "up" ? "asc" : "desc")
-                            }`}
+                          }`}
                         >
                           Type
                         </th>
@@ -1306,9 +1315,10 @@ const FileManagePage = ({ history }) => {
                                 : "down"
                             )
                           }
-                          className={`sortable ${sortable.column === "created" &&
+                          className={`sortable ${
+                            sortable.column === "created" &&
                             (sortable.method === "up" ? "asc" : "desc")
-                            }`}
+                          }`}
                         >
                           Created
                         </th>
@@ -1324,9 +1334,10 @@ const FileManagePage = ({ history }) => {
                               : "down"
                           )
                         }
-                        className={`sortable ${sortable.column === "size" &&
+                        className={`sortable ${
+                          sortable.column === "size" &&
                           (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                        }`}
                       >
                         Size
                       </th>
