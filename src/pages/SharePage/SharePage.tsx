@@ -178,7 +178,7 @@ const SharePage = ({ history }) => {
     >
       <Container fluid="xl share">
         <Row>
-          <Col md={6} className="center">
+          <Col lg={6} md={12} className="center">
             <Row style={{ padding: "20px" }}>
               {downloading ? (
                 <div className="download-progress">
@@ -208,7 +208,7 @@ const SharePage = ({ history }) => {
               )}
             </Row>
           </Col>
-          <Col md={6} className="control-area">
+          <Col lg={6} md={12} className="control-area">
             <Row className="align-items-center">
               <Col className="text-center">
                 {/* <img width="88" src={shareImg} />
