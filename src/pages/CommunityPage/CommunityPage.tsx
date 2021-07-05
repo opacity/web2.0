@@ -3,6 +3,8 @@ import { NavLink } from "tabler-react";
 import { Row, Col, Container } from "react-bootstrap";
 import SiteWrapper from "../../SiteWrapper";
 import "./CommunityPage.scss";
+
+const visitIcon = require("../../assets/visit.png");
 const storgeImage = require("../../assets/storage.png");
 // const gitImage = require("../../assets/github.png");
 const opqImage = require("../../assets/imgopq.png");
@@ -53,7 +55,8 @@ const PlansPage = ({ history }) => {
                 <img src={opqImage} />
                 <span>
                   <p className="item-link">imgopct.com</p>
-                  <p>
+                  <p className="visit d-flex align-items-center">
+                    <img src={visitIcon} width={15} />
                     <NavLink href="https://imgopct.com/" target="_blank">
                       Visit
                     </NavLink>
@@ -76,7 +79,8 @@ const PlansPage = ({ history }) => {
                 <img src={storgeImage} />
                 <span>
                   <p className="item-link">opacitystora.ge</p>
-                  <p>
+                  <p className="visit d-flex align-items-center">
+                    <img src={visitIcon} width={15} />
                     <NavLink href="https://opacitystora.ge/" target="_blank">
                       Visit
                     </NavLink>
