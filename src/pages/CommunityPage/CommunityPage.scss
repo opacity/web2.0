@@ -90,6 +90,18 @@
             line-height: 136%;
           }
         }
+        &.visit {
+          position: relative;
+          font-weight: normal;
+          font-size: 16px;
+          line-height: 136%;
+          text-decoration: underline;
+          color: #2e6dde;
+          @media (max-width: 767.8px) {
+            font-size: 14px;
+            line-height: 136%;
+          }
+        }
       }
       .item-link {
         font-weight: 600;
