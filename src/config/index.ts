@@ -13,7 +13,7 @@ enum STORAGE_NODE_VERSION {
 const PROTOCOL =
   process.env.NODE_ENV == NODE_ENV.DEVELOPMENT &&
   process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
-    ? "http"
+    ? "https"
     : "https";
 
 export const STRIPE_API_KEY =
@@ -37,7 +37,7 @@ export const DEFAULT_STORAGE_NODE_V2 = "beta-broker.opacitynodes.com";
 
 const DEFAULT_STORAGE_NODE_IP =
   process.env.NODE_ENV == NODE_ENV.DEVELOPMENT
-    ? "18.191.166.234"
+    ? DEFAULT_STORAGE_NODE_V2
     : process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
     ? DEFAULT_STORAGE_NODE_V2
     : DEFAULT_STORAGE_NODE_V1;
