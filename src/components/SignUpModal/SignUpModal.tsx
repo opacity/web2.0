@@ -75,6 +75,7 @@ type SignUpProps = {
   mnemonic?: string[];
   invoice?: AccountCreationInvoice;
   account?: Account;
+  isForUpgrade?: boolean;
 };
 
 const SignUpModal: React.FC<OtherProps> = ({
@@ -90,11 +91,13 @@ const SignUpModal: React.FC<OtherProps> = ({
   const [account, setAccount] = React.useState<Account>();
   const [invoiceData, setInvoiceData] =
     React.useState<AccountCreationInvoice>();
+  const currentAccount = localStorage.getItem("key");
 
   const goBack = () => {
     if (currentStep > 1) setStep(currentStep - 1);
     else handleClose();
   };
+
   const goNext = () => {
     if (currentStep === 1) {
       if (!plan || plan.permalink === "free") {
@@ -110,16 +113,18 @@ const SignUpModal: React.FC<OtherProps> = ({
       setStep(currentStep + 1);
     }
   };
+
   const ModalClose = () => {
     setStep(1);
     handleClose();
   };
+
   const handleOpenLoginModal = () => {
     handleClose();
     openLoginModal();
   };
+
   const createAccount = async () => {
-    console.log("go to next account");
     const cryptoMiddleware = new WebAccountMiddleware({
       asymmetricKey: hexToBytes(handle),
     });
@@ -143,16 +148,52 @@ const SignUpModal: React.FC<OtherProps> = ({
     const invoice = await account.signUp(form);
     setInvoiceData(invoice);
   };
+
+  const upgradeAccount = async () => {
+    const currentHandle = localStorage.getItem("key");
+
+    const cryptoMiddleware = new WebAccountMiddleware({
+      asymmetricKey: hexToBytes(currentHandle),
+    });
+    const netMiddleware = new WebNetworkMiddleware();
+    const account = new Account({
+      crypto: cryptoMiddleware,
+      net: netMiddleware,
+      storageNode,
+    });
+    setAccount(account);
+    let form = {};
+    if (plan) {
+      form = {
+        size: plan.storageInGB,
+      };
+    } else {
+      form = {
+        size: 10,
+      };
+    }
+    const invoice = await account.upgradeAccount(form);
+    setInvoiceData(invoice);
+  };
+
   useEffect(() => {
     setMnemonic([]);
     setHandle("");
-    createMnemonic().then(async (res) => {
-      setMnemonic(res);
-      const handle = await mnemonicToHandle(res);
-      setHandle(bytesToHex(handle));
-    });
-    // change in the plan must cause handle to update
+    const currentAccount = localStorage.getItem("key");
+    if (currentAccount) {
+      setHandle(currentAccount)
+      upgradeAccount().then(() => {
+        setStep(2)
+      })
+    } else {
+      createMnemonic().then(async (res) => {
+        setMnemonic(res);
+        const handle = await mnemonicToHandle(res);
+        setHandle(bytesToHex(handle));
+      });
+    }
   }, [plan]);
+
   return (
     <Modal
       show={show}
@@ -228,6 +269,7 @@ const SignUpModal: React.FC<OtherProps> = ({
             invoice={invoiceData}
             goBack={goBack}
             goNext={goNext}
+            isForUpgrade={currentAccount && true}
             openMetamask={openMetamask}
           />
         )}
@@ -443,17 +485,24 @@ const SendPayment: React.FC<SignUpProps> = ({
   invoice,
   account,
   openMetamask,
+  isForUpgrade,
 }) => {
   const [isCopied, setIsCopied] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("crypto");
+  const [startWaiting, setStartWaiting] = useState(false);
 
   React.useEffect(() => {
-    account.waitForPayment().then(() => {
+    startWaiting && account.waitForPayment().then(() => {
       goNext();
     });
-  }, []);
+  }, [startWaiting]);
+
+  React.useEffect(() => {
+    setStartWaiting(isForUpgrade ? false : true)
+  }, [isForUpgrade])
 
   const handleStripeSuccess = async (stripeToken) => {
+    setStartWaiting(true)
     const res = await account.createSubscription({ stripeToken });
   };
 

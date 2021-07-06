@@ -11,9 +11,9 @@ import {
 import axios from "axios";
 
 const UsdPaymentForm = ({ plan, stripe, onStripeSuccess }) => {
-  const [billingCountry, setBillingCountry] = useState(null);
-  const [firstName, setFirstName] = useState(null);
-  const [lastName, setLastName] = useState(null);
+  const [billingCountry, setBillingCountry] = useState(undefined);
+  const [firstName, setFirstName] = useState(undefined);
+  const [lastName, setLastName] = useState(undefined);
   const [termChecked, setTermChecked] = useState(false);
 
   const handleSubmit = () => {
