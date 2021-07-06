@@ -67,6 +67,36 @@ export const FileManagerFolderEntryGrid = ({
           {folderMeta ? folderMeta.files.length : "..."} Files
         </div>
       </div>
+      <div className="grid-context-menu-area">
+        <DropdownButton
+          menuAlign="right"
+          title=""
+          id="dropdown-menu-align-right"
+        >
+          <Dropdown.Item
+            eventKey="3"
+            onClick={() => handleDeleteItem(folderEntry, false)}
+          >
+            <i className="icon-delete"></i>
+            Delete
+          </Dropdown.Item>
+          <Dropdown.Divider />
+          <Dropdown.Item
+            eventKey="4"
+            onClick={() =>
+              handleOpenRenameModal(
+                Object.assign(folderEntry, {
+                  name: posix.basename(folderEntry.path),
+                }),
+                false
+              )
+            }
+          >
+            <i className="icon-rename"></i>
+            Rename
+          </Dropdown.Item>
+        </DropdownButton>
+      </div>
     </div>
   );
 };

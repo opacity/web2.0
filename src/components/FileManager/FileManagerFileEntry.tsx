@@ -57,6 +57,7 @@ export const FileManagerFileEntryGrid = ({
 	fileEntry,
 	fileShare,
 	filePublicShare,
+	downloadItem,
 	handleDeleteItem,
 	handleOpenRenameModal,
 	handleSelectFile,
@@ -90,15 +91,15 @@ export const FileManagerFileEntryGrid = ({
 	return (
 		<div className='grid-item'>
 			<div
-			 className={`items ${isSelected && 'grid-item-selected'}`}
-			 onClick={() => fileMeta && handleSelectFile(fileMeta)}
+				className={`items ${isSelected && 'grid-item-selected'}`}
+				onClick={() => fileMeta && handleSelectFile(fileMeta)}
 			>
 				{/* <i className={`icon-${fileMeta && typeList[fileMeta.type]}`}></i> */}
 				<div style={{ width: '40px' }}>
 					<FileIcon
 						color="#A8A8A8"
 						glyphColor="#ffffff"
-						{ ...defaultStyles[fileMeta && getFileExtension(fileMeta.name)] }
+						{...defaultStyles[fileMeta && getFileExtension(fileMeta.name)]}
 						extension={fileMeta && getFileExtension(fileMeta.name)}
 					/>
 				</div>
@@ -110,6 +111,34 @@ export const FileManagerFileEntryGrid = ({
 				<div className='grid-selected-icon'>
 				</div>
 			}
+			<div className="grid-context-menu-area">
+				<DropdownButton menuAlign='right' title='' id='grid-dropdown-menu-align-right' className="grid-context-menu-toggle">
+					<Dropdown.Item disabled={!fileMeta || !fileMeta.private.handle} eventKey='1' onClick={() => fileShare(fileMeta)}>
+						<i className='icon-share'></i>
+						Private Share
+					</Dropdown.Item>
+					<Dropdown.Divider />
+					<Dropdown.Item disabled={!fileMeta || (!fileMeta.private.handle && (!fileMeta.public.location || !fileMeta.public.shortLinks.length))} eventKey='1' onClick={() => filePublicShare(fileMeta)}>
+						<i className='icon-link'></i>
+						Public Share
+					</Dropdown.Item>
+					<Dropdown.Divider />
+					<Dropdown.Item disabled={!fileMeta} eventKey='2' onClick={() => downloadItem(fileMeta)}>
+						<i className='icon-download'></i>
+						Download
+					</Dropdown.Item>
+					<Dropdown.Divider />
+					<Dropdown.Item disabled={!fileMeta} eventKey='3' onClick={() => handleDeleteItem(fileMeta, true)}>
+						<i className='icon-delete'></i>
+						Delete
+					</Dropdown.Item>
+					<Dropdown.Divider />
+					<Dropdown.Item disabled={!fileMeta} eventKey='4' onClick={() => handleOpenRenameModal(fileMeta, true)}>
+						<i className='icon-rename'></i>
+						Rename
+					</Dropdown.Item>
+				</DropdownButton>
+			</div>
 		</div>
 	)
 }
@@ -154,7 +183,7 @@ export const FileManagerFileEntryList = ({
 		let resName = name;
 		if (isMobile && name.length > 10) {
 			resName = name.slice(0, 10) + ' ...';
-		} else if (name.length > 50){
+		} else if (name.length > 50) {
 			resName = name.slice(0, 50) + ' ...';
 		}
 		return resName
@@ -162,15 +191,15 @@ export const FileManagerFileEntryList = ({
 
 	const typeCheck = (meta) => {
 		if (meta.private.handle) {
-			return  'Private'
+			return 'Private'
 		} else if (meta.public.location && meta.public.shortLinks.length > 0) {
-			return  'Public'
+			return 'Public'
 		}
 		return 'Unknown'
 	}
 
 	return (
-		<Table.Row  className={isSelected ? 'selected' : ''}>
+		<Table.Row className={isSelected ? 'selected' : ''}>
 			<Table.Col className='file-name' onClick={() => fileMeta && handleSelectFile(fileMeta)}>
 				<div className='d-flex' ref={ref}>
 					{/* <i className={`icon-${fileMeta && typeList[fileMeta.type]}`}></i> */}
@@ -178,7 +207,7 @@ export const FileManagerFileEntryList = ({
 						<FileIcon
 							color="#A8A8A8"
 							glyphColor="#ffffff"
-							{ ...defaultStyles[fileMeta && getFileExtension(fileMeta.name)] }
+							{...defaultStyles[fileMeta && getFileExtension(fileMeta.name)]}
 							extension={fileMeta && getFileExtension(fileMeta.name)}
 						/>
 					</div>
@@ -186,8 +215,8 @@ export const FileManagerFileEntryList = ({
 					{fileMeta && !fileMeta.finished && <span style={{ display: "inline-block", background: "rgba(0,0,0,.1)", padding: "4px 6px", borderRadius: 4, marginInline: "1em" }}>Pending</span>}
 				</div>
 			</Table.Col>
-			{ !isMobile && <Table.Col onClick={() => fileMeta && handleSelectFile(fileMeta)}>{fileMeta ? typeCheck(fileMeta) : "..."}</Table.Col> }
-			{ !isMobile && <Table.Col onClick={() => fileMeta && handleSelectFile(fileMeta)}>{fileMeta ? moment(fileMeta.uploaded).calendar() : "..."}</Table.Col> }
+			{ !isMobile && <Table.Col onClick={() => fileMeta && handleSelectFile(fileMeta)}>{fileMeta ? typeCheck(fileMeta) : "..."}</Table.Col>}
+			{ !isMobile && <Table.Col onClick={() => fileMeta && handleSelectFile(fileMeta)}>{fileMeta ? moment(fileMeta.uploaded).calendar() : "..."}</Table.Col>}
 			<Table.Col onClick={() => fileMeta && handleSelectFile(fileMeta)}>{fileMeta ? formatBytes(fileMeta.size) : "..."}</Table.Col>
 			<Table.Col className='text-nowrap'>
 				<DropdownButton menuAlign='right' title='' id='dropdown-menu-align-right' className={isSelected ? "file-selected" : ""}>
@@ -196,7 +225,7 @@ export const FileManagerFileEntryList = ({
 						Private Share
 					</Dropdown.Item>
 					<Dropdown.Divider />
-					<Dropdown.Item disabled={!fileMeta || (!fileMeta.private.handle && (!fileMeta.public.location || !fileMeta.public.shortLinks.length)) } eventKey='1' onClick={() => filePublicShare(fileMeta)}>
+					<Dropdown.Item disabled={!fileMeta || (!fileMeta.private.handle && (!fileMeta.public.location || !fileMeta.public.shortLinks.length))} eventKey='1' onClick={() => filePublicShare(fileMeta)}>
 						<i className='icon-link'></i>
 						Public Share
 					</Dropdown.Item>
