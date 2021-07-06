@@ -570,48 +570,56 @@
           }
         }
       }
-      .dropdown {
-        .dropdown-toggle {
-          border: none;
-          background: none;
-          &::after {
-            content: url("../../assets/dots.svg");
-            transform: none;
-            height: auto;
-            margin: unset;
-            border: none;
-          }
-        }
-        .dropdown-item {
-          padding: 10px 30px;
-        }
-        .icon-share {
-          content: url("../../assets/share2.svg");
-          margin-right: 20px;
-        }
-        .icon-link {
-          content: url("../../assets/publich_share.svg");
-          margin-right: 20px;
-        }
-        .icon-download {
-          content: url("../../assets/direct-download1.svg");
-          margin-right: 20px;
-        }
-        .icon-delete {
-          content: url("../../assets/delete.svg");
-          margin-right: 20px;
-        }
-        .icon-rename {
-          content: url("../../assets/edit.svg");
-          margin-right: 20px;
-        }
-      }
       .file-selected {
         .dropdown-toggle {
           &::after {
             filter: invert(80%) sepia(100%) saturate(500%) hue-rotate(200deg)
               brightness(104%) contrast(97%);
           }
+        }
+      }
+    }
+    .dropdown {
+      .dropdown-toggle {
+        border: none;
+        background: none;
+        &::after {
+          content: url("../../assets/dots.svg");
+          transform: none;
+          height: auto;
+          margin: unset;
+          border: none;
+        }
+      }
+      .dropdown-item {
+        padding: 10px 30px;
+      }
+      .icon-share {
+        content: url("../../assets/share2.svg");
+        margin-right: 20px;
+      }
+      .icon-link {
+        content: url("../../assets/publich_share.svg");
+        margin-right: 20px;
+      }
+      .icon-download {
+        content: url("../../assets/direct-download1.svg");
+        margin-right: 20px;
+      }
+      .icon-delete {
+        content: url("../../assets/delete.svg");
+        margin-right: 20px;
+      }
+      .icon-rename {
+        content: url("../../assets/edit.svg");
+        margin-right: 20px;
+      }
+    }
+    .grid-context-menu-toggle {
+      .dropdown-toggle:hover {
+        &::after {
+          filter: invert(80%) sepia(100%) saturate(500%) hue-rotate(200deg)
+            brightness(104%) contrast(97%);
         }
       }
     }
@@ -647,6 +655,14 @@
           border-radius: 13px;
           padding: 6px;
           content: url("../../assets/check.svg");
+        }
+        .grid-context-menu-area {
+          position: absolute;
+          top: 10px;
+          right: 20px;
+          width: 26px;
+          height: 26px;
+          padding: 4px;
         }
         .items {
           cursor: pointer;
