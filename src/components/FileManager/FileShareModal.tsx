@@ -63,7 +63,7 @@ const FileShareModal = ({
 
     const doAction = async () => {
       setPageLoading(true);
-
+      console.log(file, 'old --------')
       if (mode === "private") {
         if (file.private.handle && _.isEmpty(file.public.location)) {
           accountSystem

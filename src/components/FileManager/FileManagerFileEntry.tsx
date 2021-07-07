@@ -190,12 +190,13 @@ export const FileManagerFileEntryList = ({
 	}
 
 	const typeCheck = (meta) => {
-		if (meta.private.handle) {
-			return 'Private'
-		} else if (meta.public.location && meta.public.shortLinks.length > 0) {
+		if (meta.public.location && meta.public.shortLinks.length > 0) {
 			return 'Public'
 		}
-		return 'Unknown'
+		if (meta.private.handle) {
+			return 'Private'
+		} 
+		return 'NoLink'
 	}
 
 	return (
@@ -220,12 +221,12 @@ export const FileManagerFileEntryList = ({
 			<Table.Col onClick={() => fileMeta && handleSelectFile(fileMeta)}>{fileMeta ? formatBytes(fileMeta.size) : "..."}</Table.Col>
 			<Table.Col className='text-nowrap'>
 				<DropdownButton menuAlign='right' title='' id='dropdown-menu-align-right' className={isSelected ? "file-selected" : ""}>
-					<Dropdown.Item disabled={!fileMeta || !fileMeta.private.handle} eventKey='1' onClick={() => fileShare(fileMeta)}>
+					<Dropdown.Item disabled={!fileMeta || (!!fileMeta.public.location || !!fileMeta.public.shortLinks.length)} eventKey='1' onClick={() => fileShare(fileMeta)}>
 						<i className='icon-share'></i>
 						Private Share
 					</Dropdown.Item>
 					<Dropdown.Divider />
-					<Dropdown.Item disabled={!fileMeta || (!fileMeta.private.handle && (!fileMeta.public.location || !fileMeta.public.shortLinks.length))} eventKey='1' onClick={() => filePublicShare(fileMeta)}>
+					<Dropdown.Item eventKey='1' onClick={() => filePublicShare(fileMeta)}>
 						<i className='icon-link'></i>
 						Public Share
 					</Dropdown.Item>
