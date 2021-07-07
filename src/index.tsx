@@ -41,7 +41,7 @@ function App() {
   };
 
   const setTimeouts = () => {
-    logoutTimeout = setTimeout(logout, 1000 * 60 * 30);
+    logoutTimeout = setTimeout(logout, 1000 * 60 * 20);
   };
 
   const clearTimeouts = () => {
