@@ -229,14 +229,6 @@ const PlatformPage = ({ history }) => {
                       </>
                     ))}
                   </div>
-                  {/* {paperURLs.map(({ language, link }, idx) => (
-                    <>
-                      <a href={link} target="_blank">
-                        {language}
-                      </a>
-                      {idx === 1 && <br />}
-                    </>
-                  ))} */}
                 </div>
                 <NavLink
                   href="https://opacitystora.ge/GalaxyWhitepaperV1"
