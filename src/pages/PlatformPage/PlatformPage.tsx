@@ -21,25 +21,6 @@ const PlatformPage = ({ history }) => {
     setShowLoginModal(false);
   };
 
-  const paperURLs = [
-    {
-      language: "中文 🇨🇳 ",
-      link: "https://opacitystora.ge/GalaxyWhitepaperV1Chinese",
-    },
-    // {
-    //   language: "한국어 🇰🇷 ",
-    //   link: "https://opacitystora.ge/GalaxyWhitepaperV1Korean",
-    // },
-    {
-      language: "Deutsch 🇩🇪 ",
-      link: "https://opacitystora.ge/GalaxyWhitepaperV1German",
-    },
-    {
-      language: "Pусский 🇷🇺 ",
-      link: "https://opacitystora.ge/GalaxyWhitepaperV1Russian",
-    },
-  ];
-
   const leftPaperURLs = [
     {
       language: "中文 🇨🇳 ",
