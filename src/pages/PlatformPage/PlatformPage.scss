@@ -129,3 +129,11 @@
     }
   }
 }
+.language-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  margin-bottom: 20px;
+  .language-panel {
+    width: 100px;
+  }
+}

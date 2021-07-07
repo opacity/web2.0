@@ -26,13 +26,35 @@ const PlatformPage = ({ history }) => {
       language: "中文 🇨🇳 ",
       link: "https://opacitystora.ge/GalaxyWhitepaperV1Chinese",
     },
+    // {
+    //   language: "한국어 🇰🇷 ",
+    //   link: "https://opacitystora.ge/GalaxyWhitepaperV1Korean",
+    // },
     {
-      language: "한국어 🇰🇷 ",
-      link: "https://opacitystora.ge/GalaxyWhitepaperV1Korean",
+      language: "Deutsch 🇩🇪 ",
+      link: "https://opacitystora.ge/GalaxyWhitepaperV1German",
+    },
+    {
+      language: "Pусский 🇷🇺 ",
+      link: "https://opacitystora.ge/GalaxyWhitepaperV1Russian",
+    },
+  ];
+
+  const leftPaperURLs = [
+    {
+      language: "中文 🇨🇳 ",
+      link: "https://opacitystora.ge/GalaxyWhitepaperV1Chinese",
     },
     {
       language: "Deutsch 🇩🇪 ",
       link: "https://opacitystora.ge/GalaxyWhitepaperV1German",
+    },
+  ];
+
+  const rightPaperURLs = [
+    {
+      language: "한국어 🇰🇷 ",
+      link: "https://opacitystora.ge/GalaxyWhitepaperV1Korean",
     },
     {
       language: "Pусский 🇷🇺 ",
@@ -205,16 +227,36 @@ const PlatformPage = ({ history }) => {
                 <p>
                   The Opacity Whitepaper is now available in these languages:
                 </p>
-                <p>
-                  {paperURLs.map(({ language, link }, idx) => (
+                <div className="language-wrapper">
+                  <div className="language-panel">
+                    {leftPaperURLs.map(({ language, link }, idx) => (
+                      <>
+                        <a href={link} target="_blank">
+                          {language}
+                        </a>
+                        <br />
+                      </>
+                    ))}
+                  </div>
+                  <div className="language-panel">
+                    {rightPaperURLs.map(({ language, link }, idx) => (
+                      <>
+                        <a href={link} target="_blank">
+                          {language}
+                        </a>
+                        <br />
+                      </>
+                    ))}
+                  </div>
+                  {/* {paperURLs.map(({ language, link }, idx) => (
                     <>
                       <a href={link} target="_blank">
                         {language}
                       </a>
                       {idx === 1 && <br />}
                     </>
-                  ))}
-                </p>
+                  ))} */}
+                </div>
                 <NavLink
                   href="https://opacitystora.ge/GalaxyWhitepaperV1"
                   target="_blank"
