@@ -462,6 +462,9 @@
     &.header-item-absolute {
       margin-top: -4px;
       margin-right: 62px;
+      &.list-view {
+        margin-top: -60px;
+      }
       @media (max-width: 769px) {
         margin-right: 25px;
       }

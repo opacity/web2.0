@@ -1211,7 +1211,7 @@ const FileManagePage = ({ history }) => {
                 </div>
               )}
               {!tableView && (
-                <div className="d-flex header-item header-item-absolute ml-3 justify-content-end position-absolute left-0 right-0">
+                <div className="d-flex header-item header-item-absolute list-view ml-3 justify-content-end position-absolute left-0 right-0">
                   <span
                     className="item-icon table-view"
                     onClick={() => {
