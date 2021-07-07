@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Table } from "tabler-react";
+import { Table, Tooltip, Tag } from "tabler-react";
 import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import {
@@ -1295,12 +1295,20 @@ const FileManagePage = ({ history }) => {
                                 : "down"
                             )
                           }
-                          className={`sortable ${
+                          className={`sortable type ${
                             sortable.column === "type" &&
                             (sortable.method === "up" ? "asc" : "desc")
                           }`}
                         >
-                          Type
+                          Share Type
+                          <Tooltip
+                            content="'Type' lets you know if your files are private or if you have chosen to create a public link. A public file is not encrypted. You can choose to remove the public file sharing from the file menu on the right for highest privacy and security."
+                            placement="bottom"
+                          >
+                            <Tag>
+                              <span style={{ fontSize: "14px" }}>?</span>
+                            </Tag>
+                          </Tooltip>
                         </th>
                       )}
                       {!isMobile && (
