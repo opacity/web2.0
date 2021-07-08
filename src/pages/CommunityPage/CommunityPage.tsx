@@ -26,7 +26,7 @@ const PlansPage = ({ history }) => {
           <Col md={6}>
             <div className="site-item">
               <div className="d-flex">
-                <img src={logo} />
+                <img src={logo} width={108} height={108} />
                 <span>
                   <p className="item-link">Opacity Drive</p>
                   <p className="download">
@@ -52,7 +52,7 @@ const PlansPage = ({ history }) => {
           <Col md={6}>
             <div className="site-item">
               <div className="d-flex">
-                <img src={opqImage} />
+                <img src={opqImage} width={108} height={108} />
                 <span>
                   <p className="item-link">imgopct.com</p>
                   <p className="visit d-flex align-items-center">
