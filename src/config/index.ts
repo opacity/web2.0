@@ -15,8 +15,8 @@ export const IS_DEV = process.env.NODE_ENV == NODE_ENV.DEVELOPMENT
 const PROTOCOL =
   IS_DEV &&
   process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
-    ? "http"
-    : "http";
+    ? "https"
+    : "https";
 
 export const STRIPE_API_KEY =
   process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.PRODUCTION
@@ -25,7 +25,7 @@ export const STRIPE_API_KEY =
 
 export const HOST =
     IS_DEV
-    ? "localhost:4444"
+    ? "127.0.0.1:4444"
     : process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
     ? "dev2.opacity.io"
     : "opacity.io";
@@ -34,8 +34,8 @@ export const PUBLIC_SHARE_URL = `https://public-share.opacitynodes.com`;
 
 export const EXCHANGE_LINK = "https://www.kucoin.com/trade/OPCT-BTC";
 
-export const DEFAULT_STORAGE_NODE_V1 = "localhost";
-export const DEFAULT_STORAGE_NODE_V2 = "localhost";
+export const DEFAULT_STORAGE_NODE_V1 = "broker-1.opacitynodes.com";
+export const DEFAULT_STORAGE_NODE_V2 = "beta-broker.opacitynodes.com";
 
 const DEFAULT_STORAGE_NODE_IP =
     IS_DEV
@@ -45,8 +45,8 @@ const DEFAULT_STORAGE_NODE_IP =
     : DEFAULT_STORAGE_NODE_V1;
 
 export const STORAGE_NODE = `${PROTOCOL}://${DEFAULT_STORAGE_NODE_IP}:3000`;
-export const STORAGE_NODE_V1 = `http://localhost:3000`;
-export const STORAGE_NODE_V2 = `http://localhost:3000`;
+export const STORAGE_NODE_V1 = `https://${DEFAULT_STORAGE_NODE_V1}:3000`;
+export const STORAGE_NODE_V2 = `https://${DEFAULT_STORAGE_NODE_V2}:3000`;
 
 export const FILE_MAX_SIZE = 2 * 1024 * 1024 * 1024;
 
