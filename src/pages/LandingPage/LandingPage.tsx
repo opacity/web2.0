@@ -56,10 +56,15 @@ const LandingPage = ({ history }) => {
         <div className="container-xl" data-aos="fade-up">
           <div className="row">
             <div className="col-md-6">
-              <h1>Privacy By Design</h1>
-              <div className="description mb-5 mt-2">
-                Free to share ideas. Free to be private. Free to be you.
+              <div className="row mb-0">
+                <div className="col-md-10 mb-0">
+                  <h1>Privacy By Design</h1>
+                  <div className="description mb-5 mt-2">
+                    Free to share ideas. Free to be private. Free to be you.
+                  </div>
+                </div>
               </div>
+
               <div className="row mb-3">
                 <div className="col-md-5 btn-cart-container">
                   <NavLink
@@ -72,7 +77,7 @@ const LandingPage = ({ history }) => {
                     </button>
                   </NavLink>
                 </div>
-                <div className="col-md-5">
+                <div className="col-md-5 d-flex btn-upload-container">
                   <button
                     className="btn btn-pill btn-upload"
                     onClick={handleOpenSignUpModal}

@@ -49,6 +49,12 @@ img {
       margin-bottom: 20px !important;
     }
   }
+  .btn-upload-container {
+    justify-content: flex-end;
+    @media (max-width: 767.9px) {
+      justify-content: center;
+    }
+  }
   .btn-cart {
     &:hover {
       opacity: 0.8;
