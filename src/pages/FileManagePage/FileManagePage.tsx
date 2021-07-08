@@ -1306,7 +1306,7 @@ const FileManagePage = ({ history }) => {
                             placement="bottom"
                           >
                             <Tag>
-                              <span style={{ fontSize: "14px" }}>?</span>
+                              <span className="badge-content">?</span>
                             </Tag>
                           </Tooltip>
                         </th>
