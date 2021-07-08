@@ -20,6 +20,21 @@ import { FileManagementStatusProvider, FileManagementStatus } from "./context";
 import { Provider } from "react-redux";
 import { store, persistor } from "./redux";
 import { PersistGate } from "redux-persist/lib/integration/react";
+import * as Sentry from "@sentry/react";
+import { Integrations } from "@sentry/tracing";
+import { version, IS_DEV } from "./config";
+
+Sentry.init({ 
+  dsn: 'https://8fdbdab452f04a43b5c3f2e00ec126f7@sentry.io/295597', 
+  release: "web2.0@" + version,
+  integrations: [
+    new Integrations.BrowserTracing({
+      routingInstrumentation: Sentry.reactRouterV5Instrumentation(history),
+    }),
+  ],
+  tracesSampleRate: 0.7,
+  enabled: IS_DEV
+});
 
 function App() {
   const status = React.useContext(FileManagementStatus);

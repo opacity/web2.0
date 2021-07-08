@@ -4,14 +4,14 @@ import { createEpicMiddleware } from "redux-observable";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { routerMiddleware } from "connected-react-router";
-// import createRavenMiddleware from "raven-for-redux";
 
 import { IS_DEV } from "../config";
 
 import epics from "./epics";
 import reducer from "./reducers";
 import history from "./history";
-// import Raven from "../services/error-tracker";
+
+const sentryReduxEnhancer = Sentry.createReduxEnhancer({});
 
 const composeFn = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
@@ -21,7 +21,6 @@ const middleware = [
   IS_DEV && createLogger(),
   epicMiddleware,
   routerMiddleware(history),
-  // createRavenMiddleware(Raven, {})
 ].filter(x => !!x);
 
 const persistConfig = {
@@ -32,7 +31,7 @@ const persistConfig = {
 
 export const store = createStore(
   persistReducer(persistConfig, reducer(history)),
-  composeFn(applyMiddleware(...middleware))
+  composeFn(applyMiddleware(...middleware), sentryReduxEnhancer)
 );
 
 export const persistor = persistStore(store, {}, () => {
