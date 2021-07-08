@@ -891,6 +891,12 @@
 .type {
   .badge {
     border-radius: 100px;
+    width: 14px;
+    height: 14px;
+    min-width: inherit;
+    span.badge-content {
+      font-size: 10px;
+    }
   }
 }
 
