@@ -1,4 +1,5 @@
 import { applyMiddleware, compose, createStore } from "redux";
+import * as Sentry from "@sentry/react";
 import { createLogger } from "redux-logger";
 import { createEpicMiddleware } from "redux-observable";
 import { persistReducer, persistStore } from "redux-persist";
