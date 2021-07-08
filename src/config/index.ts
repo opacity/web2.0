@@ -10,8 +10,10 @@ enum STORAGE_NODE_VERSION {
   PRODUCTION = "production",
 }
 
+export const IS_DEV = process.env.NODE_ENV == NODE_ENV.DEVELOPMENT
+
 const PROTOCOL =
-  process.env.NODE_ENV == NODE_ENV.DEVELOPMENT &&
+  IS_DEV &&
   process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
     ? "https"
     : "https";
@@ -22,7 +24,7 @@ export const STRIPE_API_KEY =
     : "pk_test_jHC9KKrYExP2pdqmuSmkPSqT00ErWapX4f";
 
 export const HOST =
-  process.env.NODE_ENV == NODE_ENV.DEVELOPMENT
+    IS_DEV
     ? "127.0.0.1:4444"
     : process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
     ? "dev2.opacity.io"
@@ -36,7 +38,7 @@ export const DEFAULT_STORAGE_NODE_V1 = "broker-1.opacitynodes.com";
 export const DEFAULT_STORAGE_NODE_V2 = "beta-broker.opacitynodes.com";
 
 const DEFAULT_STORAGE_NODE_IP =
-  process.env.NODE_ENV == NODE_ENV.DEVELOPMENT
+    IS_DEV
     ? DEFAULT_STORAGE_NODE_V2
     : process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
     ? DEFAULT_STORAGE_NODE_V2
