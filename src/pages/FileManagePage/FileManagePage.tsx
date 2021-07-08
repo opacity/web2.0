@@ -1009,7 +1009,7 @@ const FileManagePage = ({ history }) => {
               className={storageWarning && "danger"}
             />
 
-            <div className="storage-info">
+            <div className="storage-info mb-0">
               <span>
                 {formatGbs(accountInfo ? accountInfo.account.storageUsed : 0)}{" "}
               </span>{" "}
@@ -1018,6 +1018,16 @@ const FileManagePage = ({ history }) => {
                 accountInfo ? accountInfo.account.storageLimit : "..."
               )}{" "}
               used
+            </div>
+
+            <div className="storage-info">
+              {`Your plan expires on ${
+                accountInfo
+                  ? moment(accountInfo.account.expirationDate).format(
+                      "MMM D, YYYY"
+                    )
+                  : "..."
+              }.`}
             </div>
 
             <div
