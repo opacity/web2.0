@@ -69,7 +69,7 @@ task("copy-streamsaver", async () => {
     .exec();
 
   await src("src/favicon.ico")
-    .dest("dist", path.join(__dirname, "src"))
+    .dest("dist/resources", path.join(__dirname, "src"))
     .write()
     .exec();
 });
