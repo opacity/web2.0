@@ -20,6 +20,7 @@ import { WebNetworkMiddleware } from "../../../ts-client-library/packages/middle
 import { CryptoMiddleware } from "../../../ts-client-library/packages/middleware";
 import _ from "lodash";
 import { toast } from "react-toastify";
+import { formatBytes } from "../../helpers";
 
 const logo = require("../../assets/logo2.png");
 const copyImage = require("../../assets/copies_white.svg");
@@ -158,6 +159,7 @@ const FileShareModal = ({
             "This file is opacity public file, Everyone can use this file!",
           fileExtension: getFileExtension(curFileMetadata.name),
           mimeType: curFileMetadata.type,
+          size: formatBytes(curFileMetadata.size),
         });
 
         setShareURL(`${PUBLIC_SHARE_URL}/${fileSystemShare.shortlink}`);
