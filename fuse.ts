@@ -6,7 +6,6 @@ class Context {
   env: {
     NODE_ENV: "development" | "production";
     STORAGE_NODE_VERSION: "beta" | "production";
-    PUBLIC_URL?: "public" | null;
   };
   getConfig = () =>
     fusebox({
@@ -99,7 +98,6 @@ task("run-dev-beta", async (ctx) => {
   ctx.runServer = true;
   ctx.env = {
     NODE_ENV: "development",
-    PUBLIC_URL: "public",
     STORAGE_NODE_VERSION: "beta",
   };
   const fuse = ctx.getConfig();
