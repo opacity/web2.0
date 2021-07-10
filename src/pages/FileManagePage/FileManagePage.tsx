@@ -46,6 +46,7 @@ import {
   OpaqueDownload,
 } from "../../../ts-client-library/packages/opaque";
 import {
+  bindFileSystemObjectToAccountSystem,
   bindDownloadToAccountSystem,
   bindUploadToAccountSystem,
 } from "../../../ts-client-library/packages/filesystem-access/src/account-system-binding";
@@ -607,13 +608,25 @@ const FileManagePage = ({ history }) => {
   );
 
   const deleteFile = React.useCallback(
-    async (file: FolderFileEntry) => {
+    async (file: FileMetadata) => {
       try {
-        const status = await accountSystem.removeFile(file.location);
+        const fso = 
+            new FileSystemObject({
+              handle: file.private.handle,
+              location: undefined,
+              config: {
+                net: netMiddleware,
+                crypto: cryptoMiddleware,
+                storageNode: storageNode,
+              },
+            })
+        bindFileSystemObjectToAccountSystem(accountSystem, fso);
+        await fso.delete();
         // toast(`${file.name} was successfully deleted.`);
         setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
         setFileToDelete(null);
       } catch (e) {
+        await accountSystem.removeFile(file.location)
         setFileToDelete(null);
         toast.error(`An error occurred while deleting ${file.name}.`);
       }
@@ -632,11 +645,20 @@ const FileManagePage = ({ history }) => {
         );
 
         for (const file of folderMeta.files) {
-          await accountSystem.removeFile(file.location);
+          const metaFile = await accountSystem.getFileIndexEntryByFileMetadataLocation(file.location)
+          const fso = 
+            new FileSystemObject({
+              handle: metaFile.private.handle,
+              location: undefined,
+              config: {
+                net: netMiddleware,
+                crypto: cryptoMiddleware,
+                storageNode: storageNode,
+              },
+            })
+          bindFileSystemObjectToAccountSystem(accountSystem, fso);
+          await fso.delete();
         }
-
-        folderMeta.files.length &&
-          (await fileSystemObject.deleteMultiFile(folderMeta.files));
 
         for (const folderItem of folders) {
           await deleteFolder(folderItem);
