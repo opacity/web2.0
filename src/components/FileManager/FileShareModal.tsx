@@ -155,11 +155,9 @@ const FileShareModal = ({
         bindPublicShareToAccountSystem(accountSystem, fileSystemShare);
         await fileSystemShare.publicShare({
           title: curFileMetadata.name,
-          description:
-            "This file is opacity public file, Everyone can use this file!",
+          description: formatBytes(curFileMetadata.size),
           fileExtension: getFileExtension(curFileMetadata.name),
-          mimeType: curFileMetadata.type,
-          size: formatBytes(curFileMetadata.size),
+          mimeType: curFileMetadata.type
         });
 
         setShareURL(`${PUBLIC_SHARE_URL}/${fileSystemShare.shortlink}`);
