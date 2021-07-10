@@ -586,13 +586,30 @@
       .dropdown-toggle {
         border: none;
         background: none;
+        box-shadow: none;
         &::after {
           content: url("../../assets/dots.svg");
           transform: none;
-          height: auto;
+          height: 18px;
           margin: unset;
           border: none;
         }
+        &:hover {
+            &::after {
+              filter: invert(80%) sepia(100%) saturate(500%) hue-rotate(200deg)
+                brightness(104%) contrast(97%);
+            }
+        }
+        &:focus {
+          background-color: #ddd;
+          &::after {
+            filter: invert(80%) sepia(100%) saturate(500%) hue-rotate(200deg)
+              brightness(104%) contrast(97%);
+          }
+        }
+      }
+      .dropdown-menu {
+        margin-top: 4px;
       }
       .dropdown-item {
         padding: 10px 30px;
@@ -616,14 +633,6 @@
       .icon-rename {
         content: url("../../assets/edit.svg");
         margin-right: 20px;
-      }
-    }
-    .grid-context-menu-toggle {
-      .dropdown-toggle:hover {
-        &::after {
-          filter: invert(80%) sepia(100%) saturate(500%) hue-rotate(200deg)
-            brightness(104%) contrast(97%);
-        }
       }
     }
     .grid-view {
