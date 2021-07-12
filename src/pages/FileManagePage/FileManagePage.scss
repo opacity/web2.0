@@ -414,8 +414,8 @@
     }
     .item-icon {
       background-color: #eaf1ff;
-      width: 40px;
-      height: 40px;
+      width: 30px;
+      height: 30px;
       &.file-upload {
         mask: url("../../assets/direct-download.svg") no-repeat center;
         -webkit-mask: url("../../assets/direct-download.svg") no-repeat center;
@@ -595,10 +595,10 @@
           border: none;
         }
         &:hover {
-            &::after {
-              filter: invert(80%) sepia(100%) saturate(500%) hue-rotate(200deg)
-                brightness(104%) contrast(97%);
-            }
+          &::after {
+            filter: invert(80%) sepia(100%) saturate(500%) hue-rotate(200deg)
+              brightness(104%) contrast(97%);
+          }
         }
         &:focus {
           background-color: #ddd;
