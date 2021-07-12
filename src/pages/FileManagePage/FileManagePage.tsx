@@ -610,23 +610,22 @@ const FileManagePage = ({ history }) => {
   const deleteFile = React.useCallback(
     async (file: FileMetadata) => {
       try {
-        const fso = 
-            new FileSystemObject({
-              handle: file.private.handle,
-              location: undefined,
-              config: {
-                net: netMiddleware,
-                crypto: cryptoMiddleware,
-                storageNode: storageNode,
-              },
-            })
+        const fso = new FileSystemObject({
+          handle: file.private.handle,
+          location: undefined,
+          config: {
+            net: netMiddleware,
+            crypto: cryptoMiddleware,
+            storageNode: storageNode,
+          },
+        });
         bindFileSystemObjectToAccountSystem(accountSystem, fso);
         await fso.delete();
         // toast(`${file.name} was successfully deleted.`);
         setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
         setFileToDelete(null);
       } catch (e) {
-        await accountSystem.removeFile(file.location)
+        await accountSystem.removeFile(file.location);
         setFileToDelete(null);
         toast.error(`An error occurred while deleting ${file.name}.`);
       }
@@ -645,17 +644,19 @@ const FileManagePage = ({ history }) => {
         );
 
         for (const file of folderMeta.files) {
-          const metaFile = await accountSystem.getFileIndexEntryByFileMetadataLocation(file.location)
-          const fso = 
-            new FileSystemObject({
-              handle: metaFile.private.handle,
-              location: undefined,
-              config: {
-                net: netMiddleware,
-                crypto: cryptoMiddleware,
-                storageNode: storageNode,
-              },
-            })
+          const metaFile =
+            await accountSystem.getFileIndexEntryByFileMetadataLocation(
+              file.location
+            );
+          const fso = new FileSystemObject({
+            handle: metaFile.private.handle,
+            location: undefined,
+            config: {
+              net: netMiddleware,
+              crypto: cryptoMiddleware,
+              storageNode: storageNode,
+            },
+          });
           bindFileSystemObjectToAccountSystem(accountSystem, fso);
           await fso.delete();
         }
@@ -1232,16 +1233,6 @@ const FileManagePage = ({ history }) => {
           )}
           {(fileList.length > 0 || folderList.length > 0) && (
             <div>
-              {tableView && (
-                <div className="d-flex header-item header-item-absolute ml-3 justify-content-end position-absolute left-0 right-0">
-                  <span
-                    className="item-icon grid-view"
-                    onClick={() => {
-                      setTableView(false);
-                    }}
-                  ></span>
-                </div>
-              )}
               {!tableView && (
                 <div className="d-flex header-item header-item-absolute list-view ml-3 justify-content-end position-absolute left-0 right-0">
                   <span
@@ -1381,7 +1372,16 @@ const FileManagePage = ({ history }) => {
                       >
                         Size
                       </th>
-                      <th></th>
+                      <th className="pt-0 pb-0">
+                        <div className="d-flex header-item">
+                          <span
+                            className="item-icon grid-view"
+                            onClick={() => {
+                              setTableView(false);
+                            }}
+                          ></span>
+                        </div>
+                      </th>
                     </tr>
                   </Table.Header>
                   <Table.Body>
