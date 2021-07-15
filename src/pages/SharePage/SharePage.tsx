@@ -72,6 +72,67 @@ const SharePage = ({ history }) => {
     return ext;
   };
 
+  const getTypeFromExt = (ext?: string) => {
+    ext = ("" + ext).replace(/^\./, "");
+
+    if (
+      [
+        "png",
+        "apng",
+
+        "svg",
+
+        "gif",
+
+        "bmp",
+
+        "ico",
+        "cur",
+
+        "jpg",
+        "jpeg",
+        "jfif",
+        "pjpeg",
+        "pjp",
+
+        "webp",
+      ].includes(ext)
+    ) {
+      return "image";
+    }
+
+    if (["mp4", "ogg", "webm"].includes(ext)) {
+      return "video";
+    }
+
+    if (["mp3", "flac"].includes(ext)) {
+      return "audio";
+    }
+
+    if (["txt", "md"].includes(ext)) {
+      return "text";
+    }
+
+    return undefined;
+  };
+
+  const checkPreviewPossible = () => {
+    if (!file) return true;
+
+    const newType =
+      "" + (file.type || getTypeFromExt(getFileExtension(file.name)));
+
+    switch (newType.split("/")[0]) {
+      case "image":
+      case "audio":
+      case "video":
+      case "text":
+        return true;
+    }
+
+    return false;
+  };
+
   useEffect(() => {
     const init = async () => {
       const shareHandle = location.hash.split("=")[1];
@@ -168,6 +229,8 @@ const SharePage = ({ history }) => {
     }
   };
 
+  const isPreviewPossible = checkPreviewPossible();
+
   return (
     <SiteWrapper
       history={history}
@@ -231,9 +294,12 @@ const SharePage = ({ history }) => {
                     <button
                       className="btn btn-pill btn-preview"
                       onClick={() => filePreview(handle)}
+                      disabled={!isPreviewPossible}
                     >
                       <span></span>
-                      {previewOpen ? "Hide" : "Show"} Preview
+                      {isPreviewPossible
+                        ? `${previewOpen ? "Hide" : "Show"} Preview`
+                        : "Preview Not Available"}
                     </button>
                   </div>
                 </div>
