@@ -489,20 +489,26 @@ const SendPayment: React.FC<SignUpProps> = ({
 }) => {
   const [isCopied, setIsCopied] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("crypto");
-  const [startWaiting, setStartWaiting] = useState(false);
 
   React.useEffect(() => {
-    startWaiting && account.waitForPayment().then(() => {
-      goNext();
-    });
-  }, [startWaiting]);
+    if(isForUpgrade) {
+      const form = {
+        size: plan.storageInGB,
+        metadataKeys: [],
+        fileIDs: [],
+      };
+      account.waitForUpgradePayment(form).then(() => {
+        goNext();
+      });
 
-  React.useEffect(() => {
-    setStartWaiting(isForUpgrade ? false : true)
-  }, [isForUpgrade])
+    } else {
+      account.waitForPayment().then(() => {
+        goNext();
+      });
+    }
+  }, []);
 
   const handleStripeSuccess = async (stripeToken) => {
-    setStartWaiting(true)
     const res = await account.createSubscription({ stripeToken });
   };
 
@@ -607,7 +613,7 @@ const SendPayment: React.FC<SignUpProps> = ({
                     Scan QR code to pay
                   </h3>
                   <QRCode
-                    value={"ethAddress"}
+                    value={invoice.ethAddress}
                     size={200}
                     renderAs="svg"
                     bgColor="#ffffff"
