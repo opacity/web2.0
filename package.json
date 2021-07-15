@@ -65,6 +65,7 @@
     "tslib": "^1.14.1",
     "util": "^0.12.3",
     "web-streams-polyfill": "^3.0.2",
+    "web3": "^1.4.0",
     "yup": "^0.32.8"
   },
   "devDependencies": {
