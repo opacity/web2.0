@@ -229,6 +229,8 @@ const SharePage = ({ history }) => {
     }
   };
 
+  const isPreviewPossible = checkPreviewPossible();
+
   return (
     <SiteWrapper
       history={history}
@@ -288,17 +290,18 @@ const SharePage = ({ history }) => {
                       Download File
                     </button>
                   </div>
-                  {checkPreviewPossible() && (
-                    <div className="col-md-5">
-                      <button
-                        className="btn btn-pill btn-preview"
-                        onClick={() => filePreview(handle)}
-                      >
-                        <span></span>
-                        {previewOpen ? "Hide" : "Show"} Preview
-                      </button>
-                    </div>
-                  )}
+                  <div className="col-md-5">
+                    <button
+                      className="btn btn-pill btn-preview"
+                      onClick={() => filePreview(handle)}
+                      disabled={!isPreviewPossible}
+                    >
+                      <span></span>
+                      {isPreviewPossible
+                        ? `${previewOpen ? "Hide" : "Show"} Preview`
+                        : "Preview Not Available"}
+                    </button>
+                  </div>
                 </div>
 
                 <h2>Easily share your files with Opacity</h2>
