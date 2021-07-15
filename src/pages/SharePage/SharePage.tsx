@@ -72,6 +72,67 @@ const SharePage = ({ history }) => {
     return ext;
   };
 
+  const getTypeFromExt = (ext?: string) => {
+    ext = ("" + ext).replace(/^\./, "");
+
+    if (
+      [
+        "png",
+        "apng",
+
+        "svg",
+
+        "gif",
+
+        "bmp",
+
+        "ico",
+        "cur",
+
+        "jpg",
+        "jpeg",
+        "jfif",
+        "pjpeg",
+        "pjp",
+
+        "webp",
+      ].includes(ext)
+    ) {
+      return "image";
+    }
+
+    if (["mp4", "ogg", "webm"].includes(ext)) {
+      return "video";
+    }
+
+    if (["mp3", "flac"].includes(ext)) {
+      return "audio";
+    }
+
+    if (["txt", "md"].includes(ext)) {
+      return "text";
+    }
+
+    return undefined;
+  };
+
+  const checkPreviewPossible = () => {
+    if (!file) return true;
+
+    const newType =
+      "" + (file.type || getTypeFromExt(getFileExtension(file.name)));
+
+    switch (newType.split("/")[0]) {
+      case "image":
+      case "audio":
+      case "video":
+      case "text":
+        return true;
+    }
+
+    return false;
+  };
+
   useEffect(() => {
     const init = async () => {
       const shareHandle = location.hash.split("=")[1];
@@ -227,15 +288,17 @@ const SharePage = ({ history }) => {
                       Download File
                     </button>
                   </div>
-                  <div className="col-md-5">
-                    <button
-                      className="btn btn-pill btn-preview"
-                      onClick={() => filePreview(handle)}
-                    >
-                      <span></span>
-                      {previewOpen ? "Hide" : "Show"} Preview
-                    </button>
-                  </div>
+                  {checkPreviewPossible() && (
+                    <div className="col-md-5">
+                      <button
+                        className="btn btn-pill btn-preview"
+                        onClick={() => filePreview(handle)}
+                      >
+                        <span></span>
+                        {previewOpen ? "Hide" : "Show"} Preview
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 <h2>Easily share your files with Opacity</h2>
