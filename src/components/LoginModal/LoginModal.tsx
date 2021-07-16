@@ -80,8 +80,9 @@ const LoginModal: React.FC<OtherProps> = ({
           setErrors({
             privateKey: (
               <>
-                Ths account handle is old. <Link to="/migration">Upgrade</Link>{" "}
-                your account to Opacity V2.0
+                This account handle is old. Upgrade will be available soon.
+                {/*<Link to="/migration">Upgrade</Link>{" "}
+                your account to Opacity V2.0*/}
               </>
             ),
           });
@@ -105,9 +106,9 @@ const LoginModal: React.FC<OtherProps> = ({
               setErrors({
                 privateKey: (
                   <>
-                    Ths account handle is old.{" "}
-                    <Link to="/migration">Upgrade</Link> your account to Opacity
-                    V2.0
+                    This account handle is old. Upgrade will be available soon.
+                    {/*<Link to="/migration">Upgrade</Link> your account to Opacity
+                    V2.0*/}
                   </>
                 ),
               });
