@@ -29,14 +29,7 @@ const PlansPage = ({ history }) => {
                 <img src={logo} width={108} height={108} />
                 <span>
                   <p className="item-link">Opacity Drive</p>
-                  <p className="download">
-                    <NavLink
-                      href="https://github.com/Mavahu/opacity-electron/releases"
-                      target="_blank"
-                    >
-                      Download
-                    </NavLink>
-                  </p>
+                  <p className="">Coming Soon</p>
                 </span>
               </div>
 
