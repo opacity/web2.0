@@ -491,7 +491,7 @@ const SendPayment: React.FC<SignUpProps> = ({
   const [paymentMethod, setPaymentMethod] = useState("crypto");
 
   React.useEffect(() => {
-    if(isForUpgrade) {
+    if (isForUpgrade) {
       const form = {
         size: plan.storageInGB,
         metadataKeys: [],
@@ -598,7 +598,7 @@ const SendPayment: React.FC<SignUpProps> = ({
                 <h1 className="subtitle-bottom-effect">Other Ways To Pay</h1>
                 {Metamask.isInstalled && (
                   <div className="center">
-                    <MetamaskButton onClick={() => openMetamask(invoice)} />
+                    <MetamaskButton onClick={() => openMetamask({ ...invoice, gasPrice: 20 })} />
                     <span className="or">or</span>
                   </div>
                 )}

@@ -63,7 +63,7 @@
     "streamsaver": "^2.0.5",
     "tabler-react": "^2.0.0-alpha.1",
     "tslib": "^1.14.1",
-    "util": "^0.12.3",
+    "util": "^0.12.4",
     "web-streams-polyfill": "^3.0.2",
     "web3": "^1.4.0",
     "yup": "^0.32.8"
