@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "ts-node -T fuse run-dev-beta",
-    "start:prod": "ts-node -T fuse run-dev-prod",
+    "start:prod": "ts-node -T fuse run-prod-prod",
     "preview": "ts-node -T fuse run-prod-beta",
     "preview:prod": "ts-node -T fuse run-prod-prod",
     "dist": "ts-node -T fuse dist-prod-beta",

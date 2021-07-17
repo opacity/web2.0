@@ -11,7 +11,7 @@ import { Row, Col, Container, Button, ProgressBar } from "react-bootstrap";
 import classNames from "classnames";
 import {
   STORAGE_NODE as storageNode,
-  DEFAULT_STORAGE_NODE_V1,
+  STORAGE_NODE_V1,
 } from "../../config";
 
 type MigrationFormProps = {
@@ -47,7 +47,7 @@ const MigrationPage = ({ history }) => {
   const runMigrator = async (accountHandle: Uint8Array) => {
     setMigrationStatus("migrating...");
     const migrator = new AccountMigrator(accountHandle, {
-      storageNodeV1: `https://${DEFAULT_STORAGE_NODE_V1}:3000`,
+      storageNodeV1: STORAGE_NODE_V1,
       storageNodeV2: storageNode,
     });
 
