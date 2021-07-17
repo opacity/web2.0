@@ -81,8 +81,8 @@ const LoginModal: React.FC<OtherProps> = ({
             privateKey: (
               <>
                 This account handle is old. Upgrade will be available soon.
-                {/*<Link to="/migration">Upgrade</Link>{" "}
-                your account to Opacity V2.0*/}
+                <Link to="/migration">Upgrade</Link>{" "}
+                your account to Opacity V2.0
               </>
             ),
           });
