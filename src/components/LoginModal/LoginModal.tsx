@@ -96,7 +96,7 @@ const LoginModal: React.FC<OtherProps> = ({
         const account = new Account({
           crypto: cryptoMiddleware,
           net: netMiddleware,
-          storageNode: `https://${DEFAULT_STORAGE_NODE_V1}:3000`,
+          storageNode: storageNode,
         });
         account
           .needsMigration()
