@@ -180,7 +180,7 @@ function App() {
                 />
                 <Route exact path="/forgot" component={ForgotPage} />
                 <Route path="/share" component={SharePage} />
-                {/* <Route path="/migration" component={MigrationPage} /> */}
+                <Route path="/migration" component={MigrationPage} />
               </Switch>
             </Router>
           </FileManagementStatusProvider>
