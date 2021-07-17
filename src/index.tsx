@@ -24,8 +24,8 @@ import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
 import { version, IS_DEV } from "./config";
 
-Sentry.init({ 
-  dsn: 'https://8fdbdab452f04a43b5c3f2e00ec126f7@sentry.io/295597', 
+Sentry.init({
+  dsn: "https://8fdbdab452f04a43b5c3f2e00ec126f7@sentry.io/295597",
   release: "web2.0@" + version,
   integrations: [
     new Integrations.BrowserTracing({
@@ -33,7 +33,7 @@ Sentry.init({
     }),
   ],
   tracesSampleRate: 0.7,
-  enabled: IS_DEV
+  enabled: IS_DEV,
 });
 
 function App() {
@@ -180,7 +180,7 @@ function App() {
                 />
                 <Route exact path="/forgot" component={ForgotPage} />
                 <Route path="/share" component={SharePage} />
-                <Route path="/migration" component={MigrationPage} />
+                {/* <Route path="/migration" component={MigrationPage} /> */}
               </Switch>
             </Router>
           </FileManagementStatusProvider>
