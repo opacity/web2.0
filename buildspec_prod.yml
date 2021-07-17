@@ -1,0 +1,32 @@
+version: 0.2
+
+env:
+  git-credential-helper: yes
+
+phases:
+  pre_build:
+    on-failure: ABORT
+    commands:
+      - npm install -g npm@7.15.0
+      - npm install -g lerna
+      - git submodule update --init --recursive --remote
+      - cd ts-client-library
+      - rm package-lock.json
+      - npx lerna bootstrap
+      - cd ../opaque
+      - npm install
+      - cd ..
+  build:
+    on-failure: ABORT
+    commands:
+      - echo build started on `date`
+      - npm install
+      - npm run dist:prod
+  post_build:
+    commands:
+      - echo build completed on `date`
+artifacts:
+  files:
+    - appspec.yml
+    - dist/**/*
+    - deploy_scripts/**/*
