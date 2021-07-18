@@ -15,7 +15,7 @@ const Footer = () => {
       <div className="container-xl">
         <div className="row">
           <div className="col-md-6 footer-logo">
-            <NavLink href="/">
+            <NavLink href="https://opacity.io" target="_blank">
               <img width={78} height={78} src={logo} />
               <span className="ml-3">OPACITY</span>
             </NavLink>
@@ -68,17 +68,17 @@ const Footer = () => {
             <span className="title"> Company</span>
             <NavLink href="https://telegram.me/opacitystorage" target="_blank">
               About us
-            </NavLink>
+            </NavLink><br />
             <NavLink href="https://medium.com/opacity-storage" target="_blank">
               Blog
             </NavLink>
           </div>
           <div className="link-wrapper">
             <span className="title"> Resources</span>
-            <NavLink href="/downloads">Downloads</NavLink>
+            <NavLink href="https:/opacity.io/downloads" target="_blank">Downloads</NavLink><br />
             <NavLink href="https://medium.com/opacity-storage" target="_blank">
               Learn
-            </NavLink>
+            </NavLink><br />
             <NavLink
               href="https://api.opacity.io:3000/swagger/index.html"
               target="_blank"
@@ -90,10 +90,10 @@ const Footer = () => {
             <span className="title"> Help</span>
             <NavLink href="https://telegram.me/opacitystorage" target="_blank">
               Contact us
-            </NavLink>
+            </NavLink><br />
             <NavLink href="https://telegram.me/opacitystorage" target="_blank">
               Telegram
-            </NavLink>
+            </NavLink><br />
             <NavLink href="http://discord.opacity.io/" target="_blank">
               Discord
             </NavLink>
@@ -102,11 +102,11 @@ const Footer = () => {
             <span className="title"> Legal</span>
             <NavLink href="/terms-of-service" target="_blank">
               Terms of Service
-            </NavLink>
+            </NavLink><br />
 
             <NavLink href="/privacy-policy" target="_blank">
               Privacy Policy
-            </NavLink>
+            </NavLink><br />
 
             <NavLink href="/code-review-license" target="_blank">
               Code License
