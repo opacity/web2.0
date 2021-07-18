@@ -30,11 +30,12 @@ export const HOST =
       ? "dev2.opacity.io"
       : "opacity.io";
 export const FRONT_END_URL = `${PROTOCOL}://${HOST}`;
-export const PUBLIC_SHARE_URL =
-  IS_DEV
-    ? `https://public-share.opacitynodes.com`
-    : `https://public.opacity.io`;
 
+export const PUBLIC_SHARE_URL =
+  process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
+    ? "https://public-share.opacitynodes.com"
+    : "https://public.opacity.io";
+    
 export const EXCHANGE_LINK = "https://www.kucoin.com/trade/OPCT-BTC";
 
 export const DEFAULT_STORAGE_NODE_V1 = "broker-1.opacitynodes.com";
