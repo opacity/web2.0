@@ -24,6 +24,7 @@ const MigrationPage = ({ history }) => {
   const [migrationDetails, setMigrationDetails] = useState("");
   const [errorStatus, setErrorStatus] = useState("");
   const [percent, setPercent] = useState(0);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const handleUpgrade = (
     values: MigrationFormProps,
@@ -80,7 +81,7 @@ const MigrationPage = ({ history }) => {
   };
 
   return (
-    <SiteWrapper history={history} page="migration">
+    <SiteWrapper history={history} page="migration" showLoginModal={showLoginModal}>
       <Container fluid="xl migration">
         <Formik
           initialValues={{ privateKey: "" }}
@@ -105,8 +106,8 @@ const MigrationPage = ({ history }) => {
                     {migrationStatus === "init"
                       ? `If your account was created before 'release date', you must upgrade to the latest version. Please enter your account handle below to complete the upgrade`
                       : migrationStatus === "Finished."
-                      ? `Your account has been migrated successfully.`
-                      : `Please wait while we complete the upgrade. Do not leave this page or interrupt the process. This may take some time depending on the size of your account.`}
+                        ? `Your account has been migrated successfully.`
+                        : `Please wait while we complete the upgrade. Do not leave this page or interrupt the process. This may take some time depending on the size of your account.`}
                   </p>
                 </Col>
               </Row>
@@ -144,17 +145,25 @@ const MigrationPage = ({ history }) => {
                     <div className="migrate-progress">
                       {(migrationStatus !== "Finished." ||
                         errorStatus !== "") && (
-                        <div className="percentage-text">{percent}%</div>
-                      )}
-                      <ProgressBar now={percent} animated striped />
+                          <div className="percentage-text">{percent}%</div>
+                        )}
+                      <ProgressBar now={percent} animated={percent !== 100 || migrationStatus !== 'Finished.'} striped />
                       <div
                         className={classNames(
                           "migrate-status",
                           errorStatus !== "" && "migrate-status-error"
                         )}
                       >
-                        {errorStatus !== "" ? errorStatus : migrationStatus}
+                        {errorStatus !== "" ? errorStatus : (percent === 100 ? "Finished." : migrationStatus)}
                       </div>
+                      {(percent === 100 || migrationStatus === 'Finished.') &&
+                        <div className="migrate-details">You may now <span
+                          style={{
+                            color: 'red',
+                            cursor: 'pointer'
+                          }} onClick={() => setShowLoginModal(true)}>login 
+                           </span> to your account</div>
+                      }
                       <div className="migrate-details">{migrationDetails}</div>
                     </div>
                   </Col>
