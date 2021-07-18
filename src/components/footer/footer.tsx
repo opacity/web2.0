@@ -2,6 +2,9 @@ import * as React from "react";
 import { NavLink } from "tabler-react";
 // import { Link } from "react-router-dom";
 import "./footer.scss";
+import {
+  FRONT_END_URL
+} from "../../config";
 const logo = require("../../assets/logo.svg");
 const github = require("../../assets/github.svg");
 const reddit = require("../../assets/reddit.svg");
@@ -9,13 +12,14 @@ const telegram = require("../../assets/telegram.svg");
 const twitter = require("../../assets/twitter.svg");
 const youtube = require("../../assets/youtube.svg");
 
+
 const Footer = () => {
   return (
     <footer>
       <div className="container-xl">
         <div className="row">
           <div className="col-md-6 footer-logo">
-            <NavLink href="https://opacity.io" target="_blank">
+            <NavLink href={FRONT_END_URL} target="_blank">
               <img width={78} height={78} src={logo} />
               <span className="ml-3">OPACITY</span>
             </NavLink>
@@ -75,7 +79,7 @@ const Footer = () => {
           </div>
           <div className="link-wrapper">
             <span className="title"> Resources</span>
-            <NavLink href="https:/opacity.io/downloads" target="_blank">Downloads</NavLink><br />
+            <NavLink href={`${FRONT_END_URL}/downloads`} target="_blank">Downloads</NavLink><br />
             <NavLink href="https://medium.com/opacity-storage" target="_blank">
               Learn
             </NavLink><br />
@@ -100,15 +104,15 @@ const Footer = () => {
           </div>
           <div className="link-wrapper">
             <span className="title"> Legal</span>
-            <NavLink href="/terms-of-service" target="_blank">
+            <NavLink href={`${FRONT_END_URL}/terms-of-service`} target="_blank">
               Terms of Service
             </NavLink><br />
 
-            <NavLink href="/privacy-policy" target="_blank">
+            <NavLink href={`${FRONT_END_URL}/privacy-policy`} target="_blank">
               Privacy Policy
             </NavLink><br />
 
-            <NavLink href="/code-review-license" target="_blank">
+            <NavLink href={`${FRONT_END_URL}/code-review-license`} target="_blank">
               Code License
             </NavLink>
           </div>
