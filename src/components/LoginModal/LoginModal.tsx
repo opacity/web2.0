@@ -80,9 +80,9 @@ const LoginModal: React.FC<OtherProps> = ({
           setErrors({
             privateKey: (
               <>
-                {/* This account handle is old. Upgrade will be available soon. */}
-                This account handle is old. Please upgrade
-                <Link to="/migration">here</Link>.
+                This account handle is old. Upgrade will be available soon.
+                {/* This account handle is old. Please upgrade
+                <Link to="/migration">here</Link>. */}
               </>
             ),
             type: 'migration'
@@ -107,9 +107,9 @@ const LoginModal: React.FC<OtherProps> = ({
               setErrors({
                 privateKey: (
                   <>
-                    {/* This account handle is old. Upgrade will be available soon. */}
-                    This account handle is old. Please upgrade
-                    <Link to="/migration">here</Link>.
+                    This account handle is old. Upgrade will be available soon.
+                    {/* This account handle is old. Please upgrade
+                    <Link to="/migration">here</Link>. */}
                   </>
                 ),
                 type: 'migration'
