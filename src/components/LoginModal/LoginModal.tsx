@@ -80,11 +80,12 @@ const LoginModal: React.FC<OtherProps> = ({
           setErrors({
             privateKey: (
               <>
-                This account handle is old. Upgrade will be available soon.
-                {/* <Link to="/migration">Upgrade</Link>{" "}
-                your account to Opacity V2.0 */}
+                {/* This account handle is old. Upgrade will be available soon. */}
+                This account handle is old. Please upgrade
+                <Link to="/migration">here</Link>.
               </>
             ),
+            type: 'migration'
           });
           return;
         }
@@ -106,11 +107,12 @@ const LoginModal: React.FC<OtherProps> = ({
               setErrors({
                 privateKey: (
                   <>
-                    This account handle is old. Upgrade will be available soon.
-                    {/*<Link to="/migration">Upgrade</Link> your account to Opacity
-                    V2.0*/}
+                    {/* This account handle is old. Upgrade will be available soon. */}
+                    This account handle is old. Please upgrade
+                    <Link to="/migration">here</Link>.
                   </>
                 ),
+                type: 'migration'
               });
               return;
             }
@@ -169,7 +171,7 @@ const LoginModal: React.FC<OtherProps> = ({
                       }
                     />
                     {errors.privateKey && touched.privateKey && (
-                      <div className="invalid-feedback">
+                      <div className="invalid-feedback" style={{ fontSize: errors.type === 'migration' && '140%' }}>
                         {errors.privateKey}
                       </div>
                     )}
