@@ -3,7 +3,7 @@ import { NavLink } from "tabler-react";
 // import { Link } from "react-router-dom";
 import "./footer.scss";
 import {
-  FRONT_END_URL
+  FRONT_END_URL, HOST
 } from "../../config";
 const logo = require("../../assets/logo.svg");
 const github = require("../../assets/github.svg");
@@ -79,7 +79,7 @@ const Footer = () => {
           </div>
           <div className="link-wrapper">
             <span className="title"> Resources</span>
-            <NavLink href={`${FRONT_END_URL}/downloads`} target="_blank">Downloads</NavLink><br />
+            <NavLink href={`https://${HOST}/downloads`}>Downloads</NavLink><br />
             <NavLink href="https://medium.com/opacity-storage" target="_blank">
               Learn
             </NavLink><br />
