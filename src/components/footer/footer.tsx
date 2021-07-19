@@ -79,7 +79,7 @@ const Footer = () => {
           </div>
           <div className="link-wrapper">
             <span className="title"> Resources</span>
-            <NavLink href={`https://${HOST}/downloads`}>Downloads</NavLink><br />
+            <NavLink href={`https://${HOST}/downloads`} target="_blank">Downloads</NavLink><br />
             <NavLink href="https://medium.com/opacity-storage" target="_blank">
               Learn
             </NavLink><br />
