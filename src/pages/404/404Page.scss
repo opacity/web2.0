@@ -1,0 +1,56 @@
+.page404 {
+  background: #252629 url("../../assets/page404-bg.svg") top/100% auto no-repeat;
+  width: 100%;
+  min-height: calc(100vh - 200px);
+  display: flex;
+  justify-content: center;
+
+  .content {
+    max-width: 596px;
+
+    .title {
+      margin-top: 100px;
+    }
+
+    .description {
+      color: white;
+      text-align: center;
+
+      h1,
+      h2 {
+        margin-top: 40px;
+      }
+
+      h2 a {
+        text-decoration: underline;
+      }
+
+      .logo-wrapper {
+        display: flex;
+        align-items: center;
+        font-weight: bold;
+        font-size: 30px;
+        line-height: 45px;
+        color: #ffffff;
+        text-decoration: none !important;
+
+        @media (max-width: 767.9px) {
+          font-size: 14px;
+          line-height: 21px;
+
+          .ml-3 {
+            margin-inline-start: 0px !important;
+          }
+        }
+
+        img {
+          height: 60px;
+          @media (max-width: 767.9px) {
+            width: 30px;
+            height: 30px;
+          }
+        }
+      }
+    }
+  }
+}
