@@ -193,6 +193,8 @@ const FileManagePage = ({ history }) => {
     method: "down",
   });
   const [filesForZip, setFilesForZip] = React.useState([]);
+  const [totalItemsToDelete, setTotalItemsToDelete] = React.useState(0);
+  const [deletedItems, setDeletedItems] = React.useState(false);
 
   const handleShowSidebar = React.useCallback(() => {
     setShowSidebar(!showSidebar);
@@ -659,6 +661,12 @@ const FileManagePage = ({ history }) => {
           });
           bindFileSystemObjectToAccountSystem(accountSystem, fso);
           await fso.delete();
+          if (!localStorage.getItem("deletingItems"))
+            localStorage.deletingItems = 0;
+          localStorage.deletingItems = parseInt(localStorage.deletingItems) + 1;
+
+          console.log("deletedItems increased:", localStorage.deletingItems);
+          setDeletedItems(!deletedItems);
         }
 
         for (const folderItem of folders) {
@@ -674,6 +682,26 @@ const FileManagePage = ({ history }) => {
     },
     [accountSystem, updateCurrentFolderSwitch]
   );
+
+  const calculateTotalItems = async (folder: FoldersIndexEntry) => {
+    try {
+      const folders = await accountSystem.getFoldersInFolderByPath(folder.path);
+      const folderMeta = await accountSystem.getFolderMetadataByPath(
+        folder.path
+      );
+
+      let files = folderMeta.files?.length;
+
+      if (!folders.length) return files;
+
+      for (const folderItem of folders)
+        files += await calculateTotalItems(folderItem);
+
+      return files;
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const handleOpenRenameModal = React.useCallback((item, isFile) => {
     setOldName(item.name);
@@ -727,9 +755,12 @@ const FileManagePage = ({ history }) => {
     setShowDeleteModal(false);
     if (selectedFiles.length === 0) {
       if (folderToDelete) {
+        setTotalItemsToDelete(await calculateTotalItems(folderToDelete));
+        localStorage.deletingItems = 0;
         await deleteFolder(folderToDelete);
         setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
         setFolderToDelete(null);
+        setTotalItemsToDelete(0);
       } else {
         deleteFile(fileToDelete);
       }
@@ -963,11 +994,38 @@ const FileManagePage = ({ history }) => {
         />
       )}
 
-      {pageLoading && (
-        <div className="loading">
-          <ReactLoading type="spinningBubbles" color="#2e6dde" />
-        </div>
-      )}
+      {pageLoading &&
+        (totalItemsToDelete ? (
+          <div className="loading">
+            <div className="w-50">
+              <ProgressBar
+                striped
+                now={
+                  ((localStorage.deletingItems
+                    ? localStorage.deletingItems
+                    : 0) /
+                    totalItemsToDelete) *
+                  100
+                }
+                animated
+              />
+              <h2 className="percentage-text text-center">
+                {(
+                  ((localStorage.deletingItems
+                    ? localStorage.deletingItems
+                    : 0) /
+                    totalItemsToDelete) *
+                  100
+                ).toFixed(1)}
+                %
+              </h2>
+            </div>
+          </div>
+        ) : (
+          <div className="loading">
+            <ReactLoading type="spinningBubbles" color="#2e6dde" />
+          </div>
+        ))}
 
       <div className="mobile-header">
         <button
