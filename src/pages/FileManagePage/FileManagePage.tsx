@@ -622,7 +622,6 @@ const FileManagePage = ({ history }) => {
         bindFileSystemObjectToAccountSystem(accountSystem, fso);
         await fso.delete();
         // toast(`${file.name} was successfully deleted.`);
-        setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
         setFileToDelete(null);
       } catch (e) {
         await accountSystem.removeFile(file.location);
@@ -684,6 +683,7 @@ const FileManagePage = ({ history }) => {
 
   const handleChangeRename = React.useCallback(
     async (rename) => {
+      setPageLoading(true);
       try {
         setShowRenameModal(false);
         setOldName(null);
@@ -731,12 +731,14 @@ const FileManagePage = ({ history }) => {
         setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
         setFolderToDelete(null);
       } else {
-        deleteFile(fileToDelete);
+        await deleteFile(fileToDelete);
+        setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
       }
     } else {
-      selectedFiles.forEach((file) => {
-        deleteFile(file);
-      });
+      for (const file of selectedFiles) {
+        await deleteFile(file);
+      }
+      setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
       setSelectedFiles([]);
     }
   };
