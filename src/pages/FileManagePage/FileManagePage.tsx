@@ -97,6 +97,8 @@ import { isInteger } from "formik";
 import { bytesToHex } from "../../../ts-client-library/packages/util/src/hex";
 import * as fflate from "fflate";
 import { saveAs } from "file-saver";
+import fileActions from "../../redux/actions/file-actions";
+import { connect } from "react-redux";
 
 const logo = require("../../assets/logo2.png");
 
@@ -195,6 +197,7 @@ const FileManagePage = ({ history }) => {
   const [filesForZip, setFilesForZip] = React.useState([]);
   const [totalItemsToDelete, setTotalItemsToDelete] = React.useState(0);
   const [deletedItems, setDeletedItems] = React.useState(false);
+  const [count, setCount] = React.useState(0);
 
   const handleShowSidebar = React.useCallback(() => {
     setShowSidebar(!showSidebar);
@@ -227,6 +230,10 @@ const FileManagePage = ({ history }) => {
   React.useEffect(() => {
     fileListRef.current = fileList;
   }, [fileList]);
+
+  React.useEffect(() => {
+    setCount(count + 1);
+  }, [deletedItems]);
 
   React.useEffect(() => {
     const levels = currentPath.split("/").slice(1);
@@ -660,13 +667,15 @@ const FileManagePage = ({ history }) => {
             },
           });
           bindFileSystemObjectToAccountSystem(accountSystem, fso);
-          await fso.delete();
-          if (!localStorage.getItem("deletingItems"))
-            localStorage.deletingItems = 0;
-          localStorage.deletingItems = parseInt(localStorage.deletingItems) + 1;
+          await fso.delete().then(() => {
+            fileManaging.increaseDeletingCount();
+            // if (!localStorage.getItem("deletingItems"))
+            //   localStorage.deletingItems = 0;
+            // localStorage.deletingItems = parseInt(localStorage.deletingItems) + 1;
 
-          console.log("deletedItems increased:", localStorage.deletingItems);
-          setDeletedItems(!deletedItems);
+            console.log("deletedItems increased:", fileManaging.deletingCount);
+            setDeletedItems(!deletedItems);
+          });
         }
 
         for (const folderItem of folders) {
@@ -756,7 +765,8 @@ const FileManagePage = ({ history }) => {
     if (selectedFiles.length === 0) {
       if (folderToDelete) {
         setTotalItemsToDelete(await calculateTotalItems(folderToDelete));
-        localStorage.deletingItems = 0;
+        // localStorage.deletingItems = 0;
+        fileManaging.setDeletingCount(0);
         await deleteFolder(folderToDelete);
         setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
         setFolderToDelete(null);
@@ -1000,24 +1010,11 @@ const FileManagePage = ({ history }) => {
             <div className="w-50">
               <ProgressBar
                 striped
-                now={
-                  ((localStorage.deletingItems
-                    ? localStorage.deletingItems
-                    : 0) /
-                    totalItemsToDelete) *
-                  100
-                }
+                now={((count ? count : 0) / totalItemsToDelete) * 100}
                 animated
               />
               <h2 className="percentage-text text-center">
-                {(
-                  ((localStorage.deletingItems
-                    ? localStorage.deletingItems
-                    : 0) /
-                    totalItemsToDelete) *
-                  100
-                ).toFixed(1)}
-                %
+                {(((count ? count : 0) / totalItemsToDelete) * 100).toFixed(1)}%
               </h2>
             </div>
           </div>
@@ -1564,11 +1561,34 @@ const UploadForm = ({ children, onSelected, isDirectory }) => {
   );
 };
 
-const FileManagePageWrapper = ({ history }) => {
+const mapStateToProps = (state) => {
+  return {
+    deletingCount: 1,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => ({
+  increaseDeleting: () =>
+    dispatch({
+      type: fileActions.INCREASE_DELETING_FILES,
+    }),
+  resetDeleting: () =>
+    dispatch({
+      type: fileActions.RESET_DELETING_FILES,
+    }),
+});
+
+const FileManagePageWrapper = ({ history, deleteingCount }) => {
+  const ConnectedFileManagePage = connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(FileManagePage);
+
   return (
     <DndProvider backend={HTML5Backend}>
-      <FileManagePage history={history} />
+      <ConnectedFileManagePage history={history} />
     </DndProvider>
   );
 };
+
 export default FileManagePageWrapper;
