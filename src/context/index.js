@@ -1,28 +1,12 @@
 import React, { useState, createContext } from "react";
 
-const FileManagementStatus = createContext({
-  isManaging: false,
-  deletingCount: 0,
-  setDeletingCount: () => {},
-  setFileStatus: () => {},
-});
+const FileManagementStatus = createContext();
 
 const FileManagementStatusProvider = (props) => {
-  const [status, setStatus] = useState(false);
-  const [count, setCount] = useState(0);
+  const [isManaging, setManagingState] = useState(false);
 
   return (
-    <FileManagementStatus.Provider
-      value={{
-        isManaging: status,
-        deletingCount: count,
-        setDeletingCount: (v) => setCount(v),
-        increaseDeletingCount: () => setCount(count + 1),
-        setFileStatus: (flag) => {
-          setStatus(flag);
-        },
-      }}
-    >
+    <FileManagementStatus.Provider value={{ isManaging, setManagingState }}>
       {props.children}
     </FileManagementStatus.Provider>
   );
