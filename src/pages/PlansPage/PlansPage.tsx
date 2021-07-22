@@ -86,9 +86,10 @@ const PlansPage = ({ history }) => {
           const accountInfo = await account.info();
           const storageLimit = accountInfo.account.storageLimit;
 
-          plansApi.forEach((plan, idx) => {
-            if (plan.storageInGB === storageLimit) setAvailableFrom(idx + 1);
-          });
+          plansApi.forEach(
+            (plan, idx) =>
+              plan.storageInGB === storageLimit && setAvailableFrom(idx + 1)
+          );
         } else {
           setAvailableFrom(0);
         }
