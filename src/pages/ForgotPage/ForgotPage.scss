@@ -28,10 +28,10 @@
       text-align: center;
       color: #344156;
     }
-    .textarea {
+    .textarea,
+    .input {
       background: #cadaf3;
       border-radius: 6px;
-      height: 160px;
     }
     .btn-primary {
       font-style: normal;
@@ -67,8 +67,8 @@
       textarea {
         height: 107px;
       }
-      .btn-primary{
-          width: 100%;
+      .btn-primary {
+        width: 100%;
       }
     }
   }
