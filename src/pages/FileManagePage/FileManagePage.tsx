@@ -196,7 +196,6 @@ const FileManagePage = ({ history }) => {
   });
   const [filesForZip, setFilesForZip] = React.useState([]);
   const [totalItemsToDelete, setTotalItemsToDelete] = React.useState(0);
-  const [deletedItems, setDeletedItems] = React.useState(false);
   const [count, setCount] = React.useState(0);
 
   const handleShowSidebar = React.useCallback(() => {
@@ -283,9 +282,9 @@ const FileManagePage = ({ history }) => {
     fileListRef.current = fileList;
   }, [fileList]);
 
-  React.useEffect(() => {
-    setCount(count + 1);
-  }, [deletedItems]);
+  // React.useEffect(() => {
+  //   setCount(count + 1);
+  // }, [deletedItems]);
 
   React.useEffect(() => {
     const levels = currentPath.split("/").slice(1);
@@ -722,6 +721,10 @@ const FileManagePage = ({ history }) => {
           });
           bindFileSystemObjectToAccountSystem(accountSystem, fso);
           await fso.delete();
+          setCount((count) => {
+            let countData = count + 1;
+            return countData;
+          });
         }
 
         for (const folderItem of folders) {
@@ -812,10 +815,15 @@ const FileManagePage = ({ history }) => {
     if (selectedFiles.length === 0) {
       if (folderToDelete) {
         isFileManaging();
+        setTotalItemsToDelete(await calculateTotalItems(folderToDelete));
+        setCount(0);
         await deleteFolder(folderToDelete);
         setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
         setFolderToDelete(null);
         OnfinishFileManaging();
+
+        setCount(0);
+        setTotalItemsToDelete(0);
       } else {
         await deleteFile(fileToDelete);
         OnfinishFileManaging();
@@ -1618,23 +1626,6 @@ const UploadForm = ({ children, onSelected, isDirectory }) => {
     </div>
   );
 };
-
-const mapStateToProps = (state) => {
-  return {
-    deletingCount: 1,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => ({
-  increaseDeleting: () =>
-    dispatch({
-      type: fileActions.INCREASE_DELETING_FILES,
-    }),
-  resetDeleting: () =>
-    dispatch({
-      type: fileActions.RESET_DELETING_FILES,
-    }),
-});
 
 const FileManagePageWrapper = ({ history }) => {
   return (
