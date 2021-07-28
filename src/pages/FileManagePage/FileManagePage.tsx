@@ -282,10 +282,6 @@ const FileManagePage = ({ history }) => {
     fileListRef.current = fileList;
   }, [fileList]);
 
-  // React.useEffect(() => {
-  //   setCount(count + 1);
-  // }, [deletedItems]);
-
   React.useEffect(() => {
     const levels = currentPath.split("/").slice(1);
     const subpaths = levels.map((l, i) => {
@@ -721,10 +717,7 @@ const FileManagePage = ({ history }) => {
           });
           bindFileSystemObjectToAccountSystem(accountSystem, fso);
           await fso.delete();
-          setCount((count) => {
-            let countData = count + 1;
-            return countData;
-          });
+          setCount((count) => count + 1);
         }
 
         for (const folderItem of folders) {
