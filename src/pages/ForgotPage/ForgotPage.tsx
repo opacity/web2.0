@@ -19,6 +19,10 @@ const ForgotPage = ({ history }) => {
   const [showLoginModal, setShowLoginModal] = React.useState(false);
   const [recoveryHandle, setRecoveryHandle] = React.useState("");
 
+  const handleCloseLoginModal = () => {
+    setShowLoginModal(false);
+  };
+
   const handleForgotButton = async (
     values: ForgotPageProps,
     { setErrors }: FormikHelpers<ForgotPageProps>
@@ -39,6 +43,7 @@ const ForgotPage = ({ history }) => {
     <SiteWrapper
       history={history}
       showLoginModal={showLoginModal}
+      handleCloseLoginModal={handleCloseLoginModal}
       recoveryHandle={recoveryHandle}
     >
       <Container fluid="xl forgot">
@@ -46,7 +51,7 @@ const ForgotPage = ({ history }) => {
           <h1>Forgot Account Handle?</h1>
         </Row>
         <Row className="justify-content-center">
-          <Col md={10}>
+          <Col md={8}>
             <Formik
               initialValues={{ privateKey: "" }}
               validationSchema={loginSchema}
@@ -82,12 +87,12 @@ const ForgotPage = ({ history }) => {
                       <h2>Recovery Phrase</h2>
                       <Form.Group>
                         <Field
-                          component="textarea"
+                          component="input"
                           name="privateKey"
                           className={
                             errors.privateKey && touched.privateKey
-                              ? "form-control textarea is-invalid state-invalid"
-                              : "form-control textarea"
+                              ? "form-control input is-invalid state-invalid"
+                              : "form-control input"
                           }
                         />
                         {errors.privateKey && touched.privateKey && (

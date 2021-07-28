@@ -97,10 +97,10 @@ import { isInteger } from "formik";
 import { bytesToHex } from "../../../ts-client-library/packages/util/src/hex";
 import * as fflate from "fflate";
 import { saveAs } from "file-saver";
+
 const logo = require("../../assets/logo2.png");
 
 let logoutTimeout;
-
 
 const FileManagePage = ({ history }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -195,6 +195,8 @@ const FileManagePage = ({ history }) => {
     method: "down",
   });
   const [filesForZip, setFilesForZip] = React.useState([]);
+  const [totalItemsToDelete, setTotalItemsToDelete] = React.useState(0);
+  const [count, setCount] = React.useState(0);
 
   const handleShowSidebar = React.useCallback(() => {
     setShowSidebar(!showSidebar);
@@ -219,7 +221,7 @@ const FileManagePage = ({ history }) => {
   }, [isManaging, clearTimeouts]);
 
   const logout = () => {
-    if (isManaging === true || window.location.pathname !== '/file-manager') {
+    if (isManaging === true || window.location.pathname !== "/file-manager") {
       return;
     }
     console.log("You have been loged out");
@@ -520,10 +522,10 @@ const FileManagePage = ({ history }) => {
       let templist = currentUploadingList.current.slice();
       isFileManaging();
 
-      files.forEach(file => {
+      files.forEach((file) => {
         let toastID = file.size + file.name;
         templist.push({ id: toastID, fileName: file.name, percent: 0 });
-      })
+      });
       setUploadingList(templist);
 
       for (const file of files) {
@@ -531,16 +533,16 @@ const FileManagePage = ({ history }) => {
         file.name === (file.path || file.webkitRelativePath || file.name)
           ? await uploadFile(file, currentPath)
           : await uploadFile(
-            file,
-            currentPath === "/"
-              ? file.webkitRelativePath
-                ? currentPath + relativePath(file.webkitRelativePath)
-                : relativePath(file.path)
-              : file.webkitRelativePath
+              file,
+              currentPath === "/"
+                ? file.webkitRelativePath
+                  ? currentPath + relativePath(file.webkitRelativePath)
+                  : relativePath(file.path)
+                : file.webkitRelativePath
                 ? currentPath + "/" + relativePath(file.webkitRelativePath)
                 : currentPath + relativePath(file.path)
-          );
-      };
+            );
+      }
       OnfinishFileManaging();
     },
     [currentPath, uploadFile]
@@ -715,6 +717,7 @@ const FileManagePage = ({ history }) => {
           });
           bindFileSystemObjectToAccountSystem(accountSystem, fso);
           await fso.delete();
+          setCount((count) => count + 1);
         }
 
         for (const folderItem of folders) {
@@ -730,6 +733,26 @@ const FileManagePage = ({ history }) => {
     },
     [accountSystem, updateCurrentFolderSwitch]
   );
+
+  const calculateTotalItems = async (folder: FoldersIndexEntry) => {
+    try {
+      const folders = await accountSystem.getFoldersInFolderByPath(folder.path);
+      const folderMeta = await accountSystem.getFolderMetadataByPath(
+        folder.path
+      );
+
+      let files = folderMeta.files?.length;
+
+      if (!folders.length) return files;
+
+      for (const folderItem of folders)
+        files += await calculateTotalItems(folderItem);
+
+      return files;
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const handleOpenRenameModal = React.useCallback((item, isFile) => {
     setOldName(item.name);
@@ -784,21 +807,26 @@ const FileManagePage = ({ history }) => {
     setShowDeleteModal(false);
     if (selectedFiles.length === 0) {
       if (folderToDelete) {
-        isFileManaging()
+        isFileManaging();
+        setTotalItemsToDelete(await calculateTotalItems(folderToDelete));
+        setCount(0);
         await deleteFolder(folderToDelete);
         setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
         setFolderToDelete(null);
-        OnfinishFileManaging()
+        OnfinishFileManaging();
+
+        setCount(0);
+        setTotalItemsToDelete(0);
       } else {
         await deleteFile(fileToDelete);
-        OnfinishFileManaging()
+        OnfinishFileManaging();
         setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
       }
     } else {
       for (const file of selectedFiles) {
         await deleteFile(file);
       }
-      OnfinishFileManaging()
+      OnfinishFileManaging();
       setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
       setSelectedFiles([]);
     }
@@ -858,7 +886,7 @@ const FileManagePage = ({ history }) => {
     setPageLoading(true);
     for (const file of selectedFiles) {
       await fileDownload(file, selectedFiles.length > 1 ? true : false);
-    };
+    }
     OnfinishFileManaging();
   };
   const handleMultiDelete = () => {
@@ -970,10 +998,10 @@ const FileManagePage = ({ history }) => {
     const tmp = await Promise.all(metaList);
     setFileMetaList(tmp);
     setPageLoading(false);
-  }, [fileList])
-  
+  }, [fileList]);
+
   React.useEffect(() => {
-    getFileMetaList()
+    getFileMetaList();
   }, [fileList, getFileMetaList]);
 
   const getFolderMetaList = React.useCallback(async () => {
@@ -988,10 +1016,10 @@ const FileManagePage = ({ history }) => {
     const tmp = await Promise.all(metaList);
     setFolderMetaList(tmp);
     setPageLoading(false);
-  }, [folderList])
+  }, [folderList]);
 
   React.useEffect(() => {
-    getFolderMetaList()
+    getFolderMetaList();
   }, [folderList, getFolderMetaList]);
 
   return (
@@ -1029,11 +1057,25 @@ const FileManagePage = ({ history }) => {
         />
       )}
 
-      {pageLoading && (
-        <div className="loading">
-          <ReactLoading type="spinningBubbles" color="#2e6dde" />
-        </div>
-      )}
+      {pageLoading &&
+        (totalItemsToDelete ? (
+          <div className="loading">
+            <div className="w-50">
+              <ProgressBar
+                striped
+                now={((count ? count : 0) / totalItemsToDelete) * 100}
+                animated
+              />
+              <h2 className="percentage-text text-center">
+                {(((count ? count : 0) / totalItemsToDelete) * 100).toFixed(1)}%
+              </h2>
+            </div>
+          </div>
+        ) : (
+          <div className="loading">
+            <ReactLoading type="spinningBubbles" color="#2e6dde" />
+          </div>
+        ))}
 
       <div className="mobile-header">
         <button
@@ -1091,7 +1133,7 @@ const FileManagePage = ({ history }) => {
               now={
                 accountInfo
                   ? (100 * accountInfo.account.storageUsed) /
-                  accountInfo.account.storageLimit
+                    accountInfo.account.storageLimit
                   : 0
               }
               variant={storageWarning && "danger"}
@@ -1110,12 +1152,13 @@ const FileManagePage = ({ history }) => {
             </div>
 
             <div className="storage-info">
-              {`Your plan expires on ${accountInfo
-                ? moment(accountInfo.account.expirationDate).format(
-                  "MMM D, YYYY"
-                )
-                : "..."
-                }.`}
+              {`Your plan expires on ${
+                accountInfo
+                  ? moment(accountInfo.account.expirationDate).format(
+                      "MMM D, YYYY"
+                    )
+                  : "..."
+              }.`}
             </div>
 
             <div
@@ -1336,7 +1379,7 @@ const FileManagePage = ({ history }) => {
                           handleDeleteItem={handleDeleteItem}
                           handleOpenRenameModal={handleOpenRenameModal}
                           downloadItem={async (f) => {
-                            await fileDownload(f)
+                            await fileDownload(f);
                             OnfinishFileManaging();
                           }}
                           handleSelectFile={handleSelectFile}
@@ -1367,9 +1410,10 @@ const FileManagePage = ({ history }) => {
                               : "down"
                           )
                         }
-                        className={`sortable ${sortable.column === "name" &&
+                        className={`sortable ${
+                          sortable.column === "name" &&
                           (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                        }`}
                       >
                         Name
                       </th>
@@ -1385,9 +1429,10 @@ const FileManagePage = ({ history }) => {
                                 : "down"
                             )
                           }
-                          className={`sortable type ${sortable.column === "type" &&
+                          className={`sortable type ${
+                            sortable.column === "type" &&
                             (sortable.method === "up" ? "asc" : "desc")
-                            }`}
+                          }`}
                         >
                           Share Type
                           <Tooltip
@@ -1412,9 +1457,10 @@ const FileManagePage = ({ history }) => {
                                 : "down"
                             )
                           }
-                          className={`sortable ${sortable.column === "created" &&
+                          className={`sortable ${
+                            sortable.column === "created" &&
                             (sortable.method === "up" ? "asc" : "desc")
-                            }`}
+                          }`}
                         >
                           Created
                         </th>
@@ -1430,9 +1476,10 @@ const FileManagePage = ({ history }) => {
                               : "down"
                           )
                         }
-                        className={`sortable ${sortable.column === "size" &&
+                        className={`sortable ${
+                          sortable.column === "size" &&
                           (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                        }`}
                       >
                         Size
                       </th>
@@ -1474,7 +1521,7 @@ const FileManagePage = ({ history }) => {
                             handleDeleteItem={handleDeleteItem}
                             handleOpenRenameModal={handleOpenRenameModal}
                             downloadItem={async (f) => {
-                              await fileDownload(f)
+                              await fileDownload(f);
                               OnfinishFileManaging();
                             }}
                             handleSelectFile={handleSelectFile}
@@ -1580,4 +1627,5 @@ const FileManagePageWrapper = ({ history }) => {
     </DndProvider>
   );
 };
+
 export default FileManagePageWrapper;
