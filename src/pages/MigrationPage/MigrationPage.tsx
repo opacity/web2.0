@@ -48,7 +48,7 @@ const MigrationPage = ({ history }) => {
   const runMigrator = async (accountHandle: Uint8Array) => {
     setMigrationStatus("migrating...");
     const migrator = new AccountMigrator(accountHandle, {
-      storageNodeV1: STORAGE_NODE_V1,
+      storageNodeV1: storageNode,
       storageNodeV2: storageNode,
     });
 
@@ -67,7 +67,7 @@ const MigrationPage = ({ history }) => {
       setMigrationDetails(d.detail.details);
     });
 
-    migrator.addEventListener(MigratorEvents.WARNIsNG, (w: any) => {
+    migrator.addEventListener(MigratorEvents.WARNING, (w: any) => {
       console.warn("Warning:", w.detail.warning);
       setErrorStatus(w.detail.warning);
     });
