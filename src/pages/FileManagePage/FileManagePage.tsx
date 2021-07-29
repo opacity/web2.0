@@ -49,6 +49,7 @@ import {
   bindFileSystemObjectToAccountSystem,
   bindDownloadToAccountSystem,
   bindUploadToAccountSystem,
+  bindPublicShareToAccountSystem,
 } from "../../../ts-client-library/packages/filesystem-access/src/account-system-binding";
 import {
   UploadEvents,
@@ -92,6 +93,7 @@ import { STORAGE_NODE as storageNode, STORAGE_NODE_V1 } from "../../config";
 import { bytesToB64URL } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/b64";
 import { isPathChild } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/path";
 import { arraysEqual } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/arrayEquality";
+import { FileSystemShare } from "../../../ts-client-library/packages/filesystem-access/src/public-share";
 import { FileManagementStatus } from "../../context";
 import { isInteger } from "formik";
 import { bytesToHex } from "../../../ts-client-library/packages/util/src/hex";
@@ -533,15 +535,15 @@ const FileManagePage = ({ history }) => {
         file.name === (file.path || file.webkitRelativePath || file.name)
           ? await uploadFile(file, currentPath)
           : await uploadFile(
-              file,
-              currentPath === "/"
-                ? file.webkitRelativePath
-                  ? currentPath + relativePath(file.webkitRelativePath)
-                  : relativePath(file.path)
-                : file.webkitRelativePath
+            file,
+            currentPath === "/"
+              ? file.webkitRelativePath
+                ? currentPath + relativePath(file.webkitRelativePath)
+                : relativePath(file.path)
+              : file.webkitRelativePath
                 ? currentPath + "/" + relativePath(file.webkitRelativePath)
                 : currentPath + relativePath(file.path)
-            );
+          );
       }
       OnfinishFileManaging();
     },
@@ -665,10 +667,35 @@ const FileManagePage = ({ history }) => {
     [cryptoMiddleware, netMiddleware, storageNode]
   );
 
+  const cancelPublicShare = React.useCallback(
+    async (file) => {
+      const curFileMetadata = await accountSystem.getFileMetadata(file.location);
+      if (!curFileMetadata.public.location) {
+        return;
+      }
+      const fileSystemShare = new FileSystemShare({
+        shortLink: curFileMetadata.public.shortLinks[0],
+        fileLocation: curFileMetadata.public.location,
+        handle: curFileMetadata.location,
+        config: {
+          crypto: cryptoMiddleware,
+          net: netMiddleware,
+          storageNode: storageNode,
+        },
+      });
+
+      bindPublicShareToAccountSystem(accountSystem, fileSystemShare);
+
+      await fileSystemShare.publicShareRevoke();
+    },
+    [accountSystem, cryptoMiddleware, netMiddleware, storageNode]
+  )
+
   const deleteFile = React.useCallback(
     async (file: FileMetadata) => {
       isFileManaging();
       try {
+        await cancelPublicShare(file)
         const fso = new FileSystemObject({
           handle: file.private.handle,
           location: undefined,
@@ -694,18 +721,12 @@ const FileManagePage = ({ history }) => {
   const deleteFolder = React.useCallback(
     async (folder: FoldersIndexEntry) => {
       try {
-        const folders = await accountSystem.getFoldersInFolderByPath(
-          folder.path
-        );
-        const folderMeta = await accountSystem.getFolderMetadataByPath(
-          folder.path
-        );
+        const folders = await accountSystem.getFoldersInFolderByPath(folder.path);
+        const folderMeta = await accountSystem.getFolderMetadataByPath(folder.path);
 
         for (const file of folderMeta.files) {
-          const metaFile =
-            await accountSystem.getFileIndexEntryByFileMetadataLocation(
-              file.location
-            );
+          const metaFile = await accountSystem.getFileIndexEntryByFileMetadataLocation(file.location);
+          await cancelPublicShare(metaFile)
           const fso = new FileSystemObject({
             handle: metaFile.private.handle,
             location: undefined,
@@ -1133,7 +1154,7 @@ const FileManagePage = ({ history }) => {
               now={
                 accountInfo
                   ? (100 * accountInfo.account.storageUsed) /
-                    accountInfo.account.storageLimit
+                  accountInfo.account.storageLimit
                   : 0
               }
               variant={storageWarning && "danger"}
@@ -1152,13 +1173,12 @@ const FileManagePage = ({ history }) => {
             </div>
 
             <div className="storage-info">
-              {`Your plan expires on ${
-                accountInfo
-                  ? moment(accountInfo.account.expirationDate).format(
-                      "MMM D, YYYY"
-                    )
-                  : "..."
-              }.`}
+              {`Your plan expires on ${accountInfo
+                ? moment(accountInfo.account.expirationDate).format(
+                  "MMM D, YYYY"
+                )
+                : "..."
+                }.`}
             </div>
 
             <div
@@ -1410,10 +1430,9 @@ const FileManagePage = ({ history }) => {
                               : "down"
                           )
                         }
-                        className={`sortable ${
-                          sortable.column === "name" &&
+                        className={`sortable ${sortable.column === "name" &&
                           (sortable.method === "up" ? "asc" : "desc")
-                        }`}
+                          }`}
                       >
                         Name
                       </th>
@@ -1429,10 +1448,9 @@ const FileManagePage = ({ history }) => {
                                 : "down"
                             )
                           }
-                          className={`sortable type ${
-                            sortable.column === "type" &&
+                          className={`sortable type ${sortable.column === "type" &&
                             (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                            }`}
                         >
                           Share Type
                           <Tooltip
@@ -1457,10 +1475,9 @@ const FileManagePage = ({ history }) => {
                                 : "down"
                             )
                           }
-                          className={`sortable ${
-                            sortable.column === "created" &&
+                          className={`sortable ${sortable.column === "created" &&
                             (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                            }`}
                         >
                           Created
                         </th>
@@ -1476,10 +1493,9 @@ const FileManagePage = ({ history }) => {
                               : "down"
                           )
                         }
-                        className={`sortable ${
-                          sortable.column === "size" &&
+                        className={`sortable ${sortable.column === "size" &&
                           (sortable.method === "up" ? "asc" : "desc")
-                        }`}
+                          }`}
                       >
                         Size
                       </th>
