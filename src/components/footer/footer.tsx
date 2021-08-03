@@ -2,16 +2,13 @@ import * as React from "react";
 import { NavLink } from "tabler-react";
 // import { Link } from "react-router-dom";
 import "./footer.scss";
-import {
-  FRONT_END_URL, HOST
-} from "../../config";
+import { FRONT_END_URL, HOST } from "../../config";
 const logo = require("../../assets/logo.svg");
 const github = require("../../assets/github.svg");
 const reddit = require("../../assets/reddit.svg");
 const telegram = require("../../assets/telegram.svg");
 const twitter = require("../../assets/twitter.svg");
 const youtube = require("../../assets/youtube.svg");
-
 
 const Footer = () => {
   return (
@@ -72,17 +69,22 @@ const Footer = () => {
             <span className="title"> Company</span>
             <NavLink href="https://telegram.me/opacitystorage" target="_blank">
               About us
-            </NavLink><br />
+            </NavLink>
+            <br />
             <NavLink href="https://medium.com/opacity-storage" target="_blank">
               Blog
             </NavLink>
           </div>
           <div className="link-wrapper">
             <span className="title"> Resources</span>
-            <NavLink href={`https://${HOST}/downloads`} target="_blank">Downloads</NavLink><br />
+            <NavLink href={`https://${HOST}/downloads`} target="_blank">
+              Downloads
+            </NavLink>
+            <br />
             <NavLink href="https://medium.com/opacity-storage" target="_blank">
               Learn
-            </NavLink><br />
+            </NavLink>
+            <br />
             <NavLink
               href="https://api.opacity.io:3000/swagger/index.html"
               target="_blank"
@@ -92,12 +94,14 @@ const Footer = () => {
           </div>
           <div className="link-wrapper">
             <span className="title"> Help</span>
-            <NavLink href="https://telegram.me/opacitystorage" target="_blank">
-              Contact us
-            </NavLink><br />
+            <NavLink href="https://help.opacity.io" target="_blank">
+              Help Center
+            </NavLink>
+            <br />
             <NavLink href="https://telegram.me/opacitystorage" target="_blank">
               Telegram
-            </NavLink><br />
+            </NavLink>
+            <br />
             <NavLink href="http://discord.opacity.io/" target="_blank">
               Discord
             </NavLink>
@@ -106,13 +110,18 @@ const Footer = () => {
             <span className="title"> Legal</span>
             <NavLink href={`${FRONT_END_URL}/terms-of-service`} target="_blank">
               Terms of Service
-            </NavLink><br />
+            </NavLink>
+            <br />
 
             <NavLink href={`${FRONT_END_URL}/privacy-policy`} target="_blank">
               Privacy Policy
-            </NavLink><br />
+            </NavLink>
+            <br />
 
-            <NavLink href={`${FRONT_END_URL}/code-review-license`} target="_blank">
+            <NavLink
+              href={`${FRONT_END_URL}/code-review-license`}
+              target="_blank"
+            >
               Code License
             </NavLink>
           </div>

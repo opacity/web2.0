@@ -131,6 +131,11 @@ class SiteWrapper extends React.Component<Props, State> {
                     </Nav.Link>
                   </li>
                   <li className="nav-item">
+                    <Nav.Link href="https://help.opacity.io" target="_blank">
+                      Help Center
+                    </Nav.Link>
+                  </li>
+                  <li className="nav-item">
                     {loggedIn ? (
                       <div className="nav-link">
                         <Button
@@ -204,6 +209,11 @@ class SiteWrapper extends React.Component<Props, State> {
                         target="_blank"
                       >
                         Learn
+                      </Nav.Link>
+                    </li>
+                    <li className="nav-item">
+                      <Nav.Link href="https://help.opacity.io" target="_blank">
+                        Help Center
                       </Nav.Link>
                     </li>
 

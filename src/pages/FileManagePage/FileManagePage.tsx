@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Table, Tooltip, Tag } from "tabler-react";
+import { Table, Tooltip, Tag, NavLink } from "tabler-react";
 import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import {
@@ -535,15 +535,15 @@ const FileManagePage = ({ history }) => {
         file.name === (file.path || file.webkitRelativePath || file.name)
           ? await uploadFile(file, currentPath)
           : await uploadFile(
-            file,
-            currentPath === "/"
-              ? file.webkitRelativePath
-                ? currentPath + relativePath(file.webkitRelativePath)
-                : relativePath(file.path)
-              : file.webkitRelativePath
+              file,
+              currentPath === "/"
+                ? file.webkitRelativePath
+                  ? currentPath + relativePath(file.webkitRelativePath)
+                  : relativePath(file.path)
+                : file.webkitRelativePath
                 ? currentPath + "/" + relativePath(file.webkitRelativePath)
                 : currentPath + relativePath(file.path)
-          );
+            );
       }
       OnfinishFileManaging();
     },
@@ -669,7 +669,9 @@ const FileManagePage = ({ history }) => {
 
   const cancelPublicShare = React.useCallback(
     async (file) => {
-      const curFileMetadata = await accountSystem.getFileMetadata(file.location);
+      const curFileMetadata = await accountSystem.getFileMetadata(
+        file.location
+      );
       if (!curFileMetadata.public.location) {
         return;
       }
@@ -689,13 +691,13 @@ const FileManagePage = ({ history }) => {
       await fileSystemShare.publicShareRevoke();
     },
     [accountSystem, cryptoMiddleware, netMiddleware, storageNode]
-  )
+  );
 
   const deleteFile = React.useCallback(
     async (file: FileMetadata) => {
       isFileManaging();
       try {
-        await cancelPublicShare(file)
+        await cancelPublicShare(file);
         const fso = new FileSystemObject({
           handle: file.private.handle,
           location: undefined,
@@ -721,12 +723,19 @@ const FileManagePage = ({ history }) => {
   const deleteFolder = React.useCallback(
     async (folder: FoldersIndexEntry) => {
       try {
-        const folders = await accountSystem.getFoldersInFolderByPath(folder.path);
-        const folderMeta = await accountSystem.getFolderMetadataByPath(folder.path);
+        const folders = await accountSystem.getFoldersInFolderByPath(
+          folder.path
+        );
+        const folderMeta = await accountSystem.getFolderMetadataByPath(
+          folder.path
+        );
 
         for (const file of folderMeta.files) {
-          const metaFile = await accountSystem.getFileIndexEntryByFileMetadataLocation(file.location);
-          await cancelPublicShare(metaFile)
+          const metaFile =
+            await accountSystem.getFileIndexEntryByFileMetadataLocation(
+              file.location
+            );
+          await cancelPublicShare(metaFile);
           const fso = new FileSystemObject({
             handle: metaFile.private.handle,
             location: undefined,
@@ -1154,7 +1163,7 @@ const FileManagePage = ({ history }) => {
               now={
                 accountInfo
                   ? (100 * accountInfo.account.storageUsed) /
-                  accountInfo.account.storageLimit
+                    accountInfo.account.storageLimit
                   : 0
               }
               variant={storageWarning && "danger"}
@@ -1173,12 +1182,13 @@ const FileManagePage = ({ history }) => {
             </div>
 
             <div className="storage-info">
-              {`Your plan expires on ${accountInfo
-                ? moment(accountInfo.account.expirationDate).format(
-                  "MMM D, YYYY"
-                )
-                : "..."
-                }.`}
+              {`Your plan expires on ${
+                accountInfo
+                  ? moment(accountInfo.account.expirationDate).format(
+                      "MMM D, YYYY"
+                    )
+                  : "..."
+              }.`}
             </div>
 
             <div
@@ -1266,6 +1276,18 @@ const FileManagePage = ({ history }) => {
             >
               <span className="item-icon new-folder"></span>
               <span>NEW FOLDER</span>
+            </div>
+            <div className="d-flex header-item ml-3">
+              <NavLink
+                className="custom-nav-icon"
+                href="https://help.opacity.io/"
+                target="__blank"
+              >
+                <div className="item-icon help-center d-flex align-items-center justify-content-center mr-1">
+                  ?
+                </div>
+                <span>HELP CENTER</span>
+              </NavLink>
             </div>
             {/* {tableView && (
               <div className=" d-flex header-item ml-3">
@@ -1430,9 +1452,10 @@ const FileManagePage = ({ history }) => {
                               : "down"
                           )
                         }
-                        className={`sortable ${sortable.column === "name" &&
+                        className={`sortable ${
+                          sortable.column === "name" &&
                           (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                        }`}
                       >
                         Name
                       </th>
@@ -1448,9 +1471,10 @@ const FileManagePage = ({ history }) => {
                                 : "down"
                             )
                           }
-                          className={`sortable type ${sortable.column === "type" &&
+                          className={`sortable type ${
+                            sortable.column === "type" &&
                             (sortable.method === "up" ? "asc" : "desc")
-                            }`}
+                          }`}
                         >
                           Share Type
                           <Tooltip
@@ -1475,9 +1499,10 @@ const FileManagePage = ({ history }) => {
                                 : "down"
                             )
                           }
-                          className={`sortable ${sortable.column === "created" &&
+                          className={`sortable ${
+                            sortable.column === "created" &&
                             (sortable.method === "up" ? "asc" : "desc")
-                            }`}
+                          }`}
                         >
                           Created
                         </th>
@@ -1493,9 +1518,10 @@ const FileManagePage = ({ history }) => {
                               : "down"
                           )
                         }
-                        className={`sortable ${sortable.column === "size" &&
+                        className={`sortable ${
+                          sortable.column === "size" &&
                           (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                        }`}
                       >
                         Size
                       </th>

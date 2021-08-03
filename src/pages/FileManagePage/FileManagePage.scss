@@ -412,6 +412,9 @@
         display: none;
       }
     }
+    .custom-nav-icon:hover {
+      color: inherit !important;
+    }
     .item-icon {
       background-color: #eaf1ff;
       width: 30px;
@@ -447,6 +450,12 @@
         -webkit-mask-size: contain;
         width: 40px;
         height: 23px;
+      }
+      &.help-center {
+        border-radius: 100px;
+        color: #2e6dde;
+        width: 25px;
+        height: 25px;
       }
       &.new-folder {
         mask: url("../../assets/add-folder.svg") no-repeat center;
