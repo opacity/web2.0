@@ -29,10 +29,7 @@ import {
   FolderFileEntry,
   FoldersIndexEntry,
 } from "../../../ts-client-library/packages/account-system";
-import {
-  WebAccountMiddleware,
-  WebNetworkMiddleware,
-} from "../../../ts-client-library/packages/middleware-web";
+import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web";
 import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex";
 import {
   polyfillReadableStreamIfNeeded,
@@ -41,20 +38,14 @@ import {
   // TransformStream,
   WritableStream,
 } from "../../../ts-client-library/packages/util/src/streams";
-import {
-  OpaqueUpload,
-  OpaqueDownload,
-} from "../../../ts-client-library/packages/opaque";
+import { OpaqueUpload, OpaqueDownload } from "../../../ts-client-library/packages/opaque";
 import {
   bindFileSystemObjectToAccountSystem,
   bindDownloadToAccountSystem,
   bindUploadToAccountSystem,
   bindPublicShareToAccountSystem,
 } from "../../../ts-client-library/packages/filesystem-access/src/account-system-binding";
-import {
-  UploadEvents,
-  UploadProgressEvent,
-} from "../../../ts-client-library/packages/filesystem-access/src/events";
+import { UploadEvents, UploadProgressEvent } from "../../../ts-client-library/packages/filesystem-access/src/events";
 import { FILE_MAX_SIZE } from "../../config";
 import RenameModal from "../../components/RenameModal/RenameModal";
 import DeleteModal from "../../components/DeleteModal/DeleteModal";
@@ -65,10 +56,7 @@ import { formatBytes, formatGbs } from "../../helpers";
 import * as moment from "moment";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import {
-  FileManagerFileEntryGrid,
-  FileManagerFileEntryList,
-} from "../../components/FileManager/FileManagerFileEntry";
+import { FileManagerFileEntryGrid, FileManagerFileEntryList } from "../../components/FileManager/FileManagerFileEntry";
 import { posix } from "path-browserify";
 import {
   FileManagerFolderEntryGrid,
@@ -137,10 +125,7 @@ const FileManagePage = ({ history }) => {
       }),
     [netMiddleware, cryptoMiddleware, storageNode]
   );
-  const accountSystem = React.useMemo(
-    () => new AccountSystem({ metadataAccess }),
-    [metadataAccess]
-  );
+  const accountSystem = React.useMemo(() => new AccountSystem({ metadataAccess }), [metadataAccess]);
   const account = React.useMemo(
     () =>
       new Account({
@@ -150,12 +135,9 @@ const FileManagePage = ({ history }) => {
       }),
     [cryptoMiddleware, netMiddleware, storageNode]
   );
-  const [updateCurrentFolderSwitch, setUpdateCurrentFolderSwitch] =
-    React.useState(false);
-  const [updateFolderEntrySwitch, setUpdateFolderEntrySwitch] =
-    React.useState(false);
-  const [updateFileEntrySwitch, setUpdateFileEntrySwitch] =
-    React.useState(false);
+  const [updateCurrentFolderSwitch, setUpdateCurrentFolderSwitch] = React.useState(false);
+  const [updateFolderEntrySwitch, setUpdateFolderEntrySwitch] = React.useState(false);
+  const [updateFileEntrySwitch, setUpdateFileEntrySwitch] = React.useState(false);
   const [showSidebar, setShowSidebar] = React.useState(false);
   const [tableView, setTableView] = React.useState(true);
   const [currentPath, setCurrentPath] = React.useState("/");
@@ -173,10 +155,8 @@ const FileManagePage = ({ history }) => {
   const [showRenameModal, setShowRenameModal] = React.useState(false);
   const [fileToRename, setFileToRename] = React.useState<FolderFileEntry>();
   const [fileToDelete, setFileToDelete] = React.useState<FolderFileEntry>();
-  const [folderToRename, setFolderToRename] =
-    React.useState<FoldersIndexEntry>();
-  const [folderToDelete, setFolderToDelete] =
-    React.useState<FoldersIndexEntry>();
+  const [folderToRename, setFolderToRename] = React.useState<FoldersIndexEntry>();
+  const [folderToDelete, setFolderToDelete] = React.useState<FoldersIndexEntry>();
   const [oldName, setOldName] = React.useState();
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const [showWarningModal, setShowWarningModal] = React.useState(false);
@@ -187,9 +167,7 @@ const FileManagePage = ({ history }) => {
   const [alertText, setAlertText] = React.useState("30 days remaining.");
   const [alertShow, setAlertShow] = React.useState(false);
   const [openShareModal, setOpenShareModal] = React.useState(false);
-  const [shareMode, setShareMode] = React.useState<"private" | "public">(
-    "private"
-  );
+  const [shareMode, setShareMode] = React.useState<"private" | "public">("private");
   const [shareFile, setShareFile] = React.useState<FileMetadata>(null);
   const [storageWarning, setIsStorageWarning] = React.useState(false);
   const [sortable, setSortable] = React.useState({
@@ -236,14 +214,7 @@ const FileManagePage = ({ history }) => {
   };
 
   React.useEffect(() => {
-    const events = [
-      "load",
-      "mousemove",
-      "mousedown",
-      "click",
-      "scroll",
-      "keypress",
-    ];
+    const events = ["load", "mousemove", "mousedown", "click", "scroll", "keypress"];
 
     const resetTimeout = () => {
       clearTimeouts();
@@ -288,8 +259,7 @@ const FileManagePage = ({ history }) => {
     const levels = currentPath.split("/").slice(1);
     const subpaths = levels.map((l, i) => {
       const parentFolders = levels.filter((_l, idx) => idx < i);
-      const parentPaths =
-        "/" + (parentFolders.length > 0 ? parentFolders.join("/") + "/" : "");
+      const parentPaths = "/" + (parentFolders.length > 0 ? parentFolders.join("/") + "/" : "");
 
       return { text: l, path: parentPaths + l };
     });
@@ -298,9 +268,7 @@ const FileManagePage = ({ history }) => {
 
     Promise.all([
       accountSystem.getFoldersInFolderByPath(currentPath),
-      currentPath == "/"
-        ? accountSystem.addFolder(currentPath)
-        : accountSystem.getFolderMetadataByPath(currentPath),
+      currentPath == "/" ? accountSystem.addFolder(currentPath) : accountSystem.getFolderMetadataByPath(currentPath),
     ])
       .then(([folders, folderMeta]) => {
         setFolderList(folders);
@@ -316,10 +284,7 @@ const FileManagePage = ({ history }) => {
   }, [currentPath, updateCurrentFolderSwitch]);
 
   React.useEffect(() => {
-    if (
-      filesForZip.length !== 0 &&
-      filesForZip.length === selectedFiles.length
-    ) {
+    if (filesForZip.length !== 0 && filesForZip.length === selectedFiles.length) {
       let zipableFiles = {};
       filesForZip.forEach((item) => {
         zipableFiles = Object.assign(zipableFiles, { [item.name]: item.data });
@@ -341,10 +306,7 @@ const FileManagePage = ({ history }) => {
 
       const usedStorage = accountInfo.account.storageUsed;
       const limitStorage = accountInfo.account.storageLimit;
-      const remainDays = moment(accountInfo.account.expirationDate).diff(
-        moment(Date.now()),
-        "days"
-      );
+      const remainDays = moment(accountInfo.account.expirationDate).diff(moment(Date.now()), "days");
 
       if ((limitStorage / 10) * 9 < usedStorage) {
         setAlertShow(true);
@@ -425,10 +387,7 @@ const FileManagePage = ({ history }) => {
     history.push("/");
   }, []);
 
-  const relativePath = React.useCallback(
-    (path: string) => path.substr(0, path.lastIndexOf("/")),
-    []
-  );
+  const relativePath = React.useCallback((path: string) => path.substr(0, path.lastIndexOf("/")), []);
 
   const fileUploadMutex = React.useMemo(() => new Mutex(), []);
   const uploadFile = React.useCallback(
@@ -458,28 +417,21 @@ const FileManagePage = ({ history }) => {
 
           if (path == currentPathRef.current) {
             setPageLoading(true);
-            const folderMeta = await accountSystem.getFolderMetadataByPath(
-              currentPathRef.current
-            );
+            const folderMeta = await accountSystem.getFolderMetadataByPath(currentPathRef.current);
             setFileList(folderMeta.files);
             setPageLoading(false);
           }
         });
-        upload.addEventListener(
-          UploadEvents.PROGRESS,
-          (e: UploadProgressEvent) => {
-            let templist = currentUploadingList.current.slice();
-            let index = templist.findIndex((ele) => ele.id === toastID);
-            if (index > -1) {
-              templist[index].percent = e.detail.progress * 100;
-              setUploadingList(templist);
-            }
+        upload.addEventListener(UploadEvents.PROGRESS, (e: UploadProgressEvent) => {
+          let templist = currentUploadingList.current.slice();
+          let index = templist.findIndex((ele) => ele.id === toastID);
+          if (index > -1) {
+            templist[index].percent = e.detail.progress * 100;
+            setUploadingList(templist);
           }
-        );
+        });
 
-        const fileStream = polyfillReadableStreamIfNeeded<Uint8Array>(
-          file.stream()
-        );
+        const fileStream = polyfillReadableStreamIfNeeded<Uint8Array>(file.stream());
 
         const release = await fileUploadMutex.acquire();
         try {
@@ -488,9 +440,7 @@ const FileManagePage = ({ history }) => {
 
           if (stream) {
             // TODO: Why does it do this?
-            fileStream.pipeThrough(
-              stream as TransformStream<Uint8Array, Uint8Array> as any
-            );
+            fileStream.pipeThrough(stream as TransformStream<Uint8Array, Uint8Array> as any);
           } else {
           }
           await upload.finish();
@@ -556,9 +506,7 @@ const FileManagePage = ({ history }) => {
       try {
         setShowNewFolderModal(false);
         const status = await accountSystem.addFolder(
-          currentPath === "/"
-            ? currentPath + folderName
-            : currentPath + "/" + folderName
+          currentPath === "/" ? currentPath + folderName : currentPath + "/" + folderName
         );
         toast(`Folder ${folderName} was successfully created.`);
         setPageLoading(false);
@@ -669,9 +617,7 @@ const FileManagePage = ({ history }) => {
 
   const cancelPublicShare = React.useCallback(
     async (file) => {
-      const curFileMetadata = await accountSystem.getFileMetadata(
-        file.location
-      );
+      const curFileMetadata = await accountSystem.getFileMetadata(file.location);
       if (!curFileMetadata.public.location) {
         return;
       }
@@ -723,18 +669,11 @@ const FileManagePage = ({ history }) => {
   const deleteFolder = React.useCallback(
     async (folder: FoldersIndexEntry) => {
       try {
-        const folders = await accountSystem.getFoldersInFolderByPath(
-          folder.path
-        );
-        const folderMeta = await accountSystem.getFolderMetadataByPath(
-          folder.path
-        );
+        const folders = await accountSystem.getFoldersInFolderByPath(folder.path);
+        const folderMeta = await accountSystem.getFolderMetadataByPath(folder.path);
 
         for (const file of folderMeta.files) {
-          const metaFile =
-            await accountSystem.getFileIndexEntryByFileMetadataLocation(
-              file.location
-            );
+          const metaFile = await accountSystem.getFileIndexEntryByFileMetadataLocation(file.location);
           await cancelPublicShare(metaFile);
           const fso = new FileSystemObject({
             handle: metaFile.private.handle,
@@ -767,16 +706,13 @@ const FileManagePage = ({ history }) => {
   const calculateTotalItems = async (folder: FoldersIndexEntry) => {
     try {
       const folders = await accountSystem.getFoldersInFolderByPath(folder.path);
-      const folderMeta = await accountSystem.getFolderMetadataByPath(
-        folder.path
-      );
+      const folderMeta = await accountSystem.getFolderMetadataByPath(folder.path);
 
       let files = folderMeta.files?.length;
 
       if (!folders.length) return files;
 
-      for (const folderItem of folders)
-        files += await calculateTotalItems(folderItem);
+      for (const folderItem of folders) files += await calculateTotalItems(folderItem);
 
       return files;
     } catch (e) {
@@ -798,17 +734,11 @@ const FileManagePage = ({ history }) => {
         setShowRenameModal(false);
         setOldName(null);
         if (fileToRename) {
-          const status = await accountSystem.renameFile(
-            fileToRename.location,
-            rename
-          );
+          const status = await accountSystem.renameFile(fileToRename.location, rename);
           toast(`${fileToRename.name} was renamed successfully.`);
         }
         if (folderToRename) {
-          const status = await accountSystem.renameFolder(
-            folderToRename.path,
-            rename
-          );
+          const status = await accountSystem.renameFolder(folderToRename.path, rename);
           toast(`${folderToRename.path} was renamed successfully.`);
         }
         setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
@@ -823,14 +753,11 @@ const FileManagePage = ({ history }) => {
     [accountSystem, fileToRename, folderToRename, updateCurrentFolderSwitch]
   );
 
-  const handleDeleteItem = React.useCallback(
-    (item: FolderFileEntry | FoldersIndexEntry, isFile: boolean) => {
-      if (isFile) setFileToDelete(item as FolderFileEntry);
-      else setFolderToDelete(item as FoldersIndexEntry);
-      setShowDeleteModal(true);
-    },
-    []
-  );
+  const handleDeleteItem = React.useCallback((item: FolderFileEntry | FoldersIndexEntry, isFile: boolean) => {
+    if (isFile) setFileToDelete(item as FolderFileEntry);
+    else setFolderToDelete(item as FoldersIndexEntry);
+    setShowDeleteModal(true);
+  }, []);
 
   const handleDelete = async () => {
     setPageLoading(true);
@@ -896,9 +823,7 @@ const FileManagePage = ({ history }) => {
   );
   const handleSelectFile = (file) => {
     let temp = selectedFiles.slice();
-    let i = selectedFiles.findIndex((item) =>
-      arraysEqual(item.location, file.location)
-    );
+    let i = selectedFiles.findIndex((item) => arraysEqual(item.location, file.location));
     if (i !== -1) {
       temp.splice(i, 1);
     } else {
@@ -936,18 +861,8 @@ const FileManagePage = ({ history }) => {
   };
 
   const compareType = (a, b, mode, type) => {
-    var nameA =
-      type === "file"
-        ? a.public.location
-          ? "PUBLIC"
-          : "PRIVATE"
-        : a.path.toUpperCase();
-    var nameB =
-      type === "file"
-        ? b.public.location
-          ? "PUBLIC"
-          : "PRIVATE"
-        : b.path.toUpperCase();
+    var nameA = type === "file" ? (a.public.location ? "PUBLIC" : "PRIVATE") : a.path.toUpperCase();
+    var nameB = type === "file" ? (b.public.location ? "PUBLIC" : "PRIVATE") : b.path.toUpperCase();
     if (nameA < nameB) {
       return mode === "down" ? 1 : -1;
     }
@@ -959,12 +874,8 @@ const FileManagePage = ({ history }) => {
 
   const compareDate = (a, b, mode, type) => {
     const sourceList = type === "file" ? fileMetaList : folderMetaList;
-    const Ameta = sourceList.find(
-      (meta) => bytesToHex(meta.location) === bytesToHex(a.location)
-    );
-    const Bmeta = sourceList.find(
-      (meta) => bytesToHex(meta.location) === bytesToHex(b.location)
-    );
+    const Ameta = sourceList.find((meta) => bytesToHex(meta.location) === bytesToHex(a.location));
+    const Bmeta = sourceList.find((meta) => bytesToHex(meta.location) === bytesToHex(b.location));
 
     if (moment(Ameta.modified).isBefore(moment(Bmeta.modified))) {
       return mode === "down" ? 1 : -1;
@@ -977,12 +888,8 @@ const FileManagePage = ({ history }) => {
 
   const compareSize = (a, b, mode, type) => {
     const sourceList = type === "file" ? fileMetaList : folderMetaList;
-    const Ameta = sourceList.find(
-      (meta) => bytesToHex(meta.location) === bytesToHex(a.location)
-    );
-    const Bmeta = sourceList.find(
-      (meta) => bytesToHex(meta.location) === bytesToHex(b.location)
-    );
+    const Ameta = sourceList.find((meta) => bytesToHex(meta.location) === bytesToHex(a.location));
+    const Bmeta = sourceList.find((meta) => bytesToHex(meta.location) === bytesToHex(b.location));
 
     if (Ameta.size < Bmeta.size) {
       return mode === "down" ? 1 : -1;
@@ -1037,11 +944,9 @@ const FileManagePage = ({ history }) => {
   const getFolderMetaList = React.useCallback(async () => {
     setPageLoading(true);
     const metaList = folderList.map(async (folder) => {
-      return await accountSystem
-        ._getFolderMetadataByLocation(folder.location)
-        .then((f) => {
-          return f;
-        });
+      return await accountSystem._getFolderMetadataByLocation(folder.location).then((f) => {
+        return f;
+      });
     });
     const tmp = await Promise.all(metaList);
     setFolderMetaList(tmp);
@@ -1054,17 +959,9 @@ const FileManagePage = ({ history }) => {
 
   return (
     <div className="page">
-      <Alert
-        variant="danger"
-        show={alertShow}
-        onClose={() => setAlertShow(false)}
-        className="limit-alert"
-        dismissible
-      >
+      <Alert variant="danger" show={alertShow} onClose={() => setAlertShow(false)} className="limit-alert" dismissible>
         {alertText}
-        <Alert.Link onClick={() => history.push("/plans")}>
-          Please renew the account.
-        </Alert.Link>
+        <Alert.Link onClick={() => history.push("/plans")}>Please renew the account.</Alert.Link>
       </Alert>
 
       {openShareModal && (
@@ -1091,11 +988,7 @@ const FileManagePage = ({ history }) => {
         (totalItemsToDelete ? (
           <div className="loading">
             <div className="w-50">
-              <ProgressBar
-                striped
-                now={((count ? count : 0) / totalItemsToDelete) * 100}
-                animated
-              />
+              <ProgressBar striped now={((count ? count : 0) / totalItemsToDelete) * 100} animated />
               <h2 className="percentage-text text-center">
                 {(((count ? count : 0) / totalItemsToDelete) * 100).toFixed(1)}%
               </h2>
@@ -1120,13 +1013,7 @@ const FileManagePage = ({ history }) => {
         </button>
         <h1 className="navbar-brand " onClick={() => history.push("/")}>
           <Link to="/">
-            <img
-              src={logo}
-              width="60"
-              height="60"
-              alt="Opacity"
-              className="navbar-brand-image"
-            />
+            <img src={logo} width="60" height="60" alt="Opacity" className="navbar-brand-image" />
           </Link>
           Opacity <span>v2.0.0</span>
         </h1>
@@ -1138,63 +1025,32 @@ const FileManagePage = ({ history }) => {
             : "navbar navbar-vertical navbar-expand-lg navbar-transparent custom-sidebar"
         }
       >
-        <div
-          className="container-fluid collapse navbar-collapse"
-          id="navbar-menu"
-          style={{ position: "relative" }}
-        >
-          <h1
-            className="navbar-brand navbar-brand-autodark cursor-point"
-            onClick={() => history.push("/")}
-          >
+        <div className="container-fluid collapse navbar-collapse" id="navbar-menu" style={{ position: "relative" }}>
+          <h1 className="navbar-brand navbar-brand-autodark cursor-point" onClick={() => history.push("/")}>
             <Link to="/">
-              <img
-                src={logo}
-                width="60"
-                height="60"
-                alt="Opacity"
-                className="navbar-brand-image"
-              />
+              <img src={logo} width="60" height="60" alt="Opacity" className="navbar-brand-image" />
             </Link>
             Opacity <span>v2.0.0</span>
           </h1>
           <div className="account-info">
             <ProgressBar
-              now={
-                accountInfo
-                  ? (100 * accountInfo.account.storageUsed) /
-                    accountInfo.account.storageLimit
-                  : 0
-              }
+              now={accountInfo ? (100 * accountInfo.account.storageUsed) / accountInfo.account.storageLimit : 0}
               variant={storageWarning && "danger"}
               className={storageWarning && "danger"}
             />
 
             <div className="storage-info mb-0">
-              <span>
-                {formatGbs(accountInfo ? accountInfo.account.storageUsed : 0)}{" "}
-              </span>{" "}
-              of{" "}
-              {formatGbs(
-                accountInfo ? accountInfo.account.storageLimit : "..."
-              )}{" "}
-              used
+              <span>{formatGbs(accountInfo ? accountInfo.account.storageUsed : 0)} </span> of{" "}
+              {formatGbs(accountInfo ? accountInfo.account.storageLimit : "...")} used
             </div>
 
             <div className="storage-info">
               {`Your plan expires on ${
-                accountInfo
-                  ? moment(accountInfo.account.expirationDate).format(
-                      "MMM D, YYYY"
-                    )
-                  : "..."
+                accountInfo ? moment(accountInfo.account.expirationDate).format("MMM D, YYYY") : "..."
               }.`}
             </div>
 
-            <div
-              className="upgrade text-right"
-              onClick={() => history.push("/plans")}
-            >
+            <div className="upgrade text-right" onClick={() => history.push("/plans")}>
               GET MORE SPACE
             </div>
           </div>
@@ -1223,11 +1079,7 @@ const FileManagePage = ({ history }) => {
                 {({ search, items }) => (
                   <ul className="tree-menu">
                     {items.map(({ key, ...props }) => (
-                      <div
-                        key={key}
-                        className={props.isOpen ? "opened" : ""}
-                        onClick={() => handleSelectFolder(props)}
-                      >
+                      <div key={key} className={props.isOpen ? "opened" : ""} onClick={() => handleSelectFolder(props)}>
                         <ItemComponent key={key} {...props} />
                       </div>
                     ))}
@@ -1270,22 +1122,13 @@ const FileManagePage = ({ history }) => {
                 <span>FILE UPLOAD</span>
               </div>
             </UploadForm>
-            <div
-              className=" d-flex header-item ml-3"
-              onClick={() => setShowNewFolderModal(true)}
-            >
+            <div className=" d-flex header-item ml-3" onClick={() => setShowNewFolderModal(true)}>
               <span className="item-icon new-folder"></span>
               <span>NEW FOLDER</span>
             </div>
             <div className="d-flex header-item ml-3">
-              <NavLink
-                className="custom-nav-icon"
-                href="https://help.opacity.io/"
-                target="__blank"
-              >
-                <div className="item-icon help-center d-flex align-items-center justify-content-center mr-1">
-                  ?
-                </div>
+              <NavLink className="custom-nav-icon" href="https://help.opacity.io/" target="__blank">
+                <div className="item-icon help-center d-flex align-items-center justify-content-center mr-1">?</div>
                 <span>HELP CENTER</span>
               </NavLink>
             </div>
@@ -1321,24 +1164,15 @@ const FileManagePage = ({ history }) => {
                   {selectedFiles.length}&nbsp;items ({getSelectedFileSize()})
                 </span>
               </div>
-              <div
-                className=" d-flex header-item ml-3"
-                onClick={() => handleMultiDownload()}
-              >
+              <div className=" d-flex header-item ml-3" onClick={() => handleMultiDownload()}>
                 <span className="item-icon file-download"></span>
                 <span className="item-text">DOWNLOAD</span>
               </div>
-              <div
-                className=" d-flex header-item ml-3"
-                onClick={() => handleMultiDelete()}
-              >
+              <div className=" d-flex header-item ml-3" onClick={() => handleMultiDelete()}>
                 <span className="item-icon file-delete"></span>
                 <span className="item-text">DELETE</span>
               </div>
-              <div
-                className=" d-flex header-item ml-3"
-                onClick={() => setSelectedFiles([])}
-              >
+              <div className=" d-flex header-item ml-3" onClick={() => setSelectedFiles([])}>
                 <span className="item-icon file-cancel"></span>
                 <span className="item-text">CANCEL</span>
               </div>
@@ -1348,10 +1182,7 @@ const FileManagePage = ({ history }) => {
         <div className="container-xl">
           <div className="breadcrumb-content">
             <Breadcrumb>
-              <Breadcrumb.Item
-                href="#"
-                onClick={() => currentPath !== "/" && setCurrentPath("/")}
-              >
+              <Breadcrumb.Item href="#" onClick={() => currentPath !== "/" && setCurrentPath("/")}>
                 <span className="home-icon"></span>
               </Breadcrumb.Item>
               {currentPath !== "/" &&
@@ -1361,10 +1192,7 @@ const FileManagePage = ({ history }) => {
                       {text}
                     </Breadcrumb.Item>
                   ) : (
-                    <Breadcrumb.Item
-                      key={i}
-                      onClick={() => setCurrentPath(path)}
-                    >
+                    <Breadcrumb.Item key={i} onClick={() => setCurrentPath(path)}>
                       {text}
                     </Breadcrumb.Item>
                   )
@@ -1375,10 +1203,7 @@ const FileManagePage = ({ history }) => {
             <div className="empty-list">
               <img src={empty} />
               <h4>This folder is empty</h4>
-              <span>
-                Upload files or folder by clicking the upload button, or drag &
-                drop from your device.
-              </span>
+              <span>Upload files or folder by clicking the upload button, or drag & drop from your device.</span>
             </div>
           )}
           {(fileList.length > 0 || folderList.length > 0) && (
@@ -1433,28 +1258,18 @@ const FileManagePage = ({ history }) => {
               )}
 
               {tableView && (
-                <Table
-                  highlightRowOnHover
-                  hasOutline
-                  verticalAlign="center"
-                  className="text-nowrap"
-                >
+                <Table highlightRowOnHover hasOutline verticalAlign="center" className="text-nowrap">
                   <Table.Header>
                     <tr className="file-table-header">
                       <th
                         onClick={() =>
                           handleSortTable(
                             "name",
-                            sortable.column === "name"
-                              ? sortable.method === "down"
-                                ? "up"
-                                : "down"
-                              : "down"
+                            sortable.column === "name" ? (sortable.method === "down" ? "up" : "down") : "down"
                           )
                         }
                         className={`sortable ${
-                          sortable.column === "name" &&
-                          (sortable.method === "up" ? "asc" : "desc")
+                          sortable.column === "name" && (sortable.method === "up" ? "asc" : "desc")
                         }`}
                       >
                         Name
@@ -1464,16 +1279,11 @@ const FileManagePage = ({ history }) => {
                           onClick={() =>
                             handleSortTable(
                               "type",
-                              sortable.column === "type"
-                                ? sortable.method === "down"
-                                  ? "up"
-                                  : "down"
-                                : "down"
+                              sortable.column === "type" ? (sortable.method === "down" ? "up" : "down") : "down"
                             )
                           }
                           className={`sortable type ${
-                            sortable.column === "type" &&
-                            (sortable.method === "up" ? "asc" : "desc")
+                            sortable.column === "type" && (sortable.method === "up" ? "asc" : "desc")
                           }`}
                         >
                           Share Type
@@ -1492,16 +1302,11 @@ const FileManagePage = ({ history }) => {
                           onClick={() =>
                             handleSortTable(
                               "created",
-                              sortable.column === "created"
-                                ? sortable.method === "down"
-                                  ? "up"
-                                  : "down"
-                                : "down"
+                              sortable.column === "created" ? (sortable.method === "down" ? "up" : "down") : "down"
                             )
                           }
                           className={`sortable ${
-                            sortable.column === "created" &&
-                            (sortable.method === "up" ? "asc" : "desc")
+                            sortable.column === "created" && (sortable.method === "up" ? "asc" : "desc")
                           }`}
                         >
                           Created
@@ -1511,16 +1316,11 @@ const FileManagePage = ({ history }) => {
                         onClick={() =>
                           handleSortTable(
                             "size",
-                            sortable.column === "size"
-                              ? sortable.method === "down"
-                                ? "up"
-                                : "down"
-                              : "down"
+                            sortable.column === "size" ? (sortable.method === "down" ? "up" : "down") : "down"
                           )
                         }
                         className={`sortable ${
-                          sortable.column === "size" &&
-                          (sortable.method === "up" ? "asc" : "desc")
+                          sortable.column === "size" && (sortable.method === "up" ? "asc" : "desc")
                         }`}
                       >
                         Size
@@ -1592,10 +1392,7 @@ const FileManagePage = ({ history }) => {
         handleClose={() => setShowDeleteModal(false)}
         setDelete={() => handleDelete()}
       />
-      <WarningModal
-        show={showWarningModal}
-        handleClose={() => setShowWarningModal(false)}
-      />
+      <WarningModal show={showWarningModal} handleClose={() => setShowWarningModal(false)} />
       <AddNewFolderModal
         show={showNewFolderModal}
         handleClose={() => setShowNewFolderModal(false)}
@@ -1615,9 +1412,7 @@ const FileManagePage = ({ history }) => {
             setUploadingList([]);
           }}
           notifications={uploadingList}
-          uploadFinish={() =>
-            setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)
-          }
+          uploadFinish={() => setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)}
         />
       )}
     </div>

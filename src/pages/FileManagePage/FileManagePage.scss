@@ -585,8 +585,7 @@
       .file-selected {
         .dropdown-toggle {
           &::after {
-            filter: invert(80%) sepia(100%) saturate(500%) hue-rotate(200deg)
-              brightness(104%) contrast(97%);
+            filter: invert(80%) sepia(100%) saturate(500%) hue-rotate(200deg) brightness(104%) contrast(97%);
           }
         }
       }
@@ -605,15 +604,13 @@
         }
         &:hover {
           &::after {
-            filter: invert(80%) sepia(100%) saturate(500%) hue-rotate(200deg)
-              brightness(104%) contrast(97%);
+            filter: invert(80%) sepia(100%) saturate(500%) hue-rotate(200deg) brightness(104%) contrast(97%);
           }
         }
         &:focus {
           background-color: #ddd;
           &::after {
-            filter: invert(80%) sepia(100%) saturate(500%) hue-rotate(200deg)
-              brightness(104%) contrast(97%);
+            filter: invert(80%) sepia(100%) saturate(500%) hue-rotate(200deg) brightness(104%) contrast(97%);
           }
         }
       }

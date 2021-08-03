@@ -3,14 +3,7 @@
 import * as React from "react";
 import { ReactElement, ReactNode } from "react";
 import { NavLink, withRouter } from "react-router-dom";
-import {
-  Site,
-  Nav,
-  Grid,
-  List,
-  Button,
-  RouterContextProvider,
-} from "tabler-react";
+import { Site, Nav, Grid, List, Button, RouterContextProvider } from "tabler-react";
 import AOS from "aos";
 import type { NotificationProps } from "tabler-react";
 import { Navbar, NavDropdown } from "react-bootstrap";
@@ -88,13 +81,7 @@ class SiteWrapper extends React.Component<Props, State> {
           <div className="container-xl">
             <h1 className="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3 mb-0">
               <NavLink to="/" className="logo-wrapper">
-                <img
-                  src={logo}
-                  width="60"
-                  height="60"
-                  alt="Opacity"
-                  className="navbar-brand-image"
-                />
+                <img src={logo} width="60" height="60" alt="Opacity" className="navbar-brand-image" />
                 <span className="ml-3">OPACITY</span>
               </NavLink>
             </h1>
@@ -123,10 +110,7 @@ class SiteWrapper extends React.Component<Props, State> {
                     </NavLink>
                   </li>
                   <li className="nav-item">
-                    <Nav.Link
-                      href="https://medium.com/opacity-storage"
-                      target="_blank"
-                    >
+                    <Nav.Link href="https://medium.com/opacity-storage" target="_blank">
                       Learn
                     </Nav.Link>
                   </li>
@@ -204,10 +188,7 @@ class SiteWrapper extends React.Component<Props, State> {
                       </NavLink>
                     </li>
                     <li className="nav-item">
-                      <Nav.Link
-                        href="https://medium.com/opacity-storage"
-                        target="_blank"
-                      >
+                      <Nav.Link href="https://medium.com/opacity-storage" target="_blank">
                         Learn
                       </Nav.Link>
                     </li>
@@ -265,8 +246,7 @@ class SiteWrapper extends React.Component<Props, State> {
           }}
           handleClose={() => {
             this.handleCloseLoginModal();
-            this.props.handleCloseLoginModal &&
-              this.props.handleCloseLoginModal();
+            this.props.handleCloseLoginModal && this.props.handleCloseLoginModal();
           }}
         />
         {(this.state.showSignUpModal || this.props.showSignUpModal) && (
@@ -274,8 +254,7 @@ class SiteWrapper extends React.Component<Props, State> {
             show={this.state.showSignUpModal || this.props.showSignUpModal}
             handleClose={() => {
               this.setState({ showSignUpModal: false });
-              this.props.handleCloseSignUpModal &&
-                this.props.handleCloseSignUpModal();
+              this.props.handleCloseSignUpModal && this.props.handleCloseSignUpModal();
             }}
             plan={this.props.plan}
             openLoginModal={this.handleOpenLoginModal.bind(this)}
