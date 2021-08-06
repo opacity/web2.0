@@ -1,5 +1,3 @@
-export const version = "v1.3.0";
-
 enum NODE_ENV {
   DEVELOPMENT = "development",
   PRODUCTION = "production",
