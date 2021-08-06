@@ -11,6 +11,7 @@ enum STORAGE_NODE_VERSION {
 }
 
 export const IS_DEV = process.env.NODE_ENV == NODE_ENV.DEVELOPMENT
+export const VERSION = process.env.VERSION ? process.env.VERSION : "local"
 
 const PROTOCOL =
   IS_DEV &&
@@ -27,14 +28,14 @@ export const HOST =
   IS_DEV
     ? "127.0.0.1:4444"
     : process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
-      ? "dev2.opacity.io"
-      : "opacity.io";
+    ? "dev2.opacity.io"
+    : "opacity.io";
 export const FRONT_END_URL = `${PROTOCOL}://${HOST}`;
 
 export const PUBLIC_SHARE_URL =
   process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
-    ? "https://public-share.opacitynodes.com"
-    : "https://public.opacity.io";
+  ? "https://public-share.opacitynodes.com"
+  : "https://public.opacity.io";
     
 export const EXCHANGE_LINK = "https://www.kucoin.com/trade/OPCT-BTC";
 

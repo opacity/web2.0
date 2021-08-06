@@ -6,6 +6,7 @@ class Context {
   env: {
     NODE_ENV: "development" | "production";
     STORAGE_NODE_VERSION: "beta" | "production";
+    VERSION: string;
   };
   getConfig = () =>
     fusebox({
@@ -85,6 +86,7 @@ task("run-dev-prod", async (ctx) => {
   ctx.env = {
     NODE_ENV: "development",
     STORAGE_NODE_VERSION: "production",
+    VERSION: process.env.VERSION,
   };
   const fuse = ctx.getConfig();
 
@@ -99,6 +101,7 @@ task("run-dev-beta", async (ctx) => {
   ctx.env = {
     NODE_ENV: "development",
     STORAGE_NODE_VERSION: "beta",
+    VERSION: process.env.VERSION,
   };
   const fuse = ctx.getConfig();
 
@@ -113,6 +116,7 @@ task("run-prod-beta", async (ctx) => {
   ctx.env = {
     NODE_ENV: "production",
     STORAGE_NODE_VERSION: "beta",
+    VERSION: process.env.VERSION,
   };
   const fuse = ctx.getConfig();
 
@@ -127,6 +131,7 @@ task("run-prod-prod", async (ctx) => {
   ctx.env = {
     NODE_ENV: "production",
     STORAGE_NODE_VERSION: "production",
+    VERSION: process.env.VERSION,
   };
   const fuse = ctx.getConfig();
 
@@ -141,6 +146,7 @@ task("dist-prod-beta", async (ctx) => {
   ctx.env = {
     NODE_ENV: "production",
     STORAGE_NODE_VERSION: "beta",
+    VERSION: process.env.VERSION,
   };
   const fuse = ctx.getConfig();
 
@@ -155,6 +161,7 @@ task("dist-prod-prod", async (ctx) => {
   ctx.env = {
     NODE_ENV: "production",
     STORAGE_NODE_VERSION: "production",
+    VERSION: process.env.VERSION,
   };
   const fuse = ctx.getConfig();
 
