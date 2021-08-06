@@ -8,6 +8,7 @@ import PlatformPage from "./pages/PlatformPage/PlatformPage";
 import PlansPage from "./pages/PlansPage/PlansPage";
 import CommunityPage from "./pages/CommunityPage/CommunityPage";
 import FileManagePage from "./pages/FileManagePage/FileManagePage";
+import OldAccountFileManage from "./pages/FileManagePage/OldAccountFileManage";
 import ForgotPage from "./pages/ForgotPage/ForgotPage";
 import SharePage from "./pages/SharePage/SharePage";
 import LegalPage from "./pages/LegalPages/LegalPage";
@@ -38,7 +39,7 @@ Sentry.init({
 });
 
 function App() {
-  
+
   return (
     <>
       <Helmet>
@@ -58,7 +59,7 @@ function App() {
         <meta name="googlebot" content="index,follow,snippet,archive" />
         <meta name="robots" content="all,index,follow" />
         <meta name="author" content="opacity.io" />
-        <meta name="copyright" content="2019 opacity.io" />
+        <meta name="copyright" content="2021 opacity.io" />
         <title>Private Cloud Storage and File Sharing | Opacity</title>
         <meta itemProp="name" content="Opacity Storage" />
         <meta
@@ -66,7 +67,7 @@ function App() {
           content="Opacity provides encrypted cloud storage that never stores your personal data. Powered by OPCT crypto token."
         />
         <meta itemProp="image" content="assets/logo.svg" />
-        <meta property="og:url" content="https://dev2.opacity.io" />
+        <meta property="og:url" content="https://opacity.io" />
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Opacity Storage" />
         <meta
@@ -129,6 +130,7 @@ function App() {
                 <Route exact path="/forgot" component={ForgotPage} />
                 <Route path="/share" component={SharePage} />
                 <Route path="/migration" component={MigrationPage} />
+                <PrivateRoute path="/migration-download" isOldRoute={true} component={OldAccountFileManage} />
 
                 <Route path="*" component={Page404} />
               </Switch>

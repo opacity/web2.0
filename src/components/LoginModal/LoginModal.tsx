@@ -77,12 +77,13 @@ const LoginModal: React.FC<OtherProps> = ({
       .info()
       .then((acc) => {
         if (acc.account.apiVersion !== 2) {
+          localStorage.setItem("old-key", privateKey);
           setErrors({
             privateKey: (
               <>
                 {/* This account handle is old. Upgrade will be available soon. */}
                 This account handle is old. Please upgrade
-                <Link to="/migration">here</Link>.
+                <Link to="/migration">here</Link>. Or <Link to="/migration-download">Visit</Link> files with old account.
               </>
             ),
             type: 'migration'
@@ -91,6 +92,7 @@ const LoginModal: React.FC<OtherProps> = ({
         }
         if (acc.paymentStatus === "paid") {
           localStorage.setItem("key", privateKey);
+          // localStorage.setItem("old-key", privateKey);
           history.push("file-manager");
         }
       })
@@ -109,7 +111,7 @@ const LoginModal: React.FC<OtherProps> = ({
                   <>
                     {/* This account handle is old. Upgrade will be available soon. */}
                     This account handle is old. Please upgrade
-                    <Link to="/migration">here</Link>.
+                    <Link to="/migration">here</Link>. Or <Link to="/migration-download">Visit</Link> files with old account.
                   </>
                 ),
                 type: 'migration'
