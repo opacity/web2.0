@@ -19,6 +19,7 @@ const OldAccountFileManage = ({ history }) => {
   const [folderList, setFolderList] = useState([]);
   const [fileList, setFileList] = useState([]);
   const [pageLoading, setPageLoading] = useState(true);
+  const [selectedFiles, setSelectedFiles] = useState([])
 
   const masterHandle = useMemo(
     () =>
@@ -63,7 +64,7 @@ const OldAccountFileManage = ({ history }) => {
     }
   }, [])
 
-  const downloadFile = async (handle) => {
+  const downloadFile = useCallback(async (handle) => {
     const download = new Download(handle, {
       endpoint: storageNode
     });
@@ -106,12 +107,37 @@ const OldAccountFileManage = ({ history }) => {
       })
       .catch(error => {
       });
-  }
+  }, [])
 
   useEffect(() => {
+    setSelectedFiles([])
     loadData(currentPath)
   }, [currentPath])
 
+  const handleDownloadFiles = async () => {
+    for (const file of selectedFiles) {
+      await downloadFile(file.versions[0].handle)
+    }
+  }
+
+  const handleSelectFile = (file) => {
+    let temp = selectedFiles.slice();
+    let i = selectedFiles.findIndex(ele => ele.versions[0].handle === file.versions[0].handle);
+    if (i !== -1) {
+      temp.splice(i, 1);
+    } else {
+      temp = [...selectedFiles, file];
+    }
+    setSelectedFiles(temp);
+  }
+
+  const handleSelectAll = () => {
+    if (selectedFiles.length === fileList.length) {
+      setSelectedFiles([])
+    } else {
+      setSelectedFiles(fileList)
+    }
+  }
 
   return (
     <div className="old-file-content">
@@ -122,6 +148,12 @@ const OldAccountFileManage = ({ history }) => {
       }
 
       <div className="file-header">
+        <Button className="mr-2" onClick={handleSelectAll}>
+          {(selectedFiles.length !== 0 && selectedFiles.length === fileList.length) ? 'Unselect All' : 'Select All'}
+        </Button>
+
+        {selectedFiles.length > 0 && <Button className="mr-2" onClick={handleDownloadFiles}>Download {selectedFiles.length} Files</Button>}
+
         <Button
           onClick={() => {
             localStorage.clear();
@@ -185,6 +217,8 @@ const OldAccountFileManage = ({ history }) => {
                 key={key}
                 fileEntry={item}
                 downloadFile={downloadFile}
+                selectedFiles={selectedFiles}
+                onSelectFile={handleSelectFile}
               />
             )}
           </Table.Body>

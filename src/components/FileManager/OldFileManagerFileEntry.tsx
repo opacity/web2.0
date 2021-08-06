@@ -17,8 +17,11 @@ const getFileExtension = (name) => {
 export const FileManagerFileEntryList = ({
   fileEntry,
   downloadFile,
+  selectedFiles,
+  onSelectFile,
 }) => {
   const { name, created } = fileEntry;
+  const [isSelected, setIsSelected] = React.useState(false)
 
   const briefName = (name) => {
     let resName = name;
@@ -28,8 +31,17 @@ export const FileManagerFileEntryList = ({
     return resName
   }
 
+  React.useEffect(() => {
+    if (!!selectedFiles.find(ele => ele.versions[0].handle === fileEntry.versions[0].handle)) {
+      setIsSelected(true)
+    } else {
+      setIsSelected(false)
+    }
+  }, [selectedFiles])
+
+
   return (
-    <Table.Row>
+    <Table.Row className={isSelected ? 'selected' : ''} onClick={() => onSelectFile(fileEntry)}>
       <Table.Col className='file-name'>
         <div className='d-flex'>
           <div style={{ width: '18px', marginRight: '40px' }}>
