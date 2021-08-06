@@ -2,11 +2,25 @@ version: 0.2
 
 env:
   git-credential-helper: yes
+  variables:
+    SENTRY_ORG: opacity
+    SENTRY_PROJECT: web-2
+  parameter-store:
+    SENTRY_AUTH_TOKEN: /storage-node/SENTRY_AUTH_TOKEN
 
 phases:
+  install:
+    on-failure: ABORT
+    commands:
+      - curl -sL https://sentry.io/get-cli/ | bash
   pre_build:
     on-failure: ABORT
     commands:
+      - VERSION=`sentry-cli releases propose-version`
+      - sentry-cli releases new "$VERSION"
+      - git remote remove origin
+      - git remote add origin https://github.com/opacity/web2.0.git
+      - sentry-cli releases set-commits "$VERSION" --auto --ignore-missing --ignore-empty
       - npm install -g npm@7.15.0
       - npm install -g lerna
       - git submodule update --init --recursive --remote
@@ -22,6 +36,8 @@ phases:
       - echo build started on `date`
       - npm install
       - npm run dist
+      - sentry-cli releases finalize "$VERSION"
+      - sentry-cli releases deploys "$VERSION" new -e "beta"
   post_build:
     commands:
       - echo build completed on `date`
