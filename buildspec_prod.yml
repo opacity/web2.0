@@ -36,6 +36,7 @@ phases:
       - echo build started on `date`
       - npm install
       - npm run dist:prod
+      - sentry-cli releases files "$VERSION" upload-sourcemaps ./dist
       - sentry-cli releases finalize "$VERSION"
       - sentry-cli releases deploys "$VERSION" new -e "production"
   post_build:
