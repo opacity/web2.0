@@ -56,8 +56,6 @@ const DEFAULT_STORAGE_NODE_IP =
         : DEFAULT_STORAGE_NODE_V1;
 
 export const STORAGE_NODE = `${PROTOCOL}://${DEFAULT_STORAGE_NODE_IP}:3000`;
-export const STORAGE_NODE_V1 = `${PROTOCOL}://${DEFAULT_STORAGE_NODE_V1}:3000`;
-export const STORAGE_NODE_V2 = `${PROTOCOL}://${DEFAULT_STORAGE_NODE_V2}:3000`;
 
 export const FILE_MAX_SIZE = 2 * 1024 * 1024 * 1024;
 
@@ -320,86 +318,7 @@ export const PLANS: PlanType[] = [
       "Desktop Sync",
     ],
   },
-  // {
-  //   isCustom: false,
-  //   borderColor: "#8ADB75",
-  //   content: "All the secure file storage you need ",
-  //   discountedUsdCost: null,
-  //   durationInMonths: 12,
-  //   opctCost: 0,
-  //   includesDesktopApp: false,
-  //   isAvailable: false,
-  //   isHighlighted: false,
-  //   permalink: "enterprise",
-  //   shadow: SHADOW.RIGHT,
-  //   specialPricing: "Custom Pricing",
-  //   storageInGB: 10000,
-  //   storageLimit: "Custom",
-  //   title: "Enterprise",
-  //   usdCost: 0,
-  //   zIndex: 0,
-  //   features: [
-  //     "Opacity can provide the storage and services your business needs. S3 compliant API integrates easily with most existing implementations.",
-  //   ],
-  // },
-  // {
-  //   isCustom: true,
-  //   borderColor: "#918DEA",
-  //   content: "Secure and access your files anywhere",
-  //   discountedUsdCost: null,
-  //   durationInMonths: 12,
-  //   opctCost: 58000,
-  //   includesDesktopApp: true,
-  //   isAvailable: true,
-  //   isHighlighted: true,
-  //   permalink: "custom-10tb",
-  //   shadow: SHADOW.CENTER,
-  //   specialPricing: null,
-  //   storageInGB: 20000,
-  //   storageLimit: "20 TB",
-  //   title: "Custom",
-  //   usdCost: 400.0,
-  //   zIndex: 2,
-  //   features: [
-  //     "End-to-End Encryption",
-  //     "Unlimited Downloads",
-  //     "Private File Sharing",
-  //     "No 3rd Party Tracking",
-  //     "Access Anywhere",
-  //     "Unlimited File Size*",
-  //     "Desktop Sync",
-  //   ],
-  // },
 ];
-
-// const ICON_FILE = require("../assets/images/file.svg");
-// const ICON_JPG = require("../assets/images/jpg.svg");
-// const ICON_PNG = require("../assets/images/png.svg");
-// const ICON_PDF = require("../assets/images/pdf.svg");
-// const ICON_DOC = require("../assets/images/doc.svg");
-
-// export const DATA_TYPES_ICONS = [
-//   {
-//     name: ".none",
-//     icon: ICON_FILE
-//   },
-//   {
-//     name: ".jpg",
-//     icon: ICON_JPG
-//   },
-//   {
-//     name: ".pdf",
-//     icon: ICON_PDF
-//   },
-//   {
-//     name: ".doc",
-//     icon: ICON_DOC
-//   },
-//   {
-//     name: ".png",
-//     icon: ICON_PNG
-//   }
-// ];
 
 export enum DROP_TYPES {
   FILE,
