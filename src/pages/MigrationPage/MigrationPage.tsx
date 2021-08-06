@@ -11,7 +11,6 @@ import { Row, Col, Container, Button, ProgressBar } from "react-bootstrap";
 import classNames from "classnames";
 import {
   STORAGE_NODE as storageNode,
-  STORAGE_NODE_V1,
 } from "../../config";
 
 type MigrationFormProps = {
@@ -48,8 +47,7 @@ const MigrationPage = ({ history }) => {
   const runMigrator = async (accountHandle: Uint8Array) => {
     setMigrationStatus("migrating...");
     const migrator = new AccountMigrator(accountHandle, {
-      storageNodeV1: storageNode,
-      storageNodeV2: storageNode,
+      storageNode: storageNode,
     });
 
     migrator.addEventListener(MigratorEvents.PERCENT, (s: any) => {

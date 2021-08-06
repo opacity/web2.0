@@ -14,7 +14,6 @@ import {
 import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex";
 import {
   STORAGE_NODE as storageNode,
-  DEFAULT_STORAGE_NODE_V1,
 } from "../../config";
 import { Link } from "react-router-dom";
 
