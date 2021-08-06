@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "ts-node -T fuse run-dev-beta",
+    "start:local": "ts-node -T fuse dist-beta-local",
     "start:prod": "ts-node -T fuse run-dev-prod",
     "preview": "ts-node -T fuse run-prod-beta",
     "preview:prod": "ts-node -T fuse run-prod-prod",
@@ -30,6 +31,7 @@
     "formik": "^2.2.6",
     "fuse-react": "^3.0.8",
     "moment": "^2.29.1",
+    "opaque": "github:opacity/opaque#0.4.6",
     "path-browserify": "^1.0.1",
     "qrcode.react": "^1.0.1",
     "react": "^16.8.6",

@@ -77,7 +77,7 @@ Object.assign(streamsaver, { WritableStream });
 const uploadImage = require("../../assets/upload.png");
 const empty = require("../../assets/empty.png");
 
-import { STORAGE_NODE as storageNode, STORAGE_NODE_V1 } from "../../config";
+import { STORAGE_NODE as storageNode } from "../../config";
 import { bytesToB64URL } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/b64";
 import { isPathChild } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/path";
 import { arraysEqual } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/arrayEquality";
@@ -549,7 +549,6 @@ const FileManagePage = ({ history }) => {
             config: {
               crypto: cryptoMiddleware,
               net: netMiddleware,
-              storageNodeV1: STORAGE_NODE_V1,
               storageNode,
             },
             name: file.name,

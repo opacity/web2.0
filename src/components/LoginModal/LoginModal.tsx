@@ -3,19 +3,12 @@ import { useState } from "react";
 import { Modal, Button, Row, Col } from "react-bootstrap";
 import { Field, Formik, FormikHelpers } from "formik";
 import { Form } from "tabler-react";
-// import * as Yup from "yup";
 import history from "../../redux/history";
 import "./LoginModal.scss";
 import { Account } from "../../../ts-client-library/packages/account-management";
-import {
-  WebAccountMiddleware,
-  WebNetworkMiddleware,
-} from "../../../ts-client-library/packages/middleware-web";
+import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web";
 import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex";
-import {
-  STORAGE_NODE as storageNode,
-  DEFAULT_STORAGE_NODE_V1,
-} from "../../config";
+import { STORAGE_NODE as storageNode } from "../../config";
 import { Link } from "react-router-dom";
 
 const logo = require("../../assets/logo2.png");
@@ -37,11 +30,7 @@ const LoginModal: React.FC<OtherProps> = ({
   recoveryHandle,
   handleSignup,
 }) => {
-  const [privateKey, setPrivateKey] = useState(
-    recoveryHandle ? recoveryHandle : ""
-  );
-  const [validatePrivateKey, setValidatePrivateKey] = useState(true);
-  const [account, setAccount] = React.useState<Account>();
+  const [privateKey, setPrivateKey] = useState(recoveryHandle ? recoveryHandle : "");
 
   React.useEffect(() => {
     recoveryHandle && setPrivateKey(recoveryHandle);
@@ -77,12 +66,12 @@ const LoginModal: React.FC<OtherProps> = ({
       .info()
       .then((acc) => {
         if (acc.account.apiVersion !== 2) {
+          localStorage.setItem("old-key", privateKey);
           setErrors({
             privateKey: (
               <>
-                {/* This account handle is old. Upgrade will be available soon. */}
-                This account handle is old. Please upgrade
-                <Link to="/migration">here</Link>.
+                We have detected this is a v1 account. To access your account, please update to v2 <Link to="/migration">here</Link>.<br />
+                If you prefer to download your v1 files only, please use this <Link to="/migration-download">link</Link>.
               </>
             ),
             type: 'migration'
@@ -91,6 +80,7 @@ const LoginModal: React.FC<OtherProps> = ({
         }
         if (acc.paymentStatus === "paid") {
           localStorage.setItem("key", privateKey);
+          // localStorage.setItem("old-key", privateKey);
           history.push("file-manager");
         }
       })
@@ -107,9 +97,8 @@ const LoginModal: React.FC<OtherProps> = ({
               setErrors({
                 privateKey: (
                   <>
-                    {/* This account handle is old. Upgrade will be available soon. */}
-                    This account handle is old. Please upgrade
-                    <Link to="/migration">here</Link>.
+                    We have detected this is a v1 account. To access your account, please update to v2 <Link to="/migration">here</Link>.<br />
+                    If you prefer to download your v1 files only, please use this <Link to="/migration-download">link</Link>.
                   </>
                 ),
                 type: 'migration'
