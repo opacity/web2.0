@@ -24,7 +24,7 @@ import { store, persistor } from "./redux";
 import { PersistGate } from "redux-persist/lib/integration/react";
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
-import { version, IS_DEV } from "./config";
+import { version } from "./config";
 
 Sentry.init({
   dsn: "https://8fdbdab452f04a43b5c3f2e00ec126f7@sentry.io/295597",
@@ -35,7 +35,6 @@ Sentry.init({
     }),
   ],
   tracesSampleRate: 0.7,
-  enabled: IS_DEV,
 });
 
 function App() {

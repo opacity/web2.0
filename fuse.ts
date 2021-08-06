@@ -4,7 +4,7 @@ import * as path from "path";
 class Context {
   runServer: boolean;
   env: {
-    NODE_ENV: "development" | "production";
+    NODE_ENV: "development" | "production" | "localhost";
     STORAGE_NODE_VERSION: "beta" | "production";
     VERSION: string;
   };
@@ -152,6 +152,21 @@ task("dist-prod-beta", async (ctx) => {
 
   await exec("copy-streamsaver");
   await fuse.runProd({ uglify: false });
+});
+
+task("dist-beta-local", async (ctx) => {
+  await exec("remove-artifacts");
+
+  ctx.runServer = true;
+  ctx.env = {
+    NODE_ENV: "localhost",
+    STORAGE_NODE_VERSION: "beta",
+    VERSION: "local",
+  };
+  const fuse = ctx.getConfig();
+
+  await exec("copy-streamsaver");
+  await fuse.runDev();
 });
 
 task("dist-prod-prod", async (ctx) => {
