@@ -24,19 +24,25 @@ import { store, persistor } from "./redux";
 import { PersistGate } from "redux-persist/lib/integration/react";
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
-import { version, IS_DEV } from "./config";
+import { VERSION, IS_LOCAL, IS_DEV } from "./config";
 
-Sentry.init({
+let sentryOptions = {
   dsn: "https://8fdbdab452f04a43b5c3f2e00ec126f7@sentry.io/295597",
-  release: "web2.0@" + version,
+  release: VERSION,
+  environment: process.env.STORAGE_NODE_VERSION,
   integrations: [
     new Integrations.BrowserTracing({
       routingInstrumentation: Sentry.reactRouterV5Instrumentation(history),
     }),
   ],
-  tracesSampleRate: 0.7,
-  enabled: IS_DEV,
-});
+  tracesSampleRate: 0.3,
+}
+if (IS_DEV) {
+  sentryOptions.tracesSampleRate = 1;
+}
+if (IS_LOCAL == false) {
+  Sentry.init(sentryOptions);
+}
 
 function App() {
 

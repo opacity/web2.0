@@ -1,8 +1,7 @@
-export const version = "v1.3.0";
-
 enum NODE_ENV {
   DEVELOPMENT = "development",
   PRODUCTION = "production",
+  LOCALHOST = "localhost",
 }
 
 enum STORAGE_NODE_VERSION {
@@ -11,30 +10,36 @@ enum STORAGE_NODE_VERSION {
 }
 
 export const IS_DEV = process.env.NODE_ENV == NODE_ENV.DEVELOPMENT
+export const IS_LOCAL = process.env.NODE_ENV == NODE_ENV.LOCALHOST
+export const VERSION = process.env.VERSION ? process.env.VERSION : "local"
 
 const PROTOCOL =
-  IS_DEV &&
-    process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
-    ? "https"
-    : "https";
-
+  IS_LOCAL 
+    ? "http" 
+    : IS_DEV &&
+      process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
+      ? "https"
+      : "https";
+  
 export const STRIPE_API_KEY =
   process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.PRODUCTION
     ? "pk_live_SLMPS7zVFurFwLOKEdiICAGC00kN41fASj"
     : "pk_test_jHC9KKrYExP2pdqmuSmkPSqT00ErWapX4f";
 
 export const HOST =
-  IS_DEV
+  IS_DEV || IS_LOCAL
     ? "127.0.0.1:4444"
     : process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
-      ? "dev2.opacity.io"
-      : "opacity.io";
+    ? "dev2.opacity.io"
+    : "opacity.io";
 export const FRONT_END_URL = `${PROTOCOL}://${HOST}`;
 
 export const PUBLIC_SHARE_URL =
-  process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
-    ? "https://public-share.opacitynodes.com"
-    : "https://public.opacity.io";
+  IS_LOCAL 
+    ? "http://localhost:3080"
+    : process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
+      ? "https://public-share.opacitynodes.com"
+      : "https://public.opacity.io";
     
 export const EXCHANGE_LINK = "https://www.kucoin.com/trade/OPCT-BTC";
 
@@ -42,15 +47,17 @@ export const DEFAULT_STORAGE_NODE_V1 = "broker-1.opacitynodes.com";
 export const DEFAULT_STORAGE_NODE_V2 = "beta-broker.opacitynodes.com";
 
 const DEFAULT_STORAGE_NODE_IP =
-  IS_DEV
-    ? DEFAULT_STORAGE_NODE_V2
-    : process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
+  IS_LOCAL 
+    ? "localhost"
+    : IS_DEV
       ? DEFAULT_STORAGE_NODE_V2
-      : DEFAULT_STORAGE_NODE_V1;
+      : process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
+        ? DEFAULT_STORAGE_NODE_V2
+        : DEFAULT_STORAGE_NODE_V1;
 
 export const STORAGE_NODE = `${PROTOCOL}://${DEFAULT_STORAGE_NODE_IP}:3000`;
-export const STORAGE_NODE_V1 = `https://${DEFAULT_STORAGE_NODE_V1}:3000`;
-export const STORAGE_NODE_V2 = `https://${DEFAULT_STORAGE_NODE_V2}:3000`;
+export const STORAGE_NODE_V1 = `${PROTOCOL}://${DEFAULT_STORAGE_NODE_V1}:3000`;
+export const STORAGE_NODE_V2 = `${PROTOCOL}://${DEFAULT_STORAGE_NODE_V2}:3000`;
 
 export const FILE_MAX_SIZE = 2 * 1024 * 1024 * 1024;
 
