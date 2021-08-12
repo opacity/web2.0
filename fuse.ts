@@ -20,34 +20,17 @@ class Context {
       plugins: [
         pluginLink(/\.ico/, { useDefault: true }),
         pluginReplace(/(?:.*[\/\\])?node_modules[\/\\]bn\.js[\/\\].*/, {
-          "require('buffer')":
-            "require('" +
-            require.resolve("./node_modules/buffer").replace(/\\/g, "\\\\") +
-            "')",
+          "require('buffer')": "require('" + require.resolve("./node_modules/buffer").replace(/\\/g, "\\\\") + "')",
         }),
         pluginReplace(/(?:.*[\/\\])?node_modules[\/\\]hdkey[\/\\].*/, {
           "require('crypto')":
-            "require('" +
-            require
-              .resolve("./node_modules/crypto-browserify")
-              .replace(/\\/g, "\\\\") +
-            "')",
+            "require('" + require.resolve("./node_modules/crypto-browserify").replace(/\\/g, "\\\\") + "')",
         }),
-        pluginReplace(
-          /(?:.*[\/\\])?node_modules[\/\\]readable-stream[\/\\].*/,
-          {
-            "require('util')":
-              "require('" +
-              require.resolve("./node_modules/util").replace(/\\/g, "\\\\") +
-              "')",
-            "require('stream')":
-              "require('" +
-              require
-                .resolve("./node_modules/stream-browserify")
-                .replace(/\\/g, "\\\\") +
-              "')",
-          }
-        ),
+        pluginReplace(/(?:.*[\/\\])?node_modules[\/\\]readable-stream[\/\\].*/, {
+          "require('util')": "require('" + require.resolve("./node_modules/util").replace(/\\/g, "\\\\") + "')",
+          "require('stream')":
+            "require('" + require.resolve("./node_modules/stream-browserify").replace(/\\/g, "\\\\") + "')",
+        }),
       ],
       env: this.env,
     });
@@ -62,17 +45,15 @@ task("remove-artifacts", async () => {
 
 task("copy-streamsaver", async () => {
   await src("node_modules/streamsaver/{mitm.html,sw.js}")
-    .dest(
-      "dist/resources/streamsaver",
-      path.join(__dirname, "node_modules/streamsaver")
-    )
+    .dest("dist/resources/streamsaver", path.join(__dirname, "node_modules/streamsaver"))
     .write()
     .exec();
 
-  await src("src/favicon.ico")
-    .dest("dist/resources", path.join(__dirname, "src"))
-    .write()
-    .exec();
+  await src("src/favicon.ico").dest("dist/resources", path.join(__dirname, "src")).write().exec();
+
+  await src("src/sitemap.xml").dest("dist", path.join(__dirname, "src")).write().exec();
+
+  await src("src/robots.txt").dest("dist", path.join(__dirname, "src")).write().exec();
 });
 
 task("default", async (ctx) => {
