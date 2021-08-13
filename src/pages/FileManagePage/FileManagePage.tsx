@@ -645,7 +645,6 @@ const FileManagePage = ({ history }) => {
     async (file: FileMetadata) => {
       isFileManaging();
       try {
-        await cancelPublicShare(file);
         const fso = new FileSystemObject({
           handle: file.private.handle,
           location: undefined,
@@ -676,7 +675,6 @@ const FileManagePage = ({ history }) => {
 
         for (const file of folderMeta.files) {
           const metaFile = await accountSystem.getFileIndexEntryByFileMetadataLocation(file.location);
-          await cancelPublicShare(metaFile);
           const fso = new FileSystemObject({
             handle: metaFile.private.handle,
             location: undefined,
