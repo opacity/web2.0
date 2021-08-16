@@ -13,10 +13,7 @@ import SiteWrapper from "../../SiteWrapper";
 import "./PlansPage.scss";
 import { PlanType, PLANS, STORAGE_NODE as storageNode } from "../../config";
 import { Account } from "../../../ts-client-library/packages/account-management";
-import {
-  WebAccountMiddleware,
-  WebNetworkMiddleware,
-} from "../../../ts-client-library/packages/middleware-web";
+import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web";
 import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex";
 import ReactLoading from "react-loading";
 
@@ -86,10 +83,7 @@ const PlansPage = ({ history }) => {
           const accountInfo = await account.info();
           const storageLimit = accountInfo.account.storageLimit;
 
-          plansApi.forEach(
-            (plan, idx) =>
-              plan.storageInGB === storageLimit && setAvailableFrom(idx + 1)
-          );
+          plansApi.forEach((plan, idx) => plan.storageInGB === storageLimit && setAvailableFrom(idx + 1));
         } else {
           setAvailableFrom(0);
         }
@@ -137,7 +131,7 @@ const PlansPage = ({ history }) => {
               return (
                 key >= availableFrom && (
                   <CarouselItem key={key}>
-                    <div className={item.permalink}>
+                    <div className={item.permalink + " plans-item-wrapper"}>
                       <div className="plans-item">
                         <div>
                           <h2 className="text-center">{item.title}</h2>
@@ -181,19 +175,17 @@ const PlansPage = ({ history }) => {
                                   )}
                                 </React.Fragment>
                               )}
-                              {item.usdCost === 0 &&
-                                item.opctCost === 0 &&
-                                item.permalink !== "free" && (
-                                  <>
-                                    <React.Fragment>
-                                      <div>
-                                        <div className="price">
-                                          <h2>{item.specialPricing}</h2>
-                                        </div>
+                              {item.usdCost === 0 && item.opctCost === 0 && item.permalink !== "free" && (
+                                <>
+                                  <React.Fragment>
+                                    <div>
+                                      <div className="price">
+                                        <h2>{item.specialPricing}</h2>
                                       </div>
-                                    </React.Fragment>
-                                  </>
-                                )}
+                                    </div>
+                                  </React.Fragment>
+                                </>
+                              )}
                             </div>
                           </div>
 
@@ -205,17 +197,12 @@ const PlansPage = ({ history }) => {
                                   handleShowSignUpModal(item);
                                 }}
                               >
-                                {item.isAvailable
-                                  ? getActionName(item.permalink)
-                                  : "Contact Us"}
+                                {item.isAvailable ? getActionName(item.permalink) : "Contact Us"}
                               </Button>
                             </div>
                           ) : (
                             <div className="button-wrapper">
-                              <NavLink
-                                className="btn btn-primary"
-                                href="mailto:sales@opacity.io"
-                              >
+                              <NavLink className="btn btn-primary" href="mailto:sales@opacity.io">
                                 Contact Us
                               </NavLink>
                             </div>
@@ -231,9 +218,7 @@ const PlansPage = ({ history }) => {
                           <div className="border-bottom mb-4 mt-1"></div>
 
                           <h2 className="mt-4 text-center">
-                            {item.storageInGB >= 1024
-                              ? `${item.storageInGB / 1024} TB`
-                              : `${item.storageInGB} GB`}
+                            {item.storageInGB >= 1024 ? `${item.storageInGB / 1024} TB` : `${item.storageInGB} GB`}
                           </h2>
 
                           <div className="features-wrapper">
@@ -245,12 +230,8 @@ const PlansPage = ({ history }) => {
                           </div>
 
                           <div className="includes">
-                            {item.includesDesktopApp && (
-                              <p>* With Desktop App</p>
-                            )}
-                            {item.discountedUsdCost && (
-                              <p>** Limited Time Discount</p>
-                            )}
+                            {item.includesDesktopApp && <p>* With Desktop App</p>}
+                            {item.discountedUsdCost && <p>** Limited Time Discount</p>}
                           </div>
                         </div>
                       </div>
