@@ -177,6 +177,7 @@ const FileManagePage = ({ history }) => {
   const [filesForZip, setFilesForZip] = React.useState([]);
   const [totalItemsToDelete, setTotalItemsToDelete] = React.useState(0);
   const [count, setCount] = React.useState(0);
+  const [upgradeAvailable, setUpgradeAvailable] = React.useState(true);
 
   const handleShowSidebar = React.useCallback(() => {
     setShowSidebar(!showSidebar);
@@ -321,6 +322,18 @@ const FileManagePage = ({ history }) => {
         setAlertShow(true);
         setAlertText(`${remainDays} days remaining.`);
       }
+
+      const plansApi = await account.plans();
+      const storageLimit = accountInfo.account.storageLimit;
+
+      let idx = 0;
+      for (idx = 0; idx < plansApi.length; idx++) {
+        if (plansApi[idx].storageInGB === storageLimit) {
+          break;
+        }
+      }
+
+      setUpgradeAvailable(idx < plansApi.length - 1);
     } catch (e) {
       localStorage.clear();
       history.push("/");
@@ -469,18 +482,20 @@ const FileManagePage = ({ history }) => {
     ]
   );
 
-  const pathGenerator = React.useCallback((file) => {
-    return file.name === (file.path || file.webkitRelativePath || file.name)
-      ? currentPath
-      : (currentPath === "/"
+  const pathGenerator = React.useCallback(
+    (file) => {
+      return file.name === (file.path || file.webkitRelativePath || file.name)
+        ? currentPath
+        : currentPath === "/"
         ? file.webkitRelativePath
           ? currentPath + relativePath(file.webkitRelativePath)
           : relativePath(file.path)
         : file.webkitRelativePath
-          ? currentPath + "/" + relativePath(file.webkitRelativePath)
-          : currentPath + relativePath(file.path)
-      )
-  }, [currentPath])
+        ? currentPath + "/" + relativePath(file.webkitRelativePath)
+        : currentPath + relativePath(file.path);
+    },
+    [currentPath]
+  );
 
   const selectFiles = React.useCallback(
     async (files) => {
@@ -1045,12 +1060,16 @@ const FileManagePage = ({ history }) => {
             </div>
 
             <div className="storage-info">
-              {`Your plan expires on ${accountInfo ? moment(accountInfo.account.expirationDate).format("MMM D, YYYY") : "..."}.`}
+              {`Your plan expires on ${
+                accountInfo ? moment(accountInfo.account.expirationDate).format("MMM D, YYYY") : "..."
+              }.`}
             </div>
 
-            <div className="upgrade text-right" onClick={() => history.push("/plans")}>
-              GET MORE SPACE
-            </div>
+            {upgradeAvailable && (
+              <div className="upgrade text-right" onClick={() => history.push("/plans")}>
+                GET MORE SPACE
+              </div>
+            )}
           </div>
           <div style={{ width: "100%" }}>
             <ul className="navbar-nav">
@@ -1266,8 +1285,9 @@ const FileManagePage = ({ history }) => {
                             sortable.column === "name" ? (sortable.method === "down" ? "up" : "down") : "down"
                           )
                         }
-                        className={`sortable ${sortable.column === "name" && (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                        className={`sortable ${
+                          sortable.column === "name" && (sortable.method === "up" ? "asc" : "desc")
+                        }`}
                       >
                         Name
                       </th>
@@ -1279,8 +1299,9 @@ const FileManagePage = ({ history }) => {
                               sortable.column === "type" ? (sortable.method === "down" ? "up" : "down") : "down"
                             )
                           }
-                          className={`sortable type ${sortable.column === "type" && (sortable.method === "up" ? "asc" : "desc")
-                            }`}
+                          className={`sortable type ${
+                            sortable.column === "type" && (sortable.method === "up" ? "asc" : "desc")
+                          }`}
                         >
                           Share Type
                           <Tooltip
@@ -1301,8 +1322,9 @@ const FileManagePage = ({ history }) => {
                               sortable.column === "created" ? (sortable.method === "down" ? "up" : "down") : "down"
                             )
                           }
-                          className={`sortable ${sortable.column === "created" && (sortable.method === "up" ? "asc" : "desc")
-                            }`}
+                          className={`sortable ${
+                            sortable.column === "created" && (sortable.method === "up" ? "asc" : "desc")
+                          }`}
                         >
                           Created
                         </th>
@@ -1314,8 +1336,9 @@ const FileManagePage = ({ history }) => {
                             sortable.column === "size" ? (sortable.method === "down" ? "up" : "down") : "down"
                           )
                         }
-                        className={`sortable ${sortable.column === "size" && (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                        className={`sortable ${
+                          sortable.column === "size" && (sortable.method === "up" ? "asc" : "desc")
+                        }`}
                       >
                         Size
                       </th>
