@@ -87,6 +87,7 @@ import { isInteger } from "formik";
 import { bytesToHex } from "../../../ts-client-library/packages/util/src/hex";
 import * as fflate from "fflate";
 import { saveAs } from "file-saver";
+import SignUpModal from "../../components/SignUpModal/SignUpModal";
 
 const logo = require("../../assets/logo2.png");
 
@@ -178,6 +179,7 @@ const FileManagePage = ({ history }) => {
   const [totalItemsToDelete, setTotalItemsToDelete] = React.useState(0);
   const [count, setCount] = React.useState(0);
   const [upgradeAvailable, setUpgradeAvailable] = React.useState(true);
+  const [showSignUpModal, setShowSignUpModal] = React.useState(false);
 
   const handleShowSidebar = React.useCallback(() => {
     setShowSidebar(!showSidebar);
@@ -487,12 +489,12 @@ const FileManagePage = ({ history }) => {
       return file.name === (file.path || file.webkitRelativePath || file.name)
         ? currentPath
         : currentPath === "/"
-        ? file.webkitRelativePath
-          ? currentPath + relativePath(file.webkitRelativePath)
-          : relativePath(file.path)
-        : file.webkitRelativePath
-        ? currentPath + "/" + relativePath(file.webkitRelativePath)
-        : currentPath + relativePath(file.path);
+          ? file.webkitRelativePath
+            ? currentPath + relativePath(file.webkitRelativePath)
+            : relativePath(file.path)
+          : file.webkitRelativePath
+            ? currentPath + "/" + relativePath(file.webkitRelativePath)
+            : currentPath + relativePath(file.path);
     },
     [currentPath]
   );
@@ -976,8 +978,16 @@ const FileManagePage = ({ history }) => {
     <div className="page">
       <Alert variant="danger" show={alertShow} onClose={() => setAlertShow(false)} className="limit-alert" dismissible>
         {alertText}
-        <Alert.Link onClick={() => history.push("/plans")}>Please renew the account.</Alert.Link>
+        <Alert.Link onClick={() => setShowSignUpModal(true)}>Please renew the account.</Alert.Link>
       </Alert>
+
+      {showSignUpModal &&
+        <SignUpModal
+          show={showSignUpModal}
+          handleClose={() => setShowSignUpModal(false)}
+          isForRenew={true}
+        />
+      }
 
       {openShareModal && (
         <FileShareModal
@@ -1060,9 +1070,8 @@ const FileManagePage = ({ history }) => {
             </div>
 
             <div className="storage-info">
-              {`Your plan expires on ${
-                accountInfo ? moment(accountInfo.account.expirationDate).format("MMM D, YYYY") : "..."
-              }.`}
+              {`Your plan expires on ${accountInfo ? moment(accountInfo.account.expirationDate).format("MMM D, YYYY") : "..."
+                }.`}
             </div>
 
             {upgradeAvailable && (
@@ -1285,9 +1294,8 @@ const FileManagePage = ({ history }) => {
                             sortable.column === "name" ? (sortable.method === "down" ? "up" : "down") : "down"
                           )
                         }
-                        className={`sortable ${
-                          sortable.column === "name" && (sortable.method === "up" ? "asc" : "desc")
-                        }`}
+                        className={`sortable ${sortable.column === "name" && (sortable.method === "up" ? "asc" : "desc")
+                          }`}
                       >
                         Name
                       </th>
@@ -1299,9 +1307,8 @@ const FileManagePage = ({ history }) => {
                               sortable.column === "type" ? (sortable.method === "down" ? "up" : "down") : "down"
                             )
                           }
-                          className={`sortable type ${
-                            sortable.column === "type" && (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                          className={`sortable type ${sortable.column === "type" && (sortable.method === "up" ? "asc" : "desc")
+                            }`}
                         >
                           Share Type
                           <Tooltip
@@ -1322,9 +1329,8 @@ const FileManagePage = ({ history }) => {
                               sortable.column === "created" ? (sortable.method === "down" ? "up" : "down") : "down"
                             )
                           }
-                          className={`sortable ${
-                            sortable.column === "created" && (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                          className={`sortable ${sortable.column === "created" && (sortable.method === "up" ? "asc" : "desc")
+                            }`}
                         >
                           Created
                         </th>
@@ -1336,9 +1342,8 @@ const FileManagePage = ({ history }) => {
                             sortable.column === "size" ? (sortable.method === "down" ? "up" : "down") : "down"
                           )
                         }
-                        className={`sortable ${
-                          sortable.column === "size" && (sortable.method === "up" ? "asc" : "desc")
-                        }`}
+                        className={`sortable ${sortable.column === "size" && (sortable.method === "up" ? "asc" : "desc")
+                          }`}
                       >
                         Size
                       </th>
