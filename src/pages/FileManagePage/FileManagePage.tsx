@@ -165,7 +165,8 @@ const FileManagePage = ({ history }) => {
   const [uploadingList, setUploadingList] = React.useState([]);
   const currentUploadingList = React.useRef([]);
   const [selectedFiles, setSelectedFiles] = React.useState<FileMetadata[]>([]);
-  const [alertText, setAlertText] = React.useState("30 days remaining.");
+  const [alertText, setAlertText] = React.useState("There are 30 days remaining. ");
+  const [alertLinkText, setAlertLinkText] = React.useState("Renew now to prevent losing access to your data.");
   const [alertShow, setAlertShow] = React.useState(false);
   const [openShareModal, setOpenShareModal] = React.useState(false);
   const [shareMode, setShareMode] = React.useState<"private" | "public">("private");
@@ -317,12 +318,14 @@ const FileManagePage = ({ history }) => {
         setAlertText(
           `You have used ${((usedStorage / limitStorage) * 100).toFixed(
             2
-          )}% of your plan. Upgrade now to get more space.`
+          )}% of your plan. `
         );
+        setAlertLinkText("Upgrade now to get more space.");
       }
       if (remainDays < 30) {
         setAlertShow(true);
-        setAlertText(`${remainDays} days remaining.`);
+        setAlertText(`There are ${remainDays} days remaining on your account. `);
+        setAlertLinkText("Renew now to prevent losing access to your data.");
       }
 
       const plansApi = await account.plans();
@@ -976,9 +979,9 @@ const FileManagePage = ({ history }) => {
 
   return (
     <div className="page">
-      <Alert variant="danger" show={alertShow} onClose={() => setAlertShow(false)} className="limit-alert" dismissible>
+      <Alert variant="danger" show={alertShow} onClose={() => setAlertShow(false)} className="limit-alert">
         {alertText}
-        <Alert.Link onClick={() => setShowSignUpModal(true)}>Please renew the account.</Alert.Link>
+        <Alert.Link onClick={() => setShowSignUpModal(true)}>{alertLinkText}</Alert.Link>
       </Alert>
 
       {showSignUpModal &&
