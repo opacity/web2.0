@@ -165,8 +165,9 @@ const FileManagePage = ({ history }) => {
   const [uploadingList, setUploadingList] = React.useState([]);
   const currentUploadingList = React.useRef([]);
   const [selectedFiles, setSelectedFiles] = React.useState<FileMetadata[]>([]);
-  const [alertText, setAlertText] = React.useState("There are 30 days remaining. ");
-  const [alertLinkText, setAlertLinkText] = React.useState("Renew now to prevent losing access to your data.");
+  const [alertText, setAlertText] = React.useState("There are 30 days remaining on your account. ");
+  const [alertLinkText, setAlertLinkText] = React.useState("Upgrade now to a paid plan.");
+  const [alertLink, setAlertLink] = React.useState('renew');
   const [alertShow, setAlertShow] = React.useState(false);
   const [openShareModal, setOpenShareModal] = React.useState(false);
   const [shareMode, setShareMode] = React.useState<"private" | "public">("private");
@@ -313,7 +314,6 @@ const FileManagePage = ({ history }) => {
       const remainDays = moment(accountInfo.account.expirationDate).diff(moment(Date.now()), "days");
 
       if ((limitStorage / 10) * 9 < usedStorage) {
-        setAlertShow(true);
         setIsStorageWarning(true);
         setAlertText(
           `You have used ${((usedStorage / limitStorage) * 100).toFixed(
@@ -321,11 +321,19 @@ const FileManagePage = ({ history }) => {
           )}% of your plan. `
         );
         setAlertLinkText("Upgrade now to get more space.");
+        setAlertLink('plans');
+        setAlertShow(true);
       }
       if (remainDays < 30) {
-        setAlertShow(true);
         setAlertText(`There are ${remainDays} days remaining on your account. `);
-        setAlertLinkText("Renew now to prevent losing access to your data.");
+        if (limitStorage === 10) {
+          setAlertLinkText("Upgrade now to a paid plan.");
+          setAlertLink('plans');
+        } else {
+          setAlertLinkText("Renew now to prevent losing access to your data.");
+          setAlertLink('renew');
+        }
+        setAlertShow(true);
       }
 
       const plansApi = await account.plans();
@@ -979,10 +987,7 @@ const FileManagePage = ({ history }) => {
 
   return (
     <div className="page">
-      <Alert variant="danger" show={alertShow} onClose={() => setAlertShow(false)} className="limit-alert">
-        {alertText}
-        <Alert.Link onClick={() => setShowSignUpModal(true)}>{alertLinkText}</Alert.Link>
-      </Alert>
+
 
       {showSignUpModal &&
         <SignUpModal
@@ -1208,7 +1213,20 @@ const FileManagePage = ({ history }) => {
             </div>
           </div>
         )}
-        <div className="container-xl">
+        <Alert variant="danger" show={alertShow} onClose={() => setAlertShow(false)} className="limit-alert">
+          {alertText}
+          <Alert.Link
+            onClick={() => {
+              if (alertLink === 'plans') {
+                history.push('/plans')
+              } else {
+                setShowSignUpModal(true)
+              }
+            }}>
+            {alertLinkText}
+          </Alert.Link>
+        </Alert>
+        <div className="container-xl" style={{ paddingTop: alertShow === true ? '0px' : undefined }}>
           <div className="breadcrumb-content">
             <Breadcrumb>
               <Breadcrumb.Item href="#" onClick={() => currentPath !== "/" && setCurrentPath("/")}>
