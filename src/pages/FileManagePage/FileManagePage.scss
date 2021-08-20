@@ -831,11 +831,15 @@
 
 .limit-alert {
   z-index: 9999 !important;
-  width: 500px !important;
-  margin-left: calc(100% / 2 - 250px);
-  margin-top: 21px;
-  position: absolute;
+  width: 100% !important;
+  border-radius: 0 !important;
   text-align: center;
+  .alert-link {
+    text-decoration-line: underline;
+    @media (max-width: 767.9px) {
+      display: block;
+    }
+  }
   button {
     background: transparent;
     border: none;

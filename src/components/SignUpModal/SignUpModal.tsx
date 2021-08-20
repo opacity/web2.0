@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Modal,
   Button,
@@ -61,6 +61,7 @@ type OtherProps = {
   plan?: PlanType;
   openLoginModal: Function;
   openMetamask: Function;
+  isForRenew?: boolean;
 };
 type SignUpProps = {
   plan?: PlanType;
@@ -84,6 +85,7 @@ const SignUpModal: React.FC<OtherProps> = ({
   plan,
   openLoginModal,
   openMetamask,
+  isForRenew = false,
 }) => {
   const [handle, setHandle] = useState("");
   const [mnemonic, setMnemonic] = useState<string[]>([]);
@@ -177,22 +179,52 @@ const SignUpModal: React.FC<OtherProps> = ({
   };
 
   useEffect(() => {
-    setMnemonic([]);
-    setHandle("");
-    const currentAccount = localStorage.getItem("key");
-    if (currentAccount) {
-      setHandle(currentAccount)
-      upgradeAccount().then(() => {
-        setStep(2)
-      })
-    } else {
-      createMnemonic().then(async (res) => {
-        setMnemonic(res);
-        const handle = await mnemonicToHandle(res);
-        setHandle(bytesToHex(handle));
-      });
+    if (plan) {
+      setMnemonic([]);
+      setHandle("");
+      const currentAccount = localStorage.getItem("key");
+      if (currentAccount) {
+        setHandle(currentAccount)
+        upgradeAccount().then(() => {
+          setStep(2)
+        })
+      } else {
+        createMnemonic().then(async (res) => {
+          setMnemonic(res);
+          const handle = await mnemonicToHandle(res);
+          setHandle(bytesToHex(handle));
+        });
+      }
     }
   }, [plan]);
+
+  const renewAccount = useCallback(async () => {
+    const currentHandle = localStorage.getItem("key");
+
+    const cryptoMiddleware = new WebAccountMiddleware({
+      asymmetricKey: hexToBytes(currentHandle),
+    });
+    const netMiddleware = new WebNetworkMiddleware();
+    const account = new Account({
+      crypto: cryptoMiddleware,
+      net: netMiddleware,
+      storageNode,
+    });
+    setAccount(account);
+    const invoice = await account.renewAccount({ duration: 12 });
+    setInvoiceData(invoice);
+  }, []);
+
+  useEffect(() => {
+    if (isForRenew) {
+      setMnemonic([]);
+      const currentAccount = localStorage.getItem("key");
+      setHandle(currentAccount)
+      renewAccount().then(() => {
+        setStep(2)
+      })
+    }
+  }, [isForRenew])
 
   return (
     <Modal

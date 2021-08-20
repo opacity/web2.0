@@ -87,6 +87,7 @@ import { isInteger } from "formik";
 import { bytesToHex } from "../../../ts-client-library/packages/util/src/hex";
 import * as fflate from "fflate";
 import { saveAs } from "file-saver";
+import SignUpModal from "../../components/SignUpModal/SignUpModal";
 
 const logo = require("../../assets/logo2.png");
 
@@ -164,7 +165,9 @@ const FileManagePage = ({ history }) => {
   const [uploadingList, setUploadingList] = React.useState([]);
   const currentUploadingList = React.useRef([]);
   const [selectedFiles, setSelectedFiles] = React.useState<FileMetadata[]>([]);
-  const [alertText, setAlertText] = React.useState("30 days remaining.");
+  const [alertText, setAlertText] = React.useState("There are 30 days remaining on your account. ");
+  const [alertLinkText, setAlertLinkText] = React.useState("Upgrade now to a paid plan.");
+  const [alertLink, setAlertLink] = React.useState('renew');
   const [alertShow, setAlertShow] = React.useState(false);
   const [openShareModal, setOpenShareModal] = React.useState(false);
   const [shareMode, setShareMode] = React.useState<"private" | "public">("private");
@@ -177,6 +180,8 @@ const FileManagePage = ({ history }) => {
   const [filesForZip, setFilesForZip] = React.useState([]);
   const [totalItemsToDelete, setTotalItemsToDelete] = React.useState(0);
   const [count, setCount] = React.useState(0);
+  const [upgradeAvailable, setUpgradeAvailable] = React.useState(true);
+  const [showSignUpModal, setShowSignUpModal] = React.useState(false);
 
   const handleShowSidebar = React.useCallback(() => {
     setShowSidebar(!showSidebar);
@@ -309,18 +314,39 @@ const FileManagePage = ({ history }) => {
       const remainDays = moment(accountInfo.account.expirationDate).diff(moment(Date.now()), "days");
 
       if ((limitStorage / 10) * 9 < usedStorage) {
-        setAlertShow(true);
         setIsStorageWarning(true);
         setAlertText(
           `You have used ${((usedStorage / limitStorage) * 100).toFixed(
             2
-          )}% of your plan. Upgrade now to get more space.`
+          )}% of your plan. `
         );
+        setAlertLinkText("Upgrade now to get more space.");
+        setAlertLink('plans');
+        setAlertShow(true);
       }
       if (remainDays < 30) {
+        setAlertText(`There are ${remainDays} days remaining on your account. `);
+        if (limitStorage === 10) {
+          setAlertLinkText("Upgrade now to a paid plan.");
+          setAlertLink('plans');
+        } else {
+          setAlertLinkText("Renew now to prevent losing access to your data.");
+          setAlertLink('renew');
+        }
         setAlertShow(true);
-        setAlertText(`${remainDays} days remaining.`);
       }
+
+      const plansApi = await account.plans();
+      const storageLimit = accountInfo.account.storageLimit;
+
+      let idx = 0;
+      for (idx = 0; idx < plansApi.length; idx++) {
+        if (plansApi[idx].storageInGB === storageLimit) {
+          break;
+        }
+      }
+
+      setUpgradeAvailable(idx < plansApi.length - 1);
     } catch (e) {
       localStorage.clear();
       history.push("/");
@@ -469,18 +495,20 @@ const FileManagePage = ({ history }) => {
     ]
   );
 
-  const pathGenerator = React.useCallback((file) => {
-    return file.name === (file.path || file.webkitRelativePath || file.name)
-      ? currentPath
-      : (currentPath === "/"
-        ? file.webkitRelativePath
-          ? currentPath + relativePath(file.webkitRelativePath)
-          : relativePath(file.path)
-        : file.webkitRelativePath
-          ? currentPath + "/" + relativePath(file.webkitRelativePath)
-          : currentPath + relativePath(file.path)
-      )
-  }, [currentPath])
+  const pathGenerator = React.useCallback(
+    (file) => {
+      return file.name === (file.path || file.webkitRelativePath || file.name)
+        ? currentPath
+        : currentPath === "/"
+          ? file.webkitRelativePath
+            ? currentPath + relativePath(file.webkitRelativePath)
+            : relativePath(file.path)
+          : file.webkitRelativePath
+            ? currentPath + "/" + relativePath(file.webkitRelativePath)
+            : currentPath + relativePath(file.path);
+    },
+    [currentPath]
+  );
 
   const selectFiles = React.useCallback(
     async (files) => {
@@ -959,10 +987,15 @@ const FileManagePage = ({ history }) => {
 
   return (
     <div className="page">
-      <Alert variant="danger" show={alertShow} onClose={() => setAlertShow(false)} className="limit-alert" dismissible>
-        {alertText}
-        <Alert.Link onClick={() => history.push("/plans")}>Please renew the account.</Alert.Link>
-      </Alert>
+
+
+      {showSignUpModal &&
+        <SignUpModal
+          show={showSignUpModal}
+          handleClose={() => setShowSignUpModal(false)}
+          isForRenew={true}
+        />
+      }
 
       {openShareModal && (
         <FileShareModal
@@ -1045,12 +1078,15 @@ const FileManagePage = ({ history }) => {
             </div>
 
             <div className="storage-info">
-              {`Your plan expires on ${accountInfo ? moment(accountInfo.account.expirationDate).format("MMM D, YYYY") : "..."}.`}
+              {`Your plan expires on ${accountInfo ? moment(accountInfo.account.expirationDate).format("MMM D, YYYY") : "..."
+                }.`}
             </div>
 
-            <div className="upgrade text-right" onClick={() => history.push("/plans")}>
-              GET MORE SPACE
-            </div>
+            {upgradeAvailable && (
+              <div className="upgrade text-right" onClick={() => history.push("/plans")}>
+                GET MORE SPACE
+              </div>
+            )}
           </div>
           <div style={{ width: "100%" }}>
             <ul className="navbar-nav">
@@ -1177,7 +1213,20 @@ const FileManagePage = ({ history }) => {
             </div>
           </div>
         )}
-        <div className="container-xl">
+        <Alert variant="danger" show={alertShow} onClose={() => setAlertShow(false)} className="limit-alert">
+          {alertText}
+          <Alert.Link
+            onClick={() => {
+              if (alertLink === 'plans') {
+                history.push('/plans')
+              } else {
+                setShowSignUpModal(true)
+              }
+            }}>
+            {alertLinkText}
+          </Alert.Link>
+        </Alert>
+        <div className="container-xl" style={{ paddingTop: alertShow === true ? '0px' : undefined }}>
           <div className="breadcrumb-content">
             <Breadcrumb>
               <Breadcrumb.Item href="#" onClick={() => currentPath !== "/" && setCurrentPath("/")}>
