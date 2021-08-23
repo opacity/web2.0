@@ -2,6 +2,11 @@ import * as React from "react";
 import { useState } from "react";
 import { NavLink } from "tabler-react";
 import Lottie from "react-lottie";
+import { PlanType, PLANS, STORAGE_NODE as storageNode } from "../../config";
+import { Account } from "../../../ts-client-library/packages/account-management";
+import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web";
+import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex";
+import ReactLoading from "react-loading";
 
 const animationData1 = require("./lottie1.json");
 const animationData2 = require("./lottie2.json");
@@ -21,12 +26,63 @@ const kucoin = require("../../assets/kucoin.png");
 
 const LandingPage = ({ history }) => {
   const [showSignUpModal, setShowSignUpModal] = useState(false);
+  const [plan, setPlan] = React.useState<PlanType>();
+  const [pageLoading, setPageLoading] = React.useState(true);
+  const [plans, setPlans] = React.useState<PlanType[]>([]);
+
+  const cryptoMiddleware = React.useMemo(
+    () =>
+      new WebAccountMiddleware(),
+    []
+  );
+
+  const netMiddleware = React.useMemo(() => new WebNetworkMiddleware(), []);
+  const account = React.useMemo(
+    () =>
+      new Account({
+        crypto: cryptoMiddleware,
+        net: netMiddleware,
+        storageNode,
+      }),
+    [cryptoMiddleware, netMiddleware, storageNode]
+  );
+
+  React.useEffect(() => {
+    const init = async () => {
+      try {
+        setPageLoading(true);
+
+        const plansApi = await account.plans();
+
+        const converedPlan = PLANS.map((item, index) => {
+          if (plansApi[index]) {
+            const { cost, costInUSD, storageInGB } = plansApi[index];
+            return {
+              ...item,
+              opctCost: cost,
+              usdCost: costInUSD,
+              storageInGB,
+            };
+          } else {
+            return item;
+          }
+        });
+        setPlans(converedPlan);
+        setPageLoading(false);
+      } catch {
+        // setPageLoading(false)
+      }
+    };
+    account && init();
+  }, [account]);
 
   const handleCloseSignUpModal = () => {
     setShowSignUpModal(false);
   };
   const handleOpenSignUpModal = () => {
     setShowSignUpModal(true);
+    const freePlan = plans.find(item => item.permalink === "free");
+    setPlan(freePlan);
   };
   const defaultOptions = {
     loop: true,
@@ -51,7 +107,14 @@ const LandingPage = ({ history }) => {
       handleCloseSignUpModal={handleCloseSignUpModal}
       isHome={true}
       history={history}
+      plan={plan}
     >
+      {pageLoading && (
+        <div className="loading">
+          <ReactLoading type="spinningBubbles" color="#2e6dde" />
+        </div>
+      )}
+
       <div className="first-ele">
         <div className="container-xl" data-aos="fade-up">
           <div className="row">
