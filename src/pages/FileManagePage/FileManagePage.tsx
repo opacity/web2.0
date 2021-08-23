@@ -315,11 +315,7 @@ const FileManagePage = ({ history }) => {
 
       if ((limitStorage / 10) * 9 < usedStorage) {
         setIsStorageWarning(true);
-        setAlertText(
-          `You have used ${((usedStorage / limitStorage) * 100).toFixed(
-            2
-          )}% of your plan. `
-        );
+        setAlertText(`You have used ${((usedStorage / limitStorage) * 100).toFixed(2)}% of your plan. `);
         setAlertLinkText("Upgrade now to get more space.");
         setAlertLink('plans');
         setAlertShow(true);
@@ -500,12 +496,12 @@ const FileManagePage = ({ history }) => {
       return file.name === (file.path || file.webkitRelativePath || file.name)
         ? currentPath
         : currentPath === "/"
-          ? file.webkitRelativePath
-            ? currentPath + relativePath(file.webkitRelativePath)
-            : relativePath(file.path)
-          : file.webkitRelativePath
-            ? currentPath + "/" + relativePath(file.webkitRelativePath)
-            : currentPath + relativePath(file.path);
+        ? file.webkitRelativePath
+          ? currentPath + relativePath(file.webkitRelativePath)
+          : relativePath(file.path)
+        : file.webkitRelativePath
+        ? currentPath + "/" + relativePath(file.webkitRelativePath)
+        : currentPath + relativePath(file.path);
     },
     [currentPath]
   );
@@ -889,8 +885,8 @@ const FileManagePage = ({ history }) => {
   };
 
   const compareType = (a, b, mode, type) => {
-    var nameA = type === "file" ? (a.public.location ? "PUBLIC" : "PRIVATE") : a.path.toUpperCase();
-    var nameB = type === "file" ? (b.public.location ? "PUBLIC" : "PRIVATE") : b.path.toUpperCase();
+    var nameA = type === "file" ? (a.public?.location ? "PUBLIC" : "PRIVATE") : a.path.toUpperCase();
+    var nameB = type === "file" ? (b.public?.location ? "PUBLIC" : "PRIVATE") : b.path.toUpperCase();
     if (nameA < nameB) {
       return mode === "down" ? 1 : -1;
     }
@@ -937,7 +933,11 @@ const FileManagePage = ({ history }) => {
         folderList.sort((a, b) => compareName(a, b, method, "folder"));
         break;
       case "type":
-        fileList.sort((a, b) => compareType(a, b, method, "file"));
+        setFileList(
+          [...fileMetaList]
+            .sort((a, b) => compareType(a, b, method, "file"))
+            .map((item) => ({ location: item.location, name: item.name }))
+        );
         // folderList.sort((a, b) => compareName(a, b, method, 'folder'))
         break;
       case "created":
@@ -989,13 +989,9 @@ const FileManagePage = ({ history }) => {
     <div className="page">
 
 
-      {showSignUpModal &&
-        <SignUpModal
-          show={showSignUpModal}
-          handleClose={() => setShowSignUpModal(false)}
-          isForRenew={true}
-        />
-      }
+      {showSignUpModal && (
+        <SignUpModal show={showSignUpModal} handleClose={() => setShowSignUpModal(false)} isForRenew={true} />
+      )}
 
       {openShareModal && (
         <FileShareModal
@@ -1078,8 +1074,9 @@ const FileManagePage = ({ history }) => {
             </div>
 
             <div className="storage-info">
-              {`Your plan expires on ${accountInfo ? moment(accountInfo.account.expirationDate).format("MMM D, YYYY") : "..."
-                }.`}
+              {`Your plan expires on ${
+                accountInfo ? moment(accountInfo.account.expirationDate).format("MMM D, YYYY") : "..."
+              }.`}
             </div>
 
             {upgradeAvailable && (
@@ -1315,8 +1312,9 @@ const FileManagePage = ({ history }) => {
                             sortable.column === "name" ? (sortable.method === "down" ? "up" : "down") : "down"
                           )
                         }
-                        className={`sortable ${sortable.column === "name" && (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                        className={`sortable ${
+                          sortable.column === "name" && (sortable.method === "up" ? "asc" : "desc")
+                        }`}
                       >
                         Name
                       </th>
@@ -1328,8 +1326,9 @@ const FileManagePage = ({ history }) => {
                               sortable.column === "type" ? (sortable.method === "down" ? "up" : "down") : "down"
                             )
                           }
-                          className={`sortable type ${sortable.column === "type" && (sortable.method === "up" ? "asc" : "desc")
-                            }`}
+                          className={`sortable type ${
+                            sortable.column === "type" && (sortable.method === "up" ? "asc" : "desc")
+                          }`}
                         >
                           Share Type
                           <Tooltip
@@ -1350,8 +1349,9 @@ const FileManagePage = ({ history }) => {
                               sortable.column === "created" ? (sortable.method === "down" ? "up" : "down") : "down"
                             )
                           }
-                          className={`sortable ${sortable.column === "created" && (sortable.method === "up" ? "asc" : "desc")
-                            }`}
+                          className={`sortable ${
+                            sortable.column === "created" && (sortable.method === "up" ? "asc" : "desc")
+                          }`}
                         >
                           Created
                         </th>
@@ -1363,8 +1363,9 @@ const FileManagePage = ({ history }) => {
                             sortable.column === "size" ? (sortable.method === "down" ? "up" : "down") : "down"
                           )
                         }
-                        className={`sortable ${sortable.column === "size" && (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                        className={`sortable ${
+                          sortable.column === "size" && (sortable.method === "up" ? "asc" : "desc")
+                        }`}
                       >
                         Size
                       </th>
