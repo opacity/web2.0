@@ -675,6 +675,10 @@
 }
 
 .confirmation-modal {
+  .modal-content {
+    overflow: hidden;
+  }
+
   .modal-title {
     font-size: 22px;
     font-weight: bold;
