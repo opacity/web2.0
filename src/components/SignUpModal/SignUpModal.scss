@@ -673,3 +673,23 @@
   right: 12px;
   top: 5px;
 }
+
+.confirmation-modal {
+  .modal-content {
+    overflow: hidden;
+  }
+
+  .modal-title {
+    font-size: 22px;
+    font-weight: bold;
+  }
+
+  .modal-body {
+    font-size: 16px;
+    margin: 20px;
+  }
+}
+
+.modal.fade {
+  background: rgba(0, 0, 0, 0.5);
+}
