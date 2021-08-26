@@ -24,7 +24,7 @@ import { store, persistor } from "./redux";
 import { PersistGate } from "redux-persist/lib/integration/react";
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
-import { VERSION, IS_LOCAL, IS_DEV } from "./config";
+import { VERSION, IS_LOCAL, IS_DEV, DEFAULT_STORAGE_NODE_IP } from "./config";
 
 let sentryOptions = {
   dsn: "https://8fdbdab452f04a43b5c3f2e00ec126f7@sentry.io/295597",
@@ -33,6 +33,7 @@ let sentryOptions = {
   integrations: [
     new Integrations.BrowserTracing({
       routingInstrumentation: Sentry.reactRouterV5Instrumentation(history),
+      tracingOrigins: ["127.0.0.1", "public.opacity.io", "public-share.opacitynodes.com", DEFAULT_STORAGE_NODE_IP],
     }),
   ],
   tracesSampleRate: 0.3,
@@ -43,6 +44,7 @@ if (IS_DEV) {
 if (IS_LOCAL == false) {
   Sentry.init(sentryOptions);
 }
+
 
 function App() {
 

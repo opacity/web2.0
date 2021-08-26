@@ -46,7 +46,7 @@ export const EXCHANGE_LINK = "https://www.kucoin.com/trade/OPCT-BTC";
 export const DEFAULT_STORAGE_NODE_V1 = "broker-1.opacitynodes.com";
 export const DEFAULT_STORAGE_NODE_V2 = "beta-broker.opacitynodes.com";
 
-const DEFAULT_STORAGE_NODE_IP =
+export const DEFAULT_STORAGE_NODE_IP =
   IS_LOCAL 
     ? "localhost"
     : IS_DEV
