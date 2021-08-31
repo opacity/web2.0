@@ -182,6 +182,7 @@ const FileManagePage = ({ history }) => {
   const [count, setCount] = React.useState(0);
   const [upgradeAvailable, setUpgradeAvailable] = React.useState(true);
   const [showSignUpModal, setShowSignUpModal] = React.useState(false);
+  const [currentUploader, setCurrentUploader] = React.useState<OpaqueUpload>();
 
   const handleShowSidebar = React.useCallback(() => {
     setShowSidebar(!showSidebar);
@@ -411,10 +412,35 @@ const FileManagePage = ({ history }) => {
 
   const relativePath = React.useCallback((path: string) => path.substr(0, path.lastIndexOf("/")), []);
 
+  const handleCancelUpload = React.useCallback(async (item) => {
+    let currentID = currentUploader?.metadata?.size + currentUploader?.name + currentUploader?.path
+    let cancelledId
+    if (currentID === item.id) {
+      await currentUploader.cancel()
+      cancelledId = currentID
+    } else {
+      cancelledId = item.id
+    }
+    let templist = currentUploadingList.current.slice();
+    let index = templist.findIndex((ele) => ele.id === cancelledId);
+    if (index > -1) {
+      templist[index].percent = 100;
+      templist[index].status = 'cancelled';
+      setUploadingList(templist);
+    }
+  }, [])
+
   const fileUploadMutex = React.useMemo(() => new Mutex(), []);
   const uploadFile = React.useCallback(
     async (file: File, path: string) => {
       try {
+        let toastID = file.size + file.name + path;
+        let templist = currentUploadingList.current.slice();
+        let index = templist.findIndex((ele) => ele.id === toastID);
+        if(index > -1 && templist[index].status === 'cancelled') {
+          return
+        }
+
         const upload = new OpaqueUpload({
           config: {
             crypto: cryptoMiddleware,
@@ -425,7 +451,8 @@ const FileManagePage = ({ history }) => {
           name: file.name,
           path: path,
         });
-        let toastID = file.size + file.name + path;
+        setCurrentUploader(upload)
+        console.log(upload, '0202010')
         // side effects
         bindUploadToAccountSystem(accountSystem, upload);
 
@@ -449,6 +476,7 @@ const FileManagePage = ({ history }) => {
           let index = templist.findIndex((ele) => ele.id === toastID);
           if (index > -1) {
             templist[index].percent = e.detail.progress * 100;
+            templist[index].status = 'uploading';
             setUploadingList(templist);
           }
         });
@@ -471,6 +499,7 @@ const FileManagePage = ({ history }) => {
           let index = templistdone.findIndex((ele) => ele.id === toastID);
           if (index > -1) {
             templistdone[index].percent = 100;
+            templistdone[index].status = 'completed';
             setUploadingList(templistdone);
           }
         } finally {
@@ -496,12 +525,12 @@ const FileManagePage = ({ history }) => {
       return file.name === (file.path || file.webkitRelativePath || file.name)
         ? currentPath
         : currentPath === "/"
-        ? file.webkitRelativePath
-          ? currentPath + relativePath(file.webkitRelativePath)
-          : relativePath(file.path)
-        : file.webkitRelativePath
-        ? currentPath + "/" + relativePath(file.webkitRelativePath)
-        : currentPath + relativePath(file.path);
+          ? file.webkitRelativePath
+            ? currentPath + relativePath(file.webkitRelativePath)
+            : relativePath(file.path)
+          : file.webkitRelativePath
+            ? currentPath + "/" + relativePath(file.webkitRelativePath)
+            : currentPath + relativePath(file.path);
     },
     [currentPath]
   );
@@ -514,7 +543,7 @@ const FileManagePage = ({ history }) => {
       files.forEach((file) => {
         const path = pathGenerator(file);
         let toastID = file.size + file.name + path;
-        templist.push({ id: toastID, fileName: file.name, percent: 0 });
+        templist.push({ id: toastID, fileName: file.name, percent: 0, status: 'active' });
       });
       setUploadingList(templist);
 
@@ -1074,9 +1103,8 @@ const FileManagePage = ({ history }) => {
             </div>
 
             <div className="storage-info">
-              {`Your plan expires on ${
-                accountInfo ? moment(accountInfo.account.expirationDate).format("MMM D, YYYY") : "..."
-              }.`}
+              {`Your plan expires on ${accountInfo ? moment(accountInfo.account.expirationDate).format("MMM D, YYYY") : "..."
+                }.`}
             </div>
 
             {upgradeAvailable && (
@@ -1312,9 +1340,8 @@ const FileManagePage = ({ history }) => {
                             sortable.column === "name" ? (sortable.method === "down" ? "up" : "down") : "down"
                           )
                         }
-                        className={`sortable ${
-                          sortable.column === "name" && (sortable.method === "up" ? "asc" : "desc")
-                        }`}
+                        className={`sortable ${sortable.column === "name" && (sortable.method === "up" ? "asc" : "desc")
+                          }`}
                       >
                         Name
                       </th>
@@ -1326,9 +1353,8 @@ const FileManagePage = ({ history }) => {
                               sortable.column === "type" ? (sortable.method === "down" ? "up" : "down") : "down"
                             )
                           }
-                          className={`sortable type ${
-                            sortable.column === "type" && (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                          className={`sortable type ${sortable.column === "type" && (sortable.method === "up" ? "asc" : "desc")
+                            }`}
                         >
                           Share Type
                           <Tooltip
@@ -1349,9 +1375,8 @@ const FileManagePage = ({ history }) => {
                               sortable.column === "created" ? (sortable.method === "down" ? "up" : "down") : "down"
                             )
                           }
-                          className={`sortable ${
-                            sortable.column === "created" && (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                          className={`sortable ${sortable.column === "created" && (sortable.method === "up" ? "asc" : "desc")
+                            }`}
                         >
                           Created
                         </th>
@@ -1363,9 +1388,8 @@ const FileManagePage = ({ history }) => {
                             sortable.column === "size" ? (sortable.method === "down" ? "up" : "down") : "down"
                           )
                         }
-                        className={`sortable ${
-                          sortable.column === "size" && (sortable.method === "up" ? "asc" : "desc")
-                        }`}
+                        className={`sortable ${sortable.column === "size" && (sortable.method === "up" ? "asc" : "desc")
+                          }`}
                       >
                         Size
                       </th>
@@ -1457,6 +1481,7 @@ const FileManagePage = ({ history }) => {
           }}
           notifications={uploadingList}
           uploadFinish={() => setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)}
+          onCancel={handleCancelUpload}
         />
       )}
     </div>

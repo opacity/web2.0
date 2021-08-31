@@ -1,9 +1,9 @@
 import React from "react"
+import UploadingItem from "./UploadingItem"
 import './UploadingNotification.scss'
-import { CircularProgressbar } from "react-circular-progressbar"
-import 'react-circular-progressbar/dist/styles.css';
 
-const UploadingNotification = ({ notifications, uploadFinish, setUploadingList }) => {
+
+const UploadingNotification = ({ notifications, uploadFinish, setUploadingList, onCancel }) => {
     const [minimize, setMinimize] = React.useState(false)
     const [isClose, setClose] = React.useState(false)
     const handleMinimize = () => {
@@ -21,14 +21,6 @@ const UploadingNotification = ({ notifications, uploadFinish, setUploadingList }
         }
     }, [notifications])
 
-    const briefName = (name) => {
-		let resName = name;
-		if (name.length > 30) {
-			resName = name.slice(0, 30) + ' ...';
-		}
-		return resName
-    }
-    
     return (
         <div className={minimize ? 'notifications minimize' : 'notifications'}>
             <div className='notifications-header'>
@@ -44,15 +36,14 @@ const UploadingNotification = ({ notifications, uploadFinish, setUploadingList }
                     <span className='icon-close' onClick={() => handleClose()}></span>
                 </div>
             </div>
+            <div className='notifications-subheader'>
+                <span>Uploading...</span>
+                <strong className="cancel-button">CANCEL</strong>
+            </div>
             <div className='notifications-body'>
                 {
                     notifications.map((item, i) => (
-                        <div className='notification-item' key={i}>
-                            <div className="d-flex align-items-center"><i className="icon-document"></i><div className='text-field'>{briefName(item.fileName)}</div></div>
-                            <div className="percent">
-                                <CircularProgressbar value={item.percent} strokeWidth={20} />
-                            </div>
-                        </div>
+                        <UploadingItem key={i} item={item} onCancel={() => onCancel(item)}/>
                     ))
                 }
 
