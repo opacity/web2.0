@@ -19,27 +19,6 @@
     $bundles
   </body>
 
-  <script defer type="text/javascript">
-    // describe widget configuration and saving to a global variable for future use
-    var configuration = {
-      from: "ETH",
-      to: "RBC",
-      fromChain: "ETH",
-      toChain: "ETH",
-      amount: 1,
-      iframe: "flex",
-      hideSelectionFrom: false,
-      hideSelectionTo: true,
-      theme: "dark",
-      background: "#28372e",
-    };
-
-    // prevent accidental changes to the object, for example, when re-creating a widget for another theme
-    Object.freeze(configuration);
-
-    // create widget
-    rubicWidget.init(configuration);
-  </script>
   <!-- <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
   integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
