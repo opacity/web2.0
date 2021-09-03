@@ -3,66 +3,8 @@ img {
   height: auto;
 }
 
-.rubic-container {
+.rubic-widget {
   margin-top: 80px;
-
-  h1 {
-    font-size: 45px;
-    line-height: 67px;
-    letter-spacing: 0.05em;
-    margin-bottom: 80px;
-    text-align: center;
-    @media (max-width: 767.9px) {
-      margin-bottom: 10px;
-      font-weight: 600;
-      font-size: 17px;
-      line-height: 25px;
-      color: #000000;
-    }
-  }
-
-  .subtitle {
-    font-weight: 500;
-    font-size: 28px;
-    line-height: 36px;
-    text-align: center;
-    color: #050b17;
-    margin-bottom: 24px;
-    position: relative;
-    &::after {
-      content: "";
-      width: 13px;
-      height: 2px;
-      background-color: #000000;
-      position: absolute;
-      margin-left: auto;
-      margin-right: auto;
-      left: 0;
-      right: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    @media (max-width: 767.9px) {
-      font-size: 17px;
-      line-height: 25px;
-    }
-  }
-
-  .descriptions {
-    font-size: 20px;
-    line-height: 24px;
-    text-align: center;
-    color: #000000;
-    @media (max-width: 767.9px) {
-      font-size: 14px;
-      line-height: 21px;
-    }
-  }
-
-  .learn-more {
-    text-align: center;
-  }
 }
 
 .first-ele {
