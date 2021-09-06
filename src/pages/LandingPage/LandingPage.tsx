@@ -79,7 +79,7 @@ const LandingPage = ({ history }) => {
       fromChain: "ETH",
       toChain: "ETH",
       amount: 1,
-      iframe: "flex",
+      iframe: "vertical",
       hideSelectionFrom: false,
       hideSelectionTo: false,
       theme: "light",
@@ -171,29 +171,28 @@ const LandingPage = ({ history }) => {
       </div>
 
       <div className="container-xl rubic-container">
-        <h1>Purchase Opacity tokens (OPCT) directly on our website using the Rubic!</h1>
+        <h1>Purchase Opacity tokens (OPCT) with Rubic!</h1>
 
-        <div className="row">
-          <div className="col-md-4 col-sm-12 d-flex align-items-center">
-            <div>
-              <h1 className="subtitle">What is Rubic?</h1>
+        <div className="content">
+          <div className="left">
+            <h2 className="subtitle mb-4">What is Rubic?</h2>
 
-              <p className="descriptions">
-                Rubic is a multichain DEX aggregator, with instant & cross-chain swaps for Ethereum, BSC, Polygon,
-                Harmony, Tron & xDai, limit orders, fiat on-ramps and more!
-              </p>
+            <p className="descriptions">
+              Rubic is a multichain DEX aggregator, with instant & cross-chain swaps for Ethereum, BSC, Polygon,
+              Harmony, Tron & xDai, limit orders, fiat on-ramps and more!
+            </p>
 
-              <p className="descriptions">
-                Rubic enables trades in one-step, so you can buy and sell tokens without needing to visit an exchange.
-                Just connect your wallet and go!
-              </p>
+            <p className="descriptions">
+              Rubic enables trades in one-step, so you can buy and sell tokens without needing to visit an exchange.
+              Just connect your wallet and go!
+            </p>
 
-              <p className="descriptions learn-more">
-                <a href="https://rubic.exchange/faq">Learn More</a>
-              </p>
-            </div>
+            <p className="descriptions learn-more">
+              <a href="https://rubic.exchange/faq">Learn More</a>
+            </p>
           </div>
-          <div className="col-md-8 col-sm-12">
+
+          <div className="rubic-widget-wrapper">
             <div id="rubic-widget-root" className="rubic-widget"></div>
           </div>
         </div>
