@@ -83,6 +83,11 @@ const LandingPage = ({ history }) => {
       hideSelectionFrom: false,
       hideSelectionTo: false,
       theme: "light",
+      injectTokens: {
+        eth: ["0xDb05EA0877A2622883941b939f0bb11d1ac7c400"],
+        polygon: ["0xce6bF09e5c7A3E65B84F88DcC6475c88d38BA5eF"],
+        harmony: ["0x40f5c9b19472b2d7ee4dc080ae1be4de2f402bfe"],
+      },
     };
 
     // prevent accidental changes to the object, for example, when re-creating a widget for another theme
@@ -175,21 +180,23 @@ const LandingPage = ({ history }) => {
 
         <div className="content">
           <div className="left">
-            <h2 className="subtitle mb-4">What is Rubic?</h2>
+            <div>
+              <h2 className="subtitle mb-4">What is Rubic?</h2>
 
-            <p className="descriptions">
-              Rubic is a multichain DEX aggregator, with instant & cross-chain swaps for Ethereum, BSC, Polygon,
-              Harmony, Tron & xDai, limit orders, fiat on-ramps and more!
-            </p>
+              <p className="descriptions">
+                Rubic is a multichain DEX aggregator, with instant & cross-chain swaps for Ethereum, BSC, Polygon,
+                Harmony, Tron & xDai, limit orders, fiat on-ramps and more!
+              </p>
 
-            <p className="descriptions">
-              Rubic enables trades in one-step, so you can buy and sell tokens without needing to visit an exchange.
-              Just connect your wallet and go!
-            </p>
+              <p className="descriptions">
+                Rubic enables trades in one-step, so you can buy and sell tokens without needing to visit an exchange.
+                Just connect your wallet and go!
+              </p>
 
-            <p className="descriptions learn-more">
-              <a href="https://rubic.exchange/faq">Learn More</a>
-            </p>
+              <p className="descriptions learn-more">
+                <a href="https://rubic.exchange/faq">Learn More</a>
+              </p>
+            </div>
           </div>
 
           <div className="rubic-widget-wrapper">
