@@ -88,6 +88,7 @@ import { bytesToHex } from "../../../ts-client-library/packages/util/src/hex";
 import * as fflate from "fflate";
 import { saveAs } from "file-saver";
 import SignUpModal from "../../components/SignUpModal/SignUpModal";
+import { PlanType, PLANS } from "../../config";
 
 const logo = require("../../assets/logo2.png");
 
@@ -182,6 +183,7 @@ const FileManagePage = ({ history }) => {
   const [count, setCount] = React.useState(0);
   const [upgradeAvailable, setUpgradeAvailable] = React.useState(true);
   const [showSignUpModal, setShowSignUpModal] = React.useState(false);
+  const [currentPlan, setCurrentPlan] = React.useState();
 
   const handleShowSidebar = React.useCallback(() => {
     setShowSidebar(!showSidebar);
@@ -320,17 +322,17 @@ const FileManagePage = ({ history }) => {
         setAlertLink('plans');
         setAlertShow(true);
       }
-      if (remainDays < 30) {
+      // if (remainDays < 30) {
         setAlertText(`There are ${remainDays} days remaining on your account. `);
-        if (limitStorage === 10) {
-          setAlertLinkText("Upgrade now to a paid plan.");
-          setAlertLink('plans');
-        } else {
+        // if (limitStorage === 10) {
+        //   setAlertLinkText("Upgrade now to a paid plan.");
+        //   setAlertLink('plans');
+        // } else {
           setAlertLinkText("Renew now to prevent losing access to your data.");
           setAlertLink('renew');
-        }
+        // }
         setAlertShow(true);
-      }
+      // }
 
       const plansApi = await account.plans();
       const storageLimit = accountInfo.account.storageLimit;
@@ -343,6 +345,17 @@ const FileManagePage = ({ history }) => {
       }
 
       setUpgradeAvailable(idx < plansApi.length - 1);
+
+      const curPlanIndex = plansApi.findIndex(item => item.storageInGB === storageLimit)
+      if (curPlanIndex >= 0) {
+        const { cost, costInUSD, storageInGB } = plansApi[curPlanIndex];
+        setCurrentPlan({
+          ...PLANS[curPlanIndex],
+          opctCost: cost,
+          usdCost: costInUSD,
+          storageInGB,
+        })
+      }
     } catch (e) {
       localStorage.clear();
       history.push("/");
@@ -989,8 +1002,8 @@ const FileManagePage = ({ history }) => {
     <div className="page">
 
 
-      {showSignUpModal && (
-        <SignUpModal show={showSignUpModal} handleClose={() => setShowSignUpModal(false)} isForRenew={true} />
+      {showSignUpModal && currentPlan && (
+        <SignUpModal show={showSignUpModal} handleClose={() => setShowSignUpModal(false)} isForRenew={true} plan={currentPlan} />
       )}
 
       {openShareModal && (

@@ -2,6 +2,89 @@ img {
   max-width: 100%;
   height: auto;
 }
+
+.rubic-container {
+  margin-top: 80px;
+
+  .content {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+
+    @media (max-width: 767.9px) {
+      flex-wrap: wrap;
+    }
+  }
+
+  h1 {
+    font-size: 45px;
+    line-height: 67px;
+    letter-spacing: 0.05em;
+    margin-bottom: 80px;
+    text-align: center;
+    @media (max-width: 767.9px) {
+      margin-bottom: 10px;
+      font-weight: 600;
+      font-size: 17px;
+      line-height: 25px;
+      color: #000000;
+    }
+  }
+
+  .subtitle {
+    font-weight: 600;
+    font-size: 30px;
+    line-height: 45px;
+    color: #000000;
+    text-align: center;
+    @media (max-width: 767.9px) {
+      font-weight: 600;
+      font-size: 17px;
+      line-height: 25px;
+      margin-bottom: 10px !important;
+      margin-top: 10px;
+    }
+  }
+
+  .descriptions {
+    font-weight: normal;
+    font-size: 22px;
+    line-height: 33px;
+    color: #898989;
+    @media (max-width: 767.9px) {
+      font-size: 14px;
+      line-height: 191.4%;
+    }
+  }
+
+  .learn-more {
+    text-align: center;
+  }
+
+  .left {
+    max-width: 500px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  .rubic-widget-wrapper {
+    max-width: 100%;
+    width: 600px;
+    display: flex;
+
+    .rubic-widget {
+      justify-content: flex-end !important;
+    }
+
+    @media (max-width: 767.9px) {
+      .rubic-widget {
+        justify-content: center !important;
+      }
+    }
+  }
+}
+
 .first-ele {
   padding-top: 70px;
   padding-bottom: 50px;
@@ -589,7 +672,8 @@ img {
 
 .opct {
   padding-bottom: 100px;
-  margin-bottom: 100px;
+  margin-bottom: 20px;
+  margin-top: 80px;
   h1 {
     font-weight: 600;
     font-size: 40px;
@@ -607,7 +691,7 @@ img {
     border: 1px solid #f4f4f4;
     border-radius: 0px 50px;
     margin-top: 80px;
-    margin-bottom: 80px;
+    margin-bottom: 20px;
     &:hover {
       // transform: scale(1.1);
       // transition: transform 4.8s cubic-bezier(0.33, 1, 0.68, 1);

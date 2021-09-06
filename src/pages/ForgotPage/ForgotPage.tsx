@@ -23,10 +23,7 @@ const ForgotPage = ({ history }) => {
     setShowLoginModal(false);
   };
 
-  const handleForgotButton = async (
-    values: ForgotPageProps,
-    { setErrors }: FormikHelpers<ForgotPageProps>
-  ) => {
+  const handleForgotButton = async (values: ForgotPageProps, { setErrors }: FormikHelpers<ForgotPageProps>) => {
     const words = values.privateKey.trim().split(" ");
     if (words.length === 12) {
       const handle = await mnemonicToHandle(words);
@@ -59,26 +56,15 @@ const ForgotPage = ({ history }) => {
                 handleForgotButton(values, helpers);
               }}
             >
-              {({
-                values,
-                errors,
-                touched,
-                handleChange,
-                handleBlur,
-                handleSubmit,
-                isSubmitting,
-              }) => (
+              {({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => (
                 <form onSubmit={handleSubmit} autoComplete="off">
                   <Row className="align-items-center ">
                     <Col className="text-center mb-4">
                       <h2 className="mb-3">Recover Account Handle</h2>
                       <p>
-                        If you have lost your Opacity Account Handle, you can
-                        recover it using the 12 word mnemonic phrase provided
-                        when you signed up for your account. Please enter the 12
-                        words below in the exact order originally provided with
-                        a space between each word. Then click 'Recover Account
-                        Handle.
+                        If you have lost your Opacity Account Handle, you can recover it using the 12 word mnemonic
+                        phrase provided when you signed up for your account. Please enter your 12 word phrase with a
+                        comma or single space between each word. Then click 'Recover Account Handle'.
                       </p>
                     </Col>
                   </Row>
@@ -96,9 +82,7 @@ const ForgotPage = ({ history }) => {
                           }
                         />
                         {errors.privateKey && touched.privateKey && (
-                          <div className="invalid-feedback">
-                            {errors.privateKey}
-                          </div>
+                          <div className="invalid-feedback">{errors.privateKey}</div>
                         )}
                       </Form.Group>
                     </Col>
