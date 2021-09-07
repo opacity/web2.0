@@ -5,20 +5,11 @@ type StatusType = "error" | null;
 
 interface RedeemProps {
 	ethAddress: string;
-	storageLimit: string;
+	storageLimit: number;
 }
 
-const storageLimitToCodeName = ({ storageLimit }: { storageLimit: string }) => {
-	switch (storageLimit) {
-		case "128 GB":
-			return "128GB";
-		case "1 TB":
-			return "1TB";
-		case "2 TB":
-			return "2TB";
-		default:
-			return;
-	}
+const storageLimitToCodeName = ({ storageLimit }: { storageLimit: number }) => {
+	return `${storageLimit}GB`
 };
 
 // TODO: switch to Formik form
@@ -33,7 +24,7 @@ const Redeem = ({ ethAddress, storageLimit }: RedeemProps) => {
 	const redeemCode = async ({ code, storageLimit, ethAddress }: {
 		code: string,
 		ethAddress: string,
-		storageLimit: string
+		storageLimit: number
 	}) => {
 		setDisabled(true);
 		setStatusType(null);
@@ -62,29 +53,24 @@ const Redeem = ({ ethAddress, storageLimit }: RedeemProps) => {
 	};
 
 	return (
-		storageLimitToCodeName({ storageLimit })
-			? (
-				<>
-					<div className='d-flex'>
-						<h4>OPCT{storageLimitToCodeName({ storageLimit })}</h4>
-						<div>
-							<input
-								className={statusType == "error" ? "redeem-form-error" : ""}
-								onChange={(e) => setCode(e.target.value)}
-							/>
-							{status && <div className={statusType == "error" ? "redeem-form-error" : ""}>{status}</div>}
-						</div>
-					</div>
-					<Button
-						disabled={disabled}
-						variant='primary'
-						onClick={() => redeemCode({ code, ethAddress, storageLimit })}
-					>{buttonText}</Button>
-				</>
-			)
-			: null
+		<>
+			<div className='d-flex'>
+				<h4>OPCT{storageLimitToCodeName({ storageLimit })}</h4>
+				<div>
+					<input
+						className={statusType == "error" ? "redeem-form-error" : ""}
+						onChange={(e) => setCode(e.target.value)}
+					/>
+					{status && <div className={statusType == "error" ? "redeem-form-error" : ""}>{status}</div>}
+				</div>
+			</div>
+			<Button
+				disabled={disabled}
+				variant='primary'
+				onClick={() => redeemCode({ code, ethAddress, storageLimit })}
+			>{buttonText}</Button>
+		</>
 	);
 };
 
 export default Redeem;
-export { storageLimitToCodeName };

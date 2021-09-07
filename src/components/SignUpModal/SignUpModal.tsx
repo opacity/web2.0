@@ -224,7 +224,7 @@ const SignUpModal: React.FC<OtherProps> = ({
     }
   }, [plan]);
 
-  const renewAccount = useCallback(async () => {
+  const renewAccount = async () => {
     const currentHandle = localStorage.getItem("key");
 
     const cryptoMiddleware = new WebAccountMiddleware({
@@ -239,7 +239,7 @@ const SignUpModal: React.FC<OtherProps> = ({
     setAccount(account);
     const invoice = await account.renewAccount({ duration: 12 });
     setInvoiceData(invoice);
-  }, []);
+  }
 
   return (
     <>
@@ -577,7 +577,7 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, op
                     <span className="or">or</span>
                   </div>
                 )}
-                <Redeem storageLimit={plan.storageLimit} ethAddress={invoice.ethAddress} />
+                <Redeem storageLimit={plan.storageInGB} ethAddress={invoice.ethAddress} />
               </Col>
               <Col>
                 <div className="scan">
