@@ -315,38 +315,18 @@ const FileManagePage = ({ history }) => {
       const limitStorage = accountInfo.account.storageLimit;
       const remainDays = moment(accountInfo.account.expirationDate).diff(moment(Date.now()), "days");
 
-      if ((limitStorage / 10) * 9 < usedStorage) {
-        setIsStorageWarning(true);
-        setAlertText(`You have used ${((usedStorage / limitStorage) * 100).toFixed(2)}% of your plan. `);
-        setAlertLinkText("Upgrade now to get more space.");
-        setAlertLink('plans');
-        setAlertShow(true);
-      }
-      if (remainDays < 30) {
-        setAlertText(`There are ${remainDays} days remaining on your account. `);
-        if (limitStorage === 10) {
-          setAlertLinkText("Upgrade now to a paid plan.");
-          setAlertLink('plans');
-        } else {
-          setAlertLinkText("Renew now to prevent losing access to your data.");
-          setAlertLink('renew');
-        }
-        setAlertShow(true);
-      }
-
       const plansApi = await account.plans();
-      const storageLimit = accountInfo.account.storageLimit;
 
       let idx = 0;
       for (idx = 0; idx < plansApi.length; idx++) {
-        if (plansApi[idx].storageInGB === storageLimit) {
+        if (plansApi[idx].storageInGB === limitStorage) {
           break;
         }
       }
 
       setUpgradeAvailable(idx < plansApi.length - 1);
 
-      const curPlanIndex = plansApi.findIndex(item => item.storageInGB === storageLimit)
+      const curPlanIndex = plansApi.findIndex(item => item.storageInGB === limitStorage)
       if (curPlanIndex >= 0) {
         const { cost, costInUSD, storageInGB } = plansApi[curPlanIndex];
         setCurrentPlan({
@@ -356,6 +336,28 @@ const FileManagePage = ({ history }) => {
           storageInGB,
         })
       }
+
+      if ((limitStorage / 10) * 9 < usedStorage) {
+        setIsStorageWarning(true);
+        setAlertText(`You have used ${((usedStorage / limitStorage) * 100).toFixed(2)}% of your plan. `);
+        setAlertLinkText("Upgrade now to get more space.");
+        setAlertLink('plans');
+        setAlertShow(true);
+      }
+      // if (remainDays < 30) {
+        setAlertText(`There are ${remainDays} days remaining on your account. `);
+        // if (limitStorage === 10) {
+        //   setAlertLinkText("Upgrade now to a paid plan.");
+        //   setAlertLink('plans');
+        // } else {
+          
+          setAlertLinkText("Renew now to prevent losing access to your data.");
+          setAlertLink('renew');
+        // }
+        setAlertShow(true);
+      // }
+
+      
     } catch (e) {
       localStorage.clear();
       history.push("/");
