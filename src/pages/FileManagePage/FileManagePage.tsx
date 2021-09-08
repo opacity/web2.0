@@ -328,12 +328,13 @@ const FileManagePage = ({ history }) => {
 
       const curPlanIndex = plansApi.findIndex(item => item.storageInGB === limitStorage)
       if (curPlanIndex >= 0) {
-        const { cost, costInUSD, storageInGB } = plansApi[curPlanIndex];
+        const { cost, costInUSD, storageInGB, name } = plansApi[curPlanIndex];
         setCurrentPlan({
           ...PLANS[curPlanIndex],
           opctCost: cost,
           usdCost: costInUSD,
           storageInGB,
+          name,
         })
       }
 

@@ -89,12 +89,13 @@ const PlansPage = ({ history }) => {
         }
         const converedPlan = PLANS.map((item, index) => {
           if (plansApi[index]) {
-            const { cost, costInUSD, storageInGB } = plansApi[index];
+            const { cost, costInUSD, storageInGB, name } = plansApi[index];
             return {
               ...item,
               opctCost: cost,
               usdCost: costInUSD,
               storageInGB,
+              name,
             };
           } else {
             return item;
