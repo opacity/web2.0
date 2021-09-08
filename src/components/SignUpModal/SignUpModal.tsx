@@ -577,7 +577,7 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, op
                     <span className="or">or</span>
                   </div>
                 )}
-                <Redeem storageLimit={plan.storageInGB} ethAddress={invoice.ethAddress} />
+                <Redeem planName={plan.name} ethAddress={invoice.ethAddress} />
               </Col>
               <Col>
                 <div className="scan">
