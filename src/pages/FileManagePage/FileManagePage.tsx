@@ -428,7 +428,22 @@ const FileManagePage = ({ history }) => {
       templist[index].status = 'cancelled';
       setUploadingList(templist);
     }
-  }, [])
+  }, [currentUploader])
+
+  const handleCancelAllUpload = React.useCallback(async () => {
+    if (currentUploadingList.current.find(item => item.percent !== 100)) {
+      await currentUploader.cancel()
+      let templist = currentUploadingList.current.map(item => {
+        return item.percent !== 100 ? {
+          ...item,
+          percent: 100,
+          status: 'cancelled'
+        } : item
+      });
+      setUploadingList(templist);
+      console.log(templist, 'cancelled')
+    }
+  }, [currentUploader])
 
   const fileUploadMutex = React.useMemo(() => new Mutex(), []);
   const uploadFile = React.useCallback(
@@ -437,7 +452,8 @@ const FileManagePage = ({ history }) => {
         let toastID = file.size + file.name + path;
         let templist = currentUploadingList.current.slice();
         let index = templist.findIndex((ele) => ele.id === toastID);
-        if(index > -1 && templist[index].status === 'cancelled') {
+        console.log(templist, 'old list')
+        if (index > -1 && templist[index].status === 'cancelled') {
           return
         }
 
@@ -452,7 +468,6 @@ const FileManagePage = ({ history }) => {
           path: path,
         });
         setCurrentUploader(upload)
-        console.log(upload, '0202010')
         // side effects
         bindUploadToAccountSystem(accountSystem, upload);
 
@@ -1482,6 +1497,7 @@ const FileManagePage = ({ history }) => {
           notifications={uploadingList}
           uploadFinish={() => setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)}
           onCancel={handleCancelUpload}
+          onCancelAll={handleCancelAllUpload}
         />
       )}
     </div>
