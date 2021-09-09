@@ -345,18 +345,17 @@ const FileManagePage = ({ history }) => {
         setAlertLink('plans');
         setAlertShow(true);
       }
-      // if (remainDays < 30) {
+      if (remainDays < 30) {
         setAlertText(`There are ${remainDays} days remaining on your account. `);
-        // if (limitStorage === 10) {
-        //   setAlertLinkText("Upgrade now to a paid plan.");
-        //   setAlertLink('plans');
-        // } else {
-          
+        if (limitStorage === 10) {
+          setAlertLinkText("Upgrade now to a paid plan.");
+          setAlertLink('plans');
+        } else {
           setAlertLinkText("Renew now to prevent losing access to your data.");
           setAlertLink('renew');
-        // }
+        }
         setAlertShow(true);
-      // }
+      }
 
       
     } catch (e) {
