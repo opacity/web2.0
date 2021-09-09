@@ -315,6 +315,29 @@ const FileManagePage = ({ history }) => {
       const limitStorage = accountInfo.account.storageLimit;
       const remainDays = moment(accountInfo.account.expirationDate).diff(moment(Date.now()), "days");
 
+      const plansApi = await account.plans();
+
+      let idx = 0;
+      for (idx = 0; idx < plansApi.length; idx++) {
+        if (plansApi[idx].storageInGB === limitStorage) {
+          break;
+        }
+      }
+
+      setUpgradeAvailable(idx < plansApi.length - 1);
+
+      const curPlanIndex = plansApi.findIndex(item => item.storageInGB === limitStorage)
+      if (curPlanIndex >= 0) {
+        const { cost, costInUSD, storageInGB, name } = plansApi[curPlanIndex];
+        setCurrentPlan({
+          ...PLANS[curPlanIndex],
+          opctCost: cost,
+          usdCost: costInUSD,
+          storageInGB,
+          name,
+        })
+      }
+
       if ((limitStorage / 10) * 9 < usedStorage) {
         setIsStorageWarning(true);
         setAlertText(`You have used ${((usedStorage / limitStorage) * 100).toFixed(2)}% of your plan. `);
@@ -334,28 +357,7 @@ const FileManagePage = ({ history }) => {
         setAlertShow(true);
       }
 
-      const plansApi = await account.plans();
-      const storageLimit = accountInfo.account.storageLimit;
-
-      let idx = 0;
-      for (idx = 0; idx < plansApi.length; idx++) {
-        if (plansApi[idx].storageInGB === storageLimit) {
-          break;
-        }
-      }
-
-      setUpgradeAvailable(idx < plansApi.length - 1);
-
-      const curPlanIndex = plansApi.findIndex(item => item.storageInGB === storageLimit)
-      if (curPlanIndex >= 0) {
-        const { cost, costInUSD, storageInGB } = plansApi[curPlanIndex];
-        setCurrentPlan({
-          ...PLANS[curPlanIndex],
-          opctCost: cost,
-          usdCost: costInUSD,
-          storageInGB,
-        })
-      }
+      
     } catch (e) {
       localStorage.clear();
       history.push("/");
