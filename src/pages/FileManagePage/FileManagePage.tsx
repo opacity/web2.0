@@ -1102,13 +1102,13 @@ const FileManagePage = ({ history }) => {
           </div>
           <div style={{ width: "100%" }}>
             <ul className="navbar-nav">
-              <UploadForm isDirectory={true} onSelected={selectFiles}>
+              <UploadForm isDirectory={true} onSelected={selectFiles} showWarningModal={() => setShowWarningModal(true)}>
                 <li className="nav-item">
                   <span className="nav-icon nav-icon-folder"></span>
                   <Nav.Link>UPLOAD FOLDER</Nav.Link>
                 </li>
               </UploadForm>
-              <UploadForm isDirectory={false} onSelected={selectFiles}>
+              <UploadForm isDirectory={false} onSelected={selectFiles} showWarningModal={() => setShowWarningModal(true)}>
                 <li className="nav-item">
                   <span className="nav-icon nav-icon-upload"></span>
                   <Nav.Link>UPLOAD FILE</Nav.Link>
@@ -1162,7 +1162,7 @@ const FileManagePage = ({ history }) => {
         )}
         {selectedFiles.length === 0 && (
           <div className="file-header">
-            <UploadForm isDirectory={false} onSelected={selectFiles}>
+            <UploadForm isDirectory={false} onSelected={selectFiles} showWarningModal={() => setShowWarningModal(true)}>
               <div className="d-flex header-item">
                 <span className="item-icon file-upload"></span>
                 <span>FILE UPLOAD</span>
@@ -1478,7 +1478,7 @@ const FileManagePage = ({ history }) => {
   );
 };
 
-const UploadForm = ({ children, onSelected, isDirectory }) => {
+const UploadForm = ({ children, onSelected, isDirectory, showWarningModal }) => {
   const uploadFileInput = React.useRef<HTMLInputElement>(null);
   const uploadForm = React.useRef<HTMLFormElement>(null);
 
@@ -1494,7 +1494,7 @@ const UploadForm = ({ children, onSelected, isDirectory }) => {
     uploadForm.current!.reset();
     if (files.length > 0) {
       files = files.filter((file) => file.size <= FILE_MAX_SIZE);
-      files.length !== filesLength && setShowWarningModal(true);
+      files.length !== filesLength && showWarningModal();
       onSelected(files);
     }
   };
