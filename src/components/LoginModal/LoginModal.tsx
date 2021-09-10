@@ -10,6 +10,7 @@ import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-l
 import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex";
 import { STORAGE_NODE as storageNode } from "../../config";
 import { Link } from "react-router-dom";
+import * as moment from "moment";
 
 const logo = require("../../assets/logo2.png");
 
@@ -78,10 +79,17 @@ const LoginModal: React.FC<OtherProps> = ({
           });
           return;
         }
+
         if (acc.paymentStatus === "paid") {
           localStorage.setItem("key", privateKey);
-          // localStorage.setItem("old-key", privateKey);
           history.push("file-manager");
+        } else {
+          // expired status
+          const remainDays = moment(acc.account.expirationDate).diff(moment(Date.now()), "days");
+          if (remainDays <= 30) {
+            localStorage.setItem("key", privateKey);
+            history.push("file-manager");
+          }
         }
       })
       .catch((err: Error) => {
