@@ -184,6 +184,7 @@ const FileManagePage = ({ history }) => {
   const [upgradeAvailable, setUpgradeAvailable] = React.useState(true);
   const [showSignUpModal, setShowSignUpModal] = React.useState(false);
   const [currentPlan, setCurrentPlan] = React.useState();
+  const [isAccountExpired, setIsAccountExpired] = React.useState(false);
 
   const handleShowSidebar = React.useCallback(() => {
     setShowSidebar(!showSidebar);
@@ -346,6 +347,8 @@ const FileManagePage = ({ history }) => {
         setAlertShow(true);
       }
       if (remainDays < 30) {
+        moment(accountInfo.account.expirationDate).isAfter(moment(Date.now())) && setIsAccountExpired(true)
+
         setAlertText(`There are ${remainDays} days remaining on your account. `);
         if (limitStorage === 10) {
           setAlertLinkText("Upgrade now to a paid plan.");
@@ -357,7 +360,7 @@ const FileManagePage = ({ history }) => {
         setAlertShow(true);
       }
 
-      
+
     } catch (e) {
       localStorage.clear();
       history.push("/");
@@ -511,12 +514,12 @@ const FileManagePage = ({ history }) => {
       return file.name === (file.path || file.webkitRelativePath || file.name)
         ? currentPath
         : currentPath === "/"
-        ? file.webkitRelativePath
-          ? currentPath + relativePath(file.webkitRelativePath)
-          : relativePath(file.path)
-        : file.webkitRelativePath
-        ? currentPath + "/" + relativePath(file.webkitRelativePath)
-        : currentPath + relativePath(file.path);
+          ? file.webkitRelativePath
+            ? currentPath + relativePath(file.webkitRelativePath)
+            : relativePath(file.path)
+          : file.webkitRelativePath
+            ? currentPath + "/" + relativePath(file.webkitRelativePath)
+            : currentPath + relativePath(file.path);
     },
     [currentPath]
   );
@@ -852,6 +855,7 @@ const FileManagePage = ({ history }) => {
     maxSize: FILE_MAX_SIZE,
     multiple: true,
     validator: maxFileValidator,
+    disabled: isAccountExpired,
   });
 
   const handleSelectFolder = React.useCallback(
@@ -1089,9 +1093,8 @@ const FileManagePage = ({ history }) => {
             </div>
 
             <div className="storage-info">
-              {`Your plan expires on ${
-                accountInfo ? moment(accountInfo.account.expirationDate).format("MMM D, YYYY") : "..."
-              }.`}
+              {`Your plan expires on ${accountInfo ? moment(accountInfo.account.expirationDate).format("MMM D, YYYY") : "..."
+                }.`}
             </div>
 
             {upgradeAvailable && (
@@ -1102,6 +1105,7 @@ const FileManagePage = ({ history }) => {
           </div>
           <div style={{ width: "100%" }}>
             <ul className="navbar-nav">
+            disabled={!isAccountExpired}
               <UploadForm isDirectory={true} onSelected={selectFiles} showWarningModal={() => setShowWarningModal(true)}>
                 <li className="nav-item">
                   <span className="nav-icon nav-icon-folder"></span>
@@ -1162,13 +1166,13 @@ const FileManagePage = ({ history }) => {
         )}
         {selectedFiles.length === 0 && (
           <div className="file-header">
-            <UploadForm isDirectory={false} onSelected={selectFiles} showWarningModal={() => setShowWarningModal(true)}>
+            <UploadForm isAccountExpired={isAccountExpired} isDirectory={false} onSelected={selectFiles} showWarningModal={() => setShowWarningModal(true)}>
               <div className="d-flex header-item">
                 <span className="item-icon file-upload"></span>
                 <span>FILE UPLOAD</span>
               </div>
             </UploadForm>
-            <div className=" d-flex header-item ml-3" onClick={() => setShowNewFolderModal(true)}>
+            <div className=" d-flex header-item ml-3" onClick={() => setShowNewFolderModal(true)} disabled={isAccountExpired}>
               <span className="item-icon new-folder"></span>
               <span>NEW FOLDER</span>
             </div>
@@ -1290,6 +1294,7 @@ const FileManagePage = ({ history }) => {
                           handleDeleteItem={handleDeleteItem}
                           handleOpenRenameModal={handleOpenRenameModal}
                           setCurrentPath={setCurrentPath}
+                          isAccountExpired={isAccountExpired}
                         />
                       )
                   )}
@@ -1310,6 +1315,7 @@ const FileManagePage = ({ history }) => {
                           }}
                           handleSelectFile={handleSelectFile}
                           selectedFiles={selectedFiles}
+                          isAccountExpired={isAccountExpired}
                         />
                       )
                   )}
@@ -1327,9 +1333,8 @@ const FileManagePage = ({ history }) => {
                             sortable.column === "name" ? (sortable.method === "down" ? "up" : "down") : "down"
                           )
                         }
-                        className={`sortable ${
-                          sortable.column === "name" && (sortable.method === "up" ? "asc" : "desc")
-                        }`}
+                        className={`sortable ${sortable.column === "name" && (sortable.method === "up" ? "asc" : "desc")
+                          }`}
                       >
                         Name
                       </th>
@@ -1341,9 +1346,8 @@ const FileManagePage = ({ history }) => {
                               sortable.column === "type" ? (sortable.method === "down" ? "up" : "down") : "down"
                             )
                           }
-                          className={`sortable type ${
-                            sortable.column === "type" && (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                          className={`sortable type ${sortable.column === "type" && (sortable.method === "up" ? "asc" : "desc")
+                            }`}
                         >
                           Share Type
                           <Tooltip
@@ -1364,9 +1368,8 @@ const FileManagePage = ({ history }) => {
                               sortable.column === "created" ? (sortable.method === "down" ? "up" : "down") : "down"
                             )
                           }
-                          className={`sortable ${
-                            sortable.column === "created" && (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                          className={`sortable ${sortable.column === "created" && (sortable.method === "up" ? "asc" : "desc")
+                            }`}
                         >
                           Created
                         </th>
@@ -1378,9 +1381,8 @@ const FileManagePage = ({ history }) => {
                             sortable.column === "size" ? (sortable.method === "down" ? "up" : "down") : "down"
                           )
                         }
-                        className={`sortable ${
-                          sortable.column === "size" && (sortable.method === "up" ? "asc" : "desc")
-                        }`}
+                        className={`sortable ${sortable.column === "size" && (sortable.method === "up" ? "asc" : "desc")
+                          }`}
                       >
                         Size
                       </th>
@@ -1478,7 +1480,7 @@ const FileManagePage = ({ history }) => {
   );
 };
 
-const UploadForm = ({ children, onSelected, isDirectory, showWarningModal }) => {
+const UploadForm = ({ children, onSelected, isDirectory, showWarningModal, isAccountExpired }) => {
   const uploadFileInput = React.useRef<HTMLInputElement>(null);
   const uploadForm = React.useRef<HTMLFormElement>(null);
 
@@ -1500,7 +1502,7 @@ const UploadForm = ({ children, onSelected, isDirectory, showWarningModal }) => 
   };
 
   return (
-    <div onClick={() => uploadFileInput.current!.click()}>
+    <div disabled={isAccountExpired} onClick={() => uploadFileInput.current!.click()}>
       {children}
       <form ref={uploadForm} style={{ display: "none" }}>
         <input
