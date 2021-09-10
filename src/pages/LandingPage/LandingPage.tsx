@@ -65,6 +65,8 @@ const LandingPage = ({ history }) => {
           }
         });
         setPlans(converedPlan);
+        const freePlan = converedPlan.find((item) => item.permalink === "free");
+        setPlan(freePlan);
         setPageLoading(false);
       } catch {
         // setPageLoading(false)
@@ -103,8 +105,6 @@ const LandingPage = ({ history }) => {
   };
   const handleOpenSignUpModal = () => {
     setShowSignUpModal(true);
-    const freePlan = plans.find((item) => item.permalink === "free");
-    setPlan(freePlan);
   };
   const defaultOptions = {
     loop: true,
