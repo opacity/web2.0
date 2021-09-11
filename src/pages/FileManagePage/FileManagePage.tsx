@@ -1105,14 +1105,13 @@ const FileManagePage = ({ history }) => {
           </div>
           <div style={{ width: "100%" }}>
             <ul className="navbar-nav">
-            disabled={!isAccountExpired}
-              <UploadForm isDirectory={true} onSelected={selectFiles} showWarningModal={() => setShowWarningModal(true)}>
+              <UploadForm isAccountExpired={isAccountExpired} isDirectory={true} onSelected={selectFiles} showWarningModal={() => setShowWarningModal(true)}>
                 <li className="nav-item">
                   <span className="nav-icon nav-icon-folder"></span>
                   <Nav.Link>UPLOAD FOLDER</Nav.Link>
                 </li>
               </UploadForm>
-              <UploadForm isDirectory={false} onSelected={selectFiles} showWarningModal={() => setShowWarningModal(true)}>
+              <UploadForm  isAccountExpired={isAccountExpired}  isDirectory={false} onSelected={selectFiles} showWarningModal={() => setShowWarningModal(true)}>
                 <li className="nav-item">
                   <span className="nav-icon nav-icon-upload"></span>
                   <Nav.Link>UPLOAD FILE</Nav.Link>
@@ -1172,7 +1171,7 @@ const FileManagePage = ({ history }) => {
                 <span>FILE UPLOAD</span>
               </div>
             </UploadForm>
-            <div className=" d-flex header-item ml-3" onClick={() => setShowNewFolderModal(true)} disabled={isAccountExpired}>
+            <div className=" d-flex header-item ml-3" onClick={() => !isAccountExpired && setShowNewFolderModal(true)}>
               <span className="item-icon new-folder"></span>
               <span>NEW FOLDER</span>
             </div>
@@ -1409,6 +1408,7 @@ const FileManagePage = ({ history }) => {
                             handleDeleteItem={handleDeleteItem}
                             handleOpenRenameModal={handleOpenRenameModal}
                             setCurrentPath={setCurrentPath}
+                            isAccountExpired={isAccountExpired}
                           />
                         )
                     )}
@@ -1429,6 +1429,7 @@ const FileManagePage = ({ history }) => {
                             }}
                             handleSelectFile={handleSelectFile}
                             selectedFiles={selectedFiles}
+                            isAccountExpired={isAccountExpired}
                           />
                         )
                     )}
@@ -1502,7 +1503,7 @@ const UploadForm = ({ children, onSelected, isDirectory, showWarningModal, isAcc
   };
 
   return (
-    <div disabled={isAccountExpired} onClick={() => uploadFileInput.current!.click()}>
+    <div onClick={() => uploadFileInput.current!.click()}>
       {children}
       <form ref={uploadForm} style={{ display: "none" }}>
         <input
@@ -1511,6 +1512,7 @@ const UploadForm = ({ children, onSelected, isDirectory, showWarningModal, isAcc
           ref={uploadFileInput}
           onChange={(e) => selectFiles()}
           multiple={true}
+          disabled={isAccountExpired}
           {...(isDirectory && { ...directory })}
         />
       </form>
