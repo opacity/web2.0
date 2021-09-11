@@ -39,9 +39,6 @@ let sentryOptions = {
   tracesSampleRate: 0.3,
 }
 
-if (IS_DEV) {
-  sentryOptions.tracesSampleRate = 1;
-}
 if (IS_LOCAL == false) {
   Sentry.init(sentryOptions);
 }
