@@ -111,6 +111,7 @@ export const FileManagerFolderEntryList = ({
   setCurrentPath,
   handleDeleteItem,
   handleOpenRenameModal,
+  isAccountExpired,
 }: FileManagerFolderEntryProps) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const [folderMeta, setFolderMeta] = React.useState<FolderMetadata>();
@@ -176,12 +177,14 @@ export const FileManagerFolderEntryList = ({
           <Dropdown.Item
             eventKey="3"
             onClick={() => handleDeleteItem(folderEntry, false)}
+            disabled={isAccountExpired}
           >
             <i className="icon-delete"></i>
             Delete
           </Dropdown.Item>
           <Dropdown.Divider />
           <Dropdown.Item
+            disabled={isAccountExpired}
             eventKey="4"
             onClick={() =>
               handleOpenRenameModal(
