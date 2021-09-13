@@ -10,6 +10,10 @@ const storgeImage = require("../../assets/storage.png");
 const opqImage = require("../../assets/imgopq.png");
 // const olelog = require("../../assets/OcelotLogo.png");
 const logo = require("../../assets/logo2.png");
+const winLogo = require("../../assets/win_log.svg");
+const macLogo = require("../../assets/mac_log.svg");
+
+
 const PlansPage = ({ history }) => {
   return (
     <SiteWrapper history={history}>
@@ -28,16 +32,24 @@ const PlansPage = ({ history }) => {
               <div className="d-flex">
                 <img src={logo} width={108} height={108} />
                 <span>
-                  <p className="item-link">Opacity Drive</p>
-                  <p className="">Coming Soon</p>
+                  <p className="item-link">Opacity Drive for Desktop</p>
+                  <p className="visit d-flex align-items-center">
+                    <img src={winLogo} width={16} />
+                    <NavLink href="https://opacity-public.s3.us-east-2.amazonaws.com/Opacity-Desktop.exe" target="_blank">
+                      Download Opacity Drive for Windows (Beta)
+                    </NavLink>
+                  </p>
+                  <p className="visit d-flex align-items-center">
+                    <img src={macLogo} width={16} />
+                    <NavLink href="https://opacity-public.s3.us-east-2.amazonaws.com/Opacity-Desktop.dmg" target="_blank">
+                      Download Opacity Drive for Mac (Beta)
+                    </NavLink>
+                  </p>
                 </span>
               </div>
 
               <h5 className="mt-4">
-                This Windows desktop application allows you to interact with
-                your Opacity account. It supports all features and even offers
-                you the possibility to rename folders or move files/folders
-                around.
+              This desktop application allows you to interact with your Opacity account from your local system. It supports all features and even offers you the possibility to rename folders or move files/folders around.
               </h5>
             </div>
           </Col>
