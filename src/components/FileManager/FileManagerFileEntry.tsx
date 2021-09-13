@@ -154,7 +154,8 @@ export const FileManagerFileEntryList = ({
 	handleOpenRenameModal,
 	downloadItem,
 	handleSelectFile,
-	selectedFiles
+	selectedFiles,
+	isAccountExpired,
 }: FileManagerFileEntryProps) => {
 	const isMobile = useMediaQuery({ maxWidth: 768 })
 	const [fileMeta, setFileMeta] = React.useState<FileMetadata>()
@@ -223,12 +224,12 @@ export const FileManagerFileEntryList = ({
 			<Table.Col onClick={() => fileMeta && handleSelectFile(fileMeta)}>{fileMeta ? formatBytes(fileMeta.size) : "..."}</Table.Col>
 			<Table.Col className='text-nowrap'>
 				<DropdownButton menuAlign='right' title='' id='dropdown-menu-align-right' className={isSelected ? "file-selected" : ""}>
-					<Dropdown.Item disabled={!fileMeta || (!!fileMeta.public.location || !!fileMeta.public.shortLinks.length)} eventKey='1' onClick={() => fileShare(fileMeta)}>
+					<Dropdown.Item disabled={!fileMeta || !fileMeta.private.handle || isAccountExpired} eventKey='1' onClick={() => fileShare(fileMeta)}>
 						<i className='icon-share'></i>
 						Private Share
 					</Dropdown.Item>
 					<Dropdown.Divider />
-					<Dropdown.Item eventKey='1' onClick={() => filePublicShare(fileMeta)}>
+					<Dropdown.Item disabled={!fileMeta || isAccountExpired || (!fileMeta.private.handle && (!fileMeta.public.location || !fileMeta.public.shortLinks.length))} eventKey='1' onClick={() => filePublicShare(fileMeta)}>
 						<i className='icon-link'></i>
 						Public Share
 					</Dropdown.Item>
@@ -238,12 +239,12 @@ export const FileManagerFileEntryList = ({
 						Download
 					</Dropdown.Item>
 					<Dropdown.Divider />
-					<Dropdown.Item disabled={!fileMeta} eventKey='3' onClick={() => handleDeleteItem(fileMeta, true)}>
+					<Dropdown.Item disabled={!fileMeta || isAccountExpired} eventKey='3' onClick={() => handleDeleteItem(fileMeta, true)}>
 						<i className='icon-delete'></i>
 						Delete
 					</Dropdown.Item>
 					<Dropdown.Divider />
-					<Dropdown.Item disabled={!fileMeta} eventKey='4' onClick={() => handleOpenRenameModal(fileMeta, true)}>
+					<Dropdown.Item disabled={!fileMeta || isAccountExpired} eventKey='4' onClick={() => handleOpenRenameModal(fileMeta, true)}>
 						<i className='icon-rename'></i>
 						Rename
 					</Dropdown.Item>
