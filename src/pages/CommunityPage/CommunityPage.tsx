@@ -29,7 +29,7 @@ const PlansPage = ({ history }) => {
         </Row>
         <Row className="site-items">
           <Col md={6}>
-            <div className="site-item">
+            <div className="site-item pb-0">
               <div className="d-flex">
                 <img src={logo} width={108} height={108} />
                 <span>
@@ -48,15 +48,14 @@ const PlansPage = ({ history }) => {
                   </p>
                 </span>
               </div>
-
-              <h5 className="mt-4">
-              This desktop application allows you to interact with your Opacity account from your local system. It supports all features and even offers you the possibility to rename folders or move files/folders around.
+              <h5 className="mt-4 content">
+                This desktop application allows you to interact with your Opacity account from your local system. It supports all features and even offers you the possibility to rename folders or move files/folders around.
               </h5>
             </div>
           </Col>
 
           <Col md={6}>
-            <div className="site-item">
+            <div className="site-item pb-0">
               <div className="d-flex">
                 <img src={opqImage} width={108} height={108} />
                 <span>
@@ -69,8 +68,27 @@ const PlansPage = ({ history }) => {
                   </p>
                 </span>
               </div>
+              <h5 className="mt-4 content">
+                imgOPCT is a public imageboard platform to share your images
+                uploaded on Opacity. It's hosted for the community by the
+                community. You can upload images and share them with the public
+                on the front page.
+              </h5>
 
-              <h5 className="mt-4">
+            </div>
+          </Col>
+
+          <Col md={6} className="content-view">
+            <div className="site-item pt-0">
+              <h5 className="">
+                This desktop application allows you to interact with your Opacity account from your local system. It supports all features and even offers you the possibility to rename folders or move files/folders around.
+              </h5>
+            </div>
+          </Col>
+
+          <Col md={6} className="content-view">
+            <div className="site-item pt-0">
+              <h5 className="">
                 imgOPCT is a public imageboard platform to share your images
                 uploaded on Opacity. It's hosted for the community by the
                 community. You can upload images and share them with the public

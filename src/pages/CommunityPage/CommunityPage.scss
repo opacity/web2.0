@@ -126,6 +126,19 @@
       font-size: 14px;
       line-height: 191%;
       color: #414141;
+      
+    }
+    .content {
+      display: none;
+      @media (max-width: 767.8px) {
+        display: block;
+      }
+    }
+  }
+  .content-view {
+    display: block;
+    @media (max-width: 767.8px) {
+      display: none;
     }
   }
 }
