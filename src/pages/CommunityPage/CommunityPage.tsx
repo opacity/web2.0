@@ -3,6 +3,7 @@ import { NavLink } from "tabler-react";
 import { Row, Col, Container } from "react-bootstrap";
 import SiteWrapper from "../../SiteWrapper";
 import "./CommunityPage.scss";
+import { OPACITY_DRIVE_FOR_MAC, OPACITY_DRIVE_FOR_WINDOWS } from "../../config";
 
 const visitIcon = require("../../assets/visit.png");
 const storgeImage = require("../../assets/storage.png");
@@ -35,13 +36,13 @@ const PlansPage = ({ history }) => {
                   <p className="item-link">Opacity Drive for Desktop</p>
                   <p className="visit d-flex align-items-center">
                     <img src={winLogo} width={16} />
-                    <NavLink href="https://opacity-public.s3.us-east-2.amazonaws.com/Opacity-Desktop.exe" target="_blank">
+                    <NavLink href={OPACITY_DRIVE_FOR_WINDOWS} target="_blank">
                       Download Opacity Drive for Windows (Beta)
                     </NavLink>
                   </p>
                   <p className="visit d-flex align-items-center">
                     <img src={macLogo} width={16} />
-                    <NavLink href="https://opacity-public.s3.us-east-2.amazonaws.com/Opacity-Desktop.dmg" target="_blank">
+                    <NavLink href={OPACITY_DRIVE_FOR_MAC} target="_blank">
                       Download Opacity Drive for Mac without M1 chip (Beta)
                     </NavLink>
                   </p>
