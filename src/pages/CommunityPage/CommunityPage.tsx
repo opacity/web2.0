@@ -42,7 +42,7 @@ const PlansPage = ({ history }) => {
                   <p className="visit d-flex align-items-center">
                     <img src={macLogo} width={16} />
                     <NavLink href="https://opacity-public.s3.us-east-2.amazonaws.com/Opacity-Desktop.dmg" target="_blank">
-                      Download Opacity Drive for Mac (Beta)
+                      Download Opacity Drive for Mac without M1 chip (Beta)
                     </NavLink>
                   </p>
                 </span>
