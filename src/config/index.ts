@@ -14,13 +14,13 @@ export const IS_LOCAL = process.env.NODE_ENV == NODE_ENV.LOCALHOST
 export const VERSION = process.env.VERSION ? process.env.VERSION : "local"
 
 const PROTOCOL =
-  IS_LOCAL 
-    ? "http" 
+  IS_LOCAL
+    ? "http"
     : IS_DEV &&
       process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
       ? "https"
       : "https";
-  
+
 export const STRIPE_API_KEY =
   process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.PRODUCTION
     ? "pk_live_SLMPS7zVFurFwLOKEdiICAGC00kN41fASj"
@@ -30,24 +30,24 @@ export const HOST =
   IS_DEV || IS_LOCAL
     ? "127.0.0.1:4444"
     : process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
-    ? "dev2.opacity.io"
-    : "opacity.io";
+      ? "dev2.opacity.io"
+      : "opacity.io";
 export const FRONT_END_URL = `${PROTOCOL}://${HOST}`;
 
 export const PUBLIC_SHARE_URL =
-  IS_LOCAL 
+  IS_LOCAL
     ? "http://localhost:3080"
     : process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
       ? "https://public-share.opacitynodes.com"
       : "https://public.opacity.io";
-    
+
 export const EXCHANGE_LINK = "https://www.kucoin.com/trade/OPCT-BTC";
 
 export const DEFAULT_STORAGE_NODE_V1 = "broker-1.opacitynodes.com";
 export const DEFAULT_STORAGE_NODE_V2 = "beta-broker.opacitynodes.com";
 
 export const DEFAULT_STORAGE_NODE_IP =
-  IS_LOCAL 
+  IS_LOCAL
     ? "localhost"
     : IS_DEV
       ? DEFAULT_STORAGE_NODE_V2
@@ -71,6 +71,16 @@ export const THIRD_PARTY = Object.freeze({
 
 export const LANDING_PAGE_VIDEO =
   "https://s3.us-east-2.amazonaws.com/opacity-public/whatIsOpacity.mov";
+
+export const OPACITY_DRIVE_FOR_MAC =
+  IS_DEV || IS_LOCAL
+    ? "https://opacity-public.s3.us-east-2.amazonaws.com/dev/Opacity-Desktop.dmg"
+    : "https://opacity-public.s3.us-east-2.amazonaws.com/Opacity-Desktop.dmg"
+
+export const OPACITY_DRIVE_FOR_WINDOWS =
+  IS_DEV || IS_LOCAL
+    ? "https://opacity-public.s3.us-east-2.amazonaws.com/dev/Opacity-Desktop.exe"
+    : "https://opacity-public.s3.us-east-2.amazonaws.com/Opacity-Desktop.exe"
 
 export enum HEADER_TYPES {
   LANDING_PAGE = "LANDING_PAGE",
