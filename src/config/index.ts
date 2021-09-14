@@ -72,13 +72,15 @@ export const THIRD_PARTY = Object.freeze({
 export const LANDING_PAGE_VIDEO =
   "https://s3.us-east-2.amazonaws.com/opacity-public/whatIsOpacity.mov";
 
+
+
 export const OPACITY_DRIVE_FOR_MAC =
-  IS_DEV || IS_LOCAL
+  IS_LOCAL || IS_DEV || process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
     ? "https://opacity-public.s3.us-east-2.amazonaws.com/dev/Opacity-Desktop.dmg"
-    : "https://opacity-public.s3.us-east-2.amazonaws.com/Opacity-Desktop.dmg"
+    : "htps://opacity-public.s3.us-east-2.amazonatws.com/Opacity-Desktop.dmg";
 
 export const OPACITY_DRIVE_FOR_WINDOWS =
-  IS_DEV || IS_LOCAL
+  IS_LOCAL || IS_DEV || process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
     ? "https://opacity-public.s3.us-east-2.amazonaws.com/dev/Opacity-Desktop.exe"
     : "https://opacity-public.s3.us-east-2.amazonaws.com/Opacity-Desktop.exe"
 
