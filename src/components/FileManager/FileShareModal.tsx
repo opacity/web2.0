@@ -86,6 +86,7 @@ const FileShareModal = ({
                   .catch((err) => {
                     setShareURL("");
                     console.error("Error starting share:", err);
+                    setPageLoading(false);
 
                     // do something with the error
                   });
@@ -106,62 +107,70 @@ const FileShareModal = ({
               setShareURL("");
               toast.error("Error getting existing share:", err);
               onClose();
+              setPageLoading(false);
             });
         } else {
           toast.error("Public files not yet supported");
+          setPageLoading(false);
           onClose();
         }
       } else if (mode === "public") {
-        const curFileMetadata = await accountSystem.getFileMetadata(
-          file.location
-        );
-
-        if (
-          curFileMetadata.public.shortLinks[0] ||
-          !_.isEmpty(curFileMetadata.public.location)
-        ) {
-          setShareURL(
-            `${PUBLIC_SHARE_URL}/${curFileMetadata.public.shortLinks[0]}`
+        try {
+          const curFileMetadata = await accountSystem.getFileMetadata(
+            file.location
           );
-          setPageLoading(false);
 
-          return;
+          if (
+            curFileMetadata.public.shortLinks[0] ||
+            !_.isEmpty(curFileMetadata.public.location)
+          ) {
+            setShareURL(
+              `${PUBLIC_SHARE_URL}/${curFileMetadata.public.shortLinks[0]}`
+            );
+            setPageLoading(false);
+
+            return;
+          }
+
+          const fileSystemObject = new FileSystemObject({
+            handle: curFileMetadata.private.handle || undefined,
+            location: curFileMetadata.public.location || undefined,
+            config: {
+              crypto: cryptoMiddleware,
+              net: netMiddleware,
+              storageNode: storageNode,
+            },
+          });
+
+          bindFileSystemObjectToAccountSystem(accountSystem, fileSystemObject);
+          await fileSystemObject.convertToPublic();
+
+          const fileSystemShare = new FileSystemShare({
+            handle: curFileMetadata.private.handle,
+            fileLocation: fileSystemObject.location,
+            config: {
+              crypto: cryptoMiddleware,
+              net: netMiddleware,
+              storageNode: storageNode,
+            },
+          });
+
+          bindPublicShareToAccountSystem(accountSystem, fileSystemShare);
+          await fileSystemShare.publicShare({
+            title: curFileMetadata.name,
+            description: formatBytes(curFileMetadata.size),
+            fileExtension: getFileExtension(curFileMetadata.name),
+            mimeType: curFileMetadata.type
+          });
+
+          setShareURL(`${PUBLIC_SHARE_URL}/${fileSystemShare.shortlink}`);
+          setPageLoading(false);
+          doRefresh();
+        } catch (e) {
+          setPageLoading(false);
+          toast.error("An error occurred while converting public");
         }
 
-        const fileSystemObject = new FileSystemObject({
-          handle: curFileMetadata.private.handle || undefined,
-          location: curFileMetadata.public.location || undefined,
-          config: {
-            crypto: cryptoMiddleware,
-            net: netMiddleware,
-            storageNode: storageNode,
-          },
-        });
-
-        bindFileSystemObjectToAccountSystem(accountSystem, fileSystemObject);
-        await fileSystemObject.convertToPublic();
-
-        const fileSystemShare = new FileSystemShare({
-          handle: curFileMetadata.private.handle,
-          fileLocation: fileSystemObject.location,
-          config: {
-            crypto: cryptoMiddleware,
-            net: netMiddleware,
-            storageNode: storageNode,
-          },
-        });
-
-        bindPublicShareToAccountSystem(accountSystem, fileSystemShare);
-        await fileSystemShare.publicShare({
-          title: curFileMetadata.name,
-          description: formatBytes(curFileMetadata.size),
-          fileExtension: getFileExtension(curFileMetadata.name),
-          mimeType: curFileMetadata.type
-        });
-
-        setShareURL(`${PUBLIC_SHARE_URL}/${fileSystemShare.shortlink}`);
-        setPageLoading(false);
-        doRefresh();
       }
     };
 
@@ -170,27 +179,32 @@ const FileShareModal = ({
 
   const handleRevokeShortlink = async () => {
     setPageLoading(true);
+    try {
+      const curFileMetadata = await accountSystem.getFileMetadata(file.location);
 
-    const curFileMetadata = await accountSystem.getFileMetadata(file.location);
+      const fileSystemShare = new FileSystemShare({
+        shortLink: curFileMetadata.public.shortLinks[0],
+        fileLocation: curFileMetadata.public.location,
+        handle: curFileMetadata.location,
+        config: {
+          crypto: cryptoMiddleware,
+          net: netMiddleware,
+          storageNode: storageNode,
+        },
+      });
 
-    const fileSystemShare = new FileSystemShare({
-      shortLink: curFileMetadata.public.shortLinks[0],
-      fileLocation: curFileMetadata.public.location,
-      handle: curFileMetadata.location,
-      config: {
-        crypto: cryptoMiddleware,
-        net: netMiddleware,
-        storageNode: storageNode,
-      },
-    });
+      bindPublicShareToAccountSystem(accountSystem, fileSystemShare);
 
-    bindPublicShareToAccountSystem(accountSystem, fileSystemShare);
+      await fileSystemShare.publicShareRevoke();
 
-    await fileSystemShare.publicShareRevoke();
+      setPageLoading(false);
+      doRefresh();
+      onClose();
+    } catch (error) {
+      toast.error("An error occurred while revoking public");
+      setPageLoading(false);
+    }
 
-    setPageLoading(false);
-    doRefresh();
-    onClose();
   };
 
   return (

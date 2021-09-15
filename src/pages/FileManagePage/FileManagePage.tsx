@@ -88,6 +88,7 @@ import { bytesToHex } from "../../../ts-client-library/packages/util/src/hex";
 import * as fflate from "fflate";
 import { saveAs } from "file-saver";
 import SignUpModal from "../../components/SignUpModal/SignUpModal";
+import { PlanType, PLANS } from "../../config";
 
 const logo = require("../../assets/logo2.png");
 
@@ -182,6 +183,8 @@ const FileManagePage = ({ history }) => {
   const [count, setCount] = React.useState(0);
   const [upgradeAvailable, setUpgradeAvailable] = React.useState(true);
   const [showSignUpModal, setShowSignUpModal] = React.useState(false);
+  const [currentPlan, setCurrentPlan] = React.useState();
+  const [isAccountExpired, setIsAccountExpired] = React.useState(false);
   const [currentUploader, setCurrentUploader] = React.useState<OpaqueUpload>();
   const [, setProcessChange] = React.useState();
 
@@ -311,6 +314,26 @@ const FileManagePage = ({ history }) => {
       const limitStorage = accountInfo.account.storageLimit;
       const remainDays = moment(accountInfo.account.expirationDate).diff(moment(Date.now()), "days");
 
+      const plansApi = await account.plans();
+      let idx = 0;
+      for (idx = 0; idx < plansApi.length; idx++) {
+        if (plansApi[idx].storageInGB === limitStorage) {
+          break;
+        }
+      }
+      setUpgradeAvailable(idx < plansApi.length - 1);
+      const curPlanIndex = plansApi.findIndex(item => item.storageInGB === limitStorage)
+      if (curPlanIndex >= 0) {
+        const { cost, costInUSD, storageInGB, name } = plansApi[curPlanIndex];
+        setCurrentPlan({
+          ...PLANS[curPlanIndex],
+          opctCost: cost,
+          usdCost: costInUSD,
+          storageInGB,
+          name,
+        })
+      }
+
       if ((limitStorage / 10) * 9 < usedStorage) {
         setIsStorageWarning(true);
         setAlertText(`You have used ${((usedStorage / limitStorage) * 100).toFixed(2)}% of your plan. `);
@@ -319,6 +342,8 @@ const FileManagePage = ({ history }) => {
         setAlertShow(true);
       }
       if (remainDays < 30) {
+        moment(accountInfo.account.expirationDate).isAfter(moment(Date.now())) && setIsAccountExpired(true)
+
         setAlertText(`There are ${remainDays} days remaining on your account. `);
         if (limitStorage === 10) {
           setAlertLinkText("Upgrade now to a paid plan.");
@@ -330,17 +355,6 @@ const FileManagePage = ({ history }) => {
         setAlertShow(true);
       }
 
-      const plansApi = await account.plans();
-      const storageLimit = accountInfo.account.storageLimit;
-
-      let idx = 0;
-      for (idx = 0; idx < plansApi.length; idx++) {
-        if (plansApi[idx].storageInGB === storageLimit) {
-          break;
-        }
-      }
-
-      setUpgradeAvailable(idx < plansApi.length - 1);
     } catch (e) {
       localStorage.clear();
       history.push("/");
@@ -874,6 +888,7 @@ const FileManagePage = ({ history }) => {
     maxSize: FILE_MAX_SIZE,
     multiple: true,
     validator: maxFileValidator,
+    disabled: isAccountExpired,
   });
 
   const handleSelectFolder = React.useCallback(
@@ -1026,8 +1041,8 @@ const FileManagePage = ({ history }) => {
     <div className="page">
 
 
-      {showSignUpModal && (
-        <SignUpModal show={showSignUpModal} handleClose={() => setShowSignUpModal(false)} isForRenew={true} />
+      {showSignUpModal && currentPlan && (
+        <SignUpModal show={showSignUpModal} handleClose={() => setShowSignUpModal(false)} isForRenew={true} plan={currentPlan} />
       )}
 
       {openShareModal && (
@@ -1123,13 +1138,13 @@ const FileManagePage = ({ history }) => {
           </div>
           <div style={{ width: "100%" }}>
             <ul className="navbar-nav">
-              <UploadForm isDirectory={true} onSelected={selectFiles}>
+            <UploadForm isAccountExpired={isAccountExpired} isDirectory={true} onSelected={selectFiles} showWarningModal={() => setShowWarningModal(true)}>
                 <li className="nav-item">
                   <span className="nav-icon nav-icon-folder"></span>
                   <Nav.Link>UPLOAD FOLDER</Nav.Link>
                 </li>
               </UploadForm>
-              <UploadForm isDirectory={false} onSelected={selectFiles}>
+              <UploadForm  isAccountExpired={isAccountExpired}  isDirectory={false} onSelected={selectFiles} showWarningModal={() => setShowWarningModal(true)}>
                 <li className="nav-item">
                   <span className="nav-icon nav-icon-upload"></span>
                   <Nav.Link>UPLOAD FILE</Nav.Link>
@@ -1183,13 +1198,13 @@ const FileManagePage = ({ history }) => {
         )}
         {selectedFiles.length === 0 && (
           <div className="file-header">
-            <UploadForm isDirectory={false} onSelected={selectFiles}>
+            <UploadForm isAccountExpired={isAccountExpired} isDirectory={false} onSelected={selectFiles} showWarningModal={() => setShowWarningModal(true)}>
               <div className="d-flex header-item">
                 <span className="item-icon file-upload"></span>
                 <span>FILE UPLOAD</span>
               </div>
             </UploadForm>
-            <div className=" d-flex header-item ml-3" onClick={() => setShowNewFolderModal(true)}>
+            <div className=" d-flex header-item ml-3" onClick={() => !isAccountExpired && setShowNewFolderModal(true)}>
               <span className="item-icon new-folder"></span>
               <span>NEW FOLDER</span>
             </div>
@@ -1311,6 +1326,7 @@ const FileManagePage = ({ history }) => {
                           handleDeleteItem={handleDeleteItem}
                           handleOpenRenameModal={handleOpenRenameModal}
                           setCurrentPath={setCurrentPath}
+                          isAccountExpired={isAccountExpired}
                         />
                       )
                   )}
@@ -1331,6 +1347,7 @@ const FileManagePage = ({ history }) => {
                           }}
                           handleSelectFile={handleSelectFile}
                           selectedFiles={selectedFiles}
+                          isAccountExpired={isAccountExpired}
                         />
                       )
                   )}
@@ -1424,6 +1441,7 @@ const FileManagePage = ({ history }) => {
                             handleDeleteItem={handleDeleteItem}
                             handleOpenRenameModal={handleOpenRenameModal}
                             setCurrentPath={setCurrentPath}
+                            isAccountExpired={isAccountExpired}
                           />
                         )
                     )}
@@ -1444,6 +1462,7 @@ const FileManagePage = ({ history }) => {
                             }}
                             handleSelectFile={handleSelectFile}
                             selectedFiles={selectedFiles}
+                            isAccountExpired={isAccountExpired}
                           />
                         )
                     )}
@@ -1499,7 +1518,7 @@ const FileManagePage = ({ history }) => {
   );
 };
 
-const UploadForm = ({ children, onSelected, isDirectory }) => {
+const UploadForm = ({ children, onSelected, isDirectory, showWarningModal, isAccountExpired }) => {
   const uploadFileInput = React.useRef<HTMLInputElement>(null);
   const uploadForm = React.useRef<HTMLFormElement>(null);
 
@@ -1515,7 +1534,7 @@ const UploadForm = ({ children, onSelected, isDirectory }) => {
     uploadForm.current!.reset();
     if (files.length > 0) {
       files = files.filter((file) => file.size <= FILE_MAX_SIZE);
-      files.length !== filesLength && setShowWarningModal(true);
+      files.length !== filesLength && showWarningModal();
       onSelected(files);
     }
   };
@@ -1530,6 +1549,7 @@ const UploadForm = ({ children, onSelected, isDirectory }) => {
           ref={uploadFileInput}
           onChange={(e) => selectFiles()}
           multiple={true}
+          disabled={isAccountExpired}
           {...(isDirectory && { ...directory })}
         />
       </form>

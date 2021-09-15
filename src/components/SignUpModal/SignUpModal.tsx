@@ -53,6 +53,7 @@ type SignUpProps = {
   invoice?: AccountCreationInvoice;
   account?: Account;
   isForUpgrade?: boolean;
+  isForRenew?: boolean;
 };
 type ConfirmationModalProps = {
   show: boolean;
@@ -64,8 +65,8 @@ type ConfirmationModalProps = {
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   show,
   handleClose,
-  handleYes = () => {},
-  handleNo = () => {},
+  handleYes = () => { },
+  handleNo = () => { },
 }) => {
   return (
     <Modal show={show} onHide={handleClose} dialogClassName="confirmation-modal" centered>
@@ -205,11 +206,14 @@ const SignUpModal: React.FC<OtherProps> = ({
       setMnemonic([]);
       setHandle("");
       const currentAccount = localStorage.getItem("key");
-      if (currentAccount) {
+      if (currentAccount || isForRenew) {
         setHandle(currentAccount);
-        upgradeAccount().then(() => {
-          setStep(2);
-        });
+        if (isForRenew) {
+          renewAccount().then(() => setStep(2));
+        } else {
+          upgradeAccount().then(() => setStep(2));
+        }
+
       } else {
         createMnemonic().then(async (res) => {
           setMnemonic(res);
@@ -220,7 +224,7 @@ const SignUpModal: React.FC<OtherProps> = ({
     }
   }, [plan]);
 
-  const renewAccount = useCallback(async () => {
+  const renewAccount = async () => {
     const currentHandle = localStorage.getItem("key");
 
     const cryptoMiddleware = new WebAccountMiddleware({
@@ -235,18 +239,7 @@ const SignUpModal: React.FC<OtherProps> = ({
     setAccount(account);
     const invoice = await account.renewAccount({ duration: 12 });
     setInvoiceData(invoice);
-  }, []);
-
-  useEffect(() => {
-    if (isForRenew) {
-      setMnemonic([]);
-      const currentAccount = localStorage.getItem("key");
-      setHandle(currentAccount);
-      renewAccount().then(() => {
-        setStep(2);
-      });
-    }
-  }, [isForRenew]);
+  }
 
   return (
     <>
@@ -295,7 +288,8 @@ const SignUpModal: React.FC<OtherProps> = ({
               invoice={invoiceData}
               goBack={goBack}
               goNext={goNext}
-              isForUpgrade={currentAccount && true}
+              isForUpgrade={(currentAccount && !isForRenew) && true}
+              isForRenew={isForRenew}
               openMetamask={openMetamask}
             />
           )}
@@ -482,7 +476,7 @@ const AccountHandle: React.FC<SignUpProps> = ({ plan, goBack, goNext, mnemonic, 
   );
 };
 
-const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, openMetamask, isForUpgrade }) => {
+const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, openMetamask, isForUpgrade, isForRenew }) => {
   const [isCopied, setIsCopied] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("crypto");
 
@@ -494,6 +488,14 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, op
         fileIDs: [],
       };
       account.waitForUpgradePayment(form).then(() => {
+        goNext();
+      });
+    } else if (isForRenew) {
+      const renewForm = {
+        metadataKeys: [],
+        fileIDs: [],
+      }
+      account.waitForRenewPayment(renewForm).then(() => {
         goNext();
       });
     } else {
@@ -575,7 +577,7 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, op
                     <span className="or">or</span>
                   </div>
                 )}
-                <Redeem storageLimit={plan.storageLimit} ethAddress={invoice.ethAddress} />
+                <Redeem planName={plan.name} ethAddress={invoice.ethAddress} />
               </Col>
               <Col>
                 <div className="scan">

@@ -5,16 +5,16 @@ type StatusType = "error" | null;
 
 interface RedeemProps {
 	ethAddress: string;
-	storageLimit: string;
+	planName: string;
 }
 
-const storageLimitToCodeName = ({ storageLimit }: { storageLimit: string }) => {
-	switch (storageLimit) {
-		case "128 GB":
+const planNameToCodeName = ({ planName }: { planName: string }) => {
+	switch (planName) {
+		case "Basic":
 			return "128GB";
-		case "1 TB":
+		case "Professional":
 			return "1TB";
-		case "2 TB":
+		case "Business":
 			return "2TB";
 		default:
 			return;
@@ -22,7 +22,7 @@ const storageLimitToCodeName = ({ storageLimit }: { storageLimit: string }) => {
 };
 
 // TODO: switch to Formik form
-const Redeem = ({ ethAddress, storageLimit }: RedeemProps) => {
+const Redeem = ({ ethAddress, planName }: RedeemProps) => {
 	const [status, setStatus] = React.useState<JSX.Element>();
 	const [statusType, setStatusType] = React.useState<StatusType>();
 	const [disabled, setDisabled] = React.useState(false);
@@ -30,17 +30,17 @@ const Redeem = ({ ethAddress, storageLimit }: RedeemProps) => {
 
 	const [code, setCode] = React.useState("");
 
-	const redeemCode = async ({ code, storageLimit, ethAddress }: {
+	const redeemCode = async ({ code, planName, ethAddress }: {
 		code: string,
 		ethAddress: string,
-		storageLimit: string
+		planName: string
 	}) => {
 		setDisabled(true);
 		setStatusType(null);
 		setStatus(undefined);
 		setButtonText("Checking...");
 
-		const res = await (await fetch(`https://redeem.opacity.io/api?code=OPCT${storageLimitToCodeName({ storageLimit })}-${code.toUpperCase()}&ethaddress=${ethAddress}`))
+		const res = await (await fetch(`https://redeem.opacity.io/api?code=OPCT${planNameToCodeName({ planName })}-${code.toUpperCase()}&ethaddress=${ethAddress}`))
 			.json()
 			.catch((err: Error) => {
 				setStatus(<div>{err.message}</div>)
@@ -62,11 +62,11 @@ const Redeem = ({ ethAddress, storageLimit }: RedeemProps) => {
 	};
 
 	return (
-		storageLimitToCodeName({ storageLimit })
+		planNameToCodeName({ planName })
 			? (
 				<>
 					<div className='d-flex'>
-						<h4>OPCT{storageLimitToCodeName({ storageLimit })}</h4>
+						<h4>OPCT{planNameToCodeName({ planName })}</h4>
 						<div>
 							<input
 								className={statusType == "error" ? "redeem-form-error" : ""}
@@ -78,7 +78,7 @@ const Redeem = ({ ethAddress, storageLimit }: RedeemProps) => {
 					<Button
 						disabled={disabled}
 						variant='primary'
-						onClick={() => redeemCode({ code, ethAddress, storageLimit })}
+						onClick={() => redeemCode({ code, ethAddress, planName })}
 					>{buttonText}</Button>
 				</>
 			)
@@ -87,4 +87,3 @@ const Redeem = ({ ethAddress, storageLimit }: RedeemProps) => {
 };
 
 export default Redeem;
-export { storageLimitToCodeName };
