@@ -3,7 +3,7 @@ import UploadingItem from "./UploadingItem"
 import './UploadingNotification.scss'
 
 const isUploadCompleted = (notifications) => {
-    return notifications.filter(item => item.percent === 100).length === notifications.length ? true : false;
+    return notifications.find(item => item.percent !== 100) ? false : true;
 }
 
 const UploadingNotification = ({ notifications, uploadFinish, setUploadingList, onCancel, onCancelAll }) => {
@@ -20,7 +20,6 @@ const UploadingNotification = ({ notifications, uploadFinish, setUploadingList, 
     React.useEffect(() => {
         if (notifications.length > 0 && isUploadCompleted(notifications)) {
             uploadFinish();
-            // setUploadingList()
         }
     }, [notifications])
 
