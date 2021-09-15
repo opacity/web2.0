@@ -27,6 +27,25 @@
             margin-left: 20px;
         }
     }
+    &-subheader {
+        height: 30px;
+        background: #dae0e8;
+        font-size: 13px;
+        line-height: 15px;
+        color: #5f5353;
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+        align-items: center;
+        .cancel-button {
+            color:#2e6dde;
+            cursor: pointer;
+            &:hover {
+                color: #dc1a1a;
+            }
+        }
+    }
+
     &-body {
         flex: 1;
         overflow: auto;
@@ -54,6 +73,30 @@
                 .CircularProgressbar-trail {
                     stroke: rgba(46, 109, 222, 0.29);
                 }
+            }
+            .icon-cancel {
+                width: 22px;
+                height: 22px;
+                cursor: pointer;
+                content: url("../../assets/upload-cancel.svg");
+                -webkit-mask: url("../../assets/upload-cancel.svg") no-repeat center;
+                -webkit-mask-size: contain;
+            }
+            .icon-warning {
+                width: 22px;
+                height: 22px;
+                cursor: pointer;
+                content: url("../../assets/upload-warning.svg");
+                -webkit-mask: url("../../assets/upload-warning.svg") no-repeat center;
+                -webkit-mask-size: contain;
+            }
+            .icon-completed {
+                width: 22px;
+                height: 22px;
+                cursor: pointer;
+                content: url("../../assets/upload-completed.svg");
+                -webkit-mask: url("../../assets/upload-completed.svg") no-repeat center;
+                -webkit-mask-size: contain;
             }
             .icon-folder {
                 content: "";

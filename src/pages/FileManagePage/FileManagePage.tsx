@@ -93,6 +93,7 @@ import { PlanType, PLANS } from "../../config";
 const logo = require("../../assets/logo2.png");
 
 let logoutTimeout;
+let fileUploadingList = [];
 
 const FileManagePage = ({ history }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -164,7 +165,6 @@ const FileManagePage = ({ history }) => {
   const [showWarningModal, setShowWarningModal] = React.useState(false);
   const [showNewFolderModal, setShowNewFolderModal] = React.useState(false);
   const [uploadingList, setUploadingList] = React.useState([]);
-  const currentUploadingList = React.useRef([]);
   const [selectedFiles, setSelectedFiles] = React.useState<FileMetadata[]>([]);
   const [alertText, setAlertText] = React.useState("There are 30 days remaining on your account. ");
   const [alertLinkText, setAlertLinkText] = React.useState("Upgrade now to a paid plan.");
@@ -185,6 +185,8 @@ const FileManagePage = ({ history }) => {
   const [showSignUpModal, setShowSignUpModal] = React.useState(false);
   const [currentPlan, setCurrentPlan] = React.useState();
   const [isAccountExpired, setIsAccountExpired] = React.useState(false);
+  const [currentUploader, setCurrentUploader] = React.useState<OpaqueUpload>();
+  const [, setProcessChange] = React.useState();
 
   const handleShowSidebar = React.useCallback(() => {
     setShowSidebar(!showSidebar);
@@ -252,10 +254,6 @@ const FileManagePage = ({ history }) => {
   }, [currentPath]);
 
   React.useEffect(() => {
-    currentUploadingList.current = uploadingList;
-  }, [uploadingList]);
-
-  React.useEffect(() => {
     folderListRef.current = folderList;
   }, [folderList]);
 
@@ -317,16 +315,13 @@ const FileManagePage = ({ history }) => {
       const remainDays = moment(accountInfo.account.expirationDate).diff(moment(Date.now()), "days");
 
       const plansApi = await account.plans();
-
       let idx = 0;
       for (idx = 0; idx < plansApi.length; idx++) {
         if (plansApi[idx].storageInGB === limitStorage) {
           break;
         }
       }
-
       setUpgradeAvailable(idx < plansApi.length - 1);
-
       const curPlanIndex = plansApi.findIndex(item => item.storageInGB === limitStorage)
       if (curPlanIndex >= 0) {
         const { cost, costInUSD, storageInGB, name } = plansApi[curPlanIndex];
@@ -359,7 +354,6 @@ const FileManagePage = ({ history }) => {
         }
         setAlertShow(true);
       }
-
 
     } catch (e) {
       localStorage.clear();
@@ -429,10 +423,54 @@ const FileManagePage = ({ history }) => {
 
   const relativePath = React.useCallback((path: string) => path.substr(0, path.lastIndexOf("/")), []);
 
+  const handleCancelUpload = React.useCallback(async (item) => {
+    let currentID = currentUploader?.metadata?.size + currentUploader?.name + currentUploader?.path
+    let cancelledId
+    if (currentID === item.id) {
+      await currentUploader.cancel()
+      cancelledId = currentID
+    } else {
+      cancelledId = item.id
+    }
+    let templist = fileUploadingList;
+    let index = templist.findIndex((ele) => ele.id === cancelledId);
+    if (index > -1) {
+      templist[index].percent = 100;
+      templist[index].status = 'cancelled';
+      fileUploadingList = templist;
+      setUploadingList(templist);
+      setProcessChange({})
+    }
+  }, [currentUploader])
+
+  const handleCancelAllUpload = React.useCallback(async () => {
+    if (fileUploadingList.find(item => item.percent !== 100)) {
+      await currentUploader.cancel()
+      let templist = fileUploadingList.map(item => {
+        return item.percent !== 100 ? {
+          ...item,
+          percent: 100,
+          status: 'cancelled'
+        } : item
+      });
+      fileUploadingList = templist;
+      setUploadingList(templist);
+      setProcessChange({})
+    }
+  }, [currentUploader])
+
   const fileUploadMutex = React.useMemo(() => new Mutex(), []);
   const uploadFile = React.useCallback(
     async (file: File, path: string) => {
       try {
+        let toastID = file.size + file.name + path;
+        let index = fileUploadingList.findIndex((ele) => ele.id === toastID);
+        if (index > -1 && fileUploadingList[index].status === 'cancelled') {
+          return
+        }
+
+        const release = await fileUploadMutex.acquire();
+
         const upload = new OpaqueUpload({
           config: {
             crypto: cryptoMiddleware,
@@ -443,56 +481,47 @@ const FileManagePage = ({ history }) => {
           name: file.name,
           path: path,
         });
-        let toastID = file.size + file.name + path;
+        setCurrentUploader(upload)
         // side effects
         bindUploadToAccountSystem(accountSystem, upload);
 
-        upload.addEventListener(UploadEvents.START, async () => {
-          // console.log(currentPathRef.current, path);
-
-          if (isPathChild(currentPathRef.current, path)) {
-            // setPageLoading(true)
-            // setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)
-          }
-
-          if (path == currentPathRef.current) {
-            setPageLoading(true);
-            const folderMeta = await accountSystem.getFolderMetadataByPath(currentPathRef.current);
-            setFileList(folderMeta.files);
-            setPageLoading(false);
-          }
-        });
         upload.addEventListener(UploadEvents.PROGRESS, (e: UploadProgressEvent) => {
-          let templist = currentUploadingList.current.slice();
+          let templist = fileUploadingList;
           let index = templist.findIndex((ele) => ele.id === toastID);
           if (index > -1) {
             templist[index].percent = e.detail.progress * 100;
+            templist[index].status = 'uploading';
+            fileUploadingList = templist;
             setUploadingList(templist);
+            setProcessChange({})
           }
         });
 
         const fileStream = polyfillReadableStreamIfNeeded<Uint8Array>(file.stream());
 
-        const release = await fileUploadMutex.acquire();
         try {
           const stream = await upload.start();
           console.log("uploading,,,,,,");
 
-          if (stream) {
-            // TODO: Why does it do this?
-            fileStream.pipeThrough(stream as TransformStream<Uint8Array, Uint8Array> as any);
-          } else {
-          }
+          stream && fileStream.pipeThrough(stream as TransformStream<Uint8Array, Uint8Array> as any);
           await upload.finish();
 
-          let templistdone = currentUploadingList.current.slice();
+          let templistdone = fileUploadingList;
           let index = templistdone.findIndex((ele) => ele.id === toastID);
           if (index > -1) {
             templistdone[index].percent = 100;
+            templistdone[index].status = 'completed';
+            fileUploadingList = templistdone;
             setUploadingList(templistdone);
+            setProcessChange({})
           }
+
         } finally {
           release();
+
+          if (path == currentPathRef.current) {
+            accountSystem.getFolderMetadataByPath(currentPathRef.current).then(res => setFileList(res.files));
+          }
         }
       } catch (e) {
         console.error(e);
@@ -526,15 +555,19 @@ const FileManagePage = ({ history }) => {
 
   const selectFiles = React.useCallback(
     async (files) => {
-      let templist = currentUploadingList.current.slice();
+      let templist = fileUploadingList;
       isFileManaging();
 
       files.forEach((file) => {
         const path = pathGenerator(file);
         let toastID = file.size + file.name + path;
-        templist.push({ id: toastID, fileName: file.name, percent: 0 });
+        if (!templist.find(item => item.id === toastID)) {
+          templist.push({ id: toastID, fileName: file.name, percent: 0, status: 'active' });
+        }
       });
+      fileUploadingList = templist;
       setUploadingList(templist);
+      setProcessChange({})
 
       for (const file of files) {
         const path = pathGenerator(file);
@@ -1105,7 +1138,7 @@ const FileManagePage = ({ history }) => {
           </div>
           <div style={{ width: "100%" }}>
             <ul className="navbar-nav">
-              <UploadForm isAccountExpired={isAccountExpired} isDirectory={true} onSelected={selectFiles} showWarningModal={() => setShowWarningModal(true)}>
+            <UploadForm isAccountExpired={isAccountExpired} isDirectory={true} onSelected={selectFiles} showWarningModal={() => setShowWarningModal(true)}>
                 <li className="nav-item">
                   <span className="nav-icon nav-icon-folder"></span>
                   <Nav.Link>UPLOAD FOLDER</Nav.Link>
@@ -1471,10 +1504,14 @@ const FileManagePage = ({ history }) => {
       {uploadingList.length > 0 && (
         <UploadingNotification
           setUploadingList={() => {
+            fileUploadingList = [];
             setUploadingList([]);
+            setProcessChange({})
           }}
           notifications={uploadingList}
           uploadFinish={() => setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)}
+          onCancel={handleCancelUpload}
+          onCancelAll={handleCancelAllUpload}
         />
       )}
     </div>
