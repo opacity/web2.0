@@ -77,7 +77,7 @@ export const LANDING_PAGE_VIDEO =
 export const OPACITY_DRIVE_FOR_MAC =
   IS_LOCAL || IS_DEV || process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
     ? "https://opacity-public.s3.us-east-2.amazonaws.com/dev/Opacity-Desktop.dmg"
-    : "htps://opacity-public.s3.us-east-2.amazonatws.com/Opacity-Desktop.dmg";
+    : "https://opacity-public.s3.us-east-2.amazonaws.com/Opacity-Desktop.dmg";
 
 export const OPACITY_DRIVE_FOR_WINDOWS =
   IS_LOCAL || IS_DEV || process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
