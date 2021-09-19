@@ -1,7 +1,6 @@
 import opacityABI from "../contracts/opacity.abi.json";
 import Web3 from 'web3';
-
-const CONTRACT_ADDRESS = "0xDb05EA0877A2622883941b939f0bb11d1ac7c400";
+import { CONTRACT_ADDRESS } from "../config";
 
 declare global {
   interface Window {
