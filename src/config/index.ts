@@ -14,7 +14,7 @@ export const IS_LOCAL = process.env.NODE_ENV == NODE_ENV.LOCALHOST
 export const VERSION = process.env.VERSION ? process.env.VERSION : "local"
 
 export const CONTRACT_ADDRESS =
-  IS_DEV || IS_LOCAL
+  IS_LOCAL || IS_DEV || process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
     ? "0x50D97A13bEa3d8D722f72C53e93Ed1D6A1Af60d3" // Goerli
     : "0xDb05EA0877A2622883941b939f0bb11d1ac7c400" // Mainnet
 
