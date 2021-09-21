@@ -25,6 +25,7 @@ import MetamaskButton from "./metamask-button";
 import Metamask from "../../services/metamask";
 import { connect } from "react-redux";
 import metamaskActions from "../../redux/actions/metamask-actions";
+import moment from 'moment';
 
 const logo = require("../../assets/logo2.png");
 const loginSchema = Yup.object().shape({
@@ -38,6 +39,7 @@ type OtherProps = {
   openLoginModal: Function;
   openMetamask: Function;
   isForRenew?: boolean;
+  doRefresh?: Function;
 };
 type SignUpProps = {
   plan?: PlanType;
@@ -54,6 +56,7 @@ type SignUpProps = {
   account?: Account;
   isForUpgrade?: boolean;
   isForRenew?: boolean;
+  doRefresh?: Function;
 };
 type ConfirmationModalProps = {
   show: boolean;
@@ -108,6 +111,7 @@ const SignUpModal: React.FC<OtherProps> = ({
   openLoginModal,
   openMetamask,
   isForRenew = false,
+  doRefresh,
 }) => {
   const [handle, setHandle] = useState("");
   const [mnemonic, setMnemonic] = useState<string[]>([]);
@@ -291,6 +295,7 @@ const SignUpModal: React.FC<OtherProps> = ({
               isForUpgrade={(currentAccount && !isForRenew) && true}
               isForRenew={isForRenew}
               openMetamask={openMetamask}
+              doRefresh={() => doRefresh()}
             />
           )}
           {currentStep === 3 && (
@@ -300,6 +305,8 @@ const SignUpModal: React.FC<OtherProps> = ({
               goBack={goBack}
               goNext={goNext}
               handleOpenLoginModal={handleOpenLoginModal}
+              isForRenew={isForRenew}
+              account={account}
             />
           )}
         </Modal.Body>
@@ -476,7 +483,7 @@ const AccountHandle: React.FC<SignUpProps> = ({ plan, goBack, goNext, mnemonic, 
   );
 };
 
-const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, openMetamask, isForUpgrade, isForRenew }) => {
+const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, openMetamask, isForUpgrade, isForRenew, doRefresh }) => {
   const [isCopied, setIsCopied] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("crypto");
 
@@ -496,6 +503,7 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, op
         fileIDs: [],
       }
       account.waitForRenewPayment(renewForm).then(() => {
+        doRefresh && doRefresh();
         goNext();
       });
     } else {
@@ -609,8 +617,19 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, op
   );
 };
 
-const ConfirmPayment: React.FC<SignUpProps> = ({ plan, handle, handleOpenLoginModal }) => {
+const ConfirmPayment: React.FC<SignUpProps> = ({ plan, handle, handleOpenLoginModal, isForRenew, account }) => {
   const [isCopied, setIsCopied] = React.useState(false);
+  const [remainDate, setRemainDate] = React.useState('');
+
+  const loadInfo = useCallback(async () => {
+    const accountInfo = await account.info();
+    setRemainDate(moment(accountInfo.account.expirationDate).format("MMM D, YYYY"));
+  }, [])
+
+  useEffect(() => {
+    isForRenew && loadInfo();
+  }, [isForRenew])
+
   return (
     <div className="ConfirmPayment">
       <Row className="align-items-center ">
@@ -622,7 +641,11 @@ const ConfirmPayment: React.FC<SignUpProps> = ({ plan, handle, handleOpenLoginMo
               handleOpenLoginModal();
             }}
           >
-            Login now with your Account Handle
+            {
+              isForRenew
+              ? `Your subscription has been renew until ${remainDate}`
+              : "Login now with your Account Handle"
+            }
           </h3>
           <div>Opacity Account Handle</div>
           <Form.Group>
