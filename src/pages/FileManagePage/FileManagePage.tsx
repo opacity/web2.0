@@ -305,6 +305,17 @@ const FileManagePage = ({ history }) => {
     }
   }, [filesForZip]);
 
+  const doRefreshAfterRenew = React.useCallback(async () => {
+    try {
+      const accountInfo = await account.info();
+      setAccountInfo(accountInfo);
+      setAlertShow(false);
+    } catch (e) {
+      localStorage.clear();
+      history.push("/");
+    }
+  }, [account])
+
   const getFolderData = React.useCallback(async () => {
     try {
       const accountInfo = await account.info();
@@ -1042,7 +1053,7 @@ const FileManagePage = ({ history }) => {
 
 
       {showSignUpModal && currentPlan && (
-        <SignUpModal show={showSignUpModal} handleClose={() => setShowSignUpModal(false)} isForRenew={true} plan={currentPlan} />
+        <SignUpModal show={showSignUpModal} handleClose={() => setShowSignUpModal(false)} isForRenew={true} plan={currentPlan} doRefresh={doRefreshAfterRenew} />
       )}
 
       {openShareModal && (
@@ -1138,13 +1149,13 @@ const FileManagePage = ({ history }) => {
           </div>
           <div style={{ width: "100%" }}>
             <ul className="navbar-nav">
-            <UploadForm isAccountExpired={isAccountExpired} isDirectory={true} onSelected={selectFiles} showWarningModal={() => setShowWarningModal(true)}>
+              <UploadForm isAccountExpired={isAccountExpired} isDirectory={true} onSelected={selectFiles} showWarningModal={() => setShowWarningModal(true)}>
                 <li className="nav-item">
                   <span className="nav-icon nav-icon-folder"></span>
                   <Nav.Link>UPLOAD FOLDER</Nav.Link>
                 </li>
               </UploadForm>
-              <UploadForm  isAccountExpired={isAccountExpired}  isDirectory={false} onSelected={selectFiles} showWarningModal={() => setShowWarningModal(true)}>
+              <UploadForm isAccountExpired={isAccountExpired} isDirectory={false} onSelected={selectFiles} showWarningModal={() => setShowWarningModal(true)}>
                 <li className="nav-item">
                   <span className="nav-icon nav-icon-upload"></span>
                   <Nav.Link>UPLOAD FILE</Nav.Link>
