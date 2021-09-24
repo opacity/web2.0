@@ -135,6 +135,7 @@ const FileShareModal = ({
           const fileSystemObject = new FileSystemObject({
             handle: curFileMetadata.private.handle || undefined,
             location: curFileMetadata.public.location || undefined,
+            fileSize: curFileMetadata.size,
             config: {
               crypto: cryptoMiddleware,
               net: netMiddleware,
