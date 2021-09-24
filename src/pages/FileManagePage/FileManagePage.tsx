@@ -753,6 +753,32 @@ const FileManagePage = ({ history }) => {
     [accountSystem, updateCurrentFolderSwitch]
   );
 
+  const deleteMultiFile = React.useCallback(
+    async (files: FileMetadata[]) => {
+      isFileManaging();
+      try {
+        const fso = new FileSystemObject({
+          handle: files[0].private.handle,
+          location: undefined,
+          config: {
+            net: netMiddleware,
+            crypto: cryptoMiddleware,
+            storageNode: storageNode,
+          },
+        });
+        bindFileSystemObjectToAccountSystem(accountSystem, fso);
+        await fso.deleteMultiFile(files);
+        await accountSystem.removeMultiFile(files.map(item => item.location));
+        setFileToDelete(null);
+      } catch (e) {
+        await accountSystem.removeMultiFile(files.map(item => item.location));
+        setFileToDelete(null);
+        toast.error(`An error occurred while deleting selected files.`);
+      }
+    },
+    [accountSystem, updateCurrentFolderSwitch]
+  );
+
   const deleteFolder = React.useCallback(
     async (folder: FoldersIndexEntry) => {
       try {
@@ -866,9 +892,7 @@ const FileManagePage = ({ history }) => {
         setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
       }
     } else {
-      for (const file of selectedFiles) {
-        await deleteFile(file);
-      }
+      await deleteMultiFile(selectedFiles);
       OnfinishFileManaging();
       setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
       setSelectedFiles([]);
