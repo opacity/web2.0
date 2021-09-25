@@ -316,6 +316,7 @@ const SignUpModal: React.FC<OtherProps> = ({
         show={showConfirmationModal}
         handleClose={() => setShowConfirmationModal(false)}
         handleYes={() => {
+          account.cancelWaitForPayment()
           handleCloseOriginal();
         }}
       />
