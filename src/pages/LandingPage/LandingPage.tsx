@@ -21,6 +21,7 @@ const share = require("../../assets/share.png");
 // const stand = require("../../assets/stand.png");
 // const crypto = require("../../assets/crypto.png");
 const uniswap = require("../../assets/uniswap.png");
+const quickswap = require("../../assets/quickswap.png");
 // const mercatox = require("../../assets/mercatox.png");
 const kucoin = require("../../assets/kucoin.png");
 
@@ -346,7 +347,7 @@ const LandingPage = ({ history }) => {
       <div className="container-xl opct" data-aos="fade-up">
         <h1>Where to Buy OPCT</h1>
         <div className="row text-center align-items-center">
-          <div className="col-md-4">
+          <div className="col-md-6">
             <div className="card-item">
               <img src={kucoin} width={119} height={111} />
               <NavLink href="https://www.kucoin.com/trade/OPCT-USDT" target="_blank">
@@ -355,13 +356,13 @@ const LandingPage = ({ history }) => {
             </div>
           </div>
 
-          <div className="col-md-4">
+          <div className="col-md-6">
             <div className="card-item">
               <coingecko-coin-ticker-widget currency="usd" coin-id="opacity" locale="en"></coingecko-coin-ticker-widget>
             </div>
           </div>
 
-          <div className="col-md-4">
+          <div className="col-md-6">
             <div className="card-item">
               <img src={uniswap} width={107} height={109} />
               <NavLink
@@ -369,6 +370,18 @@ const LandingPage = ({ history }) => {
                 target="_blank"
               >
                 Buy OPCT on UNISWAP
+              </NavLink>
+            </div>
+          </div>
+
+          <div className="col-md-6">
+            <div className="card-item">
+              <img src={quickswap} width={107} height={109} />
+              <NavLink
+                href="https://info.quickswap.exchange/pair/0xFCEF650B29a3951EcFadb8364A9f7819Cd2e221a"
+                target="_blank"
+              >
+                Buy OPCT on QUICKSWAP
               </NavLink>
             </div>
           </div>
