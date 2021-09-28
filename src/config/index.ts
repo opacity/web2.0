@@ -90,6 +90,17 @@ export const OPACITY_DRIVE_FOR_WINDOWS =
     ? "https://opacity-public.s3.us-east-2.amazonaws.com/dev/Opacity-Desktop.exe"
     : "https://opacity-public.s3.us-east-2.amazonaws.com/Opacity-Desktop.exe"
 
+export const OPACITY_GO_FOR_ANDROID =
+  IS_LOCAL || IS_DEV || process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
+    ? "https://opacity-public.s3.us-east-2.amazonaws.com/dev/Opacity-Desktop.dmg"
+    : "https://opacity-public.s3.us-east-2.amazonaws.com/Opacity-Desktop.dmg";
+
+export const OPACITY_GO_FOR_IPHONE =
+  IS_LOCAL || IS_DEV || process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
+    ? "https://opacity-public.s3.us-east-2.amazonaws.com/dev/Opacity-Desktop.exe"
+    : "https://opacity-public.s3.us-east-2.amazonaws.com/Opacity-Desktop.exe"
+
+
 export enum HEADER_TYPES {
   LANDING_PAGE = "LANDING_PAGE",
   FILE_MANAGER = "FILE_MANAGER",

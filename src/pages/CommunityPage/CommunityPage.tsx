@@ -3,7 +3,7 @@ import { NavLink } from "tabler-react";
 import { Row, Col, Container } from "react-bootstrap";
 import SiteWrapper from "../../SiteWrapper";
 import "./CommunityPage.scss";
-import { OPACITY_DRIVE_FOR_MAC, OPACITY_DRIVE_FOR_WINDOWS } from "../../config";
+import { OPACITY_DRIVE_FOR_MAC, OPACITY_DRIVE_FOR_WINDOWS, OPACITY_GO_FOR_ANDROID, OPACITY_GO_FOR_IPHONE } from "../../config";
 
 const visitIcon = require("../../assets/visit.png");
 const storgeImage = require("../../assets/storage.png");
@@ -11,6 +11,8 @@ const storgeImage = require("../../assets/storage.png");
 const opqImage = require("../../assets/imgopq.png");
 // const olelog = require("../../assets/OcelotLogo.png");
 const logo = require("../../assets/logo2.png");
+const mobile_logo = require("../../assets/opacity-go-rocket.svg");
+const android_log = require("../../assets/opacity_mobile_android.svg");
 const winLogo = require("../../assets/win_log.svg");
 const macLogo = require("../../assets/mac_log.svg");
 
@@ -54,27 +56,30 @@ const PlansPage = ({ history }) => {
             </div>
           </Col>
 
+
           <Col md={6}>
             <div className="site-item pb-0">
               <div className="d-flex">
-                <img src={opqImage} width={108} height={108} />
+                <img src={mobile_logo} width={108} height={108} />
                 <span>
-                  <p className="item-link">imgopct.com</p>
+                  <p className="item-link">Opacity Drive for Desktop</p>
                   <p className="visit d-flex align-items-center">
-                    <img src={visitIcon} width={15} />
-                    <NavLink href="https://imgopct.com/" target="_blank">
-                      Visit
+                    <img src={android_log} width={16} />
+                    <NavLink href={OPACITY_GO_FOR_IPHONE} target="_blank">
+                      Download for iOS on Apple store
+                    </NavLink>
+                  </p>
+                  <p className="visit d-flex align-items-center">
+                    <img src={macLogo} width={16} />
+                    <NavLink href={OPACITY_GO_FOR_IPHONE} target="_blank">
+                      Download for Android on Play store
                     </NavLink>
                   </p>
                 </span>
               </div>
               <h5 className="mt-4 content">
-                imgOPCT is a public imageboard platform to share your images
-                uploaded on Opacity. It's hosted for the community by the
-                community. You can upload images and share them with the public
-                on the front page.
+                Our mobile experience is second to none. Opacity Go allows you to interact with your Opacity account when you are away from a computer. All our cutting edge privacy features stay with you to protect your files and photos while they sync automatically. And you can easily share privately with friends or publicly with social media in a snap!
               </h5>
-
             </div>
           </Col>
 
@@ -89,10 +94,7 @@ const PlansPage = ({ history }) => {
           <Col md={6} className="content-view">
             <div className="site-item pt-0">
               <h5 className="">
-                imgOPCT is a public imageboard platform to share your images
-                uploaded on Opacity. It's hosted for the community by the
-                community. You can upload images and share them with the public
-                on the front page.
+                Our mobile experience is second to none. Opacity Go allows you to interact with your Opacity account when you are away from a computer. All our cutting edge privacy features stay with you to protect your files and photos while they sync automatically. And you can easily share privately with friends or publicly with social media in a snap!
               </h5>
             </div>
           </Col>
@@ -118,6 +120,31 @@ const PlansPage = ({ history }) => {
               </h5>
             </div>
           </Col>
+
+          <Col md={6}>
+            <div className="site-item pb-0">
+              <div className="d-flex">
+                <img src={opqImage} width={108} height={108} />
+                <span>
+                  <p className="item-link">imgopct.com</p>
+                  <p className="visit d-flex align-items-center">
+                    <img src={visitIcon} width={15} />
+                    <NavLink href="https://imgopct.com/" target="_blank">
+                      Visit
+                    </NavLink>
+                  </p>
+                </span>
+              </div>
+              <h5 className="mt-4 content">
+                imgOPCT is a public imageboard platform to share your images
+                uploaded on Opacity. It's hosted for the community by the
+                community. You can upload images and share them with the public
+                on the front page.
+              </h5>
+
+            </div>
+          </Col>
+
         </Row>
         <Row>
           <h1>Developers: Build Your App on Opacity</h1>
