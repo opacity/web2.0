@@ -59,6 +59,10 @@ const Footer = () => {
               Downloads
             </NavLink>
             <br />
+            <NavLink href="https://opacitystora.ge/GalaxyWhitepaperV1" target="_blank">
+              Whitepaper
+            </NavLink>
+            <br />
             <NavLink href="https://medium.com/opacity-storage" target="_blank">
               Learn
             </NavLink>

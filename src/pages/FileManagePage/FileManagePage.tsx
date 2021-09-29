@@ -94,6 +94,7 @@ const logo = require("../../assets/logo2.png");
 
 let logoutTimeout;
 let fileUploadingList = [];
+let loadingFlagCnt = 0;
 
 const FileManagePage = ({ history }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -179,8 +180,6 @@ const FileManagePage = ({ history }) => {
     method: "down",
   });
   const [filesForZip, setFilesForZip] = React.useState([]);
-  const [totalItemsToDelete, setTotalItemsToDelete] = React.useState(0);
-  const [count, setCount] = React.useState(0);
   const [upgradeAvailable, setUpgradeAvailable] = React.useState(true);
   const [showSignUpModal, setShowSignUpModal] = React.useState(false);
   const [currentPlan, setCurrentPlan] = React.useState();
@@ -271,6 +270,7 @@ const FileManagePage = ({ history }) => {
     });
     setSubPaths(subpaths);
     setPageLoading(true);
+    loadingFlagCnt++;
 
     Promise.all([
       accountSystem.getFoldersInFolderByPath(currentPath),
@@ -279,8 +279,8 @@ const FileManagePage = ({ history }) => {
       .then(([folders, folderMeta]) => {
         setFolderList(folders);
         setFileList(folderMeta.files);
-        // console.log(folderMeta.files);
-        setPageLoading(false);
+        loadingFlagCnt--;
+        loadingFlagCnt === 0 && setPageLoading(false)
       })
       .catch((err) => {
         console.error(err);
@@ -318,6 +318,8 @@ const FileManagePage = ({ history }) => {
 
   const getFolderData = React.useCallback(async () => {
     try {
+      setPageLoading(true);
+      loadingFlagCnt++;
       const accountInfo = await account.info();
       setAccountInfo(accountInfo);
 
@@ -425,6 +427,8 @@ const FileManagePage = ({ history }) => {
       };
     }
     setTreeData(temp);
+    loadingFlagCnt--;
+    loadingFlagCnt === 0 && setPageLoading(false);
   }, [account, accountSystem]);
 
   const handleLogout = React.useCallback(() => {
@@ -753,27 +757,45 @@ const FileManagePage = ({ history }) => {
     [accountSystem, updateCurrentFolderSwitch]
   );
 
+  const deleteMultiFile = React.useCallback(
+    async (files: FileMetadata[]) => {
+      isFileManaging();
+      try {
+        const fso = new FileSystemObject({
+          handle: files[0].private.handle,
+          location: undefined,
+          config: {
+            net: netMiddleware,
+            crypto: cryptoMiddleware,
+            storageNode: storageNode,
+          },
+        });
+        bindFileSystemObjectToAccountSystem(accountSystem, fso);
+        await fso.deleteMultiFile(files);
+        await accountSystem.removeMultiFile(files.map(item => item.location));
+        setFileToDelete(null);
+      } catch (e) {
+        await accountSystem.removeMultiFile(files.map(item => item.location));
+        setFileToDelete(null);
+        toast.error(`An error occurred while deleting selected files.`);
+      }
+    },
+    [accountSystem, updateCurrentFolderSwitch]
+  );
+
   const deleteFolder = React.useCallback(
     async (folder: FoldersIndexEntry) => {
       try {
         const folders = await accountSystem.getFoldersInFolderByPath(folder.path);
         const folderMeta = await accountSystem.getFolderMetadataByPath(folder.path);
 
+        const fileMetaListInFolder = [];
         for (const file of folderMeta.files) {
           const metaFile = await accountSystem.getFileIndexEntryByFileMetadataLocation(file.location);
-          const fso = new FileSystemObject({
-            handle: metaFile.private.handle,
-            location: undefined,
-            config: {
-              net: netMiddleware,
-              crypto: cryptoMiddleware,
-              storageNode: storageNode,
-            },
-          });
-          bindFileSystemObjectToAccountSystem(accountSystem, fso);
-          await fso.delete();
-          setCount((count) => count + 1);
+          fileMetaListInFolder.push(metaFile)
         }
+
+        fileMetaListInFolder.length > 0 && await deleteMultiFile(fileMetaListInFolder)
 
         for (const folderItem of folders) {
           await deleteFolder(folderItem);
@@ -786,7 +808,7 @@ const FileManagePage = ({ history }) => {
         toast.error(`An error occurred while deleting Folder ${folder.path}.`);
       }
     },
-    [accountSystem, updateCurrentFolderSwitch]
+    [accountSystem]
   );
 
   const calculateTotalItems = async (folder: FoldersIndexEntry) => {
@@ -851,24 +873,17 @@ const FileManagePage = ({ history }) => {
     if (selectedFiles.length === 0) {
       if (folderToDelete) {
         isFileManaging();
-        setTotalItemsToDelete(await calculateTotalItems(folderToDelete));
-        setCount(0);
         await deleteFolder(folderToDelete);
         setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
         setFolderToDelete(null);
         OnfinishFileManaging();
-
-        setCount(0);
-        setTotalItemsToDelete(0);
       } else {
         await deleteFile(fileToDelete);
         OnfinishFileManaging();
         setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
       }
     } else {
-      for (const file of selectedFiles) {
-        await deleteFile(file);
-      }
+      await deleteMultiFile(selectedFiles);
       OnfinishFileManaging();
       setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
       setSelectedFiles([]);
@@ -1018,6 +1033,7 @@ const FileManagePage = ({ history }) => {
 
   const getFileMetaList = React.useCallback(async () => {
     setPageLoading(true);
+    loadingFlagCnt++;
     const metaList = fileList.map(async (file) => {
       return await accountSystem._getFileMetadata(file.location).then((f) => {
         return f;
@@ -1025,7 +1041,8 @@ const FileManagePage = ({ history }) => {
     });
     const tmp = await Promise.all(metaList);
     setFileMetaList(tmp);
-    setPageLoading(false);
+    loadingFlagCnt--;
+    loadingFlagCnt === 0 && setPageLoading(false)
   }, [fileList]);
 
   React.useEffect(() => {
@@ -1034,6 +1051,7 @@ const FileManagePage = ({ history }) => {
 
   const getFolderMetaList = React.useCallback(async () => {
     setPageLoading(true);
+    loadingFlagCnt++;
     const metaList = folderList.map(async (folder) => {
       return await accountSystem._getFolderMetadataByLocation(folder.location).then((f) => {
         return f;
@@ -1041,7 +1059,8 @@ const FileManagePage = ({ history }) => {
     });
     const tmp = await Promise.all(metaList);
     setFolderMetaList(tmp);
-    setPageLoading(false);
+    loadingFlagCnt--;
+    loadingFlagCnt === 0 && setPageLoading(false)
   }, [folderList]);
 
   React.useEffect(() => {
@@ -1077,20 +1096,10 @@ const FileManagePage = ({ history }) => {
       )}
 
       {pageLoading &&
-        (totalItemsToDelete ? (
-          <div className="loading">
-            <div className="w-50">
-              <ProgressBar striped now={((count ? count : 0) / totalItemsToDelete) * 100} animated />
-              <h2 className="percentage-text text-center">
-                {(((count ? count : 0) / totalItemsToDelete) * 100).toFixed(1)}%
-              </h2>
-            </div>
-          </div>
-        ) : (
-          <div className="loading">
-            <ReactLoading type="spinningBubbles" color="#2e6dde" />
-          </div>
-        ))}
+        <div className="loading">
+          <ReactLoading type="spinningBubbles" color="#2e6dde" />
+        </div>
+      }
 
       <div className="mobile-header">
         <button

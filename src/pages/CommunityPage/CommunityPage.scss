@@ -102,6 +102,10 @@
             line-height: 136%;
           }
         }
+        &.no-link {
+          text-decoration: unset !important;
+          color: black;
+        }
       }
       .item-link {
         font-weight: 600;
