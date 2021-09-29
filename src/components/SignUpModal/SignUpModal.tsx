@@ -77,7 +77,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         <Modal.Title>Are you sure you want to close this window?</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        Note: OPCT payment may take time to complete on the Ethereum blockchain depending on gas provided and network
+        Note: OPCT payment may take time to complete on the blockchain depending on gas provided and network
         activity. If you close the window, you will need to start a new transaction
       </Modal.Body>
       <Modal.Footer>
@@ -558,12 +558,12 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, op
               funds. Only send {plan.opctCost} OPCT. Sending more may also result in loss of funds.
             </div>
             <div className="payment-content">
-              Once your payment is sent, it may take some time to confirm your payment on the Ethereum network. We will
+              Once your payment is sent, it may take some time to confirm your payment on the network. We will
               confirm receipt and complete setup of your account once the network transaction is confirmed. Please be
               patient.
             </div>
             <ProgressBar striped now={100} animated />
-            <div className="send-email">Send {plan.opctCost} OPCT to Ethereum Address:</div>
+            <div className="send-email">Send {plan.opctCost} OPCT to Address:</div>
             <div className="form-group">
               <div className="account-handle">{invoice.ethAddress}</div>
               <CopyToClipboard text={invoice.ethAddress} onCopy={() => invoice.ethAddress && setIsCopied(true)}>
