@@ -92,13 +92,13 @@ export const OPACITY_DRIVE_FOR_WINDOWS =
 
 export const OPACITY_GO_FOR_ANDROID =
   IS_LOCAL || IS_DEV || process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
-    ? "https://opacity-public.s3.us-east-2.amazonaws.com/dev/Opacity-Desktop.dmg"
-    : "https://opacity-public.s3.us-east-2.amazonaws.com/Opacity-Desktop.dmg";
+    ? "https://play.google.com/apps/testing/com.opacity"
+    : "https://play.google.com/apps/testing/com.opacity";
 
 export const OPACITY_GO_FOR_IPHONE =
   IS_LOCAL || IS_DEV || process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
-    ? "https://opacity-public.s3.us-east-2.amazonaws.com/dev/Opacity-Desktop.exe"
-    : "https://opacity-public.s3.us-east-2.amazonaws.com/Opacity-Desktop.exe"
+    ? "https://testflight.apple.com/join/6BCYLiFO"
+    : "https://testflight.apple.com/join/6BCYLiFO"
 
 
 export enum HEADER_TYPES {
