@@ -94,6 +94,7 @@ const logo = require("../../assets/logo2.png");
 
 let logoutTimeout;
 let fileUploadingList = [];
+let loadingFlagCnt = 0;
 
 const FileManagePage = ({ history }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -269,6 +270,7 @@ const FileManagePage = ({ history }) => {
     });
     setSubPaths(subpaths);
     setPageLoading(true);
+    loadingFlagCnt++;
 
     Promise.all([
       accountSystem.getFoldersInFolderByPath(currentPath),
@@ -277,8 +279,8 @@ const FileManagePage = ({ history }) => {
       .then(([folders, folderMeta]) => {
         setFolderList(folders);
         setFileList(folderMeta.files);
-        // console.log(folderMeta.files);
-        setPageLoading(false);
+        loadingFlagCnt--;
+        loadingFlagCnt === 0 && setPageLoading(false)
       })
       .catch((err) => {
         console.error(err);
@@ -316,6 +318,8 @@ const FileManagePage = ({ history }) => {
 
   const getFolderData = React.useCallback(async () => {
     try {
+      setPageLoading(true);
+      loadingFlagCnt++;
       const accountInfo = await account.info();
       setAccountInfo(accountInfo);
 
@@ -423,6 +427,8 @@ const FileManagePage = ({ history }) => {
       };
     }
     setTreeData(temp);
+    loadingFlagCnt--;
+    loadingFlagCnt === 0 && setPageLoading(false);
   }, [account, accountSystem]);
 
   const handleLogout = React.useCallback(() => {
@@ -1027,6 +1033,7 @@ const FileManagePage = ({ history }) => {
 
   const getFileMetaList = React.useCallback(async () => {
     setPageLoading(true);
+    loadingFlagCnt++;
     const metaList = fileList.map(async (file) => {
       return await accountSystem._getFileMetadata(file.location).then((f) => {
         return f;
@@ -1034,7 +1041,8 @@ const FileManagePage = ({ history }) => {
     });
     const tmp = await Promise.all(metaList);
     setFileMetaList(tmp);
-    setPageLoading(false);
+    loadingFlagCnt--;
+    loadingFlagCnt === 0 && setPageLoading(false)
   }, [fileList]);
 
   React.useEffect(() => {
@@ -1043,6 +1051,7 @@ const FileManagePage = ({ history }) => {
 
   const getFolderMetaList = React.useCallback(async () => {
     setPageLoading(true);
+    loadingFlagCnt++;
     const metaList = folderList.map(async (folder) => {
       return await accountSystem._getFolderMetadataByLocation(folder.location).then((f) => {
         return f;
@@ -1050,7 +1059,8 @@ const FileManagePage = ({ history }) => {
     });
     const tmp = await Promise.all(metaList);
     setFolderMetaList(tmp);
-    setPageLoading(false);
+    loadingFlagCnt--;
+    loadingFlagCnt === 0 && setPageLoading(false)
   }, [folderList]);
 
   React.useEffect(() => {
