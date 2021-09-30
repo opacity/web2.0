@@ -347,7 +347,7 @@ const LandingPage = ({ history }) => {
       <div className="container-xl opct" data-aos="fade-up">
         <h1>Where to Buy OPCT</h1>
         <div className="row text-center align-items-center">
-          <div className="col-md-6">
+          <div className="col-md-6 right">
             <div className="card-item">
               <img src={kucoin} width={119} height={111} />
               <NavLink href="https://www.kucoin.com/trade/OPCT-USDT" target="_blank">
@@ -356,13 +356,13 @@ const LandingPage = ({ history }) => {
             </div>
           </div>
 
-          <div className="col-md-6">
+          <div className="col-md-6 left">
             <div className="card-item">
               <coingecko-coin-ticker-widget currency="usd" coin-id="opacity" locale="en"></coingecko-coin-ticker-widget>
             </div>
           </div>
 
-          <div className="col-md-6">
+          <div className="col-md-6 right">
             <div className="card-item">
               <img src={uniswap} width={107} height={109} />
               <NavLink
@@ -374,7 +374,7 @@ const LandingPage = ({ history }) => {
             </div>
           </div>
 
-          <div className="col-md-6">
+          <div className="col-md-6 left">
             <div className="card-item">
               <img src={quickswap} width={107} height={109} />
               <NavLink
