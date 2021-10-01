@@ -418,8 +418,9 @@
           font-size: 18px;
           line-height: 30px;
           color: #2e6dde;
-           font-weight: 600;
-           margin-right: 10px;
+          font-weight: 600;
+          margin-right: 10px;
+          margin-bottom: 8px;
           @media (max-width: 767.7px) {
             font-size: 15px;
             line-height: 22px;
@@ -463,16 +464,18 @@
           flex-direction: column;
           justify-content: space-between;
           @media (max-width: 767.7px) {
-            flex-direction: row;
+            // flex-direction: row;
             flex: 100%;
           }
         }
         .d-flex {
           align-items: center;
           margin-bottom: 20px;
+          float: right;
           @media (max-width: 767.7px) {
-            flex-direction: column;
-            align-items: flex-start;
+            // flex-direction: column;
+            // align-items: flex-start;
+            float: unset;
             margin-bottom: 0;
             div {
               width: 100%;
@@ -554,6 +557,14 @@
             @media (max-width: 767.7px) {
               font-size: 16px;
               line-height: 24px;
+            }
+          }
+          .redeem-button {
+            float: right;
+            margin-right: 10px;
+            @media (max-width: 767.7px) {
+              float: unset;
+              margin-right: unset;
             }
           }
         }
