@@ -26,6 +26,11 @@ import Metamask from "../../services/metamask";
 import { connect } from "react-redux";
 import metamaskActions from "../../redux/actions/metamask-actions";
 import moment from 'moment';
+import Chain from "./Chain/Chain";
+import ChainData from "../../config/chains.json";
+
+
+const fetcher = (...args) => fetch(...args).then(res => res.json())
 
 const logo = require("../../assets/logo2.png");
 const loginSchema = Yup.object().shape({
@@ -77,7 +82,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         <Modal.Title>Are you sure you want to close this window?</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        Note: OPCT payment may take time to complete on the Ethereum blockchain depending on gas provided and network
+        Note: OPCT payment may take time to complete on the blockchain depending on gas provided and network
         activity. If you close the window, you will need to start a new transaction
       </Modal.Body>
       <Modal.Footer>
@@ -487,6 +492,11 @@ const AccountHandle: React.FC<SignUpProps> = ({ plan, goBack, goNext, mnemonic, 
 const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, openMetamask, isForUpgrade, isForRenew, doRefresh }) => {
   const [isCopied, setIsCopied] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("crypto");
+  const [networkName, setNetworkName] = useState("No Network");
+  // const [tokenAddress, setTokenAddress] = useState(null)
+  const [networkData, setNetworkData] = useState([]);
+  
+  const [selectedChain, setSelectedChain] = useState(null)
 
   React.useEffect(() => {
     if (isForUpgrade) {
@@ -512,7 +522,25 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, op
         goNext();
       });
     }
+
+    account.getSmartContracts().then((data) => {
+      setNetworkData(data)
+    })
   }, []);
+
+  const handleChangeNetwork = (netName) => {
+    // setTokenAddress
+    setNetworkName(netName);
+
+    const chain = ChainData.find((chain) => {
+      return (chain.chain.toLowerCase().includes(netName.toLowerCase()) ||
+        chain.chainId.toString().toLowerCase().includes(netName.toLowerCase()) ||
+        chain.name.toLowerCase().includes(netName.toLowerCase()) ||
+        (chain.nativeCurrency ? chain.nativeCurrency.symbol : '').toLowerCase().includes(netName.toLowerCase()))
+    });
+
+    setSelectedChain(chain)
+  }
 
   const handleStripeSuccess = async (stripeToken) => {
     const res = await account.createSubscription({ stripeToken });
@@ -558,12 +586,12 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, op
               funds. Only send {plan.opctCost} OPCT. Sending more may also result in loss of funds.
             </div>
             <div className="payment-content">
-              Once your payment is sent, it may take some time to confirm your payment on the Ethereum network. We will
+              Once your payment is sent, it may take some time to confirm your payment on the network. We will
               confirm receipt and complete setup of your account once the network transaction is confirmed. Please be
               patient.
             </div>
             <ProgressBar striped now={100} animated />
-            <div className="send-email">Send {plan.opctCost} OPCT to Ethereum Address:</div>
+            <div className="send-email">Send {plan.opctCost} OPCT to Address:</div>
             <div className="form-group">
               <div className="account-handle">{invoice.ethAddress}</div>
               <CopyToClipboard text={invoice.ethAddress} onCopy={() => invoice.ethAddress && setIsCopied(true)}>
@@ -577,15 +605,33 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, op
                 Purchase here
               </span>
             </div>
+            <div className="d-flex">
+              <div className="select-net">Please select network to pay.</div>
+              <Dropdown>
+                <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                  {networkName}
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  {
+                    networkData.map(item => {
+                      return (
+                        <Dropdown.Item as="button" onClick={(e) => handleChangeNetwork(e.target.textContent)}>{item?.network}</Dropdown.Item>
+                      )
+                    })
+                  }
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
             <div className="row qrcode">
               <Col>
                 <h1 className="subtitle-bottom-effect">Other Ways To Pay</h1>
-                {Metamask.isInstalled && (
+                {selectedChain && <Chain chain={selectedChain} invoice={invoice}/>}
+                {/* {Metamask.isInstalled && (
                   <div className="center">
                     <MetamaskButton onClick={() => openMetamask({ ...invoice, gasPrice: 20 })} />
                     <span className="or">or</span>
                   </div>
-                )}
+                )} */}
                 <Redeem planName={plan.name} ethAddress={invoice.ethAddress} />
               </Col>
               <Col>
@@ -644,8 +690,8 @@ const ConfirmPayment: React.FC<SignUpProps> = ({ plan, handle, handleOpenLoginMo
           >
             {
               isForRenew
-              ? `Your subscription has been renew until ${remainDate}`
-              : "Login now with your Account Handle"
+                ? `Your subscription has been renew until ${remainDate}`
+                : "Login now with your Account Handle"
             }
           </h3>
           <div>Opacity Account Handle</div>
