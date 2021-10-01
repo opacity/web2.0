@@ -97,7 +97,8 @@ const Chain = ({ chain, invoice, tokenAddress, openMetamask }) => {
 
   useEffect(() => {
     tryConnectWallet()
-  }, [])
+    setIsConnected(false)
+  }, [chain])
 
   return (
     <div className="chainContainer">
