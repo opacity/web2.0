@@ -575,7 +575,7 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, op
         </div>
         {paymentMethod === "crypto" && (
           <div>
-            <h3>Send Payment with OPCT</h3>
+            <h3>Send Payment with OPCT using Ethereum or Polygon network</h3>
             <div className="payment-content">
               Use the Opacity Storage Token, OPCT, to pay for your storage account. Send your total amount of{" "}
               {plan.opctCost} OPCT to the address below or you may use MetaMask to easily make your payment right in
