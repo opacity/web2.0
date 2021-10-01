@@ -413,6 +413,18 @@
             line-height: 22px;
           }
         }
+
+        .select-net {
+          font-size: 18px;
+          line-height: 30px;
+          color: #2e6dde;
+           font-weight: 600;
+           margin-right: 10px;
+          @media (max-width: 767.7px) {
+            font-size: 15px;
+            line-height: 22px;
+          }
+        }
       }
       .qrcode {
         text-align: center;
