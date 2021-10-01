@@ -96,7 +96,7 @@ const Chain = ({ chain, invoice, contractAddress, openMetamask }) => {
   }
 
   useEffect(() => {
-    tryConnectWallet()
+    // tryConnectWallet()
     setIsConnected(false)
   }, [chain])
 
