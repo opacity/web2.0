@@ -11,14 +11,15 @@ const metamaskAccountEpic = action$ =>
   action$.pipe(
     ofType(metamaskActions.CREATE_TRANSACTION),
     mergeMap(({ payload }) => {
-      const { cost, ethAddress, gasPrice } = payload;
+      const { cost, ethAddress, gasPrice, contractAddress } = payload;
       return fromPromise(MetamaskService.fetchDefaultMetamaskAccount()).pipe(
         map(account =>
           metamaskActions.paymentPending({
             to: ethAddress,
             from: account,
             cost,
-            gasPrice
+            gasPrice,
+            contractAddress,
           })
         ),
         catchError(error => of(metamaskActions.accountError({ error })))
@@ -30,13 +31,14 @@ const metamaskTransactionEpic = action$ =>
   action$.pipe(
     ofType(metamaskActions.PAYMENT_PENDING),
     mergeMap(({ payload }) => {
-      const { from, to, cost, gasPrice } = payload;
+      const { from, to, cost, gasPrice, contractAddress } = payload;
       return fromPromise(
         MetamaskService.sendTransaction({
           cost,
           to,
           from,
           gasPrice,
+          contractAddress,
         })
       ).pipe(
         map(() => metamaskActions.paymentSuccess()),

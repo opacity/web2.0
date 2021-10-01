@@ -12,13 +12,13 @@ const ACTIONS = Object.freeze({
   PAYMENT_SUCCESS,
   PAYMENT_ERROR,
 
-  createTransaction: ({ cost, ethAddress, gasPrice }) => ({
+  createTransaction: ({ cost, ethAddress, gasPrice, contractAddress }) => ({
     type: ACTIONS.CREATE_TRANSACTION,
-    payload: { cost, ethAddress, gasPrice }
+    payload: { cost, ethAddress, gasPrice, contractAddress }
   }),
-  paymentPending: ({ to, from, cost, gasPrice }) => ({
+  paymentPending: ({ to, from, cost, gasPrice, contractAddress }) => ({
     type: ACTIONS.PAYMENT_PENDING,
-    payload: { to, from, cost, gasPrice }
+    payload: { to, from, cost, gasPrice, contractAddress }
   }),
   accountError: ({ error }) => ({
     type: ACTIONS.ACCOUNT_ERROR,

@@ -65,7 +65,7 @@ const Redeem = ({ ethAddress, planName }: RedeemProps) => {
 		planNameToCodeName({ planName })
 			? (
 				<>
-					<div className='d-flex'>
+					<div className="d-flex">
 						<h4>OPCT{planNameToCodeName({ planName })}</h4>
 						<div>
 							<input
@@ -76,6 +76,7 @@ const Redeem = ({ ethAddress, planName }: RedeemProps) => {
 						</div>
 					</div>
 					<Button
+						className="redeem-button"
 						disabled={disabled}
 						variant='primary'
 						onClick={() => redeemCode({ code, ethAddress, planName })}
