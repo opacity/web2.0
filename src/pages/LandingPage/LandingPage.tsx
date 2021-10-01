@@ -78,10 +78,10 @@ const LandingPage = ({ history }) => {
 
   React.useEffect(() => {
     const configuration = {
-      from: "ETH",
-      to: "0xDb05EA0877A2622883941b939f0bb11d1ac7c400",
-      fromChain: "ETH",
-      toChain: "ETH",
+      from: "MATIC",
+      to: "0xce6bF09e5c7A3E65B84F88DcC6475c88d38BA5eF",
+      fromChain: "POLYGON",
+      toChain: "POLYGON",
       amount: 1,
       iframe: "vertical",
       hideSelectionFrom: false,
