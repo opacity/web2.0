@@ -3,7 +3,7 @@ import { NavLink } from "tabler-react";
 import { Row, Col, Container } from "react-bootstrap";
 import SiteWrapper from "../../SiteWrapper";
 import "./CommunityPage.scss";
-import { OPACITY_DRIVE_FOR_MAC, OPACITY_DRIVE_FOR_WINDOWS, OPACITY_GO_FOR_ANDROID, OPACITY_GO_FOR_IPHONE } from "../../config";
+import { OPACITY_DRIVE_FOR_MAC, OPACITY_DRIVE_FOR_WINDOWS, OPACITY_GO_FOR_ANDROID, OPACITY_GO_FOR_IPHONE, IS_DEV } from "../../config";
 
 const visitIcon = require("../../assets/visit.png");
 const storgeImage = require("../../assets/storage.png");
@@ -62,18 +62,27 @@ const PlansPage = ({ history }) => {
               <div className="d-flex">
                 <img src={mobile_logo} width={108} height={108} />
                 <span>
-                  <p className="item-link">Opacity Drive for Desktop</p>
-                  <p className="visit d-flex align-items-center">
+                  <p className="item-link">Opacity Go for Mobile</p>
+                  <p className={`visit d-flex align-items-center ${!IS_DEV && "no-link"}`}>
                     <img src={android_log} width={16} />
-                    <NavLink href={OPACITY_GO_FOR_IPHONE} target="_blank">
-                      Download for iOS on Apple store
-                    </NavLink>
+                    {
+                      !IS_DEV
+                        ? "Coming Soon"
+                        : <NavLink href={OPACITY_GO_FOR_ANDROID} target="_blank">
+                          Download for Android on Play store
+                          </NavLink>
+                    }
                   </p>
-                  <p className="visit d-flex align-items-center">
+
+                  <p className={`visit d-flex align-items-center ${!IS_DEV && "no-link"}`}>
                     <img src={macLogo} width={16} />
-                    <NavLink href={OPACITY_GO_FOR_IPHONE} target="_blank">
-                      Download for Android on Play store
-                    </NavLink>
+                    {
+                      !IS_DEV
+                        ? "Coming Soon"
+                        : <NavLink href={OPACITY_GO_FOR_IPHONE} target="_blank">
+                            Download for iOS on Apple store
+                          </NavLink>
+                    }
                   </p>
                 </span>
               </div>
@@ -135,7 +144,7 @@ const PlansPage = ({ history }) => {
                   </p>
                 </span>
               </div>
-              <h5 className="mt-4 content">
+              <h5 className="mt-4">
                 imgOPCT is a public imageboard platform to share your images
                 uploaded on Opacity. It's hosted for the community by the
                 community. You can upload images and share them with the public

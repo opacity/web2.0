@@ -20,7 +20,7 @@ img {
     font-size: 45px;
     line-height: 67px;
     letter-spacing: 0.05em;
-    margin-bottom: 80px;
+    margin-bottom: 40px;
     text-align: center;
     @media (max-width: 767.9px) {
       margin-bottom: 10px;
@@ -671,7 +671,7 @@ img {
 }
 
 .opct {
-  padding-bottom: 100px;
+  padding-bottom: 50px;
   margin-bottom: 20px;
   margin-top: 80px;
   h1 {
@@ -684,14 +684,29 @@ img {
       margin-bottom: 38px;
     }
   }
+
+  @media (min-width: 767.9px) {
+    .col-md-6 {
+      display: flex;
+      &.left {
+        justify-content: flex-start;
+        padding-left: 80px;
+      }
+      &.right {
+        justify-content: flex-end;
+        padding-right: 80px;
+      }
+    }
+  }
+
   .card-item {
     width: 300px;
-    margin: auto;
+    // margin: auto;
     padding: 20px;
     border: 1px solid #f4f4f4;
     border-radius: 0px 50px;
-    margin-top: 80px;
-    margin-bottom: 20px;
+    margin-top: 40px;
+    margin-bottom: 10px;
     &:hover {
       // transform: scale(1.1);
       // transition: transform 4.8s cubic-bezier(0.33, 1, 0.68, 1);
@@ -723,11 +738,12 @@ img {
   @media (max-width: 767.9px) {
     padding-bottom: 0;
     margin-bottom: 50px;
-    .col-md-4 {
+    .col-md-6 {
       padding-left: 35px;
       padding-right: 35px;
       .card-item {
         width: 100%;
+        margin: auto;
         margin-bottom: 30px;
         margin-top: 0;
         padding: 40px 0;

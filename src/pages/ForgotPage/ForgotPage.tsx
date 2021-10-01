@@ -31,7 +31,7 @@ const ForgotPage = ({ history }) => {
       setRecoveryHandle(bytesToHex(handle));
     } else {
       setErrors({
-        privateKey: "Totally 12 words need!",
+        privateKey: "Please enter your 12 word phrase with a comma or single space between each word.",
       });
     }
   };
