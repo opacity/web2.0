@@ -25,12 +25,11 @@ import MetamaskButton from "./metamask-button";
 import Metamask from "../../services/metamask";
 import { connect } from "react-redux";
 import metamaskActions from "../../redux/actions/metamask-actions";
-import moment from 'moment';
+import moment from "moment";
 import Chain from "./Chain/Chain";
 import ChainData from "../../config/chains.json";
 
-
-const fetcher = (...args) => fetch(...args).then(res => res.json())
+const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 const logo = require("../../assets/logo2.png");
 const loginSchema = Yup.object().shape({
@@ -73,8 +72,8 @@ type ConfirmationModalProps = {
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   show,
   handleClose,
-  handleYes = () => { },
-  handleNo = () => { },
+  handleYes = () => {},
+  handleNo = () => {},
 }) => {
   return (
     <Modal show={show} onHide={handleClose} dialogClassName="confirmation-modal" centered>
@@ -82,8 +81,8 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         <Modal.Title>Are you sure you want to close this window?</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        Note: OPCT payment may take time to complete on the blockchain depending on gas provided and network
-        activity. If you close the window, you will need to start a new transaction
+        Note: OPCT payment may take time to complete on the blockchain depending on gas provided and network activity.
+        If you close the window, you will need to start a new transaction
       </Modal.Body>
       <Modal.Footer>
         <Button
@@ -222,7 +221,6 @@ const SignUpModal: React.FC<OtherProps> = ({
         } else {
           upgradeAccount().then(() => setStep(2));
         }
-
       } else {
         createMnemonic().then(async (res) => {
           setMnemonic(res);
@@ -248,7 +246,7 @@ const SignUpModal: React.FC<OtherProps> = ({
     setAccount(account);
     const invoice = await account.renewAccount({ duration: 12 });
     setInvoiceData(invoice);
-  }
+  };
 
   return (
     <>
@@ -297,7 +295,7 @@ const SignUpModal: React.FC<OtherProps> = ({
               invoice={invoiceData}
               goBack={goBack}
               goNext={goNext}
-              isForUpgrade={(currentAccount && !isForRenew) && true}
+              isForUpgrade={currentAccount && !isForRenew && true}
               isForRenew={isForRenew}
               openMetamask={openMetamask}
               doRefresh={() => doRefresh()}
@@ -321,7 +319,7 @@ const SignUpModal: React.FC<OtherProps> = ({
         show={showConfirmationModal}
         handleClose={() => setShowConfirmationModal(false)}
         handleYes={() => {
-          account.cancelWaitForPayment()
+          account.cancelWaitForPayment();
           handleCloseOriginal();
         }}
       />
@@ -489,14 +487,23 @@ const AccountHandle: React.FC<SignUpProps> = ({ plan, goBack, goNext, mnemonic, 
   );
 };
 
-const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, openMetamask, isForUpgrade, isForRenew, doRefresh }) => {
+const SendPayment: React.FC<SignUpProps> = ({
+  goNext,
+  plan,
+  invoice,
+  account,
+  openMetamask,
+  isForUpgrade,
+  isForRenew,
+  doRefresh,
+}) => {
   const [isCopied, setIsCopied] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("crypto");
   const [networkName, setNetworkName] = useState("No Network");
   // const [tokenAddress, setTokenAddress] = useState(null)
   const [networkData, setNetworkData] = useState([]);
-  
-  const [selectedChain, setSelectedChain] = useState(null)
+
+  const [selectedChain, setSelectedChain] = useState(null);
 
   React.useEffect(() => {
     if (isForUpgrade) {
@@ -512,7 +519,7 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, op
       const renewForm = {
         metadataKeys: [],
         fileIDs: [],
-      }
+      };
       account.waitForRenewPayment(renewForm).then(() => {
         doRefresh && doRefresh();
         goNext();
@@ -524,8 +531,8 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, op
     }
 
     account.getSmartContracts().then((data) => {
-      setNetworkData(data)
-    })
+      setNetworkData(data);
+    });
   }, []);
 
   const handleChangeNetwork = (netName) => {
@@ -533,14 +540,16 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, op
     setNetworkName(netName);
 
     const chain = ChainData.find((chain) => {
-      return (chain.chain.toLowerCase().includes(netName.toLowerCase()) ||
+      return (
+        chain.chain.toLowerCase().includes(netName.toLowerCase()) ||
         chain.chainId.toString().toLowerCase().includes(netName.toLowerCase()) ||
         chain.name.toLowerCase().includes(netName.toLowerCase()) ||
-        (chain.nativeCurrency ? chain.nativeCurrency.symbol : '').toLowerCase().includes(netName.toLowerCase()))
+        (chain.nativeCurrency ? chain.nativeCurrency.symbol : "").toLowerCase().includes(netName.toLowerCase())
+      );
     });
 
-    setSelectedChain(chain)
-  }
+    setSelectedChain(chain);
+  };
 
   const handleStripeSuccess = async (stripeToken) => {
     const res = await account.createSubscription({ stripeToken });
@@ -586,9 +595,8 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, op
               funds. Only send {plan.opctCost} OPCT. Sending more may also result in loss of funds.
             </div>
             <div className="payment-content">
-              Once your payment is sent, it may take some time to confirm your payment on the network. We will
-              confirm receipt and complete setup of your account once the network transaction is confirmed. Please be
-              patient.
+              Once your payment is sent, it may take some time to confirm your payment on the network. We will confirm
+              receipt and complete setup of your account once the network transaction is confirmed. Please be patient.
             </div>
             <ProgressBar striped now={100} animated />
             <div className="send-email">Send {plan.opctCost} OPCT to Address:</div>
@@ -605,27 +613,11 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, op
                 Purchase here
               </span>
             </div>
-            <div className="d-flex">
-              <div className="select-net">Please select network to pay.</div>
-              <Dropdown>
-                <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                  {networkName}
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  {
-                    networkData.map(item => {
-                      return (
-                        <Dropdown.Item as="button" onClick={(e) => handleChangeNetwork(e.target.textContent)}>{item?.network}</Dropdown.Item>
-                      )
-                    })
-                  }
-                </Dropdown.Menu>
-              </Dropdown>
-            </div>
+
             <div className="row qrcode">
               <Col>
                 <h1 className="subtitle-bottom-effect">Other Ways To Pay</h1>
-                {selectedChain && <Chain chain={selectedChain} invoice={invoice}/>}
+                {selectedChain && <Chain chain={selectedChain} invoice={invoice} />}
                 {/* {Metamask.isInstalled && (
                   <div className="center">
                     <MetamaskButton onClick={() => openMetamask({ ...invoice, gasPrice: 20 })} />
@@ -666,16 +658,16 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, op
 
 const ConfirmPayment: React.FC<SignUpProps> = ({ plan, handle, handleOpenLoginModal, isForRenew, account }) => {
   const [isCopied, setIsCopied] = React.useState(false);
-  const [remainDate, setRemainDate] = React.useState('');
+  const [remainDate, setRemainDate] = React.useState("");
 
   const loadInfo = useCallback(async () => {
     const accountInfo = await account.info();
     setRemainDate(moment(accountInfo.account.expirationDate).format("MMM D, YYYY"));
-  }, [])
+  }, []);
 
   useEffect(() => {
     isForRenew && loadInfo();
-  }, [isForRenew])
+  }, [isForRenew]);
 
   return (
     <div className="ConfirmPayment">
@@ -688,11 +680,7 @@ const ConfirmPayment: React.FC<SignUpProps> = ({ plan, handle, handleOpenLoginMo
               handleOpenLoginModal();
             }}
           >
-            {
-              isForRenew
-                ? `Your subscription has been renew until ${remainDate}`
-                : "Login now with your Account Handle"
-            }
+            {isForRenew ? `Your subscription has been renew until ${remainDate}` : "Login now with your Account Handle"}
           </h3>
           <div>Opacity Account Handle</div>
           <Form.Group>
