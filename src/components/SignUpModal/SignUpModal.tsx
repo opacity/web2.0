@@ -26,6 +26,11 @@ import Metamask from "../../services/metamask";
 import { connect } from "react-redux";
 import metamaskActions from "../../redux/actions/metamask-actions";
 import moment from 'moment';
+import Chain from "./Chain/Chain";
+import ChainData from "../../config/chains.json";
+
+
+const fetcher = (...args) => fetch(...args).then(res => res.json())
 
 const logo = require("../../assets/logo2.png");
 const loginSchema = Yup.object().shape({
@@ -487,6 +492,11 @@ const AccountHandle: React.FC<SignUpProps> = ({ plan, goBack, goNext, mnemonic, 
 const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, openMetamask, isForUpgrade, isForRenew, doRefresh }) => {
   const [isCopied, setIsCopied] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("crypto");
+  const [networkName, setNetworkName] = useState("No Network");
+  // const [tokenAddress, setTokenAddress] = useState(null)
+  const [networkData, setNetworkData] = useState([]);
+  
+  const [selectedChain, setSelectedChain] = useState(null)
 
   React.useEffect(() => {
     if (isForUpgrade) {
@@ -512,7 +522,25 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, op
         goNext();
       });
     }
+
+    account.getSmartContracts().then((data) => {
+      setNetworkData(data)
+    })
   }, []);
+
+  const handleChangeNetwork = (netName) => {
+    // setTokenAddress
+    setNetworkName(netName);
+
+    const chain = ChainData.find((chain) => {
+      return (chain.chain.toLowerCase().includes(netName.toLowerCase()) ||
+        chain.chainId.toString().toLowerCase().includes(netName.toLowerCase()) ||
+        chain.name.toLowerCase().includes(netName.toLowerCase()) ||
+        (chain.nativeCurrency ? chain.nativeCurrency.symbol : '').toLowerCase().includes(netName.toLowerCase()))
+    });
+
+    setSelectedChain(chain)
+  }
 
   const handleStripeSuccess = async (stripeToken) => {
     const res = await account.createSubscription({ stripeToken });
@@ -577,15 +605,33 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, op
                 Purchase here
               </span>
             </div>
+            <div className="d-flex">
+              <div className="select-net">Please select network to pay.</div>
+              <Dropdown>
+                <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                  {networkName}
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  {
+                    networkData.map(item => {
+                      return (
+                        <Dropdown.Item as="button" onClick={(e) => handleChangeNetwork(e.target.textContent)}>{item?.network}</Dropdown.Item>
+                      )
+                    })
+                  }
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
             <div className="row qrcode">
               <Col>
                 <h1 className="subtitle-bottom-effect">Other Ways To Pay</h1>
-                {Metamask.isInstalled && (
+                {selectedChain && <Chain chain={selectedChain} invoice={invoice}/>}
+                {/* {Metamask.isInstalled && (
                   <div className="center">
                     <MetamaskButton onClick={() => openMetamask({ ...invoice, gasPrice: 20 })} />
                     <span className="or">or</span>
                   </div>
-                )}
+                )} */}
                 <Redeem planName={plan.name} ethAddress={invoice.ethAddress} />
               </Col>
               <Col>
@@ -644,8 +690,8 @@ const ConfirmPayment: React.FC<SignUpProps> = ({ plan, handle, handleOpenLoginMo
           >
             {
               isForRenew
-              ? `Your subscription has been renew until ${remainDate}`
-              : "Login now with your Account Handle"
+                ? `Your subscription has been renew until ${remainDate}`
+                : "Login now with your Account Handle"
             }
           </h3>
           <div>Opacity Account Handle</div>

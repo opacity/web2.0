@@ -98,7 +98,7 @@ const LandingPage = ({ history }) => {
     Object.freeze(configuration);
 
     // create widget
-    rubicWidget.init(configuration);
+    // rubicWidget.init(configuration);
   }, []);
 
   const handleCloseSignUpModal = () => {
