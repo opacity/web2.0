@@ -20,7 +20,7 @@ const toHex = (num) => {
   return '0x' + num.toString(16)
 }
 
-const Chain = ({ chain, invoice, tokenAddress, openMetamask }) => {
+const Chain = ({ chain, invoice, contractAddress, openMetamask }) => {
   const [account, setAccount] = useState(null)
   const [isConnected, setIsConnected] = useState(false);
 
@@ -103,31 +103,11 @@ const Chain = ({ chain, invoice, tokenAddress, openMetamask }) => {
   return (
     <div className="chainContainer">
       <div className="chainNameContainer">
-        <img
-          src={logo}
-          onError={e => {
-            e.target.onerror = null;
-            e.target.src = { logo };
-          }}
-          width={28}
-          height={28}
-          className="avatar"
-        />
         <h3 className="name" >{chain.name}</h3>
-      </div>
-      <div className="chainInfoContainer">
-        <div className="dataPoint">
-          <span className="dataPointHeader" >ChainID</span><br />
-          <strong>{chain.chainId}</strong>
-        </div>
-        <div className="dataPoint">
-          <span className="dataPointHeader">Currency</span><br />
-          <strong>{chain.nativeCurrency ? chain.nativeCurrency.symbol : 'none'}</strong>
-        </div>
       </div>
       {
         isConnected ?
-          <MetamaskButton onClick={() => openMetamask({ ...invoice, gasPrice: 20 })} />
+          <MetamaskButton onClick={() => openMetamask({ ...invoice, gasPrice: 20, contractAddress })} />
           :
           <div className="addButton">
             <Button
@@ -144,8 +124,8 @@ const Chain = ({ chain, invoice, tokenAddress, openMetamask }) => {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  openMetamask: ({ cost, ethAddress, gasPrice }) =>
-    dispatch(metamaskActions.createTransaction({ cost, ethAddress, gasPrice })),
+  openMetamask: ({ cost, ethAddress, gasPrice, contractAddress }) =>
+    dispatch(metamaskActions.createTransaction({ cost, ethAddress, gasPrice, contractAddress })),
 });
 
 export default connect(null, mapDispatchToProps)(Chain);

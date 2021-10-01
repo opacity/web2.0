@@ -72,8 +72,8 @@ type ConfirmationModalProps = {
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   show,
   handleClose,
-  handleYes = () => {},
-  handleNo = () => {},
+  handleYes = () => { },
+  handleNo = () => { },
 }) => {
   return (
     <Modal show={show} onHide={handleClose} dialogClassName="confirmation-modal" centered>
@@ -500,10 +500,9 @@ const SendPayment: React.FC<SignUpProps> = ({
   const [isCopied, setIsCopied] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("crypto");
   const [networkName, setNetworkName] = useState("No Network");
-  // const [tokenAddress, setTokenAddress] = useState(null)
+  const [selectedNetwork, setSelectedNetwork] = useState(null);
   const [networkData, setNetworkData] = useState([]);
 
-  const [selectedChain, setSelectedChain] = useState(null);
 
   React.useEffect(() => {
     if (isForUpgrade) {
@@ -531,24 +530,22 @@ const SendPayment: React.FC<SignUpProps> = ({
     }
 
     account.getSmartContracts().then((data) => {
-      setNetworkData(data);
+      const wrapNetData = data.map(item => {
+        const chain = ChainData.find((chain) => chain.chainId === item.chainId);
+
+        return {
+          ...item,
+          network: chain.name,
+          chain: chain,
+        }
+      })
+      setNetworkData(wrapNetData);
     });
   }, []);
 
-  const handleChangeNetwork = (netName) => {
-    // setTokenAddress
-    setNetworkName(netName);
-
-    const chain = ChainData.find((chain) => {
-      return (
-        chain.chain.toLowerCase().includes(netName.toLowerCase()) ||
-        chain.chainId.toString().toLowerCase().includes(netName.toLowerCase()) ||
-        chain.name.toLowerCase().includes(netName.toLowerCase()) ||
-        (chain.nativeCurrency ? chain.nativeCurrency.symbol : "").toLowerCase().includes(netName.toLowerCase())
-      );
-    });
-
-    setSelectedChain(chain);
+  const handleChangeNetwork = (net) => {
+    setSelectedNetwork(net);
+    setNetworkName(net.network);
   };
 
   const handleStripeSuccess = async (stripeToken) => {
@@ -616,20 +613,31 @@ const SendPayment: React.FC<SignUpProps> = ({
 
             <div className="row qrcode">
               <Col>
-                <h1 className="subtitle-bottom-effect">Other Ways To Pay</h1>
-                {selectedChain && <Chain chain={selectedChain} invoice={invoice} />}
-                {/* {Metamask.isInstalled && (
-                  <div className="center">
-                    <MetamaskButton onClick={() => openMetamask({ ...invoice, gasPrice: 20 })} />
-                    <span className="or">or</span>
-                  </div>
-                )} */}
-                <Redeem planName={plan.name} ethAddress={invoice.ethAddress} />
+                <h1 className="subtitle-bottom-effect">Pay with Metamask</h1>
+                <div className="">
+                  <div className="select-net">Choose your payment network</div>
+                  <Dropdown>
+                    <Dropdown.Toggle variant="default" id="dropdown-basic">
+                      {networkName}
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      {
+                        networkData.map(item => {
+                          return (
+                            <Dropdown.Item as="button" onClick={(e) => handleChangeNetwork(item)}>{item?.network}</Dropdown.Item>
+                          )
+                        })
+                      }
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </div>
+                {selectedNetwork && <Chain chain={selectedNetwork.chain} contractAddress={selectedNetwork.address} invoice={invoice} />}
               </Col>
               <Col>
                 <div className="scan">
-                  <h3 className="subtitle-bottom-effect">Scan QR code to pay</h3>
-                  <QRCode
+                  <h1 className="subtitle-bottom-effect">Pay with gift code</h1>
+                  <Redeem planName={plan.name} ethAddress={invoice.ethAddress} />
+                  {/* <QRCode
                     value={invoice.ethAddress}
                     size={200}
                     renderAs="svg"
@@ -638,7 +646,7 @@ const SendPayment: React.FC<SignUpProps> = ({
                     level="H"
                     color="#ffffff"
                     includeMargin={true}
-                  />
+                  /> */}
                 </div>
               </Col>
             </div>
