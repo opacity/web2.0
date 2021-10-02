@@ -26,7 +26,7 @@ const sendTransaction = ({ cost, from, to, gasPrice, contractAddress }) =>
   new Promise((resolve, reject) => {
     const web3 = new Web3(window.ethereum);
     const opacityContract = new web3.eth.Contract(opacityABI, contractAddress)
-    opacityContract.methods.transfer(to, web3.utils.toWei(cost.toString(), "wei"))
+    opacityContract.methods.transfer(to, web3.utils.toWei(cost.toString(), "ether"))
       .send(
         {
           from,
