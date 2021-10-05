@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import metamaskActions from "../../../redux/actions/metamask-actions";
 import Web3 from 'web3';
 import MetamaskButton from "../metamask-button";
-
+import { ToastContainer, toast } from "react-toastify";
 const logo = require("../../../assets/unknown-chain.png");
 
 
@@ -32,8 +32,7 @@ const Chain = ({ chain, invoice, contractAddress, openMetamask }) => {
         const accounts = await web3.eth.getAccounts();
         setAccount(accounts[0]);
       } catch (error) {
-        console.log(error, 'error on try to connect')
-        // User denied account access...
+        toast.error("Error on try to connect");
       }
     }
     // Legacy dapp browsers...
@@ -44,7 +43,7 @@ const Chain = ({ chain, invoice, contractAddress, openMetamask }) => {
     }
     // Non-dapp browsers...
     else {
-      console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+      toast.error("Non-Ethereum browser detected. You should consider trying MetaMask!");
     }
   }, [])
 
@@ -75,8 +74,7 @@ const Chain = ({ chain, invoice, contractAddress, openMetamask }) => {
           setIsConnected(true);
         })
         .catch((error) => {
-          // stores.emitter.emit(ERROR, error.message ? error.message : error)
-          console.log(error)
+          toast.error(error?.message)
         });
     })
   }
@@ -118,6 +116,14 @@ const Chain = ({ chain, invoice, contractAddress, openMetamask }) => {
           </div>
       }
 
+      <ToastContainer
+        pauseOnHover={false}
+        draggable={true}
+        progressClassName="toast-progress-bar"
+        bodyClassName="toast-body"
+        position="bottom-right"
+        hideProgressBar
+      />
     </div>
   )
 }
