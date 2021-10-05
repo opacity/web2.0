@@ -635,7 +635,7 @@ const SendPayment: React.FC<SignUpProps> = ({
               </Col>
               <Col>
                 <div className="scan">
-                  <h1 className="subtitle-bottom-effect">Pay with Gift code</h1>
+                  <h1 className="subtitle-bottom-effect">Pay with Gift Code</h1>
                   <Redeem planName={plan.name} ethAddress={invoice.ethAddress} />
                   {/* <QRCode
                     value={invoice.ethAddress}
