@@ -90,13 +90,12 @@ const Chain = ({ chain, invoice, contractAddress, openMetamask }) => {
       }
       return providerTextList[getProvider()]
     } else {
-      return 'Connect wallet'
+      return 'Connect Wallet'
     }
 
   }
 
   useEffect(() => {
-    // tryConnectWallet()
     setIsConnected(false)
   }, [chain])
 
