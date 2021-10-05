@@ -662,7 +662,7 @@ const FileManagePage = ({ history }) => {
           });
 
           // more optimized
-          if ("WritableStream" in window && s.pipeTo && !isMultiple) {
+          if (s.pipeTo && !isMultiple) {
             console.log("pipe");
             s.pipeTo(fileStream as WritableStream<Uint8Array>)
               .then(() => {
@@ -1362,7 +1362,7 @@ const FileManagePage = ({ history }) => {
                           handleDeleteItem={handleDeleteItem}
                           handleOpenRenameModal={handleOpenRenameModal}
                           downloadItem={async (f) => {
-                            await fileDownload(f);
+                            await fileDownload(f, false);
                             OnfinishFileManaging();
                           }}
                           handleSelectFile={handleSelectFile}
