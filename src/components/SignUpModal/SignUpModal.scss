@@ -471,7 +471,6 @@
         .d-flex {
           align-items: center;
           margin-bottom: 20px;
-          float: right;
           @media (max-width: 767.7px) {
             // flex-direction: column;
             // align-items: flex-start;
@@ -561,7 +560,7 @@
           }
           .redeem-button {
             float: right;
-            margin-right: 10px;
+            margin-right: 30px;
             @media (max-width: 767.7px) {
               float: unset;
               margin-right: unset;
