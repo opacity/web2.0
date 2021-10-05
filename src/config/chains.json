@@ -3433,7 +3433,7 @@
         "networkId": 78110
     },
     {
-        "name": "Matic(Polygon) Testnet Mumbai",
+        "name": "Polygon Testnet",
         "chain": "Matic(Polygon)",
         "network": "testnet",
         "rpc": [
