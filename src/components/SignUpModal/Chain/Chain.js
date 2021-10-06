@@ -87,8 +87,29 @@ const Chain = ({ chain, invoice, contractAddress, openMetamask }) => {
     account && !isConnected && checkChain();
   }, [account])
 
-  const renderProviderText = () => {
+  useEffect(() => {
+    const events = ["disconnect", "accountsChanged", "chainChanged"];
 
+    const resetStatus = (event) => (value) => {
+      if (event === "chainChanged" && value === toHex(chain.chainId)) {
+        return
+      }
+      setIsConnected(false);
+      setAccount(null);
+    };
+
+    for (let i in events) {
+      window.ethereum.on(events[i], resetStatus(events[i]));
+    }
+
+    return () => {
+      for (let i in events) {
+        window.ethereum.removeListener(events[i], () => { });
+      }
+    }
+  }, []);
+
+  const renderProviderText = () => {
     if (account) {
       const providerTextList = {
         Metamask: 'Add to Metamask',
@@ -98,7 +119,6 @@ const Chain = ({ chain, invoice, contractAddress, openMetamask }) => {
     } else {
       return 'Connect Wallet'
     }
-
   }
 
   useEffect(() => {
