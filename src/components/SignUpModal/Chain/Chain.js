@@ -6,7 +6,6 @@ import metamaskActions from "../../../redux/actions/metamask-actions";
 import Web3 from 'web3';
 import MetamaskButton from "../metamask-button";
 import { ToastContainer, toast } from "react-toastify";
-const logo = require("../../../assets/unknown-chain.png");
 
 
 const getProvider = () => {
@@ -78,6 +77,15 @@ const Chain = ({ chain, invoice, contractAddress, openMetamask }) => {
         });
     })
   }
+
+  const checkChain = useCallback(async () => {
+    const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+    setIsConnected(chainId === toHex(chain.chainId) ? true : false)
+  }, [])
+
+  useEffect(() => {
+    account && !isConnected && checkChain();
+  }, [account])
 
   const renderProviderText = () => {
 
