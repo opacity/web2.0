@@ -46,7 +46,6 @@ import {
   bindPublicShareToAccountSystem,
 } from "../../../ts-client-library/packages/filesystem-access/src/account-system-binding";
 import { UploadEvents, UploadProgressEvent } from "../../../ts-client-library/packages/filesystem-access/src/events";
-import { FILE_MAX_SIZE } from "../../config";
 import RenameModal from "../../components/RenameModal/RenameModal";
 import DeleteModal from "../../components/DeleteModal/DeleteModal";
 import WarningModal from "../../components/WarningModal/WarningModal";
@@ -885,23 +884,10 @@ const FileManagePage = ({ history }) => {
     [currentPath]
   );
 
-  const maxFileValidator = (file) => {
-    if (file.size > FILE_MAX_SIZE) {
-      setShowWarningModal(true);
-
-      return {
-        code: "size-too-large",
-        message: `Some files are greater then 2GB!`,
-      };
-    }
-  };
-
   const { isDragActive, fileRejections, getRootProps } = useDropzone({
     onDrop,
     minSize: 0,
-    maxSize: FILE_MAX_SIZE,
     multiple: true,
-    validator: maxFileValidator,
     disabled: isAccountExpired,
   });
 
@@ -1541,8 +1527,6 @@ const UploadForm = ({ children, onSelected, isDirectory, showWarningModal, isAcc
     const filesLength = files.length;
     uploadForm.current!.reset();
     if (files.length > 0) {
-      files = files.filter((file) => file.size <= FILE_MAX_SIZE);
-      files.length !== filesLength && showWarningModal();
       onSelected(files);
     }
   };
