@@ -24,6 +24,7 @@ const uniswap = require("../../assets/uniswap.png");
 const quickswap = require("../../assets/quickswap.png");
 // const mercatox = require("../../assets/mercatox.png");
 const kucoin = require("../../assets/kucoin.png");
+const poweredByPolygon = require("../../assets/powered-by-polygon-white.svg");
 
 const LandingPage = ({ history }) => {
   const [showSignUpModal, setShowSignUpModal] = useState(false);
@@ -167,6 +168,12 @@ const LandingPage = ({ history }) => {
               </div>
               <div className="col-md-10 banner-text">
                 No personal information required. Get 10GB file storage and file sharing for free
+              </div>
+
+              <div className="col-md-10 powered-by-polygon">
+                <a href="https://polygon.technology/">
+                  <img src={poweredByPolygon} />
+                </a>
               </div>
             </div>
             <div className="col-md-6">
