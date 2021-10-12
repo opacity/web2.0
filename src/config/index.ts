@@ -75,6 +75,8 @@ export const THIRD_PARTY = Object.freeze({
   COINMARKETCAP: "https://opacity.io/widget.php",
 });
 
+export const WHITEPAPER_HELP_URL = "https://help.opacity.io/help/opacity-galaxy-whitepaper"
+
 export const LANDING_PAGE_VIDEO =
   "https://s3.us-east-2.amazonaws.com/opacity-public/whatIsOpacity.mov";
 
