@@ -122,6 +122,19 @@ img {
       display: none;
     }
   }
+  .powered-by-polygon {
+    cursor: pointer;
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+
+    @media (max-width: 767.9px) {
+      img {
+        display: block;
+        margin-bottom: 40px;
+      }
+    }
+  }
   .description {
     font-size: 18px;
     line-height: 26px;
