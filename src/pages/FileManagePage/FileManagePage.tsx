@@ -58,10 +58,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { FileManagerFileEntryGrid, FileManagerFileEntryList } from "../../components/FileManager/FileManagerFileEntry";
 import { posix } from "path-browserify";
-import {
-  FileManagerFolderEntryGrid,
-  FileManagerFolderEntryList,
-} from "../../components/FileManager/FileManagerFolderEntry";
+import { FileManagerFolderEntryGrid, FileManagerFolderEntryList } from "../../components/FileManager/FileManagerFolderEntry";
 import FileShareModal from "../../components/FileManager/FileShareModal";
 import { useDropzone } from "react-dropzone";
 import ReactLoading from "react-loading";
@@ -169,7 +166,7 @@ const FileManagePage = ({ history }) => {
   const [selectedFiles, setSelectedFiles] = React.useState<FileMetadata[]>([]);
   const [alertText, setAlertText] = React.useState("There are 30 days remaining on your account. ");
   const [alertLinkText, setAlertLinkText] = React.useState("Upgrade now to a paid plan.");
-  const [alertLink, setAlertLink] = React.useState('renew');
+  const [alertLink, setAlertLink] = React.useState("renew");
   const [alertShow, setAlertShow] = React.useState(false);
   const [openShareModal, setOpenShareModal] = React.useState(false);
   const [shareMode, setShareMode] = React.useState<"private" | "public">("private");
@@ -280,7 +277,7 @@ const FileManagePage = ({ history }) => {
         setFolderList(folders);
         setFileList(folderMeta.files);
         loadingFlagCnt--;
-        loadingFlagCnt === 0 && setPageLoading(false)
+        loadingFlagCnt === 0 && setPageLoading(false);
       })
       .catch((err) => {
         console.error(err);
@@ -314,7 +311,7 @@ const FileManagePage = ({ history }) => {
       localStorage.clear();
       history.push("/");
     }
-  }, [account])
+  }, [account]);
 
   const getFolderData = React.useCallback(async () => {
     try {
@@ -335,7 +332,7 @@ const FileManagePage = ({ history }) => {
         }
       }
       setUpgradeAvailable(idx < plansApi.length - 1);
-      const curPlanIndex = plansApi.findIndex(item => item.storageInGB === limitStorage)
+      const curPlanIndex = plansApi.findIndex((item) => item.storageInGB === limitStorage);
       if (curPlanIndex >= 0) {
         const { cost, costInUSD, storageInGB, name } = plansApi[curPlanIndex];
         setCurrentPlan({
@@ -344,30 +341,29 @@ const FileManagePage = ({ history }) => {
           usdCost: costInUSD,
           storageInGB,
           name,
-        })
+        });
       }
 
       if ((limitStorage / 10) * 9 < usedStorage) {
         setIsStorageWarning(true);
         setAlertText(`You have used ${((usedStorage / limitStorage) * 100).toFixed(2)}% of your plan. `);
         setAlertLinkText("Upgrade now to get more space.");
-        setAlertLink('plans');
+        setAlertLink("plans");
         setAlertShow(true);
       }
       if (remainDays < 30) {
-        moment(accountInfo.account.expirationDate).isAfter(moment(Date.now())) && setIsAccountExpired(true)
+        moment(accountInfo.account.expirationDate).isAfter(moment(Date.now())) && setIsAccountExpired(true);
 
         setAlertText(`There are ${remainDays} days remaining on your account. `);
         if (limitStorage === 10) {
           setAlertLinkText("Upgrade now to a paid plan.");
-          setAlertLink('plans');
+          setAlertLink("plans");
         } else {
           setAlertLinkText("Renew now to prevent losing access to your data.");
-          setAlertLink('renew');
+          setAlertLink("renew");
         }
         setAlertShow(true);
       }
-
     } catch (e) {
       localStorage.clear();
       history.push("/");
@@ -438,41 +434,46 @@ const FileManagePage = ({ history }) => {
 
   const relativePath = React.useCallback((path: string) => path.substr(0, path.lastIndexOf("/")), []);
 
-  const handleCancelUpload = React.useCallback(async (item) => {
-    let currentID = currentUploader?.metadata?.size + currentUploader?.name + currentUploader?.path
-    let cancelledId
-    if (currentID === item.id) {
-      await currentUploader.cancel()
-      cancelledId = currentID
-    } else {
-      cancelledId = item.id
-    }
-    let templist = fileUploadingList;
-    let index = templist.findIndex((ele) => ele.id === cancelledId);
-    if (index > -1) {
-      templist[index].percent = 100;
-      templist[index].status = 'cancelled';
-      fileUploadingList = templist;
-      setUploadingList(templist);
-      setProcessChange({})
-    }
-  }, [currentUploader])
+  const handleCancelUpload = React.useCallback(
+    async (item) => {
+      let currentID = currentUploader?.metadata?.size + currentUploader?.name + currentUploader?.path;
+      let cancelledId;
+      if (currentID === item.id) {
+        await currentUploader.cancel();
+        cancelledId = currentID;
+      } else {
+        cancelledId = item.id;
+      }
+      let templist = fileUploadingList;
+      let index = templist.findIndex((ele) => ele.id === cancelledId);
+      if (index > -1) {
+        templist[index].percent = 100;
+        templist[index].status = "cancelled";
+        fileUploadingList = templist;
+        setUploadingList(templist);
+        setProcessChange({});
+      }
+    },
+    [currentUploader]
+  );
 
   const handleCancelAllUpload = React.useCallback(async () => {
-    if (fileUploadingList.find(item => item.percent !== 100)) {
-      await currentUploader.cancel()
-      let templist = fileUploadingList.map(item => {
-        return item.percent !== 100 ? {
-          ...item,
-          percent: 100,
-          status: 'cancelled'
-        } : item
+    if (fileUploadingList.find((item) => item.percent !== 100)) {
+      await currentUploader.cancel();
+      let templist = fileUploadingList.map((item) => {
+        return item.percent !== 100
+          ? {
+              ...item,
+              percent: 100,
+              status: "cancelled",
+            }
+          : item;
       });
       fileUploadingList = templist;
       setUploadingList(templist);
-      setProcessChange({})
+      setProcessChange({});
     }
-  }, [currentUploader])
+  }, [currentUploader]);
 
   const fileUploadMutex = React.useMemo(() => new Mutex(), []);
   const uploadFile = React.useCallback(
@@ -480,8 +481,8 @@ const FileManagePage = ({ history }) => {
       try {
         let toastID = file.size + file.name + path;
         let index = fileUploadingList.findIndex((ele) => ele.id === toastID);
-        if (index > -1 && fileUploadingList[index].status === 'cancelled') {
-          return
+        if (index > -1 && fileUploadingList[index].status === "cancelled") {
+          return;
         }
 
         const release = await fileUploadMutex.acquire();
@@ -496,7 +497,7 @@ const FileManagePage = ({ history }) => {
           name: file.name,
           path: path,
         });
-        setCurrentUploader(upload)
+        setCurrentUploader(upload);
         // side effects
         bindUploadToAccountSystem(accountSystem, upload);
 
@@ -505,10 +506,10 @@ const FileManagePage = ({ history }) => {
           let index = templist.findIndex((ele) => ele.id === toastID);
           if (index > -1) {
             templist[index].percent = e.detail.progress * 100;
-            templist[index].status = 'uploading';
+            templist[index].status = "uploading";
             fileUploadingList = templist;
             setUploadingList(templist);
-            setProcessChange({})
+            setProcessChange({});
           }
         });
 
@@ -525,32 +526,23 @@ const FileManagePage = ({ history }) => {
           let index = templistdone.findIndex((ele) => ele.id === toastID);
           if (index > -1) {
             templistdone[index].percent = 100;
-            templistdone[index].status = 'completed';
+            templistdone[index].status = "completed";
             fileUploadingList = templistdone;
             setUploadingList(templistdone);
-            setProcessChange({})
+            setProcessChange({});
           }
-
         } finally {
           release();
 
           if (path == currentPathRef.current) {
-            accountSystem.getFolderMetadataByPath(currentPathRef.current).then(res => setFileList(res.files));
+            accountSystem.getFolderMetadataByPath(currentPathRef.current).then((res) => setFileList(res.files));
           }
         }
       } catch (e) {
         console.error(e);
       }
     },
-    [
-      accountSystem,
-      cryptoMiddleware,
-      netMiddleware,
-      storageNode,
-      updateCurrentFolderSwitch,
-      updateFolderEntrySwitch,
-      updateFileEntrySwitch,
-    ]
+    [accountSystem, cryptoMiddleware, netMiddleware, storageNode, updateCurrentFolderSwitch, updateFolderEntrySwitch, updateFileEntrySwitch]
   );
 
   const pathGenerator = React.useCallback(
@@ -558,12 +550,12 @@ const FileManagePage = ({ history }) => {
       return file.name === (file.path || file.webkitRelativePath || file.name)
         ? currentPath
         : currentPath === "/"
-          ? file.webkitRelativePath
-            ? currentPath + relativePath(file.webkitRelativePath)
-            : relativePath(file.path)
-          : file.webkitRelativePath
-            ? currentPath + "/" + relativePath(file.webkitRelativePath)
-            : currentPath + relativePath(file.path);
+        ? file.webkitRelativePath
+          ? currentPath + relativePath(file.webkitRelativePath)
+          : relativePath(file.path)
+        : file.webkitRelativePath
+        ? currentPath + "/" + relativePath(file.webkitRelativePath)
+        : currentPath + relativePath(file.path);
     },
     [currentPath]
   );
@@ -576,13 +568,13 @@ const FileManagePage = ({ history }) => {
       files.forEach((file) => {
         const path = pathGenerator(file);
         let toastID = file.size + file.name + path;
-        if (!templist.find(item => item.id === toastID)) {
-          templist.push({ id: toastID, fileName: file.name, percent: 0, status: 'active' });
+        if (!templist.find((item) => item.id === toastID)) {
+          templist.push({ id: toastID, fileName: file.name, percent: 0, status: "active" });
         }
       });
       fileUploadingList = templist;
       setUploadingList(templist);
-      setProcessChange({})
+      setProcessChange({});
 
       for (const file of files) {
         const path = pathGenerator(file);
@@ -598,9 +590,7 @@ const FileManagePage = ({ history }) => {
       setPageLoading(true);
       try {
         setShowNewFolderModal(false);
-        const status = await accountSystem.addFolder(
-          currentPath === "/" ? currentPath + folderName : currentPath + "/" + folderName
-        );
+        const status = await accountSystem.addFolder(currentPath === "/" ? currentPath + folderName : currentPath + "/" + folderName);
         toast(`Folder ${folderName} was successfully created.`);
         setPageLoading(false);
         setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
@@ -651,9 +641,7 @@ const FileManagePage = ({ history }) => {
           // side effects
           bindDownloadToAccountSystem(accountSystem, d);
 
-          const fileStream = polyfillWritableStreamIfNeeded<Uint8Array>(
-            streamsaver.createWriteStream(file.name, { size: file.size })
-          );
+          const fileStream = polyfillWritableStreamIfNeeded<Uint8Array>(streamsaver.createWriteStream(file.name, { size: file.size }));
           const s = await d.start();
 
           d.finish().then(() => {
@@ -772,10 +760,10 @@ const FileManagePage = ({ history }) => {
         });
         bindFileSystemObjectToAccountSystem(accountSystem, fso);
         await fso.deleteMultiFile(files);
-        await accountSystem.removeMultiFile(files.map(item => item.location));
+        await accountSystem.removeMultiFile(files.map((item) => item.location));
         setFileToDelete(null);
       } catch (e) {
-        await accountSystem.removeMultiFile(files.map(item => item.location));
+        await accountSystem.removeMultiFile(files.map((item) => item.location));
         setFileToDelete(null);
         toast.error(`An error occurred while deleting selected files.`);
       }
@@ -792,10 +780,10 @@ const FileManagePage = ({ history }) => {
         const fileMetaListInFolder = [];
         for (const file of folderMeta.files) {
           const metaFile = await accountSystem.getFileIndexEntryByFileMetadataLocation(file.location);
-          fileMetaListInFolder.push(metaFile)
+          fileMetaListInFolder.push(metaFile);
         }
 
-        fileMetaListInFolder.length > 0 && await deleteMultiFile(fileMetaListInFolder)
+        fileMetaListInFolder.length > 0 && (await deleteMultiFile(fileMetaListInFolder));
 
         for (const folderItem of folders) {
           await deleteFolder(folderItem);
@@ -1012,9 +1000,7 @@ const FileManagePage = ({ history }) => {
         break;
       case "type":
         setFileList(
-          [...fileMetaList]
-            .sort((a, b) => compareType(a, b, method, "file"))
-            .map((item) => ({ location: item.location, name: item.name }))
+          [...fileMetaList].sort((a, b) => compareType(a, b, method, "file")).map((item) => ({ location: item.location, name: item.name }))
         );
         // folderList.sort((a, b) => compareName(a, b, method, 'folder'))
         break;
@@ -1042,7 +1028,7 @@ const FileManagePage = ({ history }) => {
     const tmp = await Promise.all(metaList);
     setFileMetaList(tmp);
     loadingFlagCnt--;
-    loadingFlagCnt === 0 && setPageLoading(false)
+    loadingFlagCnt === 0 && setPageLoading(false);
   }, [fileList]);
 
   React.useEffect(() => {
@@ -1060,19 +1046,25 @@ const FileManagePage = ({ history }) => {
     const tmp = await Promise.all(metaList);
     setFolderMetaList(tmp);
     loadingFlagCnt--;
-    loadingFlagCnt === 0 && setPageLoading(false)
+    loadingFlagCnt === 0 && setPageLoading(false);
   }, [folderList]);
 
   React.useEffect(() => {
     getFolderMetaList();
   }, [folderList, getFolderMetaList]);
 
+  const lastFour = localStorage.getItem("key")?.slice(-4);
+
   return (
     <div className="page">
-
-
       {showSignUpModal && currentPlan && (
-        <SignUpModal show={showSignUpModal} handleClose={() => setShowSignUpModal(false)} isForRenew={true} plan={currentPlan} doRefresh={doRefreshAfterRenew} />
+        <SignUpModal
+          show={showSignUpModal}
+          handleClose={() => setShowSignUpModal(false)}
+          isForRenew={true}
+          plan={currentPlan}
+          doRefresh={doRefreshAfterRenew}
+        />
       )}
 
       {openShareModal && (
@@ -1095,11 +1087,11 @@ const FileManagePage = ({ history }) => {
         />
       )}
 
-      {pageLoading &&
+      {pageLoading && (
         <div className="loading">
           <ReactLoading type="spinningBubbles" color="#2e6dde" />
         </div>
-      }
+      )}
 
       <div className="mobile-header">
         <button
@@ -1134,6 +1126,8 @@ const FileManagePage = ({ history }) => {
             Opacity <span>v2.0.0</span>
           </h1>
           <div className="account-info">
+            {!!lastFour && <div className="account">Account ending - {lastFour}</div>}
+
             <ProgressBar
               now={accountInfo ? (100 * accountInfo.account.storageUsed) / accountInfo.account.storageLimit : 0}
               variant={storageWarning && "danger"}
@@ -1146,8 +1140,7 @@ const FileManagePage = ({ history }) => {
             </div>
 
             <div className="storage-info">
-              {`Your plan expires on ${accountInfo ? moment(accountInfo.account.expirationDate).format("MMM D, YYYY") : "..."
-                }.`}
+              {`Your plan expires on ${accountInfo ? moment(accountInfo.account.expirationDate).format("MMM D, YYYY") : "..."}.`}
             </div>
 
             {upgradeAvailable && (
@@ -1158,13 +1151,23 @@ const FileManagePage = ({ history }) => {
           </div>
           <div style={{ width: "100%" }}>
             <ul className="navbar-nav">
-              <UploadForm isAccountExpired={isAccountExpired} isDirectory={true} onSelected={selectFiles} showWarningModal={() => setShowWarningModal(true)}>
+              <UploadForm
+                isAccountExpired={isAccountExpired}
+                isDirectory={true}
+                onSelected={selectFiles}
+                showWarningModal={() => setShowWarningModal(true)}
+              >
                 <li className="nav-item">
                   <span className="nav-icon nav-icon-folder"></span>
                   <Nav.Link>UPLOAD FOLDER</Nav.Link>
                 </li>
               </UploadForm>
-              <UploadForm isAccountExpired={isAccountExpired} isDirectory={false} onSelected={selectFiles} showWarningModal={() => setShowWarningModal(true)}>
+              <UploadForm
+                isAccountExpired={isAccountExpired}
+                isDirectory={false}
+                onSelected={selectFiles}
+                showWarningModal={() => setShowWarningModal(true)}
+              >
                 <li className="nav-item">
                   <span className="nav-icon nav-icon-upload"></span>
                   <Nav.Link>UPLOAD FILE</Nav.Link>
@@ -1218,7 +1221,12 @@ const FileManagePage = ({ history }) => {
         )}
         {selectedFiles.length === 0 && (
           <div className="file-header">
-            <UploadForm isAccountExpired={isAccountExpired} isDirectory={false} onSelected={selectFiles} showWarningModal={() => setShowWarningModal(true)}>
+            <UploadForm
+              isAccountExpired={isAccountExpired}
+              isDirectory={false}
+              onSelected={selectFiles}
+              showWarningModal={() => setShowWarningModal(true)}
+            >
               <div className="d-flex header-item">
                 <span className="item-icon file-upload"></span>
                 <span>FILE UPLOAD</span>
@@ -1285,16 +1293,17 @@ const FileManagePage = ({ history }) => {
           {alertText}
           <Alert.Link
             onClick={() => {
-              if (alertLink === 'plans') {
-                history.push('/plans')
+              if (alertLink === "plans") {
+                history.push("/plans");
               } else {
-                setShowSignUpModal(true)
+                setShowSignUpModal(true);
               }
-            }}>
+            }}
+          >
             {alertLinkText}
           </Alert.Link>
         </Alert>
-        <div className="container-xl" style={{ paddingTop: alertShow === true ? '0px' : undefined }}>
+        <div className="container-xl" style={{ paddingTop: alertShow === true ? "0px" : undefined }}>
           <div className="breadcrumb-content">
             <Breadcrumb>
               <Breadcrumb.Item href="#" onClick={() => currentPath !== "/" && setCurrentPath("/")}>
@@ -1380,26 +1389,18 @@ const FileManagePage = ({ history }) => {
                     <tr className="file-table-header">
                       <th
                         onClick={() =>
-                          handleSortTable(
-                            "name",
-                            sortable.column === "name" ? (sortable.method === "down" ? "up" : "down") : "down"
-                          )
+                          handleSortTable("name", sortable.column === "name" ? (sortable.method === "down" ? "up" : "down") : "down")
                         }
-                        className={`sortable ${sortable.column === "name" && (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                        className={`sortable ${sortable.column === "name" && (sortable.method === "up" ? "asc" : "desc")}`}
                       >
                         Name
                       </th>
                       {!isMobile && (
                         <th
                           onClick={() =>
-                            handleSortTable(
-                              "type",
-                              sortable.column === "type" ? (sortable.method === "down" ? "up" : "down") : "down"
-                            )
+                            handleSortTable("type", sortable.column === "type" ? (sortable.method === "down" ? "up" : "down") : "down")
                           }
-                          className={`sortable type ${sortable.column === "type" && (sortable.method === "up" ? "asc" : "desc")
-                            }`}
+                          className={`sortable type ${sortable.column === "type" && (sortable.method === "up" ? "asc" : "desc")}`}
                         >
                           Share Type
                           <Tooltip
@@ -1420,21 +1421,16 @@ const FileManagePage = ({ history }) => {
                               sortable.column === "created" ? (sortable.method === "down" ? "up" : "down") : "down"
                             )
                           }
-                          className={`sortable ${sortable.column === "created" && (sortable.method === "up" ? "asc" : "desc")
-                            }`}
+                          className={`sortable ${sortable.column === "created" && (sortable.method === "up" ? "asc" : "desc")}`}
                         >
                           Created
                         </th>
                       )}
                       <th
                         onClick={() =>
-                          handleSortTable(
-                            "size",
-                            sortable.column === "size" ? (sortable.method === "down" ? "up" : "down") : "down"
-                          )
+                          handleSortTable("size", sortable.column === "size" ? (sortable.method === "down" ? "up" : "down") : "down")
                         }
-                        className={`sortable ${sortable.column === "size" && (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                        className={`sortable ${sortable.column === "size" && (sortable.method === "up" ? "asc" : "desc")}`}
                       >
                         Size
                       </th>
@@ -1502,17 +1498,9 @@ const FileManagePage = ({ history }) => {
           setNewName={handleChangeRename}
         />
       )}
-      <DeleteModal
-        show={showDeleteModal}
-        handleClose={() => setShowDeleteModal(false)}
-        setDelete={() => handleDelete()}
-      />
+      <DeleteModal show={showDeleteModal} handleClose={() => setShowDeleteModal(false)} setDelete={() => handleDelete()} />
       <WarningModal show={showWarningModal} handleClose={() => setShowWarningModal(false)} />
-      <AddNewFolderModal
-        show={showNewFolderModal}
-        handleClose={() => setShowNewFolderModal(false)}
-        addNewFolder={addNewFolder}
-      />
+      <AddNewFolderModal show={showNewFolderModal} handleClose={() => setShowNewFolderModal(false)} addNewFolder={addNewFolder} />
       <ToastContainer
         pauseOnHover={false}
         draggable={true}
@@ -1526,7 +1514,7 @@ const FileManagePage = ({ history }) => {
           setUploadingList={() => {
             fileUploadingList = [];
             setUploadingList([]);
-            setProcessChange({})
+            setProcessChange({});
           }}
           notifications={uploadingList}
           uploadFinish={() => setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)}
