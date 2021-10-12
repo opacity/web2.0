@@ -58,10 +58,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { FileManagerFileEntryGrid, FileManagerFileEntryList } from "../../components/FileManager/FileManagerFileEntry";
 import { posix } from "path-browserify";
-import {
-  FileManagerFolderEntryGrid,
-  FileManagerFolderEntryList,
-} from "../../components/FileManager/FileManagerFolderEntry";
+import { FileManagerFolderEntryGrid, FileManagerFolderEntryList } from "../../components/FileManager/FileManagerFolderEntry";
 import FileShareModal from "../../components/FileManager/FileShareModal";
 import { useDropzone } from "react-dropzone";
 import ReactLoading from "react-loading";
@@ -545,15 +542,7 @@ const FileManagePage = ({ history }) => {
         console.error(e);
       }
     },
-    [
-      accountSystem,
-      cryptoMiddleware,
-      netMiddleware,
-      storageNode,
-      updateCurrentFolderSwitch,
-      updateFolderEntrySwitch,
-      updateFileEntrySwitch,
-    ]
+    [accountSystem, cryptoMiddleware, netMiddleware, storageNode, updateCurrentFolderSwitch, updateFolderEntrySwitch, updateFileEntrySwitch]
   );
 
   const pathGenerator = React.useCallback(
@@ -601,9 +590,7 @@ const FileManagePage = ({ history }) => {
       setPageLoading(true);
       try {
         setShowNewFolderModal(false);
-        const status = await accountSystem.addFolder(
-          currentPath === "/" ? currentPath + folderName : currentPath + "/" + folderName
-        );
+        const status = await accountSystem.addFolder(currentPath === "/" ? currentPath + folderName : currentPath + "/" + folderName);
         toast(`Folder ${folderName} was successfully created.`);
         setPageLoading(false);
         setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
@@ -654,9 +641,7 @@ const FileManagePage = ({ history }) => {
           // side effects
           bindDownloadToAccountSystem(accountSystem, d);
 
-          const fileStream = polyfillWritableStreamIfNeeded<Uint8Array>(
-            streamsaver.createWriteStream(file.name, { size: file.size })
-          );
+          const fileStream = polyfillWritableStreamIfNeeded<Uint8Array>(streamsaver.createWriteStream(file.name, { size: file.size }));
           const s = await d.start();
 
           d.finish().then(() => {
@@ -1015,9 +1000,7 @@ const FileManagePage = ({ history }) => {
         break;
       case "type":
         setFileList(
-          [...fileMetaList]
-            .sort((a, b) => compareType(a, b, method, "file"))
-            .map((item) => ({ location: item.location, name: item.name }))
+          [...fileMetaList].sort((a, b) => compareType(a, b, method, "file")).map((item) => ({ location: item.location, name: item.name }))
         );
         // folderList.sort((a, b) => compareName(a, b, method, 'folder'))
         break;
@@ -1157,9 +1140,7 @@ const FileManagePage = ({ history }) => {
             </div>
 
             <div className="storage-info">
-              {`Your plan expires on ${
-                accountInfo ? moment(accountInfo.account.expirationDate).format("MMM D, YYYY") : "..."
-              }.`}
+              {`Your plan expires on ${accountInfo ? moment(accountInfo.account.expirationDate).format("MMM D, YYYY") : "..."}.`}
             </div>
 
             {upgradeAvailable && (
@@ -1408,28 +1389,18 @@ const FileManagePage = ({ history }) => {
                     <tr className="file-table-header">
                       <th
                         onClick={() =>
-                          handleSortTable(
-                            "name",
-                            sortable.column === "name" ? (sortable.method === "down" ? "up" : "down") : "down"
-                          )
+                          handleSortTable("name", sortable.column === "name" ? (sortable.method === "down" ? "up" : "down") : "down")
                         }
-                        className={`sortable ${
-                          sortable.column === "name" && (sortable.method === "up" ? "asc" : "desc")
-                        }`}
+                        className={`sortable ${sortable.column === "name" && (sortable.method === "up" ? "asc" : "desc")}`}
                       >
                         Name
                       </th>
                       {!isMobile && (
                         <th
                           onClick={() =>
-                            handleSortTable(
-                              "type",
-                              sortable.column === "type" ? (sortable.method === "down" ? "up" : "down") : "down"
-                            )
+                            handleSortTable("type", sortable.column === "type" ? (sortable.method === "down" ? "up" : "down") : "down")
                           }
-                          className={`sortable type ${
-                            sortable.column === "type" && (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                          className={`sortable type ${sortable.column === "type" && (sortable.method === "up" ? "asc" : "desc")}`}
                         >
                           Share Type
                           <Tooltip
@@ -1450,23 +1421,16 @@ const FileManagePage = ({ history }) => {
                               sortable.column === "created" ? (sortable.method === "down" ? "up" : "down") : "down"
                             )
                           }
-                          className={`sortable ${
-                            sortable.column === "created" && (sortable.method === "up" ? "asc" : "desc")
-                          }`}
+                          className={`sortable ${sortable.column === "created" && (sortable.method === "up" ? "asc" : "desc")}`}
                         >
                           Created
                         </th>
                       )}
                       <th
                         onClick={() =>
-                          handleSortTable(
-                            "size",
-                            sortable.column === "size" ? (sortable.method === "down" ? "up" : "down") : "down"
-                          )
+                          handleSortTable("size", sortable.column === "size" ? (sortable.method === "down" ? "up" : "down") : "down")
                         }
-                        className={`sortable ${
-                          sortable.column === "size" && (sortable.method === "up" ? "asc" : "desc")
-                        }`}
+                        className={`sortable ${sortable.column === "size" && (sortable.method === "up" ? "asc" : "desc")}`}
                       >
                         Size
                       </th>
@@ -1534,17 +1498,9 @@ const FileManagePage = ({ history }) => {
           setNewName={handleChangeRename}
         />
       )}
-      <DeleteModal
-        show={showDeleteModal}
-        handleClose={() => setShowDeleteModal(false)}
-        setDelete={() => handleDelete()}
-      />
+      <DeleteModal show={showDeleteModal} handleClose={() => setShowDeleteModal(false)} setDelete={() => handleDelete()} />
       <WarningModal show={showWarningModal} handleClose={() => setShowWarningModal(false)} />
-      <AddNewFolderModal
-        show={showNewFolderModal}
-        handleClose={() => setShowNewFolderModal(false)}
-        addNewFolder={addNewFolder}
-      />
+      <AddNewFolderModal show={showNewFolderModal} handleClose={() => setShowNewFolderModal(false)} addNewFolder={addNewFolder} />
       <ToastContainer
         pauseOnHover={false}
         draggable={true}
