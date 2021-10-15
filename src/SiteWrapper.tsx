@@ -105,6 +105,11 @@ class SiteWrapper extends React.Component<Props, State> {
                     </NavLink>
                   </li>
                   <li className="nav-item">
+                    <NavLink to="/about" className="nav-link">
+                      About Us
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
                     <NavLink to="/downloads" className="nav-link">
                       Downloads
                     </NavLink>
