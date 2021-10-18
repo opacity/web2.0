@@ -25,6 +25,7 @@ import { PersistGate } from "redux-persist/lib/integration/react";
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
 import { VERSION, IS_LOCAL, DEFAULT_STORAGE_NODE_IP } from "./config";
+import AboutPage from "./pages/AboutPage/AboutPage";
 
 let sentryOptions = {
   dsn: "https://8fdbdab452f04a43b5c3f2e00ec126f7@sentry.io/295597",
@@ -37,27 +38,19 @@ let sentryOptions = {
     }),
   ],
   tracesSampleRate: 0.3,
-}
+};
 
 if (IS_LOCAL == false) {
   Sentry.init(sentryOptions);
 }
 
-
 function App() {
-
   return (
     <>
       <Helmet>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, viewport-fit=cover"
-        />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-        <meta
-          http-equiv="Content-Security-Policy"
-          content="worker-src 'self'"
-        />
+        <meta http-equiv="Content-Security-Policy" content="worker-src 'self'" />
         <meta
           name="description"
           content="Opacity provides encrypted cloud storage that never stores your personal data. Powered by OPCT crypto token."
@@ -99,43 +92,15 @@ function App() {
                 <Route exact path="/platform" component={PlatformPage} />
                 <Route exact path="/plans" component={PlansPage} />
                 <Route exact path="/downloads" component={CommunityPage} />
-                <Route
-                  path="/terms-of-service"
-                  render={() => (
-                    <LegalPage
-                      title="Terms Of Service"
-                      type="terms-of-service"
-                    />
-                  )}
-                />
-                <Route
-                  path="/privacy-policy"
-                  render={() => (
-                    <LegalPage title="Privacy Policy" type="privacy-policy" />
-                  )}
-                />
-                <Route
-                  path="/code-review-license"
-                  render={() => (
-                    <LegalPage
-                      title="Code Review License"
-                      type="code-review-license"
-                    />
-                  )}
-                />
-                <PrivateRoute
-                  exact
-                  path="/file-manager"
-                  component={FileManagePage}
-                />
-                <PrivateRoute
-                  exact
-                  path="/file-manager/:folderName"
-                  component={FileManagePage}
-                />
+                <Route path="/terms-of-service" render={() => <LegalPage title="Terms Of Service" type="terms-of-service" />} />
+                <Route path="/privacy-policy" render={() => <LegalPage title="Privacy Policy" type="privacy-policy" />} />
+                <Route path="/code-review-license" render={() => <LegalPage title="Code Review License" type="code-review-license" />} />
+                <PrivateRoute exact path="/file-manager" component={FileManagePage} />
+                <PrivateRoute exact path="/file-manager/:folderName" component={FileManagePage} />
                 <Route exact path="/forgot" component={ForgotPage} />
                 <Route path="/share" component={SharePage} />
                 <Route path="/migration" component={MigrationPage} />
+                <Route path="/about" component={AboutPage} />
                 <PrivateRoute path="/migration-download" isOldRoute={true} component={OldAccountFileManage} />
 
                 <Route path="*" component={Page404} />

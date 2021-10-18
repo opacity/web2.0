@@ -1,0 +1,144 @@
+.about {
+  // margin-top: 110px;
+  // padding-left: 100px;
+  // padding-right: 100px;
+  @media (max-width: 767.8px) {
+    // margin-top: 50px;
+    // padding-left: 10px;
+    // padding-right: 10px;
+    margin-bottom: 50px;
+  }
+
+  .section {
+    margin-bottom: 150px;
+
+    &.hero {
+      padding-top: 150px;
+      padding-bottom: 150px;
+      background-color: #2e6dde;
+
+      h1 {
+        color: white;
+      }
+    }
+  }
+
+  h1 {
+    font-style: normal;
+    font-weight: bold;
+    font-size: 42px;
+    line-height: 57px;
+    color: #000000;
+    margin-bottom: 28px;
+    text-align: center;
+    @media (max-width: 767.8px) {
+      font-size: 17px;
+      line-height: 21px;
+    }
+  }
+  h2 {
+    font-style: normal;
+    // font-weight: bold;
+    font-size: 32px;
+    line-height: 40px;
+    color: #000000;
+    margin-top: 28px;
+    margin-bottom: 28px;
+    text-align: center;
+    @media (max-width: 767.8px) {
+      font-size: 17px;
+      line-height: 21px;
+    }
+  }
+  h3 {
+    font-style: normal;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 24px;
+    color: #000000;
+    text-align: center;
+    @media (max-width: 767.8px) {
+      font-size: 14px;
+      line-height: 21px;
+    }
+  }
+
+  h4 {
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 136%;
+    margin-top: 20px;
+  }
+  h5 {
+    font-size: 14px;
+    line-height: 191%;
+    color: #414141;
+  }
+  p {
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 24px;
+    @media (max-width: 767.8px) {
+      font-size: 16px;
+      line-height: 24px;
+    }
+  }
+
+  .team-member {
+    display: flex;
+    @media (max-width: 767.8px) {
+      flex-wrap: wrap;
+    }
+
+    .avatar-section {
+      max-width: 300px;
+      @media (max-width: 767.8px) {
+        width: 100%;
+      }
+
+      height: auto;
+    }
+
+    .profile {
+      margin-left: 50px;
+
+      @media (max-width: 767.8px) {
+        margin-left: 0px;
+        width: 100%;
+      }
+
+      h2 {
+        margin-top: 0px;
+      }
+
+      h1,
+      h2,
+      p {
+        text-align: left;
+      }
+
+      a {
+        font-size: 18px;
+      }
+    }
+  }
+
+  .cta {
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 150px;
+
+    h2 {
+      text-align: left;
+    }
+    .explore {
+      width: 300px;
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
+}
+
+.nav-link {
+  padding: 0;
+}
