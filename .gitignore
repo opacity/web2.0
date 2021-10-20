@@ -15,3 +15,4 @@ dist/
 sourcemaps.js.map
 .fusebox
 .cache
+.env
