@@ -31,7 +31,7 @@ const AboutPage = ({ history }) => {
             private information, such as company secrets, intellectual property, personal photographs, legal documents, and family moments,
             with assurance that personal data stays personal.
           </p>
-          <h3 className="mt-2 mb-3">You own your identity and your data! No other storage provider can make this claim.</h3>
+          {/* <h3 className="mt-2 mb-3">You own your identity and your data! No other storage provider can make this claim.</h3> */}
           <p>
             In addition to establishing our own decentralized network, Opacity’s goal is to be a gateway to other decentralized storage
             providers. In this way, Opacity gives users choice and freedom to select the best features and capabilities for their needs
@@ -86,7 +86,10 @@ const AboutPage = ({ history }) => {
 
         <div className="d-flex section cta container-xl">
           <div>
-            <h2>Privacy By Design Free to share ideas. Free to be private. Free to be you.</h2>
+            <h2>
+              <b>Privacy By Design</b>
+              <br /> Free to share ideas. Free to be private. Free to be you.
+            </h2>
           </div>
 
           <div className="explore">
