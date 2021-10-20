@@ -141,6 +141,7 @@ const FileManagePage = ({ history }) => {
   const [showSidebar, setShowSidebar] = React.useState(false);
   const [tableView, setTableView] = React.useState(true);
   const [currentPath, setCurrentPath] = React.useState("/");
+  const [currentLocation, setCurrentLocation] = React.useState<Uint8Array>();
   const currentPathRef = React.useRef("/");
   const [folderList, setFolderList] = React.useState<FoldersIndexEntry[]>([]);
   const [folderMetaList, setFolderMetaList] = React.useState([]);
@@ -275,6 +276,7 @@ const FileManagePage = ({ history }) => {
       .then(([folders, folderMeta]) => {
         setFolderList(folders);
         setFileList(folderMeta.files);
+        setCurrentLocation(folderMeta.location);
         loadingFlagCnt--;
         loadingFlagCnt === 0 && setPageLoading(false);
       })
@@ -495,6 +497,7 @@ const FileManagePage = ({ history }) => {
           meta: file,
           name: file.name,
           path: path,
+          folderLocation: currentLocation,
         });
         setCurrentUploader(upload);
         // side effects
@@ -541,7 +544,7 @@ const FileManagePage = ({ history }) => {
         console.error(e);
       }
     },
-    [accountSystem, cryptoMiddleware, netMiddleware, storageNode, updateCurrentFolderSwitch, updateFolderEntrySwitch, updateFileEntrySwitch]
+    [accountSystem, currentLocation, cryptoMiddleware, netMiddleware, storageNode, updateCurrentFolderSwitch, updateFolderEntrySwitch, updateFileEntrySwitch]
   );
 
   const pathGenerator = React.useCallback(
