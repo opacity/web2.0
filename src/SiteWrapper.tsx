@@ -115,8 +115,8 @@ class SiteWrapper extends React.Component<Props, State> {
                     </NavLink>
                   </li>
                   <li className="nav-item">
-                    <Nav.Link href="https://medium.com/opacity-storage" target="_blank">
-                      Learn
+                    <Nav.Link href="https://blog.opacity.io/" target="_blank">
+                      Blog
                     </Nav.Link>
                   </li>
                   <li className="nav-item">
@@ -198,8 +198,8 @@ class SiteWrapper extends React.Component<Props, State> {
                       </NavLink>
                     </li>
                     <li className="nav-item">
-                      <Nav.Link href="https://medium.com/opacity-storage" target="_blank">
-                        Learn
+                      <Nav.Link href="https://blog.opacity.io" target="_blank">
+                        Blog
                       </Nav.Link>
                     </li>
                     <li className="nav-item">
