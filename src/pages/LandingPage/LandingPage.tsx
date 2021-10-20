@@ -166,9 +166,7 @@ const LandingPage = ({ history }) => {
                   </button>
                 </div>
               </div>
-              <div className="col-md-10 banner-text">
-                No personal information required. Get 10GB file storage and file sharing for free
-              </div>
+              <div className="col-md-10 banner-text">No personal information required. Get 10GB file storage and file sharing for free</div>
 
               <div className="col-md-10 powered-by-polygon">
                 <a href="https://polygon.technology/">
@@ -193,13 +191,13 @@ const LandingPage = ({ history }) => {
               <h2 className="subtitle mb-4">What is Rubic?</h2>
 
               <p className="descriptions">
-                Rubic is a multichain DEX aggregator, with instant & cross-chain swaps for Ethereum, BSC, Polygon,
-                Harmony, Tron & xDai, limit orders, fiat on-ramps and more!
+                Rubic is a multichain DEX aggregator, with instant & cross-chain swaps for Ethereum, BSC, Polygon, Harmony, Tron & xDai,
+                limit orders, fiat on-ramps and more!
               </p>
 
               <p className="descriptions">
-                Rubic enables trades in one-step, so you can buy and sell tokens without needing to visit an exchange.
-                Just connect your wallet and go!
+                Rubic enables trades in one-step, so you can buy and sell tokens without needing to visit an exchange. Just connect your
+                wallet and go!
               </p>
 
               <p className="descriptions learn-more">
@@ -220,8 +218,7 @@ const LandingPage = ({ history }) => {
             <div className="image-ele"></div>
             <div className="title">No Personal Info Required</div>
             <div className="descriptions">
-              We never ask for your personal information. You're always protected, so you'll never end up on the dark
-              web
+              We never ask for your personal information. You're always protected, so you'll never end up on the dark web
             </div>
           </div>
           <div className="col-md-4 card-items image-share">
@@ -249,9 +246,9 @@ const LandingPage = ({ history }) => {
                 <h1 className="title mb-4">Share any private file easily, with anyone, on any device.</h1>
                 <div className="descriptions">
                   <p className="mb-4">
-                    File sharing with Opacity is quick and simple. By just sharing a link, you can send anything – from
-                    photos and videos to zipped folders and large CAD files – with anyone, even if they don’t have a
-                    Opacity account. Share links and files from anywhere, using your phone, tablet or computer.
+                    File sharing with Opacity is quick and simple. By just sharing a link, you can send anything – from photos and videos to
+                    zipped folders and large CAD files – with anyone, even if they don’t have a Opacity account. Share links and files from
+                    anywhere, using your phone, tablet or computer.
                   </p>
                   {/* <p>
                     And unlike email attachments, you don’t have to worry about file size limits—share files as large as your cloud storage space
@@ -270,9 +267,9 @@ const LandingPage = ({ history }) => {
                 <h1 className="title mb-4">No Personal Information Means 100% Trust</h1>
                 <div className="descriptions">
                   <p className="mb-4">
-                    Only Opacity can guarantee your information will never be leaked or used by 3rd party ads. Because
-                    we don't ask for it! Your name, address, or credit card will never be compromised. We respect your
-                    privacy by keeping you out of the transaction.
+                    Only Opacity can guarantee your information will never be leaked or used by 3rd party ads. Because we don't ask for it!
+                    Your name, address, or credit card will never be compromised. We respect your privacy by keeping you out of the
+                    transaction.
                   </p>
                 </div>
               </div>
@@ -287,9 +284,9 @@ const LandingPage = ({ history }) => {
         <div className="container-xl">
           <h1>What can Opacity help you do?</h1>
           <h3>
-            Opacity provides 100% private data storage. But we also use client side encryption you won’t find on other
-            file hosting sites. Our private file sharing capability ensures only authorized users you share with can
-            access your files. Mobile and desktop applications make it easy to access and share files anywhere!
+            Opacity provides 100% private data storage. But we also use client side encryption you won’t find on other file hosting sites.
+            Our private file sharing capability ensures only authorized users you share with can access your files. Mobile and desktop
+            applications make it easy to access and share files anywhere!
           </h3>
           <button className="btn btn-pill btn-primary" onClick={handleOpenSignUpModal}>
             Get Started for Free
@@ -302,9 +299,9 @@ const LandingPage = ({ history }) => {
             <div className="col-md-6 pr-4 mt-7">
               <h1>Your Files, Safe and Secure.</h1>
               <h4>
-                Opacity uses state-of-the-art encryption algorithms to ensure that your files are secure. The Opacity
-                platform encrypts your files at rest to provide comprehensive protection for your files. As long as you
-                protect your Opacity Handle, your data is safe.
+                Opacity uses state-of-the-art encryption algorithms to ensure that your files are secure. The Opacity platform encrypts your
+                files at rest to provide comprehensive protection for your files. As long as you protect your Opacity Handle, your data is
+                safe.
               </h4>
             </div>
             <div className="col-md-6 pl-4">
@@ -329,10 +326,10 @@ const LandingPage = ({ history }) => {
             <div className="col-md-6 pl-4 ">
               <h1>Your Handle, Your Rules.</h1>
               <h4>
-                Your unique Opacity Account Handle is the single point of access to your storage account. Like a private
-                encryption key, only you know this Handle, and only you have access to your files unless you decide to
-                share the Handle. You may also choose to only share individual files with a unique File Handle that
-                others may use to privately download or view files on the Opacity platform.
+                Your unique Opacity Account Handle is the single point of access to your storage account. Like a private encryption key,
+                only you know this Handle, and only you have access to your files unless you decide to share the Handle. You may also choose
+                to only share individual files with a unique File Handle that others may use to privately download or view files on the
+                Opacity platform.
               </h4>
             </div>
           </div>
@@ -342,8 +339,8 @@ const LandingPage = ({ history }) => {
         <div className="container-xl">
           <h1>Sync files automatically</h1>
           <h3 className="pl-5 pr-5">
-            When you download the Opacity desktop app for Windows or Mac, you can automatically sync your local files
-            with your Opacity Private cloud storage
+            When you download the Opacity desktop app for Windows or Mac, you can automatically sync your local files with your Opacity
+            private cloud storage
           </h3>
           <button className="btn btn-pill btn-primary" onClick={handleOpenSignUpModal}>
             Get Started for Free
@@ -372,10 +369,7 @@ const LandingPage = ({ history }) => {
           <div className="col-md-6 right">
             <div className="card-item">
               <img src={uniswap} width={107} height={109} />
-              <NavLink
-                href="https://v2.info.uniswap.org/pair/0xd07d843cd1d769cdf918be8a3c2c0b708889f7fc"
-                target="_blank"
-              >
+              <NavLink href="https://v2.info.uniswap.org/pair/0xd07d843cd1d769cdf918be8a3c2c0b708889f7fc" target="_blank">
                 Buy OPCT on UNISWAP
               </NavLink>
             </div>
@@ -384,10 +378,7 @@ const LandingPage = ({ history }) => {
           <div className="col-md-6 left">
             <div className="card-item">
               <img src={quickswap} width={107} height={109} />
-              <NavLink
-                href="https://info.quickswap.exchange/pair/0xFCEF650B29a3951EcFadb8364A9f7819Cd2e221a"
-                target="_blank"
-              >
+              <NavLink href="https://info.quickswap.exchange/pair/0xFCEF650B29a3951EcFadb8364A9f7819Cd2e221a" target="_blank">
                 Buy OPCT on QUICKSWAP
               </NavLink>
             </div>
