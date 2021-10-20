@@ -22,20 +22,42 @@ const Footer = () => {
             </NavLink>
           </div>
           <div className="col-md-6 footer-third">
-            <div className="d-flex h-100 align-items-center" style={{ justifyContent: "flex-end" }}>
-              <NavLink href="https://github.com/opacity" target="_blank" className="social-link">
+            <div
+              className="d-flex h-100 align-items-center"
+              style={{ justifyContent: "flex-end" }}
+            >
+              <NavLink
+                href="https://github.com/opacity"
+                target="_blank"
+                className="social-link"
+              >
                 <img width={43} height={43} src={github} />
               </NavLink>
-              <NavLink href="https://www.reddit.com/r/Opacity/" target="_blank" className="social-link">
+              <NavLink
+                href="https://www.reddit.com/r/Opacity/"
+                target="_blank"
+                className="social-link"
+              >
                 <img width={43} height={43} src={reddit} />
               </NavLink>
-              <NavLink href="https://telegram.me/opacitystorage" className="social-link" target="_blank">
+              <NavLink
+                href="https://telegram.me/opacitystorage"
+                className="social-link"
+                target="_blank"
+              >
                 <img width={43} height={43} src={telegram} />
               </NavLink>
-              <NavLink href="https://twitter.com/Opacity_Storage" className="social-link" target="_blank">
+              <NavLink
+                href="https://twitter.com/Opacity_Storage"
+                className="social-link"
+                target="_blank"
+              >
                 <img width={43} height={43} src={twitter} />
               </NavLink>
-              <NavLink href="https://www.youtube.com/opacitystorage" target="_blank">
+              <NavLink
+                href="https://www.youtube.com/opacitystorage"
+                target="_blank"
+              >
                 <img width={43} height={43} src={youtube} />
               </NavLink>
             </div>
@@ -47,7 +69,7 @@ const Footer = () => {
             <span className="title"> Company</span>
             <NavLink href="/about">About us</NavLink>
             <br />
-            <NavLink href="https://medium.com/opacity-storage" target="_blank">
+            <NavLink href="https://blog.opacity.io" target="_blank">
               Blog
             </NavLink>
           </div>
@@ -57,15 +79,18 @@ const Footer = () => {
               Downloads
             </NavLink>
             <br />
-            <NavLink href="https://opacitystora.ge/GalaxyWhitepaperV1" target="_blank">
+            <NavLink
+              href="https://opacitystora.ge/GalaxyWhitepaperV1"
+              target="_blank"
+            >
               Whitepaper
             </NavLink>
+
             <br />
-            <NavLink href="https://medium.com/opacity-storage" target="_blank">
-              Learn
-            </NavLink>
-            <br />
-            <NavLink href="https://api.opacity.io:3000/swagger/index.html" target="_blank">
+            <NavLink
+              href="https://api.opacity.io:3000/swagger/index.html"
+              target="_blank"
+            >
               API for Developers
             </NavLink>
           </div>
@@ -95,14 +120,20 @@ const Footer = () => {
             </NavLink>
             <br />
 
-            <NavLink href={`${FRONT_END_URL}/code-review-license`} target="_blank">
+            <NavLink
+              href={`${FRONT_END_URL}/code-review-license`}
+              target="_blank"
+            >
               Code License
             </NavLink>
           </div>
         </div>
         <div className="divider"></div>
         <div className="row">
-          <div className="col-md-12 text-center copywrite"> © 2018-2021 Opacity Storage Inc. All rights reserved.</div>
+          <div className="col-md-12 text-center copywrite">
+            {" "}
+            © 2018-2021 Opacity Storage Inc. All rights reserved.
+          </div>
         </div>
       </div>
     </footer>
