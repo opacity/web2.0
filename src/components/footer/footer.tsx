@@ -47,7 +47,7 @@ const Footer = () => {
             <span className="title"> Company</span>
             <NavLink href="/about">About us</NavLink>
             <br />
-            <NavLink href="https://medium.com/opacity-storage" target="_blank">
+            <NavLink href="https://blog.opacity.io" target="_blank">
               Blog
             </NavLink>
           </div>
@@ -60,10 +60,7 @@ const Footer = () => {
             <NavLink href="https://opacitystora.ge/GalaxyWhitepaperV1" target="_blank">
               Whitepaper
             </NavLink>
-            <br />
-            <NavLink href="https://medium.com/opacity-storage" target="_blank">
-              Learn
-            </NavLink>
+
             <br />
             <NavLink href="https://api.opacity.io:3000/swagger/index.html" target="_blank">
               API for Developers
