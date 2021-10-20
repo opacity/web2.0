@@ -1,0 +1,7 @@
+**/.dockerignore
+**/.git
+**/.gitignore
+**/.vscode
+**/dist
+**/Dockerfile
+**/node_modules
