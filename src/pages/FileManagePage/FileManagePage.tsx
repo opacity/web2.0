@@ -7,7 +7,7 @@ import {
   // Col,
   // Container,
   // Media,
-  // Button,
+  Button,
   Nav,
   ProgressBar,
   Breadcrumb,
@@ -87,6 +87,7 @@ import SignUpModal from "../../components/SignUpModal/SignUpModal";
 import { PlanType, PLANS } from "../../config";
 
 const logo = require("../../assets/logo2.png");
+const copy = require("../../assets/copy.svg");
 
 let logoutTimeout;
 let fileUploadingList = [];
@@ -544,7 +545,16 @@ const FileManagePage = ({ history }) => {
         console.error(e);
       }
     },
-    [accountSystem, currentLocation, cryptoMiddleware, netMiddleware, storageNode, updateCurrentFolderSwitch, updateFolderEntrySwitch, updateFileEntrySwitch]
+    [
+      accountSystem,
+      currentLocation,
+      cryptoMiddleware,
+      netMiddleware,
+      storageNode,
+      updateCurrentFolderSwitch,
+      updateFolderEntrySwitch,
+      updateFileEntrySwitch,
+    ]
   );
 
   const pathGenerator = React.useCallback(
@@ -1115,7 +1125,25 @@ const FileManagePage = ({ history }) => {
             Opacity <span>v2.0.0</span>
           </h1>
           <div className="account-info">
-            {!!lastFour && <div className="account">Account ending - {lastFour}</div>}
+            {!!lastFour && (
+              <div>
+                <Button
+                  variant="default"
+                  className="account-button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(localStorage.getItem("key"));
+                    toast.info("Copied to Clipboard", {
+                      autoClose: 1500,
+                      position: toast.POSITION.TOP_CENTER,
+                    });
+                  }}
+                >
+                  <span>Account</span>
+                  <span className="ml-3">...{lastFour}</span>
+                  <img src={copy} className="copy-icon" />
+                </Button>
+              </div>
+            )}
 
             <ProgressBar
               now={accountInfo ? (100 * accountInfo.account.storageUsed) / accountInfo.account.storageLimit : 0}
