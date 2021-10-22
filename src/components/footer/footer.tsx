@@ -45,7 +45,7 @@ const Footer = () => {
         <div className=" footer-links">
           <div className="link-wrapper">
             <span className="title"> Company</span>
-            <NavLink href="/about">About</NavLink>
+            <NavLink href="/about">About Us</NavLink>
             <br />
             <NavLink href="https://blog.opacity.io" target="_blank">
               Blog
