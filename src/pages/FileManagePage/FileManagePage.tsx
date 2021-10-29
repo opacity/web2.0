@@ -489,11 +489,11 @@ const FileManagePage = ({ history }) => {
       try {
         let index = fileUploadingList.findIndex((ele) => ele.id === toastID);
         if (index > -1 && fileUploadingList[index].status === "cancelled") {
-          const fileIndex = uploadingFileList.findIndex((item) => toastID === item.size + file.name + pathGenerator(item));
+          const fileIndex = uploadingFileList.findIndex((item) => toastID === item.size + file.name + pathGenerator(item, currentPath));
           fileIndex !== -1 && uploadingFileList.splice(fileIndex, 1);
           if (curThreadNum < THREAD_COUNT && uploadingFileList.length > 0) {
             const nextFile = uploadingFileList[0];
-            const nextFilePath = pathGenerator(nextFile);
+            const nextFilePath = pathGenerator(nextFile, currentPath);
             uploadFile(nextFile, nextFilePath);
           }
           return;
@@ -513,13 +513,13 @@ const FileManagePage = ({ history }) => {
         uploaderThread.push(upload);
         curThreadNum++;
 
-        const fileIndex = uploadingFileList.findIndex((item) => toastID === item.size + file.name + pathGenerator(item));
+        const fileIndex = uploadingFileList.findIndex((item) => toastID === item.size + file.name + pathGenerator(item, currentPath));
         fileIndex !== -1 && uploadingFileList.splice(fileIndex, 1);
         if (curThreadNum < THREAD_COUNT && uploadingFileList.length > 0) {
           const nextFile = uploadingFileList[0];
-          const nextFilePath = pathGenerator(nextFile);
+          const nextFilePath = pathGenerator(nextFile, currentPath);
           uploadFile(nextFile, nextFilePath);
-        }
+      }
 
         // side effects
         bindUploadToAccountSystem(accountSystem, upload);
@@ -565,13 +565,10 @@ const FileManagePage = ({ history }) => {
           }
           if (curThreadNum < THREAD_COUNT && uploadingFileList.length > 0) {
             const nextFile = uploadingFileList[0];
-            const nextFilePath = pathGenerator(nextFile);
+            const nextFilePath = pathGenerator(nextFile, currentPath);
             uploadFile(nextFile, nextFilePath);
           }
 
-          if (path == currentPathRef.current) {
-            accountSystem.getFolderMetadataByPath(currentPathRef.current).then((res) => setFileList(res.files));
-          }
         }
       } catch (e) {
         console.error(e, "catched");
@@ -585,12 +582,13 @@ const FileManagePage = ({ history }) => {
         }
         if (curThreadNum < THREAD_COUNT && uploadingFileList.length > 0) {
           const nextFile = uploadingFileList[0];
-          const nextFilePath = pathGenerator(nextFile);
+          const nextFilePath = pathGenerator(nextFile, currentPath);
           uploadFile(nextFile, nextFilePath);
         }
       }
     },
     [
+      currentPath,
       accountSystem,
       currentLocation,
       cryptoMiddleware,
@@ -603,18 +601,14 @@ const FileManagePage = ({ history }) => {
   );
 
   const pathGenerator = React.useCallback(
-    (file) => {
-      return file.name === (file.path || file.webkitRelativePath || file.name)
-        ? currentPath
-        : currentPath === "/"
-        ? file.webkitRelativePath
-          ? currentPath + relativePath(file.webkitRelativePath)
-          : relativePath(file.path)
-        : file.webkitRelativePath
-        ? currentPath + "/" + relativePath(file.webkitRelativePath)
-        : currentPath + relativePath(file.path);
+    (file, curPath) => {
+      const folderPath = 
+      file.path 
+      ? curPath + relativePath(file.path)
+      : curPath + (file.webkitRelativePath !== "" ? "/" + relativePath(file.webkitRelativePath) : "");
+      return folderPath;
     },
-    [currentPath]
+    []
   );
 
   const selectFiles = React.useCallback(
@@ -623,7 +617,7 @@ const FileManagePage = ({ history }) => {
       isFileManaging();
 
       files.forEach((file) => {
-        const path = pathGenerator(file);
+        const path = pathGenerator(file, currentPath);
         let toastID = file.size + file.name + path;
         if (!templist.find((item) => item.id === toastID)) {
           templist.push({ id: toastID, fileName: file.name, percent: 0, status: "active" });
@@ -636,7 +630,7 @@ const FileManagePage = ({ history }) => {
       uploadingFileList.push(...files);
       if (curThreadNum === 0 || curThreadNum < THREAD_COUNT) {
         const file = uploadingFileList[0];
-        const path = pathGenerator(file);
+        const path = pathGenerator(file, currentPath);
         uploadFile(file, path);
       }
       OnfinishFileManaging();
@@ -833,8 +827,8 @@ const FileManagePage = ({ history }) => {
   const deleteFolder = React.useCallback(
     async (folder: FoldersIndexEntry) => {
       try {
-        const folders = await accountSystem.getFoldersInFolderByPath(folder.path);
-        const folderMeta = await accountSystem.getFolderMetadataByPath(folder.path);
+        const folders = await accountSystem.getFoldersInFolderByLocation(folder.location);
+        const folderMeta = await accountSystem.getFolderMetadataByLocation(folder.location);
 
         const fileMetaListInFolder = [];
         for (const file of folderMeta.files) {
@@ -848,7 +842,7 @@ const FileManagePage = ({ history }) => {
           await deleteFolder(folderItem);
         }
 
-        await accountSystem.removeFolderByPath(folder.path);
+        await accountSystem.removeFolderByLocation(folder.location);
       } catch (e) {
         console.error(e);
         setFolderToDelete(null);
