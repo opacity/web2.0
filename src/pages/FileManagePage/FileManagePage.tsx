@@ -569,6 +569,10 @@ const FileManagePage = ({ history }) => {
             uploadFile(nextFile, nextFilePath);
           }
 
+          if(curThreadNum === 0 && uploadingFileList.length === 0) {
+            setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
+          }
+
         }
       } catch (e) {
         console.error(e, "catched");
@@ -584,6 +588,10 @@ const FileManagePage = ({ history }) => {
           const nextFile = uploadingFileList[0];
           const nextFilePath = pathGenerator(nextFile, currentPath);
           uploadFile(nextFile, nextFilePath);
+        }
+
+        if(curThreadNum === 0 && uploadingFileList.length === 0) {
+          setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
         }
       }
     },
