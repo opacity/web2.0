@@ -26,6 +26,7 @@ import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
 import { VERSION, IS_LOCAL, DEFAULT_STORAGE_NODE_IP } from "./config";
 import AboutPage from "./pages/AboutPage/AboutPage";
+import WarningWrapper from "./components/WarningWrapper/WarningWrapper";
 
 let sentryOptions = {
   dsn: "https://8fdbdab452f04a43b5c3f2e00ec126f7@sentry.io/295597",
@@ -86,26 +87,28 @@ function App() {
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <FileManagementStatusProvider>
-            <Router history={history}>
-              <Switch>
-                <Route exact path="/" component={LandingPage} />
-                <Route exact path="/platform" component={PlatformPage} />
-                <Route exact path="/plans" component={PlansPage} />
-                <Route exact path="/downloads" component={CommunityPage} />
-                <Route path="/terms-of-service" render={() => <LegalPage title="Terms Of Service" type="terms-of-service" />} />
-                <Route path="/privacy-policy" render={() => <LegalPage title="Privacy Policy" type="privacy-policy" />} />
-                <Route path="/code-review-license" render={() => <LegalPage title="Code Review License" type="code-review-license" />} />
-                <PrivateRoute exact path="/file-manager" component={FileManagePage} />
-                <PrivateRoute exact path="/file-manager/:folderName" component={FileManagePage} />
-                <Route exact path="/forgot" component={ForgotPage} />
-                <Route path="/share" component={SharePage} />
-                <Route path="/migration" component={MigrationPage} />
-                <Route path="/about" component={AboutPage} />
-                <PrivateRoute path="/migration-download" isOldRoute={true} component={OldAccountFileManage} />
+            <WarningWrapper>
+              <Router history={history}>
+                <Switch>
+                  <Route exact path="/" component={LandingPage} />
+                  <Route exact path="/platform" component={PlatformPage} />
+                  <Route exact path="/plans" component={PlansPage} />
+                  <Route exact path="/downloads" component={CommunityPage} />
+                  <Route path="/terms-of-service" render={() => <LegalPage title="Terms Of Service" type="terms-of-service" />} />
+                  <Route path="/privacy-policy" render={() => <LegalPage title="Privacy Policy" type="privacy-policy" />} />
+                  <Route path="/code-review-license" render={() => <LegalPage title="Code Review License" type="code-review-license" />} />
+                  <PrivateRoute exact path="/file-manager" component={FileManagePage} />
+                  <PrivateRoute exact path="/file-manager/:folderName" component={FileManagePage} />
+                  <Route exact path="/forgot" component={ForgotPage} />
+                  <Route path="/share" component={SharePage} />
+                  <Route path="/migration" component={MigrationPage} />
+                  <Route path="/about" component={AboutPage} />
+                  <PrivateRoute path="/migration-download" isOldRoute={true} component={OldAccountFileManage} />
 
-                <Route path="*" component={Page404} />
-              </Switch>
-            </Router>
+                  <Route path="*" component={Page404} />
+                </Switch>
+              </Router>
+            </WarningWrapper>
           </FileManagementStatusProvider>
         </PersistGate>
       </Provider>
