@@ -187,6 +187,7 @@ const FileManagePage = ({ history }) => {
   const [currentPlan, setCurrentPlan] = React.useState();
   const [isAccountExpired, setIsAccountExpired] = React.useState(false);
   const [, setProcessChange] = React.useState();
+  const [cmdKeyStatus, setCmdKeyStatus] = React.useState(false);
 
   const handleShowSidebar = React.useCallback(() => {
     setShowSidebar(!showSidebar);
@@ -969,6 +970,14 @@ const FileManagePage = ({ history }) => {
     }
     setSelectedFiles(temp);
   };
+  const onSelectAll = (e) => {
+    e.stopPropagation();
+    if (selectedFiles.length) {
+      setSelectedFiles([]);
+    } else {
+      setSelectedFiles(fileMetaList);
+    }
+  };
   const getSelectedFileSize = () => {
     let size = 0;
     selectedFiles.map((item) => (size = size + item.size));
@@ -1103,8 +1112,26 @@ const FileManagePage = ({ history }) => {
 
   const lastFour = localStorage.getItem("key")?.slice(-4);
 
+  const keyDownHandler = (e) => {
+    if (e.keyCode === 224 || e.keyCode === 91 || e.keyCode === 17) {
+      e.preventDefault();
+      e.stopPropagation();
+      localStorage.setItem("cmd_status", "true");
+    }
+
+    if (e.keyCode === 65 && localStorage.cmd_status === "true") {
+      e.preventDefault();
+      e.stopPropagation();
+      onSelectAll(e);
+    }
+  };
+
+  const keyUpHandler = (e) => {
+    if (e.keyCode === 224 || e.keyCode === 91 || e.keyCode === 17) localStorage.setItem("cmd_status", "false");
+  };
+
   return (
-    <div className="page">
+    <div className="page" onKeyDown={(e) => keyDownHandler(e)} onKeyUp={(e) => keyUpHandler(e)}>
       {showSignUpModal && currentPlan && (
         <SignUpModal
           show={showSignUpModal}
@@ -1410,43 +1437,45 @@ const FileManagePage = ({ history }) => {
               )}
 
               {!tableView && (
-                <div className="grid-view">
-                  {folderList.map(
-                    (item) =>
-                      item && (
-                        <FileManagerFolderEntryGrid
-                          key={bytesToB64URL(item.location)}
-                          accountSystem={accountSystem}
-                          folderEntry={item}
-                          handleDeleteItem={handleDeleteItem}
-                          handleOpenRenameModal={handleOpenRenameModal}
-                          setCurrentPath={setCurrentPath}
-                          isAccountExpired={isAccountExpired}
-                        />
-                      )
-                  )}
-                  {fileList.map(
-                    (item) =>
-                      item && (
-                        <FileManagerFileEntryGrid
-                          key={bytesToB64URL(item.location)}
-                          accountSystem={accountSystem}
-                          fileEntry={item}
-                          fileShare={fileShare}
-                          filePublicShare={filePublicShare}
-                          handleDeleteItem={handleDeleteItem}
-                          handleOpenRenameModal={handleOpenRenameModal}
-                          downloadItem={async (f) => {
-                            await fileDownload(f, false);
-                            OnfinishFileManaging();
-                          }}
-                          handleSelectFile={handleSelectFile}
-                          selectedFiles={selectedFiles}
-                          isAccountExpired={isAccountExpired}
-                        />
-                      )
-                  )}
-                </div>
+                <>
+                  <div className="grid-view">
+                    {folderList.map(
+                      (item) =>
+                        item && (
+                          <FileManagerFolderEntryGrid
+                            key={bytesToB64URL(item.location)}
+                            accountSystem={accountSystem}
+                            folderEntry={item}
+                            handleDeleteItem={handleDeleteItem}
+                            handleOpenRenameModal={handleOpenRenameModal}
+                            setCurrentPath={setCurrentPath}
+                            isAccountExpired={isAccountExpired}
+                          />
+                        )
+                    )}
+                    {fileList.map(
+                      (item) =>
+                        item && (
+                          <FileManagerFileEntryGrid
+                            key={bytesToB64URL(item.location)}
+                            accountSystem={accountSystem}
+                            fileEntry={item}
+                            fileShare={fileShare}
+                            filePublicShare={filePublicShare}
+                            handleDeleteItem={handleDeleteItem}
+                            handleOpenRenameModal={handleOpenRenameModal}
+                            downloadItem={async (f) => {
+                              await fileDownload(f, false);
+                              OnfinishFileManaging();
+                            }}
+                            handleSelectFile={handleSelectFile}
+                            selectedFiles={selectedFiles}
+                            isAccountExpired={isAccountExpired}
+                          />
+                        )
+                    )}
+                  </div>
+                </>
               )}
 
               {tableView && (
@@ -1457,8 +1486,17 @@ const FileManagePage = ({ history }) => {
                         onClick={() =>
                           handleSortTable("name", sortable.column === "name" ? (sortable.method === "down" ? "up" : "down") : "down")
                         }
-                        className={`sortable ${sortable.column === "name" && (sortable.method === "up" ? "asc" : "desc")}`}
+                        className={`sortable ${
+                          sortable.column === "name" && (sortable.method === "up" ? "asc" : "desc")
+                        } flex items-center`}
                       >
+                        <input
+                          type="checkbox"
+                          className="mr-2"
+                          onClick={onSelectAll}
+                          checked={!!selectedFiles.length}
+                          onChange={(e) => null}
+                        />
                         Name
                       </th>
                       {!isMobile && (
