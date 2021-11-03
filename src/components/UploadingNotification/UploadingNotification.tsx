@@ -27,13 +27,17 @@ const UploadingNotification = ({ notifications, uploadFinish, setUploadingList, 
 
   const uploadingItemCount = notifications.filter((item) => item.percent !== 100).length;
 
+  const completedMessage = () => {
+    const cancelledItems = notifications.filter((item) => item.status === "cancelled").length;
+    if (cancelledItems) return `${cancelledItems} ${getPlural(cancelledItems, "upload")} canceled`;
+    return `${notifications.length} ${getPlural(notifications.length, "upload")} complete`;
+  };
+
   return (
     <div className={minimize ? "notifications minimize" : "notifications"}>
       <div className="notifications-header">
         {isUploadCompleted(notifications) ? (
-          <span>
-            {notifications.length} {getPlural(notifications.length, "upload")} complete
-          </span>
+          <span>{completedMessage()}</span>
         ) : (
           <span>
             Uploading {uploadingItemCount} {getPlural(uploadingItemCount, "item")}
