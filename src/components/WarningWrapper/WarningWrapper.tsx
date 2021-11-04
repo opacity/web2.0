@@ -13,7 +13,7 @@ const WarningWrapper = (props) => {
       <div className="full-width">
         <Alert type="warning" className="margin-0 text-center">
           This site is for test purposes only. If you are interested in a full featured Opacity Storage account, please visit
-          www.opacity.io.
+          <a href="https://www.opacity.io">www.opacity.io</a>.
         </Alert>
       </div>
       <div className="full-width">{props.children}</div>
