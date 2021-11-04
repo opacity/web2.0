@@ -8,6 +8,8 @@ import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-l
 import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex";
 import ReactLoading from "react-loading";
 
+declare let rubicWidget;
+
 const animationData1 = require("./lottie1.json");
 const animationData2 = require("./lottie2.json");
 
@@ -99,7 +101,7 @@ const LandingPage = ({ history }) => {
     Object.freeze(configuration);
 
     // create widget
-    rubicWidget.init(configuration);
+    if (rubicWidget) rubicWidget.init(configuration);
   }, []);
 
   const handleCloseSignUpModal = () => {
