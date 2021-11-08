@@ -3,12 +3,7 @@ import * as React from "react";
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import { Table } from "tabler-react";
 import { useIntersectionObserver } from "@researchgate/react-intersection-observer";
-import {
-  AccountSystem,
-  FolderFileEntry,
-  FolderMetadata,
-  FoldersIndexEntry,
-} from "../../../ts-client-library/packages/account-system";
+import { AccountSystem, FolderFileEntry, FolderMetadata, FoldersIndexEntry } from "../../../ts-client-library/packages/account-system";
 // import { formatBytes } from "../../helpers"
 import { posix } from "path-browserify";
 import { FileIcon } from "react-file-icon";
@@ -18,15 +13,10 @@ export type FileManagerFolderEntryProps = {
   accountSystem: AccountSystem;
   folderEntry: FoldersIndexEntry;
   setCurrentPath: (p: string) => void;
-  handleDeleteItem: (
-    f: FolderFileEntry | FoldersIndexEntry,
-    isFile: boolean
-  ) => void;
-  handleOpenRenameModal: (
-    f: FolderFileEntry | FoldersIndexEntry,
-    isFile: boolean
-  ) => void;
-  isAccountExpired?: boolean
+  handleDeleteItem: (f: FolderFileEntry | FoldersIndexEntry, isFile: boolean) => void;
+  handleOpenRenameModal: (f: FolderFileEntry | FoldersIndexEntry, isFile: boolean) => void;
+  handleDeleteBrokenFolder: (location: Uint8Array) => void;
+  isAccountExpired?: boolean;
 };
 
 export const FileManagerFolderEntryGrid = ({
@@ -35,9 +25,11 @@ export const FileManagerFolderEntryGrid = ({
   setCurrentPath,
   handleDeleteItem,
   handleOpenRenameModal,
+  handleDeleteBrokenFolder,
   isAccountExpired,
 }: FileManagerFolderEntryProps) => {
   const [folderMeta, setFolderMeta] = React.useState<FolderMetadata>();
+  const [isBroken, setIsBroken] = React.useState(false);
 
   const [ref, unobserve] = useIntersectionObserver((e) => {
     if (folderEntry && e.isIntersecting) {
@@ -47,22 +39,24 @@ export const FileManagerFolderEntryGrid = ({
           ._getFolderMetadataByLocation(folderEntry.location)
           .then((f) => {
             setFolderMeta(f);
+          })
+          .catch(() => {
+            setIsBroken(true);
           });
       }, 100);
     }
   });
 
+  const deleteBrokenItem = (folderLocation) => {
+    handleDeleteBrokenFolder(folderLocation);
+  };
+
   return (
     <div className="grid-item">
-      <div className="items" onClick={() => setCurrentPath(folderEntry.path)}>
+      <div className="items" onClick={() => !isBroken && folderMeta && setCurrentPath(folderEntry.path)}>
         {/* <i className='icon-folder'></i> */}
         <div style={{ width: "40px" }}>
-          <FileIcon
-            color="#8A8A8A"
-            labelColor="#A8A8A8"
-            fold={false}
-            extension="folder"
-          />
+          <FileIcon color="#8A8A8A" labelColor="#A8A8A8" fold={false} extension="folder" />
         </div>
         <h3 className="file-name">{posix.basename(folderEntry.path)}</h3>
         <div className="file-info" ref={ref}>
@@ -70,22 +64,18 @@ export const FileManagerFolderEntryGrid = ({
         </div>
       </div>
       <div className="grid-context-menu-area">
-        <DropdownButton
-          menuAlign="right"
-          title=""
-          id="dropdown-menu-align-right"
-        >
+        <DropdownButton menuAlign="right" title="" id="dropdown-menu-align-right">
           <Dropdown.Item
             eventKey="3"
             onClick={() => handleDeleteItem(folderEntry, false)}
-            disabled={isAccountExpired}
+            disabled={!folderMeta || isAccountExpired || !folderMeta.location}
           >
             <i className="icon-delete"></i>
             Delete
           </Dropdown.Item>
           <Dropdown.Divider />
           <Dropdown.Item
-            disabled={isAccountExpired}
+            disabled={!folderMeta || isAccountExpired || !folderMeta.location}
             eventKey="4"
             onClick={() =>
               handleOpenRenameModal(
@@ -99,6 +89,15 @@ export const FileManagerFolderEntryGrid = ({
             <i className="icon-rename"></i>
             Rename
           </Dropdown.Item>
+          {isBroken && (
+            <>
+              <Dropdown.Divider />
+              <Dropdown.Item eventKey="5" onClick={() => deleteBrokenItem(folderEntry.location)} style={{ color: "red" }}>
+                <i className="icon-delete"></i>
+                Delete Broken Folder
+              </Dropdown.Item>
+            </>
+          )}
         </DropdownButton>
       </div>
     </div>
@@ -111,10 +110,12 @@ export const FileManagerFolderEntryList = ({
   setCurrentPath,
   handleDeleteItem,
   handleOpenRenameModal,
+  handleDeleteBrokenFolder,
   isAccountExpired,
 }: FileManagerFolderEntryProps) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const [folderMeta, setFolderMeta] = React.useState<FolderMetadata>();
+  const [isBroken, setIsBroken] = React.useState(false);
 
   const [ref, unobserve] = useIntersectionObserver((e) => {
     if (folderEntry && e.isIntersecting) {
@@ -124,6 +125,9 @@ export const FileManagerFolderEntryList = ({
           ._getFolderMetadataByLocation(folderEntry.location)
           .then((f) => {
             setFolderMeta(f);
+          })
+          .catch(() => {
+            setIsBroken(true);
           });
       }, 100);
     }
@@ -137,54 +141,48 @@ export const FileManagerFolderEntryList = ({
     return resName;
   };
 
+  const deleteBrokenItem = (folderLocation) => {
+    handleDeleteBrokenFolder(folderLocation);
+  };
+
   return (
     <Table.Row>
-      <Table.Col
-        className="file-name"
-        onClick={() => setCurrentPath(folderEntry.path)}
-      >
+      <Table.Col className="file-name" onClick={() => !isBroken && folderMeta && setCurrentPath(folderEntry.path)}>
         <div className="d-flex" ref={ref}>
           <i className="icon-folder"></i>
           {briefFolderName(posix.basename(folderEntry.path))}
+          {isBroken && (
+            <span
+              style={{
+                display: "inline-block",
+                background: "#f15757",
+                color: "white",
+                padding: "4px 6px",
+                borderRadius: 4,
+                marginInline: "1em",
+              }}
+            >
+              Broken
+            </span>
+          )}
         </div>
       </Table.Col>
       {!isMobile && <Table.Col> </Table.Col>}
-      {!isMobile && (
-        <Table.Col>
-          {folderMeta ? moment(folderMeta.uploaded).calendar() : "..."}
-        </Table.Col>
-      )}
-      {/* <Table.Col>{moment(item.created).format("MM/DD/YYYY")}</Table.Col> */}
-      <Table.Col>
-        {folderMeta ? folderMeta.files.length : "..."} items
-      </Table.Col>
+      {!isMobile && <Table.Col>{folderMeta ? moment(folderMeta.uploaded).calendar() : "..."}</Table.Col>}
+      <Table.Col>{folderMeta ? folderMeta.files.length : "..."} items</Table.Col>
       <Table.Col className="text-nowrap">
-        <DropdownButton
-          menuAlign="right"
-          title=""
-          id="dropdown-menu-align-right"
-        >
-          {/* <Dropdown.Item eventKey='1'>
-						<i className='icon-share'></i>
-						Share
-					</Dropdown.Item>
-					<Dropdown.Divider /> */}
-          {/* <Dropdown.Item eventKey='2'>
-						<i className='icon-download'></i>
-						Download
-					</Dropdown.Item>
-					<Dropdown.Divider /> */}
+        <DropdownButton menuAlign="right" title="" id="dropdown-menu-align-right">
           <Dropdown.Item
             eventKey="3"
             onClick={() => handleDeleteItem(folderEntry, false)}
-            disabled={isAccountExpired}
+            disabled={!folderMeta || isAccountExpired || !folderMeta.location}
           >
             <i className="icon-delete"></i>
             Delete
           </Dropdown.Item>
           <Dropdown.Divider />
           <Dropdown.Item
-            disabled={isAccountExpired}
+            disabled={!folderMeta || isAccountExpired || !folderMeta.location}
             eventKey="4"
             onClick={() =>
               handleOpenRenameModal(
@@ -198,6 +196,15 @@ export const FileManagerFolderEntryList = ({
             <i className="icon-rename"></i>
             Rename
           </Dropdown.Item>
+          {isBroken && (
+            <>
+              <Dropdown.Divider />
+              <Dropdown.Item eventKey="5" onClick={() => deleteBrokenItem(folderEntry.location)} style={{ color: "red" }}>
+                <i className="icon-delete"></i>
+                Delete Broken Folder
+              </Dropdown.Item>
+            </>
+          )}
         </DropdownButton>
       </Table.Col>
     </Table.Row>

@@ -45,7 +45,7 @@ import {
   bindUploadToAccountSystem,
   bindPublicShareToAccountSystem,
 } from "../../../ts-client-library/packages/filesystem-access/src/account-system-binding";
-import { UploadEvents, UploadProgressEvent } from "../../../ts-client-library/packages/filesystem-access/src/events";
+import { UploadEvents, UploadProgressEvent, UploadErrorEvent } from "../../../ts-client-library/packages/filesystem-access/src/events";
 import RenameModal from "../../components/RenameModal/RenameModal";
 import DeleteModal from "../../components/DeleteModal/DeleteModal";
 import WarningModal from "../../components/WarningModal/WarningModal";
@@ -160,7 +160,7 @@ const FileManagePage = ({ history }) => {
   const [accountInfo, setAccountInfo] = React.useState<AccountGetRes>();
   const [showRenameModal, setShowRenameModal] = React.useState(false);
   const [fileToRename, setFileToRename] = React.useState<FolderFileEntry>();
-  const [fileToDelete, setFileToDelete] = React.useState<FolderFileEntry>();
+  const [fileToDelete, setFileToDelete] = React.useState<FileMetadata|FolderFileEntry>();
   const [folderToRename, setFolderToRename] = React.useState<FoldersIndexEntry>();
   const [folderToDelete, setFolderToDelete] = React.useState<FoldersIndexEntry>();
   const [oldName, setOldName] = React.useState();
@@ -286,9 +286,9 @@ const FileManagePage = ({ history }) => {
         loadingFlagCnt === 0 && setPageLoading(false);
       })
       .catch((err) => {
-        console.error(err);
-
         toast.error(`folder "${currentPath}" not found`);
+        loadingFlagCnt--;
+        setPageLoading(false);
       });
   }, [currentPath, updateCurrentFolderSwitch]);
 
@@ -520,7 +520,7 @@ const FileManagePage = ({ history }) => {
           const nextFile = uploadingFileList[0];
           const nextFilePath = pathGenerator(nextFile, currentPath);
           uploadFile(nextFile, nextFilePath);
-      }
+        }
 
         // side effects
         bindUploadToAccountSystem(accountSystem, upload);
@@ -531,6 +531,20 @@ const FileManagePage = ({ history }) => {
           if (index > -1) {
             templist[index].percent = e.detail.progress * 100;
             templist[index].status = "uploading";
+            fileUploadingList = templist;
+            setUploadingList(templist);
+            setProcessChange({});
+          }
+        });
+
+        upload.addEventListener(UploadEvents.ERROR, (e: UploadErrorEvent) => {
+          toast.error("Failed to upload file");
+
+          let templist = fileUploadingList;
+          let index = templist.findIndex((ele) => ele.id === toastID);
+          if (index > -1) {
+            templist[index].percent = 100;
+            templist[index].status = "cancelled";
             fileUploadingList = templist;
             setUploadingList(templist);
             setProcessChange({});
@@ -570,10 +584,9 @@ const FileManagePage = ({ history }) => {
             uploadFile(nextFile, nextFilePath);
           }
 
-          if(curThreadNum === 0 && uploadingFileList.length === 0) {
+          if (curThreadNum === 0 && uploadingFileList.length === 0) {
             setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
           }
-
         }
       } catch (e) {
         console.error(e, "catched");
@@ -591,7 +604,7 @@ const FileManagePage = ({ history }) => {
           uploadFile(nextFile, nextFilePath);
         }
 
-        if(curThreadNum === 0 && uploadingFileList.length === 0) {
+        if (curThreadNum === 0 && uploadingFileList.length === 0) {
           setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
         }
       }
@@ -609,16 +622,12 @@ const FileManagePage = ({ history }) => {
     ]
   );
 
-  const pathGenerator = React.useCallback(
-    (file, curPath) => {
-      const folderPath = 
-      file.path 
+  const pathGenerator = React.useCallback((file, curPath) => {
+    const folderPath = file.path
       ? curPath + relativePath(file.path)
       : curPath + (file.webkitRelativePath !== "" ? "/" + relativePath(file.webkitRelativePath) : "");
-      return folderPath;
-    },
-    []
-  );
+    return folderPath;
+  }, []);
 
   const selectFiles = React.useCallback(
     async (files) => {
@@ -796,10 +805,8 @@ const FileManagePage = ({ history }) => {
         });
         bindFileSystemObjectToAccountSystem(accountSystem, fso);
         await fso.delete();
-        // toast(`${file.name} was successfully deleted.`);
         setFileToDelete(null);
       } catch (e) {
-        await accountSystem.removeFile(file.location);
         setFileToDelete(null);
         toast.error(`An error occurred while deleting ${file.name}.`);
       }
@@ -911,11 +918,27 @@ const FileManagePage = ({ history }) => {
     [accountSystem, fileToRename, folderToRename, updateCurrentFolderSwitch]
   );
 
-  const handleDeleteItem = React.useCallback((item: FolderFileEntry | FoldersIndexEntry, isFile: boolean) => {
-    if (isFile) setFileToDelete(item as FolderFileEntry);
+  const handleDeleteItem = React.useCallback((item: FileMetadata | FoldersIndexEntry, isFile: boolean) => {
+    if (isFile) setFileToDelete(item as FileMetadata);
     else setFolderToDelete(item as FoldersIndexEntry);
     setShowDeleteModal(true);
   }, []);
+
+  const handleDeleteBrokenFile = React.useCallback(async (location: Uint8Array) => {
+		await accountSystem._removeBrokenFile(currentPath, location).catch(() => {
+      toast.error("Failed to remove broken file");
+			throw new Error("Error remove file metdata");
+		})
+    setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
+  }, [accountSystem, currentPath])
+
+  const handleDeleteBrokenFolder = React.useCallback(async (location: Uint8Array) => {
+    await accountSystem._removeBrokenFolder(location).catch(() => {
+      toast.error("Failed to remove broken folder");
+			throw new Error("Error remove broken folder");
+		})
+    setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
+  }, [accountSystem])
 
   const handleDelete = async () => {
     setPageLoading(true);
@@ -1073,42 +1096,6 @@ const FileManagePage = ({ history }) => {
         break;
     }
   };
-
-  const getFileMetaList = React.useCallback(async () => {
-    setPageLoading(true);
-    loadingFlagCnt++;
-    const metaList = fileList.map(async (file) => {
-      return await accountSystem._getFileMetadata(file.location).then((f) => {
-        return f;
-      });
-    });
-    const tmp = await Promise.all(metaList);
-    setFileMetaList(tmp);
-    loadingFlagCnt--;
-    loadingFlagCnt === 0 && setPageLoading(false);
-  }, [fileList]);
-
-  React.useEffect(() => {
-    getFileMetaList();
-  }, [fileList, getFileMetaList]);
-
-  const getFolderMetaList = React.useCallback(async () => {
-    setPageLoading(true);
-    loadingFlagCnt++;
-    const metaList = folderList.map(async (folder) => {
-      return await accountSystem._getFolderMetadataByLocation(folder.location).then((f) => {
-        return f;
-      });
-    });
-    const tmp = await Promise.all(metaList);
-    setFolderMetaList(tmp);
-    loadingFlagCnt--;
-    loadingFlagCnt === 0 && setPageLoading(false);
-  }, [folderList]);
-
-  React.useEffect(() => {
-    getFolderMetaList();
-  }, [folderList, getFolderMetaList]);
 
   const lastFour = localStorage.getItem("key")?.slice(-4);
 
@@ -1335,26 +1322,6 @@ const FileManagePage = ({ history }) => {
                 <span>HELP CENTER</span>
               </NavLink>
             </div>
-            {/* {tableView && (
-              <div className=" d-flex header-item ml-3">
-                <span
-                  className="item-icon grid-view"
-                  onClick={() => {
-                    setTableView(false);
-                  }}
-                ></span>
-              </div>
-            )}
-            {!tableView && (
-              <div className=" d-flex header-item ml-3">
-                <span
-                  className="item-icon table-view"
-                  onClick={() => {
-                    setTableView(true);
-                  }}
-                ></span>
-              </div>
-            )} */}
           </div>
         )}
         {selectedFiles.length > 0 && (
@@ -1437,45 +1404,45 @@ const FileManagePage = ({ history }) => {
               )}
 
               {!tableView && (
-                <>
-                  <div className="grid-view">
-                    {folderList.map(
-                      (item) =>
-                        item && (
-                          <FileManagerFolderEntryGrid
-                            key={bytesToB64URL(item.location)}
-                            accountSystem={accountSystem}
-                            folderEntry={item}
-                            handleDeleteItem={handleDeleteItem}
-                            handleOpenRenameModal={handleOpenRenameModal}
-                            setCurrentPath={setCurrentPath}
-                            isAccountExpired={isAccountExpired}
-                          />
-                        )
-                    )}
-                    {fileList.map(
-                      (item) =>
-                        item && (
-                          <FileManagerFileEntryGrid
-                            key={bytesToB64URL(item.location)}
-                            accountSystem={accountSystem}
-                            fileEntry={item}
-                            fileShare={fileShare}
-                            filePublicShare={filePublicShare}
-                            handleDeleteItem={handleDeleteItem}
-                            handleOpenRenameModal={handleOpenRenameModal}
-                            downloadItem={async (f) => {
-                              await fileDownload(f, false);
-                              OnfinishFileManaging();
-                            }}
-                            handleSelectFile={handleSelectFile}
-                            selectedFiles={selectedFiles}
-                            isAccountExpired={isAccountExpired}
-                          />
-                        )
-                    )}
-                  </div>
-                </>
+                <div className="grid-view">
+                  {folderList.map(
+                    (item) =>
+                      item && (
+                        <FileManagerFolderEntryGrid
+                          key={bytesToB64URL(item.location)}
+                          accountSystem={accountSystem}
+                          folderEntry={item}
+                          handleDeleteItem={handleDeleteItem}
+                          handleOpenRenameModal={handleOpenRenameModal}
+                          handleDeleteBrokenFolder={handleDeleteBrokenFolder}
+                          setCurrentPath={setCurrentPath}
+                          isAccountExpired={isAccountExpired}
+                        />
+                      )
+                  )}
+                  {fileList.map(
+                    (item) =>
+                      item && (
+                        <FileManagerFileEntryGrid
+                          key={bytesToB64URL(item.location)}
+                          accountSystem={accountSystem}
+                          fileEntry={item}
+                          fileShare={fileShare}
+                          filePublicShare={filePublicShare}
+                          handleDeleteItem={handleDeleteItem}
+                          handleOpenRenameModal={handleOpenRenameModal}
+                          handleDeleteBrokenFile={handleDeleteBrokenFile}
+                          downloadItem={async (f) => {
+                            await fileDownload(f, false);
+                            OnfinishFileManaging();
+                          }}
+                          handleSelectFile={handleSelectFile}
+                          selectedFiles={selectedFiles}
+                          isAccountExpired={isAccountExpired}
+                        />
+                      )
+                  )}
+                </div>
               )}
 
               {tableView && (
@@ -1560,8 +1527,10 @@ const FileManagePage = ({ history }) => {
                             folderEntry={item}
                             handleDeleteItem={handleDeleteItem}
                             handleOpenRenameModal={handleOpenRenameModal}
+                            handleDeleteBrokenFolder={handleDeleteBrokenFolder}
                             setCurrentPath={setCurrentPath}
                             isAccountExpired={isAccountExpired}
+                            
                           />
                         )
                     )}
@@ -1575,6 +1544,7 @@ const FileManagePage = ({ history }) => {
                             fileShare={fileShare}
                             filePublicShare={filePublicShare}
                             handleDeleteItem={handleDeleteItem}
+                            handleDeleteBrokenFile={handleDeleteBrokenFile}
                             handleOpenRenameModal={handleOpenRenameModal}
                             downloadItem={async (f) => {
                               await fileDownload(f);
