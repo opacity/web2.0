@@ -2,12 +2,10 @@
   margin-top: 110px;
   padding-left: 100px;
   padding-right: 100px;
-  margin-bottom: 110px;
   @media (max-width: 767.8px) {
     margin-top: 50px;
     padding-left: 10px;
     padding-right: 10px;
-    margin-bottom: 50px;
   }
   h1 {
     font-style: normal;
@@ -130,7 +128,6 @@
       font-size: 14px;
       line-height: 191%;
       color: #414141;
-      
     }
     .content {
       display: none;
@@ -143,6 +140,48 @@
     display: block;
     @media (max-width: 767.8px) {
       display: none;
+    }
+  }
+
+  .manage {
+    margin-top: 80px;
+    background-color: #d8e7ff;
+    max-width: 100%;
+    padding: 60px;
+    background-image: url("../../assets/manager.png");
+    @media (max-width: 767.9px) {
+      margin-top: 50px;
+      padding: 30px;
+      background-size: cover;
+      .btn-groups {
+        display: flex;
+        flex-direction: column;
+        .btn {
+          height: 45px;
+          &:first-child {
+            margin-bottom: 10px;
+          }
+        }
+      }
+    }
+    .btn {
+      height: 48px;
+      &.btn-warning {
+        background: #fdd801;
+        box-shadow: 0px 2px 6px 1px rgba(0, 0, 0, 0.16);
+        font-size: 16px;
+        line-height: 24px;
+        color: #000000;
+      }
+      &.btn-outline-primary {
+        border-color: #2e6dde;
+        border: 1px solid #2e6dde;
+        background-color: #d8e7ff;
+        min-width: 117px;
+        &:hover {
+          background-color: #206bc4;
+        }
+      }
     }
   }
 }
