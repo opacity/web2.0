@@ -4,6 +4,10 @@ import { Row, Col, Container, Media, Button } from "react-bootstrap";
 import SiteWrapper from "../../SiteWrapper";
 import "./PlatformPage.scss";
 import { Link } from "react-router-dom";
+import { PlanType, PLANS, STORAGE_NODE as storageNode } from "../../config";
+import { Account } from "../../../ts-client-library/packages/account-management";
+import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web";
+import ReactLoading from "react-loading";
 
 const fullControl = require("../../assets/full-control.png");
 const handle = require("../../assets/handle-access.png");
@@ -17,6 +21,53 @@ const whitepapper = require("../../assets/whitepapper.png");
 
 const PlatformPage = ({ history }) => {
   const [showLoginModal, setShowLoginModal] = React.useState(false);
+  const [plan, setPlan] = React.useState<PlanType>();
+  const [pageLoading, setPageLoading] = React.useState(true);
+
+  const cryptoMiddleware = React.useMemo(() => new WebAccountMiddleware(), []);
+
+  const netMiddleware = React.useMemo(() => new WebNetworkMiddleware(), []);
+  const account = React.useMemo(
+    () =>
+      new Account({
+        crypto: cryptoMiddleware,
+        net: netMiddleware,
+        storageNode,
+      }),
+    [cryptoMiddleware, netMiddleware, storageNode]
+  );
+
+  React.useEffect(() => {
+    const init = async () => {
+      try {
+        setPageLoading(true);
+
+        const plansApi = await account.plans();
+
+        const converedPlan = PLANS.map((item, index) => {
+          if (plansApi[index]) {
+            const { cost, costInUSD, storageInGB, name } = plansApi[index];
+            return {
+              ...item,
+              opctCost: cost,
+              usdCost: costInUSD,
+              storageInGB,
+              name,
+            };
+          } else {
+            return item;
+          }
+        });
+        const freePlan = converedPlan.find((item) => item.permalink === "free");
+        setPlan(freePlan);
+        setPageLoading(false);
+      } catch {
+        // setPageLoading(false)
+      }
+    };
+    account && init();
+  }, [account]);
+
   const handleCloseLoginModal = () => {
     setShowLoginModal(false);
   };
@@ -44,7 +95,12 @@ const PlatformPage = ({ history }) => {
   ];
 
   return (
-    <SiteWrapper showLoginModal={showLoginModal} handleCloseLoginModal={handleCloseLoginModal} history={history}>
+    <SiteWrapper history={history} plan={plan}>
+      {pageLoading && (
+        <div className="loading">
+          <ReactLoading type="spinningBubbles" color="#2e6dde" />
+        </div>
+      )}
       <Container fluid="xl" className="mt-5">
         <Row className="justify-content-md-center">
           <Col md="8" className="text-center">
