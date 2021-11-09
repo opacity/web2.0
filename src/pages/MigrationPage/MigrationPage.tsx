@@ -9,9 +9,10 @@ import "./MigrationPage.scss";
 import SiteWrapper from "../../SiteWrapper";
 import { Row, Col, Container, Button, ProgressBar } from "react-bootstrap";
 import classNames from "classnames";
-import {
-  STORAGE_NODE as storageNode,
-} from "../../config";
+import { PlanType, PLANS, STORAGE_NODE as storageNode } from "../../config";
+import { Account } from "../../../ts-client-library/packages/account-management";
+import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web";
+import ReactLoading from "react-loading";
 
 type MigrationFormProps = {
   privateKey: string;
@@ -24,6 +25,52 @@ const MigrationPage = ({ history }) => {
   const [errorStatus, setErrorStatus] = useState("");
   const [percent, setPercent] = useState(0);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [plan, setPlan] = React.useState<PlanType>();
+  const [pageLoading, setPageLoading] = React.useState(true);
+
+  const cryptoMiddleware = React.useMemo(() => new WebAccountMiddleware(), []);
+
+  const netMiddleware = React.useMemo(() => new WebNetworkMiddleware(), []);
+  const account = React.useMemo(
+    () =>
+      new Account({
+        crypto: cryptoMiddleware,
+        net: netMiddleware,
+        storageNode,
+      }),
+    [cryptoMiddleware, netMiddleware, storageNode]
+  );
+
+  React.useEffect(() => {
+    const init = async () => {
+      try {
+        setPageLoading(true);
+
+        const plansApi = await account.plans();
+
+        const converedPlan = PLANS.map((item, index) => {
+          if (plansApi[index]) {
+            const { cost, costInUSD, storageInGB, name } = plansApi[index];
+            return {
+              ...item,
+              opctCost: cost,
+              usdCost: costInUSD,
+              storageInGB,
+              name,
+            };
+          } else {
+            return item;
+          }
+        });
+        const freePlan = converedPlan.find((item) => item.permalink === "free");
+        setPlan(freePlan);
+        setPageLoading(false);
+      } catch {
+        // setPageLoading(false)
+      }
+    };
+    account && init();
+  }, [account]);
 
   const handleUpgrade = (
     values: MigrationFormProps,
@@ -79,7 +126,12 @@ const MigrationPage = ({ history }) => {
   };
 
   return (
-    <SiteWrapper history={history} page="migration" showLoginModal={showLoginModal}>
+    <SiteWrapper history={history} page="migration" showLoginModal={showLoginModal} plan={plan}>
+      {pageLoading && (
+        <div className="loading">
+          <ReactLoading type="spinningBubbles" color="#2e6dde" />
+        </div>
+      )}
       <Container fluid="xl migration">
         <Formik
           initialValues={{ privateKey: "" }}

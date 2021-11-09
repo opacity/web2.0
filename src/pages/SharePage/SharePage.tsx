@@ -30,7 +30,9 @@ import { formatBytes } from "../../helpers";
 import { FileIcon, defaultStyles } from "react-file-icon";
 import { Preview } from "./preview";
 // import ReactLoading from "react-loading";
-import { PLANS } from "../../config";
+import { PlanType, PLANS, STORAGE_NODE as storageNode } from "../../config";
+import { Account } from "../../../ts-client-library/packages/account-management";
+import ReactLoading from "react-loading";
 
 const shareImg = require("../../assets/share-download.svg");
 
@@ -44,9 +46,52 @@ const SharePage = ({ history }) => {
   const [showSignUpModal, setShowSignUpModal] = useState(false);
   const [plan, setPlan] = useState();
   const [percent, setPercent] = useState(0);
+  const [pageLoading, setPageLoading] = React.useState(true);
 
   const cryptoMiddleware = React.useMemo(() => new WebAccountMiddleware(), []);
+
   const netMiddleware = React.useMemo(() => new WebNetworkMiddleware(), []);
+  const account = React.useMemo(
+    () =>
+      new Account({
+        crypto: cryptoMiddleware,
+        net: netMiddleware,
+        storageNode,
+      }),
+    [cryptoMiddleware, netMiddleware, storageNode]
+  );
+  
+  React.useEffect(() => {
+    const init = async () => {
+      try {
+        setPageLoading(true);
+
+        const plansApi = await account.plans();
+
+        const converedPlan = PLANS.map((item, index) => {
+          if (plansApi[index]) {
+            const { cost, costInUSD, storageInGB, name } = plansApi[index];
+            return {
+              ...item,
+              opctCost: cost,
+              usdCost: costInUSD,
+              storageInGB,
+              name,
+            };
+          } else {
+            return item;
+          }
+        });
+        const freePlan = converedPlan.find((item) => item.permalink === "free");
+        setPlan(freePlan);
+        setPageLoading(false);
+      } catch {
+        // setPageLoading(false)
+      }
+    };
+    account && init();
+  }, [account]);
+
   const metadataAccess = React.useMemo(
     () =>
       new MetadataAccess({
@@ -238,6 +283,11 @@ const SharePage = ({ history }) => {
       handleCloseSignUpModal={handleCloseSignUpModal}
       plan={plan}
     >
+       {pageLoading && (
+        <div className="loading">
+          <ReactLoading type="spinningBubbles" color="#2e6dde" />
+        </div>
+      )}
       <Container fluid="xl share">
         <Row>
           <Col lg={6} md={12} className="center">
