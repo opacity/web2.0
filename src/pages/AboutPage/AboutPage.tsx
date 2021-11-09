@@ -93,7 +93,7 @@ const AboutPage = ({ history }) => {
           </div>
 
           <div className="explore">
-            <Button variant="primary btn-pill mr-md-3" onClick={() => history.push("/plans")}>
+            <Button variant="primary btn-pill mr-md-3" size="lg" onClick={() => history.push("/plans")}>
               Explore Plans
             </Button>
           </div>
