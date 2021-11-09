@@ -240,7 +240,7 @@ const LandingPage = ({ history }) => {
           <div className="col-md-12" data-aos="fade-up">
             <div className="row justify-content-center">
               <div className="col-md-5 pr-4">
-                <img className="mt-4" src={dashboard} width={507} height={330} />
+                <img className="mt-4 shadow" src={dashboard} width={507} height={330} />
               </div>
               <div className="col-md-5 pl-4">
                 <h1 className="title mb-4">Share any private file easily, with anyone, on any device.</h1>
@@ -274,7 +274,7 @@ const LandingPage = ({ history }) => {
                 </div>
               </div>
               <div className="col-md-5 pl-4">
-                <img className="mt-4" src={share} width={507} height={285} />
+                <img className="mt-4 shadow" src={share} width={507} height={285} />
               </div>
             </div>
           </div>
