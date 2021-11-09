@@ -18,8 +18,13 @@ const winLogo = require("../../assets/win_log.svg");
 const macLogo = require("../../assets/mac_log.svg");
 
 const PlansPage = ({ history }) => {
+  const [showLoginModal, setShowLoginModal] = React.useState(false);
+  const handleCloseLoginModal = () => {
+    setShowLoginModal(false);
+  };
+
   return (
-    <SiteWrapper history={history}>
+    <SiteWrapper showLoginModal={showLoginModal} handleCloseLoginModal={handleCloseLoginModal} history={history}>
       <Container fluid="xl community">
         <Row>
           <h1>Applications Powered by Opacity</h1>
