@@ -22,6 +22,11 @@ const winLogo = require("../../assets/win_log.svg");
 const macLogo = require("../../assets/mac_log.svg");
 
 const PlansPage = ({ history }) => {
+  const [showLoginModal, setShowLoginModal] = React.useState(false);
+  const handleCloseLoginModal = () => {
+    setShowLoginModal(false);
+  };
+
   const [plan, setPlan] = React.useState<PlanType>();
   const [pageLoading, setPageLoading] = React.useState(true);
 
@@ -70,7 +75,7 @@ const PlansPage = ({ history }) => {
   }, [account]);
 
   return (
-    <SiteWrapper history={history} plan={plan}>
+    <SiteWrapper showLoginModal={showLoginModal} handleCloseLoginModal={handleCloseLoginModal} history={history}>
       {pageLoading && (
         <div className="loading">
           <ReactLoading type="spinningBubbles" color="#2e6dde" />
