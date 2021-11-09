@@ -32,7 +32,6 @@ const LandingPage = ({ history }) => {
   const [showSignUpModal, setShowSignUpModal] = useState(false);
   const [plan, setPlan] = React.useState<PlanType>();
   const [pageLoading, setPageLoading] = React.useState(true);
-  const [plans, setPlans] = React.useState<PlanType[]>([]);
 
   const cryptoMiddleware = React.useMemo(() => new WebAccountMiddleware(), []);
 
@@ -68,7 +67,6 @@ const LandingPage = ({ history }) => {
             return item;
           }
         });
-        setPlans(converedPlan);
         const freePlan = converedPlan.find((item) => item.permalink === "free");
         setPlan(freePlan);
         setPageLoading(false);
