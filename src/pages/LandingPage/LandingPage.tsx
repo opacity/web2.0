@@ -171,7 +171,7 @@ const LandingPage = ({ history }) => {
               <div className="col-md-10 banner-text">No personal information required. Get 10GB file storage and file sharing for free</div>
 
               <div className="col-md-10 powered-by-polygon">
-                <a href="https://polygon.technology/">
+                <a href="https://polygon.technology/" target="_blank">
                   <img src={poweredByPolygon} />
                 </a>
               </div>
