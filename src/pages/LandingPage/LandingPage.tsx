@@ -215,22 +215,22 @@ const LandingPage = ({ history }) => {
       <div className="container-xl second-ele ">
         <div className="row text-center" data-aos="fade-up">
           <div className="col-md-4 card-items image-personal">
-            <div className="image-ele"></div>
             <div className="title">No Personal Info Required</div>
+            <div className="image-ele"></div>
             <div className="descriptions">
               We never ask for your personal information. You're always protected, so you'll never end up on the dark web
             </div>
           </div>
           <div className="col-md-4 card-items image-share">
-            <div className="image-ele"></div>
             <div className="title">Share Files Your Way</div>
+            <div className="image-ele"></div>
             <div className="descriptions">
               You control who can view your files. By default, you and only you even know these files exist.
             </div>
           </div>
           <div className="col-md-4 card-items image-pay">
-            <div className="image-ele"></div>
             <div className="title">Pay Using Cryptocurrency</div>
+            <div className="image-ele"></div>
             <div className="descriptions">
               Using the OPCT token, you can pay for your storage needs without ever having to use a credit card.
             </div>
