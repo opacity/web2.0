@@ -182,36 +182,6 @@ const LandingPage = ({ history }) => {
         </div>
       </div>
 
-      <div className="container-xl rubic-container">
-        <h1>Purchase Opacity tokens (OPCT) with Rubic!</h1>
-
-        <div className="content">
-          <div className="left">
-            <div>
-              <h2 className="subtitle mb-4">What is Rubic?</h2>
-
-              <p className="descriptions">
-                Rubic is a multichain DEX aggregator, with instant & cross-chain swaps for Ethereum, BSC, Polygon, Harmony, Tron & xDai,
-                limit orders, fiat on-ramps and more!
-              </p>
-
-              <p className="descriptions">
-                Rubic enables trades in one-step, so you can buy and sell tokens without needing to visit an exchange. Just connect your
-                wallet and go!
-              </p>
-
-              <p className="descriptions learn-more">
-                <a href="https://rubic.exchange/faq">Learn More</a>
-              </p>
-            </div>
-          </div>
-
-          <div className="rubic-widget-wrapper">
-            <div id="rubic-widget-root" className="rubic-widget"></div>
-          </div>
-        </div>
-      </div>
-
       <div className="container-xl second-ele ">
         <div className="row text-center" data-aos="fade-up">
           <div className="col-md-4 card-items image-personal">
@@ -382,6 +352,36 @@ const LandingPage = ({ history }) => {
                 Buy OPCT on QUICKSWAP
               </NavLink>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="container-xl rubic-container">
+        <h1>Purchase Opacity tokens (OPCT) with Rubic!</h1>
+
+        <div className="content">
+          <div className="left">
+            <div>
+              <h2 className="subtitle mb-4">What is Rubic?</h2>
+
+              <p className="descriptions">
+                Rubic is a multichain DEX aggregator, with instant & cross-chain swaps for Ethereum, BSC, Polygon, Harmony, Tron & xDai,
+                limit orders, fiat on-ramps and more!
+              </p>
+
+              <p className="descriptions">
+                Rubic enables trades in one-step, so you can buy and sell tokens without needing to visit an exchange. Just connect your
+                wallet and go!
+              </p>
+
+              <p className="descriptions learn-more">
+                <a href="https://rubic.exchange/faq">Learn More</a>
+              </p>
+            </div>
+          </div>
+
+          <div className="rubic-widget-wrapper">
+            <div id="rubic-widget-root" className="rubic-widget"></div>
           </div>
         </div>
       </div>
