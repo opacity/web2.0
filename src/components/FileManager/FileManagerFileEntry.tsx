@@ -104,7 +104,6 @@ export const FileManagerFileEntryGrid = ({
   return (
     <div className="grid-item">
       <div className={`items ${isSelected && "grid-item-selected"}`} onClick={() => fileMeta && handleSelectFile(fileMeta)}>
-        {/* <i className={`icon-${fileMeta && typeList[fileMeta.type]}`}></i> */}
         <div style={{ width: "40px" }}>
           <FileIcon
             color="#A8A8A8"
