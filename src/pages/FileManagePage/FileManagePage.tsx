@@ -992,12 +992,12 @@ const FileManagePage = ({ history }) => {
         fileMetaValues = await getFileMetaList();
       }
 
-      setSelectedFiles(fileMetaValues);
+      setSelectedFiles(fileMetaValues.filter((item) => "uploaded" in item));
     }
   };
   const getSelectedFileSize = () => {
     let size = 0;
-    selectedFiles.map((item) => (size = size + item.size));
+    selectedFiles.map((item) => (size = size + (item.size || 0)));
     return formatBytes(size);
   };
   const handleMultiDownload = async () => {
