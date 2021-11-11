@@ -1074,7 +1074,9 @@ const FileManagePage = ({ history }) => {
     const metaList = fileList.map(async (file) => {
       return await accountSystem._getFileMetadata(file.location).then((f) => {
         return f;
-      });
+      }).catch(() => {
+        return file;
+      });;
     });
     const tmp = await Promise.all(metaList);
     setFileMetaList(tmp);
@@ -1089,6 +1091,8 @@ const FileManagePage = ({ history }) => {
     const metaList = folderList.map(async (folder) => {
       return await accountSystem._getFolderMetadataByLocation(folder.location).then((f) => {
         return f;
+      }).catch(() => {
+        return folder;
       });
     });
     const tmp = await Promise.all(metaList);
