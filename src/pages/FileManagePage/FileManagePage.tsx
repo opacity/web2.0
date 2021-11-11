@@ -2,30 +2,13 @@ import * as React from "react";
 import { Table, Tooltip, Tag, NavLink } from "tabler-react";
 import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
-import {
-  // Row,
-  // Col,
-  // Container,
-  // Media,
-  Button,
-  Nav,
-  ProgressBar,
-  Breadcrumb,
-  // DropdownButton,
-  // Dropdown,
-  Alert,
-} from "react-bootstrap";
+import { Button, Nav, ProgressBar, Breadcrumb, Alert } from "react-bootstrap";
 import TreeMenu, { ItemComponent } from "react-simple-tree-menu";
-import {
-  Account,
-  AccountGetRes,
-  // AccountCreationInvoice,
-} from "../../../ts-client-library/packages/account-management";
+import { Account, AccountGetRes } from "../../../ts-client-library/packages/account-management";
 import {
   AccountSystem,
   MetadataAccess,
   FileMetadata,
-  // FolderMetadata,
   FolderFileEntry,
   FoldersIndexEntry,
 } from "../../../ts-client-library/packages/account-system";
@@ -34,8 +17,6 @@ import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex";
 import {
   polyfillReadableStreamIfNeeded,
   polyfillWritableStreamIfNeeded,
-  // ReadableStream,
-  // TransformStream,
   WritableStream,
 } from "../../../ts-client-library/packages/util/src/streams";
 import { OpaqueUpload, OpaqueDownload } from "../../../ts-client-library/packages/opaque";
@@ -66,28 +47,22 @@ import { Mutex } from "async-mutex";
 import { useMediaQuery } from "react-responsive";
 import UploadingNotification from "../../components/UploadingNotification/UploadingNotification";
 import { FileSystemObject } from "../../../ts-client-library/packages/filesystem-access/src/filesystem-object";
-
-streamsaver.mitm = "/resources/streamsaver/mitm.html";
-Object.assign(streamsaver, { WritableStream });
-
-const uploadImage = require("../../assets/upload.png");
-const empty = require("../../assets/empty.png");
-
 import { STORAGE_NODE as storageNode } from "../../config";
 import { bytesToB64URL } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/b64";
-import { isPathChild } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/path";
 import { arraysEqual } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/arrayEquality";
 import { FileSystemShare } from "../../../ts-client-library/packages/filesystem-access/src/public-share";
-import { FileManagementStatus } from "../../context";
-import { isInteger } from "formik";
 import { bytesToHex } from "../../../ts-client-library/packages/util/src/hex";
 import * as fflate from "fflate";
 import { saveAs } from "file-saver";
 import SignUpModal from "../../components/SignUpModal/SignUpModal";
-import { PlanType, PLANS } from "../../config";
-
+import { PLANS } from "../../config";
+const uploadImage = require("../../assets/upload.png");
+const empty = require("../../assets/empty.png");
 const logo = require("../../assets/logo2.png");
 const copy = require("../../assets/copy.svg");
+
+streamsaver.mitm = "/resources/streamsaver/mitm.html";
+Object.assign(streamsaver, { WritableStream });
 
 let logoutTimeout;
 let fileUploadingList = [];
@@ -149,10 +124,10 @@ const FileManagePage = ({ history }) => {
   const [currentLocation, setCurrentLocation] = React.useState<Uint8Array>();
   const currentPathRef = React.useRef("/");
   const [folderList, setFolderList] = React.useState<FoldersIndexEntry[]>([]);
-  const [folderMetaList, setFolderMetaList] = React.useState([]);
+  const [folderMetaList, setFolderMetaList] = React.useState(undefined);
   const folderListRef = React.useRef<FoldersIndexEntry[]>([]);
   const [fileList, setFileList] = React.useState<FolderFileEntry[]>([]);
-  const [fileMetaList, setFileMetaList] = React.useState([]);
+  const [fileMetaList, setFileMetaList] = React.useState(undefined);
   const fileListRef = React.useRef<FolderFileEntry[]>([]);
   const [treeData, setTreeData] = React.useState([]);
   const [pageLoading, setPageLoading] = React.useState(true);
@@ -160,7 +135,7 @@ const FileManagePage = ({ history }) => {
   const [accountInfo, setAccountInfo] = React.useState<AccountGetRes>();
   const [showRenameModal, setShowRenameModal] = React.useState(false);
   const [fileToRename, setFileToRename] = React.useState<FolderFileEntry>();
-  const [fileToDelete, setFileToDelete] = React.useState<FileMetadata|FolderFileEntry>();
+  const [fileToDelete, setFileToDelete] = React.useState<FileMetadata | FolderFileEntry>();
   const [folderToRename, setFolderToRename] = React.useState<FoldersIndexEntry>();
   const [folderToDelete, setFolderToDelete] = React.useState<FoldersIndexEntry>();
   const [oldName, setOldName] = React.useState();
@@ -179,7 +154,7 @@ const FileManagePage = ({ history }) => {
   const [storageWarning, setIsStorageWarning] = React.useState(false);
   const [sortable, setSortable] = React.useState({
     column: "null",
-    method: "down",
+    method: "null",
   });
   const [filesForZip, setFilesForZip] = React.useState([]);
   const [upgradeAvailable, setUpgradeAvailable] = React.useState(true);
@@ -252,6 +227,12 @@ const FileManagePage = ({ history }) => {
 
   React.useEffect(() => {
     currentPathRef.current = currentPath;
+    setFolderMetaList(undefined);
+    setFileMetaList(undefined);
+    setSortable({
+      column: "null",
+      method: "null",
+    });
   }, [currentPath]);
 
   React.useEffect(() => {
@@ -924,21 +905,27 @@ const FileManagePage = ({ history }) => {
     setShowDeleteModal(true);
   }, []);
 
-  const handleDeleteBrokenFile = React.useCallback(async (location: Uint8Array) => {
-		await accountSystem._removeBrokenFile(currentPath, location).catch(() => {
-      toast.error("Failed to remove broken file");
-			throw new Error("Error remove file metdata");
-		})
-    setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
-  }, [accountSystem, currentPath])
+  const handleDeleteBrokenFile = React.useCallback(
+    async (location: Uint8Array) => {
+      await accountSystem._removeBrokenFile(currentPath, location).catch(() => {
+        toast.error("Failed to remove broken file");
+        throw new Error("Error remove file metdata");
+      });
+      setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
+    },
+    [accountSystem, currentPath]
+  );
 
-  const handleDeleteBrokenFolder = React.useCallback(async (location: Uint8Array) => {
-    await accountSystem._removeBrokenFolder(location).catch(() => {
-      toast.error("Failed to remove broken folder");
-			throw new Error("Error remove broken folder");
-		})
-    setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
-  }, [accountSystem])
+  const handleDeleteBrokenFolder = React.useCallback(
+    async (location: Uint8Array) => {
+      await accountSystem._removeBrokenFolder(location).catch(() => {
+        toast.error("Failed to remove broken folder");
+        throw new Error("Error remove broken folder");
+      });
+      setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
+    },
+    [accountSystem]
+  );
 
   const handleDelete = async () => {
     setPageLoading(true);
@@ -1031,8 +1018,12 @@ const FileManagePage = ({ history }) => {
   };
 
   const compareType = (a, b, mode, type) => {
-    var nameA = type === "file" ? (a.public?.location ? "PUBLIC" : "PRIVATE") : a.path.toUpperCase();
-    var nameB = type === "file" ? (b.public?.location ? "PUBLIC" : "PRIVATE") : b.path.toUpperCase();
+    const sourceList = type === "file" ? fileMetaList : folderMetaList;
+    const Ameta = sourceList.find((meta) => bytesToHex(meta.location) === bytesToHex(a.location));
+    const Bmeta = sourceList.find((meta) => bytesToHex(meta.location) === bytesToHex(b.location));
+
+    var nameA = type === "file" ? (Ameta.public?.location ? "PUBLIC" : "PRIVATE") : Ameta.path.toUpperCase();
+    var nameB = type === "file" ? (Bmeta.public?.location ? "PUBLIC" : "PRIVATE") : Bmeta.path.toUpperCase();
     if (nameA < nameB) {
       return mode === "down" ? 1 : -1;
     }
@@ -1070,31 +1061,66 @@ const FileManagePage = ({ history }) => {
     return 0;
   };
 
-  const handleSortTable = async (mode, method) => {
-    setSortable({ column: mode, method });
+  const getFileMetaList = React.useCallback(async () => {
+    setPageLoading(true);
+    loadingFlagCnt++;
+    const metaList = fileList.map(async (file) => {
+      return await accountSystem._getFileMetadata(file.location).then((f) => {
+        return f;
+      });
+    });
+    const tmp = await Promise.all(metaList);
+    setFileMetaList(tmp);
+    loadingFlagCnt--;
+    loadingFlagCnt === 0 && setPageLoading(false);
+  }, [fileList]);
 
-    switch (mode) {
-      case "name":
-        fileList.sort((a, b) => compareName(a, b, method, "file"));
-        folderList.sort((a, b) => compareName(a, b, method, "folder"));
-        break;
-      case "type":
-        setFileList(
-          [...fileMetaList].sort((a, b) => compareType(a, b, method, "file")).map((item) => ({ location: item.location, name: item.name }))
-        );
-        // folderList.sort((a, b) => compareName(a, b, method, 'folder'))
-        break;
-      case "created":
-        fileList.sort((a, b) => compareDate(a, b, method, "file"));
-        folderList.sort((a, b) => compareName(a, b, method, "folder"));
-        break;
-      case "size":
-        fileList.sort((a, b) => compareSize(a, b, method, "file"));
-        folderList.sort((a, b) => compareSize(a, b, method, "folder"));
-        break;
-      default:
-        break;
+  const getFolderMetaList = React.useCallback(async () => {
+    setPageLoading(true);
+    loadingFlagCnt++;
+    const metaList = folderList.map(async (folder) => {
+      return await accountSystem._getFolderMetadataByLocation(folder.location).then((f) => {
+        return f;
+      });
+    });
+    const tmp = await Promise.all(metaList);
+    setFolderMetaList(tmp);
+    loadingFlagCnt--;
+    loadingFlagCnt === 0 && setPageLoading(false);
+  }, [folderList]);
+
+  React.useEffect(() => {
+    if (folderMetaList && fileMetaList && sortable.column !== "null") {
+      const { column, method } = sortable;
+
+      switch (column) {
+        case "name":
+          setFileList([...fileList].sort((a, b) => compareName(a, b, method, "file")));
+          setFolderList([...folderList].sort((a, b) => compareName(a, b, method, "folder")));
+          break;
+        case "type":
+          setFileList([...fileList].sort((a, b) => compareType(a, b, method, "file")));
+          break;
+        case "created":
+          setFileList([...fileList].sort((a, b) => compareDate(a, b, method, "file")));
+          setFolderList([...folderList].sort((a, b) => compareDate(a, b, method, "folder")));
+          break;
+        case "size":
+          setFileList([...fileList].sort((a, b) => compareSize(a, b, method, "file")));
+          setFolderList([...folderList].sort((a, b) => compareSize(a, b, method, "folder")));
+          break;
+        default:
+          break;
+      }
     }
+  }, [fileMetaList, folderMetaList, sortable]);
+
+  const handleSortTable = async (mode, method) => {
+    if (!folderMetaList && !fileMetaList) {
+      await getFolderMetaList();
+      await getFileMetaList();
+    }
+    setSortable({ column: mode, method });
   };
 
   const lastFour = localStorage.getItem("key")?.slice(-4);
@@ -1530,7 +1556,6 @@ const FileManagePage = ({ history }) => {
                             handleDeleteBrokenFolder={handleDeleteBrokenFolder}
                             setCurrentPath={setCurrentPath}
                             isAccountExpired={isAccountExpired}
-                            
                           />
                         )
                     )}
