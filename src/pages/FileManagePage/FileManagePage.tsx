@@ -980,12 +980,19 @@ const FileManagePage = ({ history }) => {
     }
     setSelectedFiles(temp);
   };
-  const onSelectAll = (e) => {
+  const onSelectAll = async (e) => {
     e.stopPropagation();
     if (selectedFiles.length) {
       setSelectedFiles([]);
     } else {
-      setSelectedFiles(fileMetaList);
+      let fileMetaValues = fileMetaList;
+
+      if (!fileMetaList) {
+        await getFolderMetaList();
+        fileMetaValues = await getFileMetaList();
+      }
+
+      setSelectedFiles(fileMetaValues);
     }
   };
   const getSelectedFileSize = () => {
@@ -1073,6 +1080,7 @@ const FileManagePage = ({ history }) => {
     setFileMetaList(tmp);
     loadingFlagCnt--;
     loadingFlagCnt === 0 && setPageLoading(false);
+    return tmp;
   }, [fileList]);
 
   const getFolderMetaList = React.useCallback(async () => {
