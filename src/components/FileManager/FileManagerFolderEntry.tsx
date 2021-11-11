@@ -1,14 +1,13 @@
 import moment from "moment";
 import * as React from "react";
 import { Dropdown, DropdownButton } from "react-bootstrap";
-import { Table, NavLink } from "tabler-react";
+import { Table } from "tabler-react";
 import { useIntersectionObserver } from "@researchgate/react-intersection-observer";
 import { AccountSystem, FolderFileEntry, FolderMetadata, FoldersIndexEntry } from "../../../ts-client-library/packages/account-system";
 import { posix } from "path-browserify";
 import { FileIcon } from "react-file-icon";
 import { useMediaQuery } from "react-responsive";
-import ReactTooltip from "react-tooltip";
-import "./FileManagerFileEntry.scss";
+import BrokenBadgeOnEntry from "./BrokenBadgeOnEntry";
 
 export type FileManagerFolderEntryProps = {
   accountSystem: AccountSystem;
@@ -151,31 +150,7 @@ export const FileManagerFolderEntryList = ({
         <div className="d-flex" ref={ref}>
           <i className="icon-folder"></i>
           {briefFolderName(posix.basename(folderEntry.path))}
-          {isBroken && (
-            <>
-              <ReactTooltip id="broken-tooltip" place="top" effect="solid" delayHide={100} className="broken-file-tooltip">
-                <NavLink href="https://help.opacity.io/help/broken-files" target="_blank">
-                  What does this mean?
-                </NavLink>
-              </ReactTooltip>
-
-              <span
-                data-tip
-                data-for="broken-tooltip"
-                style={{
-                  display: "inline-block",
-                  background: "#f15757",
-                  color: "white",
-                  padding: "2px 4px",
-                  fontSize: "11px",
-                  borderRadius: 4,
-                  marginInline: "1em",
-                }}
-              >
-                broken
-              </span>
-            </>
-          )}
+          {isBroken && <BrokenBadgeOnEntry />}
         </div>
       </Table.Col>
       {!isMobile && <Table.Col> </Table.Col>}
