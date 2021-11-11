@@ -190,7 +190,7 @@ export const FileManagerFileEntryList = ({
         setSelected(false);
       }
     }
-  }, [selectedFiles]);
+  }, [selectedFiles, fileMeta]);
 
   const briefName = (name) => {
     let resName = name;
