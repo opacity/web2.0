@@ -1,13 +1,14 @@
 import moment from "moment";
 import * as React from "react";
 import { Dropdown, DropdownButton } from "react-bootstrap";
-import { Table } from "tabler-react";
+import { Table, NavLink } from "tabler-react";
 import { useIntersectionObserver } from "@researchgate/react-intersection-observer";
 import { AccountSystem, FolderFileEntry, FolderMetadata, FoldersIndexEntry } from "../../../ts-client-library/packages/account-system";
-// import { formatBytes } from "../../helpers"
 import { posix } from "path-browserify";
 import { FileIcon } from "react-file-icon";
 import { useMediaQuery } from "react-responsive";
+import ReactTooltip from "react-tooltip";
+import "./FileManagerFileEntry.scss";
 
 export type FileManagerFolderEntryProps = {
   accountSystem: AccountSystem;
@@ -54,7 +55,6 @@ export const FileManagerFolderEntryGrid = ({
   return (
     <div className="grid-item">
       <div className="items" onClick={() => !isBroken && folderMeta && setCurrentPath(folderEntry.path)}>
-        {/* <i className='icon-folder'></i> */}
         <div style={{ width: "40px" }}>
           <FileIcon color="#8A8A8A" labelColor="#A8A8A8" fold={false} extension="folder" />
         </div>
@@ -152,18 +152,29 @@ export const FileManagerFolderEntryList = ({
           <i className="icon-folder"></i>
           {briefFolderName(posix.basename(folderEntry.path))}
           {isBroken && (
-            <span
-              style={{
-                display: "inline-block",
-                background: "#f15757",
-                color: "white",
-                padding: "4px 6px",
-                borderRadius: 4,
-                marginInline: "1em",
-              }}
-            >
-              Broken
-            </span>
+            <>
+              <ReactTooltip id="broken-tooltip" place="top" effect="solid" delayHide={100} className="broken-file-tooltip">
+                <NavLink href="https://help.opacity.io/help/broken-files" target="_blank">
+                  What does this mean?
+                </NavLink>
+              </ReactTooltip>
+
+              <span
+                data-tip
+                data-for="broken-tooltip"
+                style={{
+                  display: "inline-block",
+                  background: "#f15757",
+                  color: "white",
+                  padding: "2px 4px",
+                  fontSize: "11px",
+                  borderRadius: 4,
+                  marginInline: "1em",
+                }}
+              >
+                broken
+              </span>
+            </>
           )}
         </div>
       </Table.Col>

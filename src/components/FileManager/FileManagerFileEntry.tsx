@@ -1,37 +1,15 @@
 import moment from "moment";
 import * as React from "react";
 import { Dropdown, DropdownButton } from "react-bootstrap";
-import { Table } from "tabler-react";
+import { Table, NavLink } from "tabler-react";
 import { useIntersectionObserver } from "@researchgate/react-intersection-observer";
 import { AccountSystem, FileMetadata, FolderFileEntry, FoldersIndexEntry } from "../../../ts-client-library/packages/account-system";
 import { formatBytes } from "../../helpers";
 import { FileIcon, defaultStyles } from "react-file-icon";
 import { useMediaQuery } from "react-responsive";
 import { arraysEqual } from "../../../ts-client-library/packages/util/src/arrayEquality";
-
-const typeList = {
-  "text/plain": "document",
-  "application/x-zip-compressed": "compressed",
-  "application/zip": "compressed",
-  "application/x-tar": "compressed",
-  "application/vnd.rar": "compressed",
-  "image/png": "image",
-  "video/mp4": "video",
-  "video/mpeg": "video",
-  "video/ogg": "video",
-  "video/mp2t": "video",
-  "video/webm": "video",
-  "video/3gpp": "video",
-  "video/3gpp2": "video",
-  "video/x-msvideo": "video",
-  "image/bmp": "image",
-  "image/gif": "image",
-  "image/vnd.microsoft.icon": "image",
-  "image/jpeg": "image",
-  "image/svg+xml": "image",
-  "image/tiff": "image",
-  "image/webp": "image",
-};
+import ReactTooltip from "react-tooltip";
+import "./FileManagerFileEntry.scss";
 
 const getFileExtension = (name) => {
   const lastDot = name.lastIndexOf(".");
@@ -243,7 +221,6 @@ export const FileManagerFileEntryList = ({
     <Table.Row className={isSelected ? "selected" : ""}>
       <Table.Col className="file-name" onClick={() => fileMeta && handleSelectFile(fileMeta)}>
         <div className="d-flex" ref={ref}>
-          {/* <i className={`icon-${fileMeta && typeList[fileMeta.type]}`}></i> */}
           <div style={{ width: "18px", marginRight: "40px" }}>
             <FileIcon
               color="#A8A8A8"
@@ -254,18 +231,29 @@ export const FileManagerFileEntryList = ({
           </div>
           {briefName(fileEntry.name)}
           {isBroken && (
-            <span
-              style={{
-                display: "inline-block",
-                background: "#f15757",
-                color: "white",
-                padding: "4px 6px",
-                borderRadius: 4,
-                marginInline: "1em",
-              }}
-            >
-              Broken
-            </span>
+            <>
+              <ReactTooltip id="broken-tooltip" place="top" effect="solid" delayHide={100} className="broken-file-tooltip">
+                <NavLink href="https://help.opacity.io/help/broken-files" target="_blank">
+                  What does this mean?
+                </NavLink>
+              </ReactTooltip>
+
+              <span
+                data-tip
+                data-for="broken-tooltip"
+                style={{
+                  display: "inline-block",
+                  background: "#f15757",
+                  color: "white",
+                  padding: "2px 4px",
+                  fontSize: "11px",
+                  borderRadius: 4,
+                  marginInline: "1em",
+                }}
+              >
+                broken
+              </span>
+            </>
           )}
         </div>
       </Table.Col>
