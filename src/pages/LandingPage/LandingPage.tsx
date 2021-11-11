@@ -106,7 +106,7 @@ const LandingPage = ({ history }) => {
               <div className="col-md-10 banner-text">No personal information required. Get 10GB file storage and file sharing for free</div>
 
               <div className="col-md-10 powered-by-polygon">
-                <a href="https://polygon.technology/">
+                <a href="https://polygon.technology/" target="_blank">
                   <img src={poweredByPolygon} />
                 </a>
               </div>
@@ -119,55 +119,25 @@ const LandingPage = ({ history }) => {
         </div>
       </div>
 
-      <div className="container-xl rubic-container">
-        <h1>Purchase Opacity tokens (OPCT) with Rubic!</h1>
-
-        <div className="content">
-          <div className="left">
-            <div>
-              <h2 className="subtitle mb-4">What is Rubic?</h2>
-
-              <p className="descriptions">
-                Rubic is a multichain DEX aggregator, with instant & cross-chain swaps for Ethereum, BSC, Polygon, Harmony, Tron & xDai,
-                limit orders, fiat on-ramps and more!
-              </p>
-
-              <p className="descriptions">
-                Rubic enables trades in one-step, so you can buy and sell tokens without needing to visit an exchange. Just connect your
-                wallet and go!
-              </p>
-
-              <p className="descriptions learn-more">
-                <a href="https://rubic.exchange/faq">Learn More</a>
-              </p>
-            </div>
-          </div>
-
-          <div className="rubic-widget-wrapper">
-            <div id="rubic-widget-root" className="rubic-widget"></div>
-          </div>
-        </div>
-      </div>
-
       <div className="container-xl second-ele ">
         <div className="row text-center" data-aos="fade-up">
           <div className="col-md-4 card-items image-personal">
-            <div className="image-ele"></div>
             <div className="title">No Personal Info Required</div>
+            <div className="image-ele"></div>
             <div className="descriptions">
               We never ask for your personal information. You're always protected, so you'll never end up on the dark web
             </div>
           </div>
           <div className="col-md-4 card-items image-share">
-            <div className="image-ele"></div>
             <div className="title">Share Files Your Way</div>
+            <div className="image-ele"></div>
             <div className="descriptions">
               You control who can view your files. By default, you and only you even know these files exist.
             </div>
           </div>
           <div className="col-md-4 card-items image-pay">
-            <div className="image-ele"></div>
             <div className="title">Pay Using Cryptocurrency</div>
+            <div className="image-ele"></div>
             <div className="descriptions">
               Using the OPCT token, you can pay for your storage needs without ever having to use a credit card.
             </div>
@@ -177,7 +147,7 @@ const LandingPage = ({ history }) => {
           <div className="col-md-12" data-aos="fade-up">
             <div className="row justify-content-center">
               <div className="col-md-5 pr-4">
-                <img className="mt-4" src={dashboard} width={507} height={330} />
+                <img className="mt-4 shadow" src={dashboard} width={507} height={330} />
               </div>
               <div className="col-md-5 pl-4">
                 <h1 className="title mb-4">Share any private file easily, with anyone, on any device.</h1>
@@ -211,7 +181,7 @@ const LandingPage = ({ history }) => {
                 </div>
               </div>
               <div className="col-md-5 pl-4">
-                <img className="mt-4" src={share} width={507} height={285} />
+                <img className="mt-4 shadow" src={share} width={507} height={285} />
               </div>
             </div>
           </div>
@@ -319,6 +289,36 @@ const LandingPage = ({ history }) => {
                 Buy OPCT on QUICKSWAP
               </NavLink>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="container-xl rubic-container">
+        <h1>Purchase Opacity tokens (OPCT) with Rubic!</h1>
+
+        <div className="content">
+          <div className="left">
+            <div>
+              <h2 className="subtitle mb-4">What is Rubic?</h2>
+
+              <p className="descriptions">
+                Rubic is a multichain DEX aggregator, with instant & cross-chain swaps for Ethereum, BSC, Polygon, Harmony, Tron & xDai,
+                limit orders, fiat on-ramps and more!
+              </p>
+
+              <p className="descriptions">
+                Rubic enables trades in one-step, so you can buy and sell tokens without needing to visit an exchange. Just connect your
+                wallet and go!
+              </p>
+
+              <p className="descriptions learn-more">
+                <a href="https://rubic.exchange/faq">Learn More</a>
+              </p>
+            </div>
+          </div>
+
+          <div className="rubic-widget-wrapper">
+            <div id="rubic-widget-root" className="rubic-widget"></div>
           </div>
         </div>
       </div>

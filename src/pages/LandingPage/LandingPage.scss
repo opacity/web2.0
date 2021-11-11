@@ -5,6 +5,7 @@ img {
 
 .rubic-container {
   margin-top: 80px;
+  margin-bottom: 160px;
 
   .content {
     display: flex;
@@ -250,7 +251,7 @@ img {
       }
     }
     .title {
-      font-weight: 500;
+      font-weight: bold;
       font-size: 20px;
       line-height: 30px;
       text-align: center;
@@ -765,5 +766,9 @@ img {
         }
       }
     }
+  }
+
+  .shadow {
+    box-shadow: 0px 4px 25px rgba(70, 128, 232, 0.25);
   }
 }
