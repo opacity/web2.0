@@ -1,0 +1,13 @@
+.broken-file-tooltip {
+  pointer-events: auto !important;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+  a:hover {
+    text-decoration: underline !important;
+    color: white !important;
+  }
+  &:hover {
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}

@@ -4,10 +4,10 @@ import { Dropdown, DropdownButton } from "react-bootstrap";
 import { Table } from "tabler-react";
 import { useIntersectionObserver } from "@researchgate/react-intersection-observer";
 import { AccountSystem, FolderFileEntry, FolderMetadata, FoldersIndexEntry } from "../../../ts-client-library/packages/account-system";
-// import { formatBytes } from "../../helpers"
 import { posix } from "path-browserify";
 import { FileIcon } from "react-file-icon";
 import { useMediaQuery } from "react-responsive";
+import BrokenBadgeOnEntry from "./BrokenBadgeOnEntry";
 
 export type FileManagerFolderEntryProps = {
   accountSystem: AccountSystem;
@@ -54,7 +54,6 @@ export const FileManagerFolderEntryGrid = ({
   return (
     <div className="grid-item">
       <div className="items" onClick={() => !isBroken && folderMeta && setCurrentPath(folderEntry.path)}>
-        {/* <i className='icon-folder'></i> */}
         <div style={{ width: "40px" }}>
           <FileIcon color="#8A8A8A" labelColor="#A8A8A8" fold={false} extension="folder" />
         </div>
@@ -151,20 +150,7 @@ export const FileManagerFolderEntryList = ({
         <div className="d-flex" ref={ref}>
           <i className="icon-folder"></i>
           {briefFolderName(posix.basename(folderEntry.path))}
-          {isBroken && (
-            <span
-              style={{
-                display: "inline-block",
-                background: "#f15757",
-                color: "white",
-                padding: "4px 6px",
-                borderRadius: 4,
-                marginInline: "1em",
-              }}
-            >
-              Broken
-            </span>
-          )}
+          {isBroken && <BrokenBadgeOnEntry />}
         </div>
       </Table.Col>
       {!isMobile && <Table.Col> </Table.Col>}
