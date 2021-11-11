@@ -5,18 +5,12 @@ import { Field, Formik } from "formik";
 import { Form } from "tabler-react";
 import * as Yup from "yup";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
-
-import "./SignUpModal.scss";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { PlanType } from "../../config";
 import { createMnemonic, mnemonicToHandle } from "../../../ts-client-library/packages/util/src/mnemonic";
-import { Account, AccountGetRes, AccountCreationInvoice } from "../../../ts-client-library/packages/account-management";
-import { AccountSystem, MetadataAccess } from "../../../ts-client-library/packages/account-system";
-import { OpaqueUpload } from "../../../ts-client-library/packages/opaque";
+import { Account, AccountCreationInvoice } from "../../../ts-client-library/packages/account-management";
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web";
 import { bytesToHex, hexToBytes } from "../../../ts-client-library/packages/util/src/hex";
-import { STORAGE_NODE as storageNode } from "../../config";
-import { STRIPE_API_KEY } from "../../config";
+import { PlanType, STRIPE_API_KEY, PLANS, STORAGE_NODE as storageNode } from "../../config";
 import Redeem from "./Redeem";
 import UsdPaymentForm from "./UsdPaymentForm";
 import { Elements, StripeProvider } from "react-stripe-elements";
@@ -28,20 +22,20 @@ import metamaskActions from "../../redux/actions/metamask-actions";
 import moment from "moment";
 import Chain from "./Chain/Chain";
 import ChainData from "../../config/chains.json";
-
-const fetcher = (...args) => fetch(...args).then((res) => res.json());
-
+import ReactLoading from "react-loading";
+import "./SignUpModal.scss";
 const logo = require("../../assets/logo2.png");
+
 const loginSchema = Yup.object().shape({
   handle: Yup.string().length(128),
   termsCheck: Yup.boolean().required(""),
 });
 type OtherProps = {
-  show: boolean;
-  handleClose: Function;
-  plan?: PlanType;
-  openLoginModal: Function;
-  openMetamask: Function;
+  show?: boolean;
+  handleClose?: Function;
+  initialPlan?: PlanType;
+  openLoginModal?: Function;
+  openMetamask?: Function;
   isForRenew?: boolean;
   doRefresh?: Function;
 };
@@ -69,20 +63,15 @@ type ConfirmationModalProps = {
   handleNo?: Function;
 };
 
-const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
-  show,
-  handleClose,
-  handleYes = () => { },
-  handleNo = () => { },
-}) => {
+const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ show, handleClose, handleYes = () => {}, handleNo = () => {} }) => {
   return (
     <Modal show={show} onHide={handleClose} dialogClassName="confirmation-modal" centered>
       <Modal.Header>
         <Modal.Title>Are you sure you want to close this window?</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        Note: OPCT payment may take time to complete on the blockchain depending on gas provided and network activity.
-        If you close the window, you will need to start a new transaction
+        Note: OPCT payment may take time to complete on the blockchain depending on gas provided and network activity. If you close the
+        window, you will need to start a new transaction
       </Modal.Body>
       <Modal.Footer>
         <Button
@@ -111,7 +100,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 const SignUpModal: React.FC<OtherProps> = ({
   show,
   handleClose: handleCloseOriginal,
-  plan,
+  initialPlan,
   openLoginModal,
   openMetamask,
   isForRenew = false,
@@ -124,6 +113,57 @@ const SignUpModal: React.FC<OtherProps> = ({
   const [invoiceData, setInvoiceData] = React.useState<AccountCreationInvoice>();
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const currentAccount = localStorage.getItem("key");
+  const [plan, setPlan] = React.useState<PlanType>();
+  const [pageLoading, setPageLoading] = React.useState(false);
+
+  const cryptoMiddleware = React.useMemo(() => new WebAccountMiddleware(), []);
+
+  const netMiddleware = React.useMemo(() => new WebNetworkMiddleware(), []);
+  const planAccount = React.useMemo(
+    () =>
+      new Account({
+        crypto: cryptoMiddleware,
+        net: netMiddleware,
+        storageNode,
+      }),
+    [cryptoMiddleware, netMiddleware, storageNode]
+  );
+
+  React.useEffect(() => {
+    const init = async () => {
+      try {
+        setPageLoading(true);
+
+        const plansApi = await planAccount.plans();
+
+        const converedPlan = PLANS.map((item, index) => {
+          if (plansApi[index]) {
+            const { cost, costInUSD, storageInGB, name } = plansApi[index];
+            return {
+              ...item,
+              opctCost: cost,
+              usdCost: costInUSD,
+              storageInGB,
+              name,
+            };
+          } else {
+            return item;
+          }
+        });
+        const freePlan = converedPlan.find((item) => item.permalink === "free");
+        setPlan(freePlan);
+        setPageLoading(false);
+      } catch {
+        // setPageLoading(false)
+      }
+    };
+
+    if (planAccount && initialPlan) {
+      setPlan(initialPlan);
+    } else if (planAccount && !initialPlan) {
+      init();
+    }
+  }, [planAccount, initialPlan]);
 
   const handleClose = () => {
     if (currentStep === 2) {
@@ -252,6 +292,11 @@ const SignUpModal: React.FC<OtherProps> = ({
     <>
       <Modal show={show} onHide={handleClose} size="lg" centered dialogClassName="signup">
         <Modal.Body>
+          {pageLoading && (
+            <div className="loading">
+              <ReactLoading type="spinningBubbles" color="#2e6dde" />
+            </div>
+          )}
           <div className="close" onClick={handleClose}>
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
               <path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z" />
@@ -285,9 +330,7 @@ const SignUpModal: React.FC<OtherProps> = ({
               </div>
             </div>
           )}
-          {currentStep === 1 && (
-            <AccountHandle plan={plan} handle={handle} mnemonic={mnemonic} goBack={goBack} goNext={goNext} />
-          )}
+          {currentStep === 1 && <AccountHandle plan={plan} handle={handle} mnemonic={mnemonic} goBack={goBack} goNext={goNext} />}
           {currentStep === 2 && (
             <SendPayment
               plan={plan}
@@ -418,13 +461,7 @@ const AccountHandle: React.FC<SignUpProps> = ({ plan, goBack, goNext, mnemonic, 
           </Row>
           <Row className="align-items-center mb-3">
             <Col md="12" className="mb-3 text-md-right">
-              <Field
-                type="checkbox"
-                name="termsCheck"
-                className="form-check-input"
-                onChange={handleChange}
-                onBlur={handleBlur}
-              />
+              <Field type="checkbox" name="termsCheck" className="form-check-input" onChange={handleChange} onBlur={handleBlur} />
               <span className="custom-control-label">
                 I agree to the{" "}
                 <a href="/terms-of-service" target="_blank">
@@ -470,12 +507,7 @@ const AccountHandle: React.FC<SignUpProps> = ({ plan, goBack, goNext, mnemonic, 
               </>
             ) : (
               <Col>
-                <Button
-                  variant="primary btn-pill"
-                  size="lg"
-                  type="submit"
-                  disabled={!isCaptchaVerified || !values.termsCheck}
-                >
+                <Button variant="primary btn-pill" size="lg" type="submit" disabled={!isCaptchaVerified || !values.termsCheck}>
                   SIGN UP FOR FREE
                 </Button>
               </Col>
@@ -487,22 +519,12 @@ const AccountHandle: React.FC<SignUpProps> = ({ plan, goBack, goNext, mnemonic, 
   );
 };
 
-const SendPayment: React.FC<SignUpProps> = ({
-  goNext,
-  plan,
-  invoice,
-  account,
-  openMetamask,
-  isForUpgrade,
-  isForRenew,
-  doRefresh,
-}) => {
+const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, openMetamask, isForUpgrade, isForRenew, doRefresh }) => {
   const [isCopied, setIsCopied] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("crypto");
   const [networkName, setNetworkName] = useState("No Network");
   const [selectedNetwork, setSelectedNetwork] = useState(null);
   const [networkData, setNetworkData] = useState([]);
-
 
   React.useEffect(() => {
     if (isForUpgrade) {
@@ -530,15 +552,15 @@ const SendPayment: React.FC<SignUpProps> = ({
     }
 
     account.getSmartContracts().then((data) => {
-      const wrapNetData = data.map(item => {
+      const wrapNetData = data.map((item) => {
         const chain = ChainData.find((chain) => chain.chainId === item.chainId);
 
         return {
           ...item,
           network: chain.name,
           chain: chain,
-        }
-      })
+        };
+      });
       setNetworkData(wrapNetData);
     });
   }, []);
@@ -583,17 +605,16 @@ const SendPayment: React.FC<SignUpProps> = ({
           <div>
             <h3>Send Payment with OPCT using Ethereum or Polygon network</h3>
             <div className="payment-content">
-              Use the Opacity Storage Token, OPCT, to pay for your storage account. Send your total amount of{" "}
-              {plan.opctCost} OPCT to the address below or you may use MetaMask to easily make your payment right in
-              your browser.
+              Use the Opacity Storage Token, OPCT, to pay for your storage account. Send your total amount of {plan.opctCost} OPCT to the
+              address below or you may use MetaMask to easily make your payment right in your browser.
             </div>
             <div className="important-content">
-              IMPORTANT: Do not send any other coin or token to this account address as it may result in a loss of
-              funds. Only send {plan.opctCost} OPCT. Sending more may also result in loss of funds.
+              IMPORTANT: Do not send any other coin or token to this account address as it may result in a loss of funds. Only send{" "}
+              {plan.opctCost} OPCT. Sending more may also result in loss of funds.
             </div>
             <div className="payment-content">
-              Once your payment is sent, it may take some time to confirm your payment on the network. We will confirm
-              receipt and complete setup of your account once the network transaction is confirmed. Please be patient.
+              Once your payment is sent, it may take some time to confirm your payment on the network. We will confirm receipt and complete
+              setup of your account once the network transaction is confirmed. Please be patient.
             </div>
             <ProgressBar striped now={100} animated />
             <div className="send-email">Send {plan.opctCost} OPCT to Address:</div>
@@ -621,13 +642,13 @@ const SendPayment: React.FC<SignUpProps> = ({
                       {networkName}
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
-                      {
-                        networkData.map(item => {
-                          return (
-                            <Dropdown.Item as="button" onClick={(e) => handleChangeNetwork(item)}>{item?.network}</Dropdown.Item>
-                          )
-                        })
-                      }
+                      {networkData.map((item) => {
+                        return (
+                          <Dropdown.Item as="button" onClick={(e) => handleChangeNetwork(item)}>
+                            {item?.network}
+                          </Dropdown.Item>
+                        );
+                      })}
                     </Dropdown.Menu>
                   </Dropdown>
                 </div>
@@ -707,8 +728,7 @@ const ConfirmPayment: React.FC<SignUpProps> = ({ plan, handle, handleOpenLoginMo
 };
 
 const mapDispatchToProps = (dispatch) => ({
-  openMetamask: ({ cost, ethAddress, gasPrice }) =>
-    dispatch(metamaskActions.createTransaction({ cost, ethAddress, gasPrice })),
+  openMetamask: ({ cost, ethAddress, gasPrice }) => dispatch(metamaskActions.createTransaction({ cost, ethAddress, gasPrice })),
 });
 
 export default connect(null, mapDispatchToProps)(SignUpModal);

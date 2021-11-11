@@ -1,21 +1,13 @@
 import * as React from "react";
 import { NavLink } from "tabler-react";
-import {
-  Row,
-  // Col,
-  Container,
-  // Media,
-  Button,
-  Carousel,
-  CarouselItem,
-} from "react-bootstrap";
+import { Row, Container, Button, Carousel, CarouselItem } from "react-bootstrap";
 import SiteWrapper from "../../SiteWrapper";
-import "./PlansPage.scss";
 import { PlanType, PLANS, STORAGE_NODE as storageNode } from "../../config";
 import { Account } from "../../../ts-client-library/packages/account-management";
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web";
 import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex";
 import ReactLoading from "react-loading";
+import "./PlansPage.scss";
 
 const PlansPage = ({ history }) => {
   const loggedIn = localStorage.getItem("key") ? true : false;
@@ -44,6 +36,7 @@ const PlansPage = ({ history }) => {
       }),
     [cryptoMiddleware, netMiddleware, storageNode]
   );
+
   const getActionName = (type) => {
     switch (type) {
       case "free":
@@ -67,10 +60,6 @@ const PlansPage = ({ history }) => {
     setPlan(plan);
   };
 
-  React.useEffect(() => {
-    // const filteredPlan = PLANS.filter((p) => !p.isCustom && (loggedIn ? p.specialPricing !== 'Free' : !p.isCustom))
-    // setPlans(PLANS)
-  }, []);
 
   React.useEffect(() => {
     const init = async () => {
@@ -111,18 +100,13 @@ const PlansPage = ({ history }) => {
   }, [account]);
 
   return (
-    <SiteWrapper
-      showSignUpModal={showSignUpModal}
-      handleCloseSignUpModal={handleCloseSignUpModal}
-      history={history}
-      plan={plan}
-    >
+    <SiteWrapper showSignUpModal={showSignUpModal} handleCloseSignUpModal={handleCloseSignUpModal} history={history} plan={plan}>
       {pageLoading && (
         <div className="loading">
           <ReactLoading type="spinningBubbles" color="#2e6dde" />
         </div>
       )}
-      <Container fluid="xl plans">
+      <Container fluid="xl" className="plans">
         <Row>
           <h1>Choose the best plan for you</h1>
         </Row>

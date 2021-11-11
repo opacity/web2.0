@@ -4,15 +4,11 @@ import { Form } from "tabler-react";
 import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex";
 import { AccountMigrator } from "../../../ts-client-library/packages/account-management/src/accountMigrator";
 import { MigratorEvents } from "../../../ts-client-library/packages/account-management/src/migrateEvents";
-// import { Link } from 'react-router-dom'
 import "./MigrationPage.scss";
 import SiteWrapper from "../../SiteWrapper";
 import { Row, Col, Container, Button, ProgressBar } from "react-bootstrap";
 import classNames from "classnames";
-import { PlanType, PLANS, STORAGE_NODE as storageNode } from "../../config";
-import { Account } from "../../../ts-client-library/packages/account-management";
-import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web";
-import ReactLoading from "react-loading";
+import { STORAGE_NODE as storageNode } from "../../config";
 
 type MigrationFormProps = {
   privateKey: string;
@@ -25,57 +21,8 @@ const MigrationPage = ({ history }) => {
   const [errorStatus, setErrorStatus] = useState("");
   const [percent, setPercent] = useState(0);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [plan, setPlan] = React.useState<PlanType>();
-  const [pageLoading, setPageLoading] = React.useState(true);
 
-  const cryptoMiddleware = React.useMemo(() => new WebAccountMiddleware(), []);
-
-  const netMiddleware = React.useMemo(() => new WebNetworkMiddleware(), []);
-  const account = React.useMemo(
-    () =>
-      new Account({
-        crypto: cryptoMiddleware,
-        net: netMiddleware,
-        storageNode,
-      }),
-    [cryptoMiddleware, netMiddleware, storageNode]
-  );
-
-  React.useEffect(() => {
-    const init = async () => {
-      try {
-        setPageLoading(true);
-
-        const plansApi = await account.plans();
-
-        const converedPlan = PLANS.map((item, index) => {
-          if (plansApi[index]) {
-            const { cost, costInUSD, storageInGB, name } = plansApi[index];
-            return {
-              ...item,
-              opctCost: cost,
-              usdCost: costInUSD,
-              storageInGB,
-              name,
-            };
-          } else {
-            return item;
-          }
-        });
-        const freePlan = converedPlan.find((item) => item.permalink === "free");
-        setPlan(freePlan);
-        setPageLoading(false);
-      } catch {
-        // setPageLoading(false)
-      }
-    };
-    account && init();
-  }, [account]);
-
-  const handleUpgrade = (
-    values: MigrationFormProps,
-    { setErrors }: FormikHelpers<MigrationFormProps>
-  ) => {
+  const handleUpgrade = (values: MigrationFormProps, { setErrors }: FormikHelpers<MigrationFormProps>) => {
     if (!privateKey?.length) {
       setErrors({
         privateKey: "Account handle is required.",
@@ -126,28 +73,15 @@ const MigrationPage = ({ history }) => {
   };
 
   return (
-    <SiteWrapper history={history} page="migration" showLoginModal={showLoginModal} plan={plan}>
-      {pageLoading && (
-        <div className="loading">
-          <ReactLoading type="spinningBubbles" color="#2e6dde" />
-        </div>
-      )}
-      <Container fluid="xl migration">
+    <SiteWrapper history={history} showLoginModal={showLoginModal}>
+      <Container fluid="xl" className="migration">
         <Formik
           initialValues={{ privateKey: "" }}
           onSubmit={(values, helpers) => {
             handleUpgrade(values, helpers);
           }}
         >
-          {({
-            values,
-            errors,
-            touched,
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            isSubmitting,
-          }) => (
+          {({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => (
             <form onSubmit={handleSubmit} autoComplete="off">
               <Row className="align-items-center ">
                 <Col className="text-center">
@@ -156,8 +90,8 @@ const MigrationPage = ({ history }) => {
                     {migrationStatus === "init"
                       ? `If your account was created before 'release date', you must upgrade to the latest version. Please enter your account handle below to complete the upgrade`
                       : migrationStatus === "Finished."
-                        ? `Your account has been migrated successfully.`
-                        : `Please wait while we complete the upgrade. Do not leave this page or interrupt the process. This may take some time depending on the size of your account.`}
+                      ? `Your account has been migrated successfully.`
+                      : `Please wait while we complete the upgrade. Do not leave this page or interrupt the process. This may take some time depending on the size of your account.`}
                   </p>
                 </Col>
               </Row>
@@ -170,17 +104,9 @@ const MigrationPage = ({ history }) => {
                         onChange={(e) => setPrivateKey(e.target.value)}
                         name="privateKey"
                         placeholder="Account Handle"
-                        className={
-                          errors.privateKey && touched.privateKey
-                            ? "form-control is-invalid state-invalid"
-                            : "form-control"
-                        }
+                        className={errors.privateKey && touched.privateKey ? "form-control is-invalid state-invalid" : "form-control"}
                       />
-                      {errors.privateKey && touched.privateKey && (
-                        <div className="invalid-feedback">
-                          {errors.privateKey}
-                        </div>
-                      )}
+                      {errors.privateKey && touched.privateKey && <div className="invalid-feedback">{errors.privateKey}</div>}
                     </Form.Group>
                   </Col>
                   <Col md="12" className="mt-3">
@@ -193,27 +119,26 @@ const MigrationPage = ({ history }) => {
                 <Row>
                   <Col md="12" className="text-center">
                     <div className="migrate-progress">
-                      {(migrationStatus !== "Finished." ||
-                        errorStatus !== "") && (
-                          <div className="percentage-text">{percent}%</div>
-                        )}
-                      <ProgressBar now={percent} animated={percent !== 100 || migrationStatus !== 'Finished.'} striped />
-                      <div
-                        className={classNames(
-                          "migrate-status",
-                          errorStatus !== "" && "migrate-status-error"
-                        )}
-                      >
-                        {errorStatus !== "" ? errorStatus : (percent === 100 ? "Finished." : migrationStatus)}
+                      {(migrationStatus !== "Finished." || errorStatus !== "") && <div className="percentage-text">{percent}%</div>}
+                      <ProgressBar now={percent} animated={percent !== 100 || migrationStatus !== "Finished."} striped />
+                      <div className={classNames("migrate-status", errorStatus !== "" && "migrate-status-error")}>
+                        {errorStatus !== "" ? errorStatus : percent === 100 ? "Finished." : migrationStatus}
                       </div>
-                      {(percent === 100 || migrationStatus === 'Finished.') &&
-                        <div className="migrate-details">You may now <span
-                          style={{
-                            color: 'red',
-                            cursor: 'pointer'
-                          }} onClick={() => setShowLoginModal(true)}>login 
-                           </span> to your account</div>
-                      }
+                      {(percent === 100 || migrationStatus === "Finished.") && (
+                        <div className="migrate-details">
+                          You may now{" "}
+                          <span
+                            style={{
+                              color: "red",
+                              cursor: "pointer",
+                            }}
+                            onClick={() => setShowLoginModal(true)}
+                          >
+                            login
+                          </span>{" "}
+                          to your account
+                        </div>
+                      )}
                       <div className="migrate-details">{migrationDetails}</div>
                     </div>
                   </Col>
