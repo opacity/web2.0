@@ -1124,7 +1124,7 @@ const FileManagePage = ({ history }) => {
           show={showSignUpModal}
           handleClose={() => setShowSignUpModal(false)}
           isForRenew={true}
-          plan={currentPlan}
+          initialPlan={currentPlan}
           doRefresh={doRefreshAfterRenew}
         />
       )}

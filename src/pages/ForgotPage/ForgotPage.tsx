@@ -7,10 +7,6 @@ import { Form } from "tabler-react";
 import * as Yup from "yup";
 import { mnemonicToHandle } from "../../../ts-client-library/packages/util/src/mnemonic";
 import { bytesToHex } from "../../../ts-client-library/packages/util/src/hex";
-import { PlanType, PLANS, STORAGE_NODE as storageNode } from "../../config";
-import { Account } from "../../../ts-client-library/packages/account-management";
-import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web";
-import ReactLoading from "react-loading";
 
 const loginSchema = Yup.object().shape({
   privateKey: Yup.string().required("Account handle is required."),
@@ -21,62 +17,11 @@ type ForgotPageProps = {
 
 const ForgotPage = ({ history }) => {
   const [recoveryHandle, setRecoveryHandle] = React.useState("");
-  const [plan, setPlan] = React.useState<PlanType>();
-  const [pageLoading, setPageLoading] = React.useState(true);
-
-  const cryptoMiddleware = React.useMemo(() => new WebAccountMiddleware(), []);
-
-  const netMiddleware = React.useMemo(() => new WebNetworkMiddleware(), []);
-  const account = React.useMemo(
-    () =>
-      new Account({
-        crypto: cryptoMiddleware,
-        net: netMiddleware,
-        storageNode,
-      }),
-    [cryptoMiddleware, netMiddleware, storageNode]
-  );
-
-  React.useEffect(() => {
-    const init = async () => {
-      try {
-        setPageLoading(true);
-
-        const plansApi = await account.plans();
-
-        const converedPlan = PLANS.map((item, index) => {
-          if (plansApi[index]) {
-            const { cost, costInUSD, storageInGB, name } = plansApi[index];
-            return {
-              ...item,
-              opctCost: cost,
-              usdCost: costInUSD,
-              storageInGB,
-              name,
-            };
-          } else {
-            return item;
-          }
-        });
-        const freePlan = converedPlan.find((item) => item.permalink === "free");
-        setPlan(freePlan);
-        setPageLoading(false);
-      } catch {
-        // setPageLoading(false)
-      }
-    };
-    account && init();
-  }, [account]);
-
-  const handleCloseLoginModal = () => {
-    setShowLoginModal(false);
-  };
-
+  
   const handleForgotButton = async (values: ForgotPageProps, { setErrors }: FormikHelpers<ForgotPageProps>) => {
     const words = values.privateKey.trim().split(" ");
     if (words.length === 12) {
       const handle = await mnemonicToHandle(words);
-      setShowLoginModal(true);
       setRecoveryHandle(bytesToHex(handle));
     } else {
       setErrors({
@@ -89,13 +34,7 @@ const ForgotPage = ({ history }) => {
     <SiteWrapper
       history={history}
       recoveryHandle={recoveryHandle}
-      plan={plan}
     >
-      {pageLoading && (
-        <div className="loading">
-          <ReactLoading type="spinningBubbles" color="#2e6dde" />
-        </div>
-      )}
       <Container fluid="xl forgot">
         <Row>
           <h1>Forgot Account Handle?</h1>

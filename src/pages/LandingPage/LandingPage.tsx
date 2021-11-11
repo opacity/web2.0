@@ -2,81 +2,24 @@ import * as React from "react";
 import { useState } from "react";
 import { NavLink } from "tabler-react";
 import Lottie from "react-lottie";
-import { PlanType, PLANS, STORAGE_NODE as storageNode } from "../../config";
-import { Account } from "../../../ts-client-library/packages/account-management";
-import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web";
-import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex";
-import ReactLoading from "react-loading";
-
 declare let rubicWidget;
-
 const animationData1 = require("./lottie1.json");
 const animationData2 = require("./lottie2.json");
-
 import SiteWrapper from "../../SiteWrapper";
 import "./LandingPage.scss";
+
 const bannerImage = require("../../assets/banner.png");
 const opacitym = require("../../assets/opacity-m.png");
 const dashboard = require("../../assets/dashboard.png");
 const share = require("../../assets/share.png");
-// const community = require("../../assets/community.png");
-// const stand = require("../../assets/stand.png");
-// const crypto = require("../../assets/crypto.png");
 const uniswap = require("../../assets/uniswap.png");
 const quickswap = require("../../assets/quickswap.png");
-// const mercatox = require("../../assets/mercatox.png");
 const kucoin = require("../../assets/kucoin.png");
 const poweredByPolygon = require("../../assets/powered-by-polygon-white.svg");
 
 const LandingPage = ({ history }) => {
   const [showSignUpModal, setShowSignUpModal] = useState(false);
-  const [plan, setPlan] = React.useState<PlanType>();
-  const [pageLoading, setPageLoading] = React.useState(true);
-
-  const cryptoMiddleware = React.useMemo(() => new WebAccountMiddleware(), []);
-
-  const netMiddleware = React.useMemo(() => new WebNetworkMiddleware(), []);
-  const account = React.useMemo(
-    () =>
-      new Account({
-        crypto: cryptoMiddleware,
-        net: netMiddleware,
-        storageNode,
-      }),
-    [cryptoMiddleware, netMiddleware, storageNode]
-  );
-
-  React.useEffect(() => {
-    const init = async () => {
-      try {
-        setPageLoading(true);
-
-        const plansApi = await account.plans();
-
-        const converedPlan = PLANS.map((item, index) => {
-          if (plansApi[index]) {
-            const { cost, costInUSD, storageInGB, name } = plansApi[index];
-            return {
-              ...item,
-              opctCost: cost,
-              usdCost: costInUSD,
-              storageInGB,
-              name,
-            };
-          } else {
-            return item;
-          }
-        });
-        const freePlan = converedPlan.find((item) => item.permalink === "free");
-        setPlan(freePlan);
-        setPageLoading(false);
-      } catch {
-        // setPageLoading(false)
-      }
-    };
-    account && init();
-  }, [account]);
-
+  
   React.useEffect(() => {
     const configuration = {
       from: "MATIC",
@@ -99,7 +42,7 @@ const LandingPage = ({ history }) => {
     Object.freeze(configuration);
 
     // create widget
-    if (rubicWidget) rubicWidget.init(configuration);
+    // if (rubicWidget) rubicWidget.init(configuration);
   }, []);
 
   const handleCloseSignUpModal = () => {
@@ -108,6 +51,7 @@ const LandingPage = ({ history }) => {
   const handleOpenSignUpModal = () => {
     setShowSignUpModal(true);
   };
+
   const defaultOptions = {
     loop: true,
     autoplay: true,
@@ -131,14 +75,7 @@ const LandingPage = ({ history }) => {
       handleCloseSignUpModal={handleCloseSignUpModal}
       isHome={true}
       history={history}
-      plan={plan}
     >
-      {pageLoading && (
-        <div className="loading">
-          <ReactLoading type="spinningBubbles" color="#2e6dde" />
-        </div>
-      )}
-
       <div className="first-ele">
         <div className="container-xl" data-aos="fade-up">
           <div className="row">

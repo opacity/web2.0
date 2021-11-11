@@ -29,9 +29,9 @@ type Props = {
   showLoginModal?: boolean;
   handleCloseLoginModal?: Function;
   isHome?: boolean;
-  history: any;
+  history?: any;
   plan?: PlanType;
-  recoveryHandle: string;
+  recoveryHandle?: string;
 };
 
 type State = {
@@ -266,7 +266,7 @@ class SiteWrapper extends React.Component<Props, State> {
               this.setState({ showSignUpModal: false });
               this.props.handleCloseSignUpModal && this.props.handleCloseSignUpModal();
             }}
-            plan={this.props.plan}
+            initialPlan={this.props.plan}
             openLoginModal={this.handleOpenLoginModal.bind(this)}
           />
         )}

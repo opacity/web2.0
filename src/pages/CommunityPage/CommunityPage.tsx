@@ -3,18 +3,12 @@ import { Link } from "react-router-dom";
 import { NavLink } from "tabler-react";
 import { Row, Col, Container, Button } from "react-bootstrap";
 import SiteWrapper from "../../SiteWrapper";
-import "./CommunityPage.scss";
 import { OPACITY_DRIVE_FOR_MAC, OPACITY_DRIVE_FOR_WINDOWS, OPACITY_GO_FOR_ANDROID, OPACITY_GO_FOR_IPHONE, IS_DEV } from "../../config";
-import { PlanType, PLANS, STORAGE_NODE as storageNode } from "../../config";
-import { Account } from "../../../ts-client-library/packages/account-management";
-import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web";
-import ReactLoading from "react-loading";
+import "./CommunityPage.scss";
 
 const visitIcon = require("../../assets/visit.png");
 const storgeImage = require("../../assets/storage.png");
-// const gitImage = require("../../assets/github.png");
 const opqImage = require("../../assets/imgopq.png");
-// const olelog = require("../../assets/OcelotLogo.png");
 const logo = require("../../assets/logo2.png");
 const mobile_logo = require("../../assets/opacity-go-rocket.svg");
 const android_log = require("../../assets/opacity_mobile_android.svg");
@@ -22,61 +16,18 @@ const winLogo = require("../../assets/win_log.svg");
 const macLogo = require("../../assets/mac_log.svg");
 
 const PlansPage = ({ history }) => {
-  const [plan, setPlan] = React.useState<PlanType>();
-  const [pageLoading, setPageLoading] = React.useState(true);
+  const [showLoginModal, setShowLoginModal] = React.useState(false);
 
-  const cryptoMiddleware = React.useMemo(() => new WebAccountMiddleware(), []);
-
-  const netMiddleware = React.useMemo(() => new WebNetworkMiddleware(), []);
-  const account = React.useMemo(
-    () =>
-      new Account({
-        crypto: cryptoMiddleware,
-        net: netMiddleware,
-        storageNode,
-      }),
-    [cryptoMiddleware, netMiddleware, storageNode]
-  );
-
-  React.useEffect(() => {
-    const init = async () => {
-      try {
-        setPageLoading(true);
-
-        const plansApi = await account.plans();
-
-        const converedPlan = PLANS.map((item, index) => {
-          if (plansApi[index]) {
-            const { cost, costInUSD, storageInGB, name } = plansApi[index];
-            return {
-              ...item,
-              opctCost: cost,
-              usdCost: costInUSD,
-              storageInGB,
-              name,
-            };
-          } else {
-            return item;
-          }
-        });
-        const freePlan = converedPlan.find((item) => item.permalink === "free");
-        setPlan(freePlan);
-        setPageLoading(false);
-      } catch {
-        // setPageLoading(false)
-      }
-    };
-    account && init();
-  }, [account]);
+  const handleCloseLoginModal = () => {
+    setShowLoginModal(false);
+  };
+  const handleOpenLoginModal = () => {
+    setShowLoginModal(true);
+  };
 
   return (
-    <SiteWrapper history={history} plan={plan}>
-      {pageLoading && (
-        <div className="loading">
-          <ReactLoading type="spinningBubbles" color="#2e6dde" />
-        </div>
-      )}
-      <Container fluid="xl community">
+    <SiteWrapper history={history} showLoginModal={showLoginModal} handleCloseLoginModal={handleCloseLoginModal}>
+      <Container fluid="xl" className="community">
         <Row>
           <h1>Applications Powered by Opacity</h1>
           <h3> Expand your Opacity experience with these applications built on our platform.</h3>
@@ -229,12 +180,7 @@ const PlansPage = ({ history }) => {
               <Link to="/plans" style={{ textDecoration: "none" }}>
                 <Button variant="warning btn-pill mr-md-3">Explore Plans</Button>
               </Link>
-              <Button
-                variant="outline-primary btn-pill"
-                onClick={() => {
-                  setShowLoginModal(true);
-                }}
-              >
+              <Button variant="outline-primary btn-pill" onClick={handleOpenLoginModal}>
                 Log in
               </Button>
             </div>

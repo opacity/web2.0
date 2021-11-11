@@ -1,71 +1,14 @@
 import * as React from "react";
-import { NavLink } from "tabler-react";
 import { Button, Container } from "react-bootstrap";
 import SiteWrapper from "../../SiteWrapper";
 import "./AboutPage.scss";
-import { PlanType, PLANS, STORAGE_NODE as storageNode } from "../../config";
-import { Account } from "../../../ts-client-library/packages/account-management";
-import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web";
-import ReactLoading from "react-loading";
 
 const team1 = require("../../assets/team1.jpg");
 const linkedin = require("../../assets/linkedin.svg");
 
 const AboutPage = ({ history }) => {
-  const [plan, setPlan] = React.useState<PlanType>();
-  const [pageLoading, setPageLoading] = React.useState(true);
-
-  const cryptoMiddleware = React.useMemo(() => new WebAccountMiddleware(), []);
-
-  const netMiddleware = React.useMemo(() => new WebNetworkMiddleware(), []);
-  const account = React.useMemo(
-    () =>
-      new Account({
-        crypto: cryptoMiddleware,
-        net: netMiddleware,
-        storageNode,
-      }),
-    [cryptoMiddleware, netMiddleware, storageNode]
-  );
-
-  React.useEffect(() => {
-    const init = async () => {
-      try {
-        setPageLoading(true);
-
-        const plansApi = await account.plans();
-
-        const converedPlan = PLANS.map((item, index) => {
-          if (plansApi[index]) {
-            const { cost, costInUSD, storageInGB, name } = plansApi[index];
-            return {
-              ...item,
-              opctCost: cost,
-              usdCost: costInUSD,
-              storageInGB,
-              name,
-            };
-          } else {
-            return item;
-          }
-        });
-        const freePlan = converedPlan.find((item) => item.permalink === "free");
-        setPlan(freePlan);
-        setPageLoading(false);
-      } catch {
-        // setPageLoading(false)
-      }
-    };
-    account && init();
-  }, [account]);
-
   return (
-    <SiteWrapper history={history} isHome={true} plan={plan}>
-       {pageLoading && (
-        <div className="loading">
-          <ReactLoading type="spinningBubbles" color="#2e6dde" />
-        </div>
-      )}
+    <SiteWrapper history={history} isHome={true}>
       <div className="about">
         <div className="section hero">
           <div className="container-xl">
@@ -87,7 +30,6 @@ const AboutPage = ({ history }) => {
             private information, such as company secrets, intellectual property, personal photographs, legal documents, and family moments,
             with assurance that personal data stays personal.
           </p>
-          {/* <h3 className="mt-2 mb-3">You own your identity and your data! No other storage provider can make this claim.</h3> */}
           <p>
             In addition to establishing our own decentralized network, Opacity’s goal is to be a gateway to other decentralized storage
             providers. In this way, Opacity gives users choice and freedom to select the best features and capabilities for their needs

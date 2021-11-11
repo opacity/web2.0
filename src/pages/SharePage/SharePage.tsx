@@ -3,38 +3,19 @@ import SiteWrapper from "../../SiteWrapper";
 import { useLocation } from "react-router-dom";
 import { Row, Col, Container, ProgressBar } from "react-bootstrap";
 import { OpaqueDownload } from "../../../ts-client-library/packages/opaque";
-import {
-  DownloadEvents,
-  DownloadProgressEvent,
-} from "../../../ts-client-library/packages/filesystem-access/src/events";
-import {
-  polyfillWritableStreamIfNeeded,
-  WritableStream,
-} from "../../../ts-client-library/packages/util/src/streams";
-import {
-  AccountSystem,
-  MetadataAccess,
-} from "../../../ts-client-library/packages/account-system";
-import {
-  WebAccountMiddleware,
-  WebNetworkMiddleware,
-} from "../../../ts-client-library/packages/middleware-web";
+import { DownloadEvents, DownloadProgressEvent } from "../../../ts-client-library/packages/filesystem-access/src/events";
+import { polyfillWritableStreamIfNeeded, WritableStream } from "../../../ts-client-library/packages/util/src/streams";
+import { AccountSystem, MetadataAccess } from "../../../ts-client-library/packages/account-system";
+import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web";
 import streamsaver from "streamsaver";
 import { b64URLToBytes } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/b64";
-// import { bytesToHex } from "../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/hex"
 streamsaver.mitm = "/resources/streamsaver/mitm.html";
 Object.assign(streamsaver, { WritableStream });
-import { STORAGE_NODE as storageNode } from "../../config";
 import "./SharePage.scss";
 import { formatBytes } from "../../helpers";
 import { FileIcon, defaultStyles } from "react-file-icon";
 import { Preview } from "./preview";
-// import ReactLoading from "react-loading";
-import { PlanType, PLANS, STORAGE_NODE as storageNode } from "../../config";
-import { Account } from "../../../ts-client-library/packages/account-management";
-import ReactLoading from "react-loading";
-
-const shareImg = require("../../assets/share-download.svg");
+import { STORAGE_NODE as storageNode } from "../../config";
 
 const SharePage = ({ history }) => {
   const location = useLocation();
@@ -44,54 +25,10 @@ const SharePage = ({ history }) => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [showSignUpModal, setShowSignUpModal] = useState(false);
-  const [plan, setPlan] = useState();
   const [percent, setPercent] = useState(0);
-  const [pageLoading, setPageLoading] = React.useState(true);
 
   const cryptoMiddleware = React.useMemo(() => new WebAccountMiddleware(), []);
-
   const netMiddleware = React.useMemo(() => new WebNetworkMiddleware(), []);
-  const account = React.useMemo(
-    () =>
-      new Account({
-        crypto: cryptoMiddleware,
-        net: netMiddleware,
-        storageNode,
-      }),
-    [cryptoMiddleware, netMiddleware, storageNode]
-  );
-  
-  React.useEffect(() => {
-    const init = async () => {
-      try {
-        setPageLoading(true);
-
-        const plansApi = await account.plans();
-
-        const converedPlan = PLANS.map((item, index) => {
-          if (plansApi[index]) {
-            const { cost, costInUSD, storageInGB, name } = plansApi[index];
-            return {
-              ...item,
-              opctCost: cost,
-              usdCost: costInUSD,
-              storageInGB,
-              name,
-            };
-          } else {
-            return item;
-          }
-        });
-        const freePlan = converedPlan.find((item) => item.permalink === "free");
-        setPlan(freePlan);
-        setPageLoading(false);
-      } catch {
-        // setPageLoading(false)
-      }
-    };
-    account && init();
-  }, [account]);
-
   const metadataAccess = React.useMemo(
     () =>
       new MetadataAccess({
@@ -101,10 +38,7 @@ const SharePage = ({ history }) => {
       }),
     [netMiddleware, cryptoMiddleware, storageNode]
   );
-  const accountSystem = React.useMemo(
-    () => new AccountSystem({ metadataAccess }),
-    [metadataAccess]
-  );
+  const accountSystem = React.useMemo(() => new AccountSystem({ metadataAccess }), [metadataAccess]);
 
   const handleCloseSignUpModal = () => {
     setShowSignUpModal(false);
@@ -120,29 +54,7 @@ const SharePage = ({ history }) => {
   const getTypeFromExt = (ext?: string) => {
     ext = ("" + ext).replace(/^\./, "");
 
-    if (
-      [
-        "png",
-        "apng",
-
-        "svg",
-
-        "gif",
-
-        "bmp",
-
-        "ico",
-        "cur",
-
-        "jpg",
-        "jpeg",
-        "jfif",
-        "pjpeg",
-        "pjp",
-
-        "webp",
-      ].includes(ext)
-    ) {
+    if (["png", "apng", "svg", "gif", "bmp", "ico", "cur", "jpg", "jpeg", "jfif", "pjpeg", "pjp", "webp"].includes(ext)) {
       return "image";
     }
 
@@ -164,8 +76,7 @@ const SharePage = ({ history }) => {
   const checkPreviewPossible = () => {
     if (!file) return true;
 
-    const newType =
-      "" + (file.type || getTypeFromExt(getFileExtension(file.name)));
+    const newType = "" + (file.type || getTypeFromExt(getFileExtension(file.name)));
 
     switch (newType.split("/")[0]) {
       case "image":
@@ -204,10 +115,6 @@ const SharePage = ({ history }) => {
   };
 
   const clickFreeSignup = () => {
-    const freePlan = PLANS.find(
-      (p) => !p.isCustom && p.specialPricing === "Free"
-    );
-    setPlan(freePlan);
     setShowSignUpModal(true);
   };
 
@@ -227,16 +134,11 @@ const SharePage = ({ history }) => {
       const s = await d.start();
       setPercent(0);
 
-      const fileStream = polyfillWritableStreamIfNeeded<Uint8Array>(
-        streamsaver.createWriteStream(file.name, { size: file.size })
-      );
+      const fileStream = polyfillWritableStreamIfNeeded<Uint8Array>(streamsaver.createWriteStream(file.name, { size: file.size }));
 
-      d.addEventListener(
-        DownloadEvents.PROGRESS,
-        (e: DownloadProgressEvent) => {
-          setPercent((e.detail.progress * 100).toFixed(0));
-        }
-      );
+      d.addEventListener(DownloadEvents.PROGRESS, (e: DownloadProgressEvent) => {
+        setPercent((e.detail.progress * 100).toFixed(0));
+      });
 
       d.finish().then(() => {
         setDownloading(false);
@@ -278,16 +180,9 @@ const SharePage = ({ history }) => {
   return (
     <SiteWrapper
       history={history}
-      page="share"
       showSignUpModal={showSignUpModal}
       handleCloseSignUpModal={handleCloseSignUpModal}
-      plan={plan}
     >
-       {pageLoading && (
-        <div className="loading">
-          <ReactLoading type="spinningBubbles" color="#2e6dde" />
-        </div>
-      )}
       <Container fluid="xl share">
         <Row>
           <Col lg={6} md={12} className="center">
@@ -300,12 +195,7 @@ const SharePage = ({ history }) => {
               ) : (
                 <div className="preview-area center">
                   {previewOpen && previewPath ? (
-                    <Preview
-                      url={previewPath}
-                      ext={file.name}
-                      type={file.type}
-                      className="preview-content"
-                    />
+                    <Preview url={previewPath} ext={file.name} type={file.type} className="preview-content" />
                   ) : (
                     <div style={{ width: "300px" }}>
                       <FileIcon
@@ -323,32 +213,19 @@ const SharePage = ({ history }) => {
           <Col lg={6} md={12} className="control-area">
             <Row className="align-items-center">
               <Col className="text-center">
-                {/* <img width="88" src={shareImg} />
-                <h2>You have been invited to view a file!</h2> */}
                 <div className="text-filename">{file && file.name}</div>
-                <div className="text-filesize">
-                  {file && formatBytes(file.size)}
-                </div>
+                <div className="text-filesize">{file && formatBytes(file.size)}</div>
                 <div className="row mb-3" style={{ justifyContent: "center" }}>
                   <div className="col-md-5">
-                    <button
-                      className="btn btn-pill btn-download"
-                      onClick={() => fileDownload(handle)}
-                    >
+                    <button className="btn btn-pill btn-download" onClick={() => fileDownload(handle)}>
                       <span></span>
                       Download File
                     </button>
                   </div>
                   <div className="col-md-5">
-                    <button
-                      className="btn btn-pill btn-preview"
-                      onClick={() => filePreview(handle)}
-                      disabled={!isPreviewPossible}
-                    >
+                    <button className="btn btn-pill btn-preview" onClick={() => filePreview(handle)} disabled={!isPreviewPossible}>
                       <span></span>
-                      {isPreviewPossible
-                        ? `${previewOpen ? "Hide" : "Show"} Preview`
-                        : "Preview Not Available"}
+                      {isPreviewPossible ? `${previewOpen ? "Hide" : "Show"} Preview` : "Preview Not Available"}
                     </button>
                   </div>
                 </div>
@@ -358,16 +235,7 @@ const SharePage = ({ history }) => {
                 <div onClick={clickFreeSignup} className="free-signup-text">
                   <a>Get 10GB file storage and file sharing for free</a>
                 </div>
-                <div style={{ fontSize: "1.1rem" }}>
-                  Free to share ideas. Free to be protected. Free to be you.
-                </div>
-                {/* <a
-                  className="learn-more"
-                  href="https://dev2.opacity.io/platform"
-                  target="_blank"
-                >
-                  Learn More
-                </a> */}
+                <div style={{ fontSize: "1.1rem" }}>Free to share ideas. Free to be protected. Free to be you.</div>
               </Col>
             </Row>
           </Col>

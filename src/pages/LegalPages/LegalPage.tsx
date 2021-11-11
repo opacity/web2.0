@@ -28,7 +28,7 @@ const LegalPage = ({ title, type }) => {
 
   return (
     <SiteWrapper>
-      <Container fluid="xl mt-5 mb-5">
+      <Container fluid="xl" className="mx-5">
         <div className="title">{title}</div>
         <hr />
 
