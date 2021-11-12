@@ -26,7 +26,12 @@ import {
   bindUploadToAccountSystem,
   bindPublicShareToAccountSystem,
 } from "../../../ts-client-library/packages/filesystem-access/src/account-system-binding";
-import { UploadEvents, UploadProgressEvent, UploadErrorEvent } from "../../../ts-client-library/packages/filesystem-access/src/events";
+import {
+  UploadEvents,
+  UploadProgressEvent,
+  UploadErrorEvent,
+  UploadCancelEvent,
+} from "../../../ts-client-library/packages/filesystem-access/src/events";
 import RenameModal from "../../components/RenameModal/RenameModal";
 import DeleteModal from "../../components/DeleteModal/DeleteModal";
 import WarningModal from "../../components/WarningModal/WarningModal";
@@ -446,7 +451,7 @@ const FileManagePage = ({ history }) => {
   const handleCancelAllUpload = React.useCallback(async () => {
     if (fileUploadingList.find((item) => item.percent !== 100)) {
       for (const uploader of uploaderThread) {
-        await uploader.cancel();
+        uploader.cancel();
       }
 
       let templist = fileUploadingList.map((item) => {
@@ -532,6 +537,18 @@ const FileManagePage = ({ history }) => {
           }
         });
 
+        upload.addEventListener(UploadEvents.CANCEL, (e: UploadCancelEvent) => {
+          let templist = fileUploadingList;
+          let index = templist.findIndex((ele) => ele.id === toastID);
+          if (index > -1) {
+            templist[index].percent = 100;
+            templist[index].status = "cancelled";
+            fileUploadingList = templist;
+            setUploadingList(templist);
+            setProcessChange({});
+          }
+        });
+
         const fileStream = polyfillReadableStreamIfNeeded<Uint8Array>(file.stream());
 
         try {
@@ -570,8 +587,6 @@ const FileManagePage = ({ history }) => {
           }
         }
       } catch (e) {
-        console.error(e, "catched");
-
         curThreadNum--;
 
         const threadIndex = uploaderThread.findIndex((item) => toastID === item.metadata?.size + file.name + item.path);
