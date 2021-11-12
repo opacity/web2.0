@@ -178,11 +178,7 @@ const SharePage = ({ history }) => {
   const isPreviewPossible = checkPreviewPossible();
 
   return (
-    <SiteWrapper
-      history={history}
-      showSignUpModal={showSignUpModal}
-      handleCloseSignUpModal={handleCloseSignUpModal}
-    >
+    <SiteWrapper history={history} showSignUpModal={showSignUpModal} handleCloseSignUpModal={handleCloseSignUpModal}>
       <Container fluid="xl share">
         <Row>
           <Col lg={6} md={12} className="center">
@@ -232,8 +228,8 @@ const SharePage = ({ history }) => {
 
                 <h2>Easily share your files with Opacity</h2>
 
-                <div onClick={clickFreeSignup} className="free-signup-text">
-                  <a>Get 10GB file storage and file sharing for free</a>
+                <div className="free-signup-text">
+                  <a href="/plans">Get 10GB file storage and file sharing for free</a>
                 </div>
                 <div style={{ fontSize: "1.1rem" }}>Free to share ideas. Free to be protected. Free to be you.</div>
               </Col>
