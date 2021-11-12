@@ -184,6 +184,20 @@
       }
     }
   }
+  .developers-link {
+    font-style: normal;
+    font-weight: bold;
+    font-size: 32px;
+    line-height: 40px;
+    margin-top: 28px;
+    margin-bottom: 28px;
+    text-align: center;
+    text-decoration: underline;
+    @media (max-width: 767.8px) {
+      font-size: 17px;
+      line-height: 21px;
+    }
+  }
 }
 
 .nav-link {
