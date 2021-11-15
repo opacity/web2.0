@@ -1521,6 +1521,7 @@ const FileManagePage = ({ history }) => {
                           className="mr-2"
                           onClick={onSelectAll}
                           checked={!!selectedFiles.length}
+                          disabled={!fileList.length}
                           onChange={(e) => null}
                         />
                         Name
