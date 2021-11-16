@@ -12,7 +12,6 @@ type OtherProps = {
 const ExtChangeAlertModal: React.FC<OtherProps> = ({ show, handleClose, handleOk, fromExt, toExt }) => {
   return (
     <Modal show={show} onHide={handleClose} dialogClassName="ext-change-alert-modal" centered size="sm">
-      {/* <Modal.Header>Warning</Modal.Header> */}
       <Modal.Body>
         <h4>
           You're changing the file extension from {fromExt} to {toExt}. Do you want to proceed?
