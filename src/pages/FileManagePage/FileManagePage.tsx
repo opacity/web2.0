@@ -1628,6 +1628,7 @@ const FileManagePage = ({ history }) => {
           handleClose={() => setShowRenameModal(false)}
           oldName={oldName}
           setNewName={handleChangeRename}
+          isFile={!!fileToRename}
         />
       )}
       <DeleteModal show={showDeleteModal} handleClose={() => setShowDeleteModal(false)} setDelete={() => handleDelete()} />
