@@ -17,13 +17,15 @@ type OtherProps = {
   handleClose: Function;
   oldName: string;
   setNewName: Function;
+  isFile: boolean;
 };
-const RenameModal: React.FC<OtherProps> = ({ show, handleClose, oldName, setNewName }) => {
+const RenameModal: React.FC<OtherProps> = ({ show, handleClose, oldName, setNewName, isFile }) => {
   const [initValues, setInitValues] = React.useState({
     name: oldName,
   });
   const [showExtAlert, setShowExtAlert] = useState(false);
   const [renamingValue, setRenamingValue] = useState(null);
+  const [renamingExts, setRenamingExts] = useState({ old: "", new: "" });
   const handleNewName = (values) => {
     setNewName(values.name);
   };
@@ -40,6 +42,8 @@ const RenameModal: React.FC<OtherProps> = ({ show, handleClose, oldName, setNewN
             setShowExtAlert(false);
             handleNewName(renamingValue);
           }}
+          fromExt={renamingExts?.old}
+          toExt={renamingExts?.new}
         />
       )}
 
@@ -48,15 +52,19 @@ const RenameModal: React.FC<OtherProps> = ({ show, handleClose, oldName, setNewN
         initialValues={initValues}
         validationSchema={nameSchema}
         onSubmit={(values, { setErrors }) => {
-          const oldExt = oldName.split(".").pop();
-          const newExt = values.name.split(".").pop();
+          console.log("isfile", isFile);
+          if (isFile) {
+            const oldExt = oldName.split(".").pop();
+            const newExt = values.name.split(".").pop();
 
-          setRenamingValue(values);
+            setRenamingExts({ old: oldExt, new: newExt });
+            setRenamingValue(values);
 
-          if (oldExt != newExt) {
-            console.log("Not Same");
-            setShowExtAlert(true);
-            return;
+            if (oldExt != newExt) {
+              console.log("Not Same");
+              setShowExtAlert(true);
+              return;
+            }
           }
 
           handleNewName(values);
