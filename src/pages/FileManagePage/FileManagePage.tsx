@@ -627,21 +627,29 @@ const FileManagePage = ({ history }) => {
 
   const selectFiles = React.useCallback(
     async (files) => {
-      let templist = fileUploadingList;
+      let addedFileList = [];
+
       isFileManaging();
 
       files.forEach((file) => {
         const path = pathGenerator(file, currentPath);
         let toastID = file.size + file.name + path;
-        if (!templist.find((item) => item.id === toastID)) {
-          templist.push({ id: toastID, fileName: file.name, percent: 0, status: "active" });
+        if (!fileUploadingList.find((item) => item.id === toastID)) {
+          addedFileList.push({ id: toastID, fileName: file.name, percent: 0, status: "active" });
+          uploadingFileList.push(file);
         }
       });
-      fileUploadingList = templist;
-      setUploadingList(templist);
+      
+      if (curThreadNum === 0) {
+        const orderChanged = addedFileList.slice(0, THREAD_COUNT - curThreadNum);
+        orderChanged.reverse();
+        addedFileList.splice(0, 10, ...orderChanged);
+      }
+
+      fileUploadingList.push(...addedFileList);
+      setUploadingList(fileUploadingList);
       setProcessChange({});
 
-      uploadingFileList.push(...files);
       if (curThreadNum === 0 || curThreadNum < THREAD_COUNT) {
         const file = uploadingFileList[0];
         const path = pathGenerator(file, currentPath);
