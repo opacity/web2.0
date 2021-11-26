@@ -58,9 +58,9 @@
         &.nav-icon-upload {
           &::after {
             position: absolute;
-            content: "";
-            mask: url("../../assets/file.svg") no-repeat center;
-            -webkit-mask: url("../../assets/file.svg") no-repeat center;
+            content: '';
+            mask: url('../../assets/file.svg') no-repeat center;
+            -webkit-mask: url('../../assets/file.svg') no-repeat center;
             left: 0;
             right: 0;
             top: 0;
@@ -73,9 +73,9 @@
         &.nav-icon-folder {
           &::after {
             position: absolute;
-            content: "";
-            mask: url("../../assets/upload-folder.svg") no-repeat center;
-            -webkit-mask: url("../../assets/upload-folder.svg") no-repeat center;
+            content: '';
+            mask: url('../../assets/upload-folder.svg') no-repeat center;
+            -webkit-mask: url('../../assets/upload-folder.svg') no-repeat center;
             left: 0;
             right: 0;
             top: 0;
@@ -92,10 +92,10 @@
             top: 0;
             bottom: 0;
             background-color: #2e6dde;
-            content: "";
+            content: '';
             position: absolute;
-            mask: url("../../assets/logout.svg") no-repeat center;
-            -webkit-mask: url("../../assets/logout.svg") no-repeat center;
+            mask: url('../../assets/logout.svg') no-repeat center;
+            -webkit-mask: url('../../assets/logout.svg') no-repeat center;
             -webkit-mask-size: 20px;
             mask-size: 20px;
           }
@@ -160,7 +160,32 @@
     }
   }
 }
-
+.download-section {
+  border-top: 1px solid rgba(160, 194, 255, 0.59);
+  margin-bottom: 10px;
+  .position-mac {
+    margin-left: 60px;
+    margin-top: 20px;
+    width: 210px;
+  }
+  .position-window {
+    margin-left: 60px;
+    margin-top: 10px;
+    width: 210px;
+  }
+  .item-icon {
+    background-color: #eaf1ff;
+    width: 30px;
+    height: 30px;
+    &.file-download {
+      mask: url('../../assets/direct-download1.svg') no-repeat center;
+      -webkit-mask: url('../../assets/direct-download1.svg') no-repeat center;
+      -webkit-mask-size: contain;
+      width: 40px;
+      height: 23px;
+    }
+  }
+}
 // tree style
 .folder-tree {
   padding: 45px 30px;
@@ -198,10 +223,10 @@
     .rstm-toggle-icon-symbol {
       font-size: 0;
       &::before {
-        content: "";
+        content: '';
         background-color: #505050;
-        mask: url("../../assets/arrow-right.svg") no-repeat center;
-        -webkit-mask: url("../../assets/arrow-right.svg") no-repeat center;
+        mask: url('../../assets/arrow-right.svg') no-repeat center;
+        -webkit-mask: url('../../assets/arrow-right.svg') no-repeat center;
         position: absolute;
         width: 20px;
         height: 20px;
@@ -238,10 +263,10 @@
       .rstm-toggle-icon-symbol {
         font-size: 0;
         &::before {
-          content: "";
+          content: '';
           background-color: #505050;
-          mask: url("../../assets/arrow-down.svg") no-repeat center;
-          -webkit-mask: url("../../assets/arrow-down.svg") no-repeat center;
+          mask: url('../../assets/arrow-down.svg') no-repeat center;
+          -webkit-mask: url('../../assets/arrow-down.svg') no-repeat center;
           position: absolute;
           width: 20px;
           height: 20px;
@@ -342,9 +367,9 @@
       position: relative;
       &::after {
         position: absolute;
-        content: "";
-        mask: url("../../assets/user.svg") no-repeat center;
-        -webkit-mask: url("../../assets/user.svg") no-repeat center;
+        content: '';
+        mask: url('../../assets/user.svg') no-repeat center;
+        -webkit-mask: url('../../assets/user.svg') no-repeat center;
         left: 0;
         right: 0;
         top: 0;
@@ -396,7 +421,7 @@
       position: relative;
       justify-content: center;
       .circle-check {
-        content: url("../../assets/circle-check.svg");
+        content: url('../../assets/circle-check.svg');
         position: absolute;
         left: 15px;
       }
@@ -432,33 +457,33 @@
       width: 30px;
       height: 30px;
       &.file-upload {
-        mask: url("../../assets/direct-download.svg") no-repeat center;
-        -webkit-mask: url("../../assets/direct-download.svg") no-repeat center;
+        mask: url('../../assets/direct-download.svg') no-repeat center;
+        -webkit-mask: url('../../assets/direct-download.svg') no-repeat center;
       }
       &.file-download {
-        mask: url("../../assets/direct-download1.svg") no-repeat center;
-        -webkit-mask: url("../../assets/direct-download1.svg") no-repeat center;
+        mask: url('../../assets/direct-download1.svg') no-repeat center;
+        -webkit-mask: url('../../assets/direct-download1.svg') no-repeat center;
         -webkit-mask-size: contain;
         width: 40px;
         height: 23px;
       }
       &.file-delete {
-        mask: url("../../assets/delete.svg") no-repeat center;
-        -webkit-mask: url("../../assets/delete.svg") no-repeat center;
+        mask: url('../../assets/delete.svg') no-repeat center;
+        -webkit-mask: url('../../assets/delete.svg') no-repeat center;
         -webkit-mask-size: contain;
         width: 40px;
         height: 23px;
       }
       &.file-close {
-        mask: url("../../assets/close.svg") no-repeat center;
-        -webkit-mask: url("../../assets/close.svg") no-repeat center;
+        mask: url('../../assets/close.svg') no-repeat center;
+        -webkit-mask: url('../../assets/close.svg') no-repeat center;
         -webkit-mask-size: contain;
         width: 17px;
         height: 17px;
       }
       &.file-cancel {
-        mask: url("../../assets/cancel.svg") no-repeat center;
-        -webkit-mask: url("../../assets/cancel.svg") no-repeat center;
+        mask: url('../../assets/cancel.svg') no-repeat center;
+        -webkit-mask: url('../../assets/cancel.svg') no-repeat center;
         -webkit-mask-size: contain;
         width: 40px;
         height: 23px;
@@ -470,14 +495,14 @@
         height: 25px;
       }
       &.new-folder {
-        mask: url("../../assets/add-folder.svg") no-repeat center;
-        -webkit-mask: url("../../assets/add-folder.svg") no-repeat center;
+        mask: url('../../assets/add-folder.svg') no-repeat center;
+        -webkit-mask: url('../../assets/add-folder.svg') no-repeat center;
       }
       &.grid-view {
-        background: url("../../assets/grid-view.png") no-repeat center;
+        background: url('../../assets/grid-view.png') no-repeat center;
       }
       &.table-view {
-        background: url("../../assets/table-view.png") no-repeat center;
+        background: url('../../assets/table-view.png') no-repeat center;
       }
     }
     &.header-item-absolute {
@@ -503,7 +528,7 @@
       border-bottom: 2px solid #e2e2e2;
       margin-bottom: 20px;
       .home-icon {
-        content: url("../../assets/home.svg");
+        content: url('../../assets/home.svg');
         margin-top: 5px;
       }
       .breadcrumb-item {
@@ -515,49 +540,49 @@
         }
       }
       .breadcrumb-item + .breadcrumb-item::before {
-        content: url("../../assets/arrow-right.svg");
+        content: url('../../assets/arrow-right.svg');
       }
     }
     .icon-folder {
-      content: "";
-      mask: url("../../assets/folder.svg") no-repeat center;
-      -webkit-mask: url("../../assets/folder.svg") no-repeat center;
+      content: '';
+      mask: url('../../assets/folder.svg') no-repeat center;
+      -webkit-mask: url('../../assets/folder.svg') no-repeat center;
       margin-right: 40px;
       background-color: #3f3e3e;
       width: 20px;
       height: 20px;
     }
     .icon-document {
-      content: "";
-      mask: url("../../assets/document.svg") no-repeat center;
-      -webkit-mask: url("../../assets/document.svg") no-repeat center;
+      content: '';
+      mask: url('../../assets/document.svg') no-repeat center;
+      -webkit-mask: url('../../assets/document.svg') no-repeat center;
       margin-right: 40px;
       background-color: #3182ce;
       width: 20px;
       height: 20px;
     }
     .icon-image {
-      content: "";
-      mask: url("../../assets/image.svg") no-repeat center;
-      -webkit-mask: url("../../assets/image.svg") no-repeat center;
+      content: '';
+      mask: url('../../assets/image.svg') no-repeat center;
+      -webkit-mask: url('../../assets/image.svg') no-repeat center;
       margin-right: 40px;
       background-color: #2f855a;
       width: 20px;
       height: 20px;
     }
     .icon-zip {
-      content: "";
-      mask: url("../../assets/zip.svg") no-repeat center;
-      -webkit-mask: url("../../assets/zip.svg") no-repeat center;
+      content: '';
+      mask: url('../../assets/zip.svg') no-repeat center;
+      -webkit-mask: url('../../assets/zip.svg') no-repeat center;
       margin-right: 40px;
       background-color: #3f3e3e;
       width: 20px;
       height: 20px;
     }
     .icon-video {
-      content: "";
-      mask: url("../../assets/video.svg") no-repeat center;
-      -webkit-mask: url("../../assets/video.svg") no-repeat center;
+      content: '';
+      mask: url('../../assets/video.svg') no-repeat center;
+      -webkit-mask: url('../../assets/video.svg') no-repeat center;
       margin-right: 40px;
       background-color: #c53030;
       width: 20px;
@@ -608,7 +633,7 @@
         background: none;
         box-shadow: none;
         &::after {
-          content: url("../../assets/dots.svg");
+          content: url('../../assets/dots.svg');
           transform: none;
           height: 18px;
           margin: unset;
@@ -633,23 +658,23 @@
         padding: 10px 30px;
       }
       .icon-share {
-        content: url("../../assets/share2.svg");
+        content: url('../../assets/share2.svg');
         margin-right: 20px;
       }
       .icon-link {
-        content: url("../../assets/publich_share.svg");
+        content: url('../../assets/publich_share.svg');
         margin-right: 20px;
       }
       .icon-download {
-        content: url("../../assets/direct-download1.svg");
+        content: url('../../assets/direct-download1.svg');
         margin-right: 20px;
       }
       .icon-delete {
-        content: url("../../assets/delete.svg");
+        content: url('../../assets/delete.svg');
         margin-right: 20px;
       }
       .icon-rename {
-        content: url("../../assets/edit.svg");
+        content: url('../../assets/edit.svg');
         margin-right: 20px;
       }
     }
@@ -684,7 +709,7 @@
           background: #e6efff;
           border-radius: 13px;
           padding: 6px;
-          content: url("../../assets/check.svg");
+          content: url('../../assets/check.svg');
         }
         .grid-context-menu-area {
           position: absolute;
@@ -876,6 +901,7 @@
 }
 
 .side-bar-footer {
+  padding-top: 15px;
   position: absolute;
   bottom: 0;
   width: 100%;
@@ -902,15 +928,15 @@
   th.sortable::after {
     margin-left: 14px;
     color: #999;
-    content: url("../../assets/sortable.svg");
+    content: url('../../assets/sortable.svg');
   }
 
   th.sortable.asc::after {
-    content: url("../../assets/sort_up.svg");
+    content: url('../../assets/sort_up.svg');
   }
 
   th.sortable.desc::after {
-    content: url("../../assets/sort_down.svg");
+    content: url('../../assets/sort_down.svg');
   }
 
   th.sortable:hover::after {
