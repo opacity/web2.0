@@ -31,6 +31,7 @@ import {
   UploadProgressEvent,
   UploadErrorEvent,
   UploadCancelEvent,
+  UploadFinishedEvent,
 } from "../../../ts-client-library/packages/filesystem-access/src/events";
 import RenameModal from "../../components/RenameModal/RenameModal";
 import DeleteModal from "../../components/DeleteModal/DeleteModal";
@@ -72,7 +73,7 @@ Object.assign(streamsaver, { WritableStream });
 let logoutTimeout;
 let fileUploadingList = [];
 let loadingFlagCnt = 0;
-let uploadingFileList = [];
+let filesToUpload = [];
 const THREAD_COUNT = 10;
 let curThreadNum = 0;
 let uploaderThread = [];
@@ -294,6 +295,13 @@ const FileManagePage = ({ history }) => {
     }
   }, [filesForZip]);
 
+  React.useEffect(() => {
+    fileUploadingList = [];
+    filesToUpload = [];
+    curThreadNum = 0;
+    uploaderThread = [];
+  }, [])
+
   const doRefreshAfterRenew = React.useCallback(async () => {
     try {
       const accountInfo = await account.info();
@@ -426,46 +434,38 @@ const FileManagePage = ({ history }) => {
 
   const relativePath = React.useCallback((path: string) => path.substr(0, path.lastIndexOf("/")), []);
 
-  const handleCancelUpload = React.useCallback(async (item) => {
-    let cancelledId;
-    const threadIndex = uploaderThread.findIndex((uploader) => item.id === uploader.metadata?.size + uploader.name + uploader.path);
-    if (threadIndex !== -1) {
-      const uploader = uploaderThread[threadIndex];
-      await uploader.cancel();
-      cancelledId = uploader.metadata?.size + uploader.name + uploader.path;
-    } else {
-      cancelledId = item.id;
-    }
-
+  const updateUploadingItemStatus = (itemId, status, percent = 100) => {
     let templist = fileUploadingList;
-    let index = templist.findIndex((ele) => ele.id === cancelledId);
+    let index = templist.findIndex((ele) => ele.id === itemId);
     if (index > -1) {
-      templist[index].percent = 100;
-      templist[index].status = "cancelled";
+      templist[index].percent = percent;
+      templist[index].status = status;
       fileUploadingList = templist;
       setUploadingList(templist);
       setProcessChange({});
+    }
+  }
+
+  const handleCancelUpload = React.useCallback(async (item) => {
+    const threadIndex = uploaderThread.findIndex((uploader) => item.id === uploader.uploaderId);
+    if (threadIndex !== -1) {
+      const uploader = uploaderThread[threadIndex];
+      uploader.cancel()
+    } else {
+      updateUploadingItemStatus(item.id, "cancelled")
     }
   }, []);
 
   const handleCancelAllUpload = React.useCallback(async () => {
     if (fileUploadingList.find((item) => item.percent !== 100)) {
       for (const uploader of uploaderThread) {
-        uploader.cancel();
+        uploader.cancel()
       }
 
-      let templist = fileUploadingList.map((item) => {
-        return item.percent !== 100
-          ? {
-              ...item,
-              percent: 100,
-              status: "cancelled",
-            }
-          : item;
-      });
-      fileUploadingList = templist;
-      setUploadingList(templist);
-      setProcessChange({});
+      fileUploadingList.forEach(item => {
+        const isInThread = uploaderThread.findIndex(x => x.uploaderId === item.id)
+        isInThread === -1 && item.status !== "completed" && updateUploadingItemStatus(item.id, "cancelled")
+      })
     }
   }, []);
 
@@ -476,10 +476,10 @@ const FileManagePage = ({ history }) => {
       try {
         let index = fileUploadingList.findIndex((ele) => ele.id === toastID);
         if (index > -1 && fileUploadingList[index].status === "cancelled") {
-          const fileIndex = uploadingFileList.findIndex((item) => toastID === item.size + file.name + pathGenerator(item, currentPath));
-          fileIndex !== -1 && uploadingFileList.splice(fileIndex, 1);
-          if (curThreadNum < THREAD_COUNT && uploadingFileList.length > 0) {
-            const nextFile = uploadingFileList[0];
+          const fileIndex = filesToUpload.findIndex((item) => toastID === item.size + file.name + pathGenerator(item, currentPath));
+          fileIndex !== -1 && filesToUpload.splice(fileIndex, 1);
+          if (curThreadNum < THREAD_COUNT && filesToUpload.length > 0) {
+            const nextFile = filesToUpload[0];
             const nextFilePath = pathGenerator(nextFile, currentPath);
             uploadFile(nextFile, nextFilePath);
           }
@@ -500,10 +500,10 @@ const FileManagePage = ({ history }) => {
         uploaderThread.push(upload);
         curThreadNum++;
 
-        const fileIndex = uploadingFileList.findIndex((item) => toastID === item.size + file.name + pathGenerator(item, currentPath));
-        fileIndex !== -1 && uploadingFileList.splice(fileIndex, 1);
-        if (curThreadNum < THREAD_COUNT && uploadingFileList.length > 0) {
-          const nextFile = uploadingFileList[0];
+        const fileIndex = filesToUpload.findIndex((item) => toastID === item.size + file.name + pathGenerator(item, currentPath));
+        fileIndex !== -1 && filesToUpload.splice(fileIndex, 1);
+        if (curThreadNum < THREAD_COUNT && filesToUpload.length > 0) {
+          const nextFile = filesToUpload[0];
           const nextFilePath = pathGenerator(nextFile, currentPath);
           uploadFile(nextFile, nextFilePath);
         }
@@ -512,41 +512,20 @@ const FileManagePage = ({ history }) => {
         bindUploadToAccountSystem(accountSystem, upload);
 
         upload.addEventListener(UploadEvents.PROGRESS, (e: UploadProgressEvent) => {
-          let templist = fileUploadingList;
-          let index = templist.findIndex((ele) => ele.id === toastID);
-          if (index > -1) {
-            templist[index].percent = e.detail.progress * 100;
-            templist[index].status = "uploading";
-            fileUploadingList = templist;
-            setUploadingList(templist);
-            setProcessChange({});
-          }
+          updateUploadingItemStatus(toastID, "uploading", e.detail.progress * 100)
         });
 
         upload.addEventListener(UploadEvents.ERROR, (e: UploadErrorEvent) => {
-          toast.error("Failed to upload file");
-
-          let templist = fileUploadingList;
-          let index = templist.findIndex((ele) => ele.id === toastID);
-          if (index > -1) {
-            templist[index].percent = 100;
-            templist[index].status = "cancelled";
-            fileUploadingList = templist;
-            setUploadingList(templist);
-            setProcessChange({});
-          }
+          toast.error(e.detail.error);
+          updateUploadingItemStatus(toastID, "cancelled")
         });
 
         upload.addEventListener(UploadEvents.CANCEL, (e: UploadCancelEvent) => {
-          let templist = fileUploadingList;
-          let index = templist.findIndex((ele) => ele.id === toastID);
-          if (index > -1) {
-            templist[index].percent = 100;
-            templist[index].status = "cancelled";
-            fileUploadingList = templist;
-            setUploadingList(templist);
-            setProcessChange({});
-          }
+          updateUploadingItemStatus(toastID, "cancelled")
+        });
+
+        upload.addEventListener(UploadEvents.FINISH, (e: UploadFinishedEvent) => {
+          updateUploadingItemStatus(toastID, "completed")
         });
 
         const fileStream = polyfillReadableStreamIfNeeded<Uint8Array>(file.stream());
@@ -558,49 +537,40 @@ const FileManagePage = ({ history }) => {
           stream && fileStream.pipeThrough(stream as TransformStream<Uint8Array, Uint8Array> as any);
           await upload.finish();
 
-          let templistdone = fileUploadingList;
-          let index = templistdone.findIndex((ele) => ele.id === toastID);
-          if (index > -1) {
-            templistdone[index].percent = 100;
-            templistdone[index].status = "completed";
-            fileUploadingList = templistdone;
-            setUploadingList(templistdone);
-            setProcessChange({});
-          }
         } finally {
           // release();
 
           curThreadNum--;
-          const threadIndex = uploaderThread.findIndex((item) => toastID === item.metadata?.size + file.name + item.path);
+          const threadIndex = uploaderThread.findIndex((item) => toastID === item.uploaderId);
           if (threadIndex !== -1) {
             delete uploaderThread[threadIndex];
             uploaderThread.splice(threadIndex, 1);
           }
-          if (curThreadNum < THREAD_COUNT && uploadingFileList.length > 0) {
-            const nextFile = uploadingFileList[0];
+          if (curThreadNum < THREAD_COUNT && filesToUpload.length > 0) {
+            const nextFile = filesToUpload[0];
             const nextFilePath = pathGenerator(nextFile, currentPath);
             uploadFile(nextFile, nextFilePath);
           }
 
-          if (curThreadNum === 0 && uploadingFileList.length === 0) {
+          if (curThreadNum === 0 && filesToUpload.length === 0) {
             setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
           }
         }
       } catch (e) {
         curThreadNum--;
 
-        const threadIndex = uploaderThread.findIndex((item) => toastID === item.metadata?.size + file.name + item.path);
+        const threadIndex = uploaderThread.findIndex((item) => toastID === item.uploaderId);
         if (threadIndex !== -1) {
           delete uploaderThread[threadIndex];
           uploaderThread.splice(threadIndex, 1);
         }
-        if (curThreadNum < THREAD_COUNT && uploadingFileList.length > 0) {
-          const nextFile = uploadingFileList[0];
+        if (curThreadNum < THREAD_COUNT && filesToUpload.length > 0) {
+          const nextFile = filesToUpload[0];
           const nextFilePath = pathGenerator(nextFile, currentPath);
           uploadFile(nextFile, nextFilePath);
         }
 
-        if (curThreadNum === 0 && uploadingFileList.length === 0) {
+        if (curThreadNum === 0 && filesToUpload.length === 0) {
           setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
         }
       }
@@ -636,10 +606,10 @@ const FileManagePage = ({ history }) => {
         let toastID = file.size + file.name + path;
         if (!fileUploadingList.find((item) => item.id === toastID)) {
           addedFileList.push({ id: toastID, fileName: file.name, percent: 0, status: "active" });
-          uploadingFileList.push(file);
+          filesToUpload.push(file);
         }
       });
-      
+
       if (curThreadNum === 0) {
         const orderChanged = addedFileList.slice(0, THREAD_COUNT - curThreadNum);
         orderChanged.reverse();
@@ -651,7 +621,7 @@ const FileManagePage = ({ history }) => {
       setProcessChange({});
 
       if (curThreadNum === 0 || curThreadNum < THREAD_COUNT) {
-        const file = uploadingFileList[0];
+        const file = filesToUpload[0];
         const path = pathGenerator(file, currentPath);
         uploadFile(file, path);
       }
@@ -832,8 +802,14 @@ const FileManagePage = ({ history }) => {
           },
         });
         bindFileSystemObjectToAccountSystem(accountSystem, fso);
-        await accountSystem.removeMultiFile(files.map((item) => item.location));
-        await fso.deleteMultiFile(files);
+        await accountSystem.removeMultiFile(files.map((item) => item.location)).catch(() => {
+          toast.error(`An error occurred while deleting selected files.`);
+        }).then(async () => {
+          await fso.deleteMultiFile(files).catch(() => {
+            toast.error(`An error occurred while deleting selected files.`);
+          });
+        });
+        
         setFileToDelete(null);
       } catch (e) {
         await accountSystem.removeMultiFile(files.map((item) => item.location));
