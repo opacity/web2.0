@@ -160,7 +160,32 @@
     }
   }
 }
-
+.download-section {
+  border-top: 1px solid rgba(160, 194, 255, 0.59);
+  margin-bottom: 10px;
+  .position-mac {
+    margin-left: 60px;
+    margin-top: 20px;
+    width: 210px;
+  }
+  .position-window {
+    margin-left: 60px;
+    margin-top: 10px;
+    width: 210px;
+  }
+  .item-icon {
+    background-color: #eaf1ff;
+    width: 30px;
+    height: 30px;
+    &.file-download {
+      mask: url("../../assets/direct-download1.svg") no-repeat center;
+      -webkit-mask: url("../../assets/direct-download1.svg") no-repeat center;
+      -webkit-mask-size: contain;
+      width: 40px;
+      height: 23px;
+    }
+  }
+}
 // tree style
 .folder-tree {
   padding: 45px 30px;
@@ -876,6 +901,7 @@
 }
 
 .side-bar-footer {
+  padding-top: 15px;
   position: absolute;
   bottom: 0;
   width: 100%;
