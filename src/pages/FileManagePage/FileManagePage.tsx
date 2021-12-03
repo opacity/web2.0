@@ -1,94 +1,94 @@
-import * as React from 'react'
-import { Table, Tooltip, Tag, NavLink } from 'tabler-react'
-import { Link } from 'react-router-dom'
-import { ToastContainer, toast } from 'react-toastify'
-import { Button, Nav, ProgressBar, Breadcrumb, Alert } from 'react-bootstrap'
-import TreeMenu, { ItemComponent } from 'react-simple-tree-menu'
-import { Account, AccountGetRes } from '../../../ts-client-library/packages/account-management'
+import * as React from 'react';
+import { Table, Tooltip, Tag, NavLink } from 'tabler-react';
+import { Link } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import { Button, Nav, ProgressBar, Breadcrumb, Alert } from 'react-bootstrap';
+import TreeMenu, { ItemComponent } from 'react-simple-tree-menu';
+import { Account, AccountGetRes } from '../../../ts-client-library/packages/account-management';
 import {
   AccountSystem,
   MetadataAccess,
   FileMetadata,
   FolderFileEntry,
   FoldersIndexEntry
-} from '../../../ts-client-library/packages/account-system'
-import { WebAccountMiddleware, WebNetworkMiddleware } from '../../../ts-client-library/packages/middleware-web'
-import { hexToBytes } from '../../../ts-client-library/packages/util/src/hex'
+} from '../../../ts-client-library/packages/account-system';
+import { WebAccountMiddleware, WebNetworkMiddleware } from '../../../ts-client-library/packages/middleware-web';
+import { hexToBytes } from '../../../ts-client-library/packages/util/src/hex';
 import {
   polyfillReadableStreamIfNeeded,
   polyfillWritableStreamIfNeeded,
   WritableStream
-} from '../../../ts-client-library/packages/util/src/streams'
-import { OpaqueUpload, OpaqueDownload } from '../../../ts-client-library/packages/opaque'
+} from '../../../ts-client-library/packages/util/src/streams';
+import { OpaqueUpload, OpaqueDownload } from '../../../ts-client-library/packages/opaque';
 import {
   bindFileSystemObjectToAccountSystem,
   bindDownloadToAccountSystem,
   bindUploadToAccountSystem,
   bindPublicShareToAccountSystem
-} from '../../../ts-client-library/packages/filesystem-access/src/account-system-binding'
+} from '../../../ts-client-library/packages/filesystem-access/src/account-system-binding';
 import {
   UploadEvents,
   UploadProgressEvent,
   UploadErrorEvent,
   UploadCancelEvent
-} from '../../../ts-client-library/packages/filesystem-access/src/events'
-import RenameModal from '../../components/RenameModal/RenameModal'
-import DeleteModal from '../../components/DeleteModal/DeleteModal'
-import WarningModal from '../../components/WarningModal/WarningModal'
-import AddNewFolderModal from '../../components/NewFolderModal/NewFolderModal'
-import './FileManagePage.scss'
-import { formatBytes, formatGbs } from '../../helpers'
-import * as moment from 'moment'
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
-import { FileManagerFileEntryGrid, FileManagerFileEntryList } from '../../components/FileManager/FileManagerFileEntry'
-import { posix } from 'path-browserify'
-import { FileManagerFolderEntryGrid, FileManagerFolderEntryList } from '../../components/FileManager/FileManagerFolderEntry'
-import FileShareModal from '../../components/FileManager/FileShareModal'
-import { useDropzone } from 'react-dropzone'
-import ReactLoading from 'react-loading'
-import streamsaver from 'streamsaver'
-import { Mutex } from 'async-mutex'
-import { useMediaQuery } from 'react-responsive'
-import UploadingNotification from '../../components/UploadingNotification/UploadingNotification'
-import { FileSystemObject } from '../../../ts-client-library/packages/filesystem-access/src/filesystem-object'
-import { STORAGE_NODE as storageNode } from '../../config'
-import { bytesToB64URL } from '../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/b64'
-import { arraysEqual } from '../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/arrayEquality'
-import { FileSystemShare } from '../../../ts-client-library/packages/filesystem-access/src/public-share'
-import { bytesToHex } from '../../../ts-client-library/packages/util/src/hex'
-import * as fflate from 'fflate'
-import { saveAs } from 'file-saver'
-import SignUpModal from '../../components/SignUpModal/SignUpModal'
-import { PLANS } from '../../config'
-import { OPACITY_DRIVE_FOR_MAC, OPACITY_DRIVE_FOR_WINDOWS } from '../../config'
-const uploadImage = require('../../assets/upload.png')
-const empty = require('../../assets/empty.png')
-const logo = require('../../assets/logo2.png')
-const copy = require('../../assets/copy.svg')
+} from '../../../ts-client-library/packages/filesystem-access/src/events';
+import RenameModal from '../../components/RenameModal/RenameModal';
+import DeleteModal from '../../components/DeleteModal/DeleteModal';
+import WarningModal from '../../components/WarningModal/WarningModal';
+import AddNewFolderModal from '../../components/NewFolderModal/NewFolderModal';
+import './FileManagePage.scss';
+import { formatBytes, formatGbs } from '../../helpers';
+import * as moment from 'moment';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { FileManagerFileEntryGrid, FileManagerFileEntryList } from '../../components/FileManager/FileManagerFileEntry';
+import { posix } from 'path-browserify';
+import { FileManagerFolderEntryGrid, FileManagerFolderEntryList } from '../../components/FileManager/FileManagerFolderEntry';
+import FileShareModal from '../../components/FileManager/FileShareModal';
+import { useDropzone } from 'react-dropzone';
+import ReactLoading from 'react-loading';
+import streamsaver from 'streamsaver';
+import { Mutex } from 'async-mutex';
+import { useMediaQuery } from 'react-responsive';
+import UploadingNotification from '../../components/UploadingNotification/UploadingNotification';
+import { FileSystemObject } from '../../../ts-client-library/packages/filesystem-access/src/filesystem-object';
+import { STORAGE_NODE as storageNode } from '../../config';
+import { bytesToB64URL } from '../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/b64';
+import { arraysEqual } from '../../../ts-client-library/packages/account-management/node_modules/@opacity/util/src/arrayEquality';
+import { FileSystemShare } from '../../../ts-client-library/packages/filesystem-access/src/public-share';
+import { bytesToHex } from '../../../ts-client-library/packages/util/src/hex';
+import * as fflate from 'fflate';
+import { saveAs } from 'file-saver';
+import SignUpModal from '../../components/SignUpModal/SignUpModal';
+import { PLANS } from '../../config';
+import { OPACITY_DRIVE_FOR_MAC, OPACITY_DRIVE_FOR_WINDOWS } from '../../config';
+const uploadImage = require('../../assets/upload.png');
+const empty = require('../../assets/empty.png');
+const logo = require('../../assets/logo2.png');
+const copy = require('../../assets/copy.svg');
 
-streamsaver.mitm = '/resources/streamsaver/mitm.html'
-Object.assign(streamsaver, { WritableStream })
+streamsaver.mitm = '/resources/streamsaver/mitm.html';
+Object.assign(streamsaver, { WritableStream });
 
-let logoutTimeout
-let fileUploadingList = []
-let loadingFlagCnt = 0
-let uploadingFileList = []
-const THREAD_COUNT = 10
-let curThreadNum = 0
-let uploaderThread = []
+let logoutTimeout;
+let fileUploadingList = [];
+let loadingFlagCnt = 0;
+let uploadingFileList = [];
+const THREAD_COUNT = 10;
+let curThreadNum = 0;
+let uploaderThread = [];
 
 const FileManagePage = ({ history }) => {
-  const isMobile = useMediaQuery({ maxWidth: 768 })
-  const [isManaging, setIsManaging] = React.useState(false)
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const [isManaging, setIsManaging] = React.useState(false);
   const cryptoMiddleware = React.useMemo(
     () =>
       new WebAccountMiddleware({
         asymmetricKey: hexToBytes(localStorage.getItem('key'))
       }),
     []
-  )
-  const netMiddleware = React.useMemo(() => new WebNetworkMiddleware(), [])
+  );
+  const netMiddleware = React.useMemo(() => new WebNetworkMiddleware(), []);
   const fileSystemObject = React.useMemo(
     () =>
       new FileSystemObject({
@@ -101,7 +101,7 @@ const FileManagePage = ({ history }) => {
         }
       }),
     [netMiddleware, cryptoMiddleware, storageNode]
-  )
+  );
   const metadataAccess = React.useMemo(
     () =>
       new MetadataAccess({
@@ -110,8 +110,8 @@ const FileManagePage = ({ history }) => {
         metadataNode: storageNode
       }),
     [netMiddleware, cryptoMiddleware, storageNode]
-  )
-  const accountSystem = React.useMemo(() => new AccountSystem({ metadataAccess }), [metadataAccess])
+  );
+  const accountSystem = React.useMemo(() => new AccountSystem({ metadataAccess }), [metadataAccess]);
   const account = React.useMemo(
     () =>
       new Account({
@@ -120,255 +120,255 @@ const FileManagePage = ({ history }) => {
         storageNode
       }),
     [cryptoMiddleware, netMiddleware, storageNode]
-  )
-  const [updateCurrentFolderSwitch, setUpdateCurrentFolderSwitch] = React.useState(false)
-  const [updateFolderEntrySwitch, setUpdateFolderEntrySwitch] = React.useState(false)
-  const [updateFileEntrySwitch, setUpdateFileEntrySwitch] = React.useState(false)
-  const [showSidebar, setShowSidebar] = React.useState(false)
-  const [tableView, setTableView] = React.useState(true)
-  const [currentPath, setCurrentPath] = React.useState('/')
-  const [currentLocation, setCurrentLocation] = React.useState<Uint8Array>()
-  const currentPathRef = React.useRef('/')
-  const [folderList, setFolderList] = React.useState<FoldersIndexEntry[]>([])
-  const [folderMetaList, setFolderMetaList] = React.useState(undefined)
-  const folderListRef = React.useRef<FoldersIndexEntry[]>([])
-  const [fileList, setFileList] = React.useState<FolderFileEntry[]>([])
-  const [fileMetaList, setFileMetaList] = React.useState(undefined)
-  const fileListRef = React.useRef<FolderFileEntry[]>([])
-  const [treeData, setTreeData] = React.useState([])
-  const [pageLoading, setPageLoading] = React.useState(true)
-  const [subPaths, setSubPaths] = React.useState([])
-  const [accountInfo, setAccountInfo] = React.useState<AccountGetRes>()
-  const [showRenameModal, setShowRenameModal] = React.useState(false)
-  const [fileToRename, setFileToRename] = React.useState<FolderFileEntry>()
-  const [fileToDelete, setFileToDelete] = React.useState<FileMetadata | FolderFileEntry>()
-  const [folderToRename, setFolderToRename] = React.useState<FoldersIndexEntry>()
-  const [folderToDelete, setFolderToDelete] = React.useState<FoldersIndexEntry>()
-  const [oldName, setOldName] = React.useState()
-  const [showDeleteModal, setShowDeleteModal] = React.useState(false)
-  const [showWarningModal, setShowWarningModal] = React.useState(false)
-  const [showNewFolderModal, setShowNewFolderModal] = React.useState(false)
-  const [uploadingList, setUploadingList] = React.useState([])
-  const [selectedFiles, setSelectedFiles] = React.useState<FileMetadata[]>([])
-  const [alertText, setAlertText] = React.useState('There are 30 days remaining on your account. ')
-  const [alertLinkText, setAlertLinkText] = React.useState('Upgrade now to a paid plan.')
-  const [alertLink, setAlertLink] = React.useState('renew')
-  const [alertShow, setAlertShow] = React.useState(false)
-  const [openShareModal, setOpenShareModal] = React.useState(false)
-  const [shareMode, setShareMode] = React.useState<'private' | 'public'>('private')
-  const [shareFile, setShareFile] = React.useState<FileMetadata>(null)
-  const [storageWarning, setIsStorageWarning] = React.useState(false)
+  );
+  const [updateCurrentFolderSwitch, setUpdateCurrentFolderSwitch] = React.useState(false);
+  const [updateFolderEntrySwitch, setUpdateFolderEntrySwitch] = React.useState(false);
+  const [updateFileEntrySwitch, setUpdateFileEntrySwitch] = React.useState(false);
+  const [showSidebar, setShowSidebar] = React.useState(false);
+  const [tableView, setTableView] = React.useState(true);
+  const [currentPath, setCurrentPath] = React.useState('/');
+  const [currentLocation, setCurrentLocation] = React.useState<Uint8Array>();
+  const currentPathRef = React.useRef('/');
+  const [folderList, setFolderList] = React.useState<FoldersIndexEntry[]>([]);
+  const [folderMetaList, setFolderMetaList] = React.useState(undefined);
+  const folderListRef = React.useRef<FoldersIndexEntry[]>([]);
+  const [fileList, setFileList] = React.useState<FolderFileEntry[]>([]);
+  const [fileMetaList, setFileMetaList] = React.useState(undefined);
+  const fileListRef = React.useRef<FolderFileEntry[]>([]);
+  const [treeData, setTreeData] = React.useState([]);
+  const [pageLoading, setPageLoading] = React.useState(true);
+  const [subPaths, setSubPaths] = React.useState([]);
+  const [accountInfo, setAccountInfo] = React.useState<AccountGetRes>();
+  const [showRenameModal, setShowRenameModal] = React.useState(false);
+  const [fileToRename, setFileToRename] = React.useState<FolderFileEntry>();
+  const [fileToDelete, setFileToDelete] = React.useState<FileMetadata | FolderFileEntry>();
+  const [folderToRename, setFolderToRename] = React.useState<FoldersIndexEntry>();
+  const [folderToDelete, setFolderToDelete] = React.useState<FoldersIndexEntry>();
+  const [oldName, setOldName] = React.useState();
+  const [showDeleteModal, setShowDeleteModal] = React.useState(false);
+  const [showWarningModal, setShowWarningModal] = React.useState(false);
+  const [showNewFolderModal, setShowNewFolderModal] = React.useState(false);
+  const [uploadingList, setUploadingList] = React.useState([]);
+  const [selectedFiles, setSelectedFiles] = React.useState<FileMetadata[]>([]);
+  const [alertText, setAlertText] = React.useState('There are 30 days remaining on your account. ');
+  const [alertLinkText, setAlertLinkText] = React.useState('Upgrade now to a paid plan.');
+  const [alertLink, setAlertLink] = React.useState('renew');
+  const [alertShow, setAlertShow] = React.useState(false);
+  const [openShareModal, setOpenShareModal] = React.useState(false);
+  const [shareMode, setShareMode] = React.useState<'private' | 'public'>('private');
+  const [shareFile, setShareFile] = React.useState<FileMetadata>(null);
+  const [storageWarning, setIsStorageWarning] = React.useState(false);
   const [sortable, setSortable] = React.useState({
     column: 'null',
     method: 'null'
-  })
-  const [filesForZip, setFilesForZip] = React.useState([])
-  const [upgradeAvailable, setUpgradeAvailable] = React.useState(true)
-  const [showSignUpModal, setShowSignUpModal] = React.useState(false)
-  const [currentPlan, setCurrentPlan] = React.useState()
-  const [isAccountExpired, setIsAccountExpired] = React.useState(false)
-  const [, setProcessChange] = React.useState()
-  const [cmdKeyStatus, setCmdKeyStatus] = React.useState(false)
+  });
+  const [filesForZip, setFilesForZip] = React.useState([]);
+  const [upgradeAvailable, setUpgradeAvailable] = React.useState(true);
+  const [showSignUpModal, setShowSignUpModal] = React.useState(false);
+  const [currentPlan, setCurrentPlan] = React.useState();
+  const [isAccountExpired, setIsAccountExpired] = React.useState(false);
+  const [, setProcessChange] = React.useState();
+  const [cmdKeyStatus, setCmdKeyStatus] = React.useState(false);
 
   const handleShowSidebar = React.useCallback(() => {
-    setShowSidebar(!showSidebar)
-  }, [showSidebar])
+    setShowSidebar(!showSidebar);
+  }, [showSidebar]);
 
   const isFileManaging = () => {
-    setIsManaging(true)
-  }
+    setIsManaging(true);
+  };
 
   const OnfinishFileManaging = () => {
-    setIsManaging(false)
-  }
+    setIsManaging(false);
+  };
 
   //=================event hook================
 
   const clearTimeouts = () => {
-    logoutTimeout && clearTimeout(logoutTimeout)
-  }
+    logoutTimeout && clearTimeout(logoutTimeout);
+  };
 
   React.useEffect(() => {
-    isManaging === true && clearTimeouts()
-  }, [isManaging, clearTimeouts])
+    isManaging === true && clearTimeouts();
+  }, [isManaging, clearTimeouts]);
 
   const logout = () => {
     if (isManaging === true || window.location.pathname !== '/file-manager') {
-      return
+      return;
     }
-    console.log('You have been loged out')
-    localStorage.clear()
-    history.push('/')
-  }
+    console.log('You have been loged out');
+    localStorage.clear();
+    history.push('/');
+  };
 
   const setTimeouts = () => {
-    logoutTimeout = setTimeout(logout, 1000 * 60 * 20)
-  }
+    logoutTimeout = setTimeout(logout, 1000 * 60 * 20);
+  };
 
   React.useEffect(() => {
-    const events = ['load', 'mousemove', 'mousedown', 'click', 'scroll', 'keypress']
+    const events = ['load', 'mousemove', 'mousedown', 'click', 'scroll', 'keypress'];
 
     const resetTimeout = () => {
-      clearTimeouts()
-      !isManaging && setTimeouts()
-    }
+      clearTimeouts();
+      !isManaging && setTimeouts();
+    };
 
     for (let i in events) {
-      window.addEventListener(events[i], resetTimeout)
+      window.addEventListener(events[i], resetTimeout);
     }
     // resetTimeout();
     return () => {
       for (let i in events) {
-        window.removeEventListener(events[i], resetTimeout)
-        clearTimeouts()
+        window.removeEventListener(events[i], resetTimeout);
+        clearTimeouts();
       }
-    }
-  }, [isManaging, setTimeouts])
+    };
+  }, [isManaging, setTimeouts]);
 
   //=================end event hook============
 
   React.useEffect(() => {
-    getFolderData()
-  }, [updateCurrentFolderSwitch])
+    getFolderData();
+  }, [updateCurrentFolderSwitch]);
 
   React.useEffect(() => {
-    currentPathRef.current = currentPath
-    setFolderMetaList(undefined)
-    setFileMetaList(undefined)
+    currentPathRef.current = currentPath;
+    setFolderMetaList(undefined);
+    setFileMetaList(undefined);
     setSortable({
       column: 'null',
       method: 'null'
-    })
-  }, [currentPath])
+    });
+  }, [currentPath]);
 
   React.useEffect(() => {
-    folderListRef.current = folderList
-  }, [folderList])
+    folderListRef.current = folderList;
+  }, [folderList]);
 
   React.useEffect(() => {
-    fileListRef.current = fileList
-  }, [fileList])
+    fileListRef.current = fileList;
+  }, [fileList]);
 
   React.useEffect(() => {
-    const levels = currentPath.split('/').slice(1)
+    const levels = currentPath.split('/').slice(1);
     const subpaths = levels.map((l, i) => {
-      const parentFolders = levels.filter((_l, idx) => idx < i)
-      const parentPaths = '/' + (parentFolders.length > 0 ? parentFolders.join('/') + '/' : '')
+      const parentFolders = levels.filter((_l, idx) => idx < i);
+      const parentPaths = '/' + (parentFolders.length > 0 ? parentFolders.join('/') + '/' : '');
 
-      return { text: l, path: parentPaths + l }
-    })
-    setSubPaths(subpaths)
-    setPageLoading(true)
-    loadingFlagCnt++
+      return { text: l, path: parentPaths + l };
+    });
+    setSubPaths(subpaths);
+    setPageLoading(true);
+    loadingFlagCnt++;
 
     Promise.all([
       accountSystem.getFoldersInFolderByPath(currentPath),
       currentPath == '/' ? accountSystem.addFolder(currentPath) : accountSystem.getFolderMetadataByPath(currentPath)
     ])
       .then(([folders, folderMeta]) => {
-        setFolderList(folders)
-        setFileList(folderMeta.files)
-        setCurrentLocation(folderMeta.location)
-        loadingFlagCnt--
-        loadingFlagCnt === 0 && setPageLoading(false)
+        setFolderList(folders);
+        setFileList(folderMeta.files);
+        setCurrentLocation(folderMeta.location);
+        loadingFlagCnt--;
+        loadingFlagCnt === 0 && setPageLoading(false);
       })
       .catch(err => {
-        toast.error(`folder "${currentPath}" not found`)
-        loadingFlagCnt--
-        setPageLoading(false)
-      })
-  }, [currentPath, updateCurrentFolderSwitch])
+        toast.error(`folder "${currentPath}" not found`);
+        loadingFlagCnt--;
+        setPageLoading(false);
+      });
+  }, [currentPath, updateCurrentFolderSwitch]);
 
   React.useEffect(() => {
     if (filesForZip.length !== 0 && filesForZip.length === selectedFiles.length) {
-      let zipableFiles = {}
+      let zipableFiles = {};
       filesForZip.forEach(item => {
-        zipableFiles = Object.assign(zipableFiles, { [item.name]: item.data })
-      })
+        zipableFiles = Object.assign(zipableFiles, { [item.name]: item.data });
+      });
       const zipped = fflate.zipSync(zipableFiles, {
         level: 0
-      })
+      });
 
-      const blob = new Blob([zipped])
-      saveAs(blob, `opacity_files.zip`)
-      setPageLoading(false)
+      const blob = new Blob([zipped]);
+      saveAs(blob, `opacity_files.zip`);
+      setPageLoading(false);
     }
-  }, [filesForZip])
+  }, [filesForZip]);
 
   const doRefreshAfterRenew = React.useCallback(async () => {
     try {
-      const accountInfo = await account.info()
-      setAccountInfo(accountInfo)
-      setAlertShow(false)
+      const accountInfo = await account.info();
+      setAccountInfo(accountInfo);
+      setAlertShow(false);
     } catch (e) {
-      localStorage.clear()
-      history.push('/')
+      localStorage.clear();
+      history.push('/');
     }
-  }, [account])
+  }, [account]);
 
   const getFolderData = React.useCallback(async () => {
     try {
-      setPageLoading(true)
-      loadingFlagCnt++
-      const accountInfo = await account.info()
-      setAccountInfo(accountInfo)
+      setPageLoading(true);
+      loadingFlagCnt++;
+      const accountInfo = await account.info();
+      setAccountInfo(accountInfo);
 
-      const usedStorage = accountInfo.account.storageUsed
-      const limitStorage = accountInfo.account.storageLimit
-      const remainDays = moment(accountInfo.account.expirationDate).diff(moment(Date.now()), 'days')
+      const usedStorage = accountInfo.account.storageUsed;
+      const limitStorage = accountInfo.account.storageLimit;
+      const remainDays = moment(accountInfo.account.expirationDate).diff(moment(Date.now()), 'days');
 
-      const plansApi = await account.plans()
-      let idx = 0
+      const plansApi = await account.plans();
+      let idx = 0;
       for (idx = 0; idx < plansApi.length; idx++) {
         if (plansApi[idx].storageInGB === limitStorage) {
-          break
+          break;
         }
       }
-      setUpgradeAvailable(idx < plansApi.length - 1)
-      const curPlanIndex = plansApi.findIndex(item => item.storageInGB === limitStorage)
+      setUpgradeAvailable(idx < plansApi.length - 1);
+      const curPlanIndex = plansApi.findIndex(item => item.storageInGB === limitStorage);
       if (curPlanIndex >= 0) {
-        const { cost, costInUSD, storageInGB, name } = plansApi[curPlanIndex]
+        const { cost, costInUSD, storageInGB, name } = plansApi[curPlanIndex];
         setCurrentPlan({
           ...PLANS[curPlanIndex],
           opctCost: cost,
           usdCost: costInUSD,
           storageInGB,
           name
-        })
+        });
       }
 
       if ((limitStorage / 10) * 9 < usedStorage) {
-        setIsStorageWarning(true)
-        setAlertText(`You have used ${((usedStorage / limitStorage) * 100).toFixed(2)}% of your plan. `)
-        setAlertLinkText('Upgrade now to get more space.')
-        setAlertLink('plans')
-        setAlertShow(true)
+        setIsStorageWarning(true);
+        setAlertText(`You have used ${((usedStorage / limitStorage) * 100).toFixed(2)}% of your plan. `);
+        setAlertLinkText('Upgrade now to get more space.');
+        setAlertLink('plans');
+        setAlertShow(true);
       }
       if (remainDays < 30) {
-        moment(accountInfo.account.expirationDate).isAfter(moment(Date.now())) && setIsAccountExpired(true)
+        moment(accountInfo.account.expirationDate).isAfter(moment(Date.now())) && setIsAccountExpired(true);
 
-        setAlertText(`There are ${remainDays} days remaining on your account. `)
+        setAlertText(`There are ${remainDays} days remaining on your account. `);
         if (limitStorage === 10) {
-          setAlertLinkText('Upgrade now to a paid plan.')
-          setAlertLink('plans')
+          setAlertLinkText('Upgrade now to a paid plan.');
+          setAlertLink('plans');
         } else {
-          setAlertLinkText('Renew now to prevent losing access to your data.')
-          setAlertLink('renew')
+          setAlertLinkText('Renew now to prevent losing access to your data.');
+          setAlertLink('renew');
         }
-        setAlertShow(true)
+        setAlertShow(true);
       }
     } catch (e) {
-      localStorage.clear()
-      history.push('/')
+      localStorage.clear();
+      history.push('/');
     }
 
-    const t = await accountSystem.getFoldersIndex()
+    const t = await accountSystem.getFoldersIndex();
 
     function filesToTreeNodes(arr) {
-      var tree = {}
+      var tree = {};
       function addnode(obj) {
-        var splitpath = obj.path.replace(/^\/|\/$/g, '').split('/')
-        var ptr = tree
+        var splitpath = obj.path.replace(/^\/|\/$/g, '').split('/');
+        var ptr = tree;
         for (let i = 0; i < splitpath.length; i++) {
           let node: any = {
             label: splitpath[i],
@@ -376,83 +376,83 @@ const FileManagePage = ({ history }) => {
             isDirectory: true,
             path: obj.path,
             location: obj.location
-          }
+          };
           if (i == splitpath.length - 1) {
-            node.isDirectory = false
+            node.isDirectory = false;
           }
-          ptr[splitpath[i]] = ptr[splitpath[i]] || node
-          ptr[splitpath[i]].nodes = ptr[splitpath[i]].nodes || {}
-          ptr = ptr[splitpath[i]].nodes
+          ptr[splitpath[i]] = ptr[splitpath[i]] || node;
+          ptr[splitpath[i]].nodes = ptr[splitpath[i]].nodes || {};
+          ptr = ptr[splitpath[i]].nodes;
         }
       }
       function objectToArr(node) {
         Object.keys(node || {}).map(k => {
           if (node[k].nodes) {
-            objectToArr(node[k])
+            objectToArr(node[k]);
           }
-        })
+        });
         if (node.nodes) {
-          node.nodes = Object.values(node.nodes)
-          node.nodes.forEach(objectToArr)
+          node.nodes = Object.values(node.nodes);
+          node.nodes.forEach(objectToArr);
         }
       }
-      arr.map(addnode)
-      objectToArr(tree)
-      return Object.values(tree)
+      arr.map(addnode);
+      objectToArr(tree);
+      return Object.values(tree);
     }
-    let arrayList = filesToTreeNodes(t.folders)
-    let temp = []
+    let arrayList = filesToTreeNodes(t.folders);
+    let temp = [];
     if (arrayList.length) {
-      let i = arrayList.findIndex(e => e.path === '/')
-      temp[0] = arrayList[i]
-      temp[0].label = 'My Folders'
-      arrayList.splice(i, 1)
-      temp[0].nodes = arrayList
+      let i = arrayList.findIndex(e => e.path === '/');
+      temp[0] = arrayList[i];
+      temp[0].label = 'My Folders';
+      arrayList.splice(i, 1);
+      temp[0].nodes = arrayList;
     } else {
       temp[0] = {
         label: 'My Folders',
         path: '/',
         nodes: []
-      }
+      };
     }
-    setTreeData(temp)
-    loadingFlagCnt--
-    loadingFlagCnt === 0 && setPageLoading(false)
-  }, [account, accountSystem])
+    setTreeData(temp);
+    loadingFlagCnt--;
+    loadingFlagCnt === 0 && setPageLoading(false);
+  }, [account, accountSystem]);
 
   const handleLogout = React.useCallback(() => {
-    localStorage.clear()
-    history.push('/')
-  }, [])
+    localStorage.clear();
+    history.push('/');
+  }, []);
 
-  const relativePath = React.useCallback((path: string) => path.substr(0, path.lastIndexOf('/')), [])
+  const relativePath = React.useCallback((path: string) => path.substr(0, path.lastIndexOf('/')), []);
 
   const handleCancelUpload = React.useCallback(async item => {
-    let cancelledId
-    const threadIndex = uploaderThread.findIndex(uploader => item.id === uploader.metadata?.size + uploader.name + uploader.path)
+    let cancelledId;
+    const threadIndex = uploaderThread.findIndex(uploader => item.id === uploader.metadata?.size + uploader.name + uploader.path);
     if (threadIndex !== -1) {
-      const uploader = uploaderThread[threadIndex]
-      await uploader.cancel()
-      cancelledId = uploader.metadata?.size + uploader.name + uploader.path
+      const uploader = uploaderThread[threadIndex];
+      await uploader.cancel();
+      cancelledId = uploader.metadata?.size + uploader.name + uploader.path;
     } else {
-      cancelledId = item.id
+      cancelledId = item.id;
     }
 
-    let templist = fileUploadingList
-    let index = templist.findIndex(ele => ele.id === cancelledId)
+    let templist = fileUploadingList;
+    let index = templist.findIndex(ele => ele.id === cancelledId);
     if (index > -1) {
-      templist[index].percent = 100
-      templist[index].status = 'cancelled'
-      fileUploadingList = templist
-      setUploadingList(templist)
-      setProcessChange({})
+      templist[index].percent = 100;
+      templist[index].status = 'cancelled';
+      fileUploadingList = templist;
+      setUploadingList(templist);
+      setProcessChange({});
     }
-  }, [])
+  }, []);
 
   const handleCancelAllUpload = React.useCallback(async () => {
     if (fileUploadingList.find(item => item.percent !== 100)) {
       for (const uploader of uploaderThread) {
-        uploader.cancel()
+        uploader.cancel();
       }
 
       let templist = fileUploadingList.map(item => {
@@ -462,29 +462,29 @@ const FileManagePage = ({ history }) => {
               percent: 100,
               status: 'cancelled'
             }
-          : item
-      })
-      fileUploadingList = templist
-      setUploadingList(templist)
-      setProcessChange({})
+          : item;
+      });
+      fileUploadingList = templist;
+      setUploadingList(templist);
+      setProcessChange({});
     }
-  }, [])
+  }, []);
 
   // const fileUploadMutex = React.useMemo(() => new Mutex(), []);
   const uploadFile = React.useCallback(
     async (file: File, path: string) => {
-      let toastID = file.size + file.name + path
+      let toastID = file.size + file.name + path;
       try {
-        let index = fileUploadingList.findIndex(ele => ele.id === toastID)
+        let index = fileUploadingList.findIndex(ele => ele.id === toastID);
         if (index > -1 && fileUploadingList[index].status === 'cancelled') {
-          const fileIndex = uploadingFileList.findIndex(item => toastID === item.size + file.name + pathGenerator(item, currentPath))
-          fileIndex !== -1 && uploadingFileList.splice(fileIndex, 1)
+          const fileIndex = uploadingFileList.findIndex(item => toastID === item.size + file.name + pathGenerator(item, currentPath));
+          fileIndex !== -1 && uploadingFileList.splice(fileIndex, 1);
           if (curThreadNum < THREAD_COUNT && uploadingFileList.length > 0) {
-            const nextFile = uploadingFileList[0]
-            const nextFilePath = pathGenerator(nextFile, currentPath)
-            uploadFile(nextFile, nextFilePath)
+            const nextFile = uploadingFileList[0];
+            const nextFilePath = pathGenerator(nextFile, currentPath);
+            uploadFile(nextFile, nextFilePath);
           }
-          return
+          return;
         }
         // const release = await fileUploadMutex.acquire();
 
@@ -497,112 +497,112 @@ const FileManagePage = ({ history }) => {
           meta: file,
           name: file.name,
           path: path
-        })
-        uploaderThread.push(upload)
-        curThreadNum++
+        });
+        uploaderThread.push(upload);
+        curThreadNum++;
 
-        const fileIndex = uploadingFileList.findIndex(item => toastID === item.size + file.name + pathGenerator(item, currentPath))
-        fileIndex !== -1 && uploadingFileList.splice(fileIndex, 1)
+        const fileIndex = uploadingFileList.findIndex(item => toastID === item.size + file.name + pathGenerator(item, currentPath));
+        fileIndex !== -1 && uploadingFileList.splice(fileIndex, 1);
         if (curThreadNum < THREAD_COUNT && uploadingFileList.length > 0) {
-          const nextFile = uploadingFileList[0]
-          const nextFilePath = pathGenerator(nextFile, currentPath)
-          uploadFile(nextFile, nextFilePath)
+          const nextFile = uploadingFileList[0];
+          const nextFilePath = pathGenerator(nextFile, currentPath);
+          uploadFile(nextFile, nextFilePath);
         }
 
         // side effects
-        bindUploadToAccountSystem(accountSystem, upload)
+        bindUploadToAccountSystem(accountSystem, upload);
 
         upload.addEventListener(UploadEvents.PROGRESS, (e: UploadProgressEvent) => {
-          let templist = fileUploadingList
-          let index = templist.findIndex(ele => ele.id === toastID)
+          let templist = fileUploadingList;
+          let index = templist.findIndex(ele => ele.id === toastID);
           if (index > -1) {
-            templist[index].percent = e.detail.progress * 100
-            templist[index].status = 'uploading'
-            fileUploadingList = templist
-            setUploadingList(templist)
-            setProcessChange({})
+            templist[index].percent = e.detail.progress * 100;
+            templist[index].status = 'uploading';
+            fileUploadingList = templist;
+            setUploadingList(templist);
+            setProcessChange({});
           }
-        })
+        });
 
         upload.addEventListener(UploadEvents.ERROR, (e: UploadErrorEvent) => {
-          toast.error('Failed to upload file')
+          toast.error('Failed to upload file');
 
-          let templist = fileUploadingList
-          let index = templist.findIndex(ele => ele.id === toastID)
+          let templist = fileUploadingList;
+          let index = templist.findIndex(ele => ele.id === toastID);
           if (index > -1) {
-            templist[index].percent = 100
-            templist[index].status = 'cancelled'
-            fileUploadingList = templist
-            setUploadingList(templist)
-            setProcessChange({})
+            templist[index].percent = 100;
+            templist[index].status = 'cancelled';
+            fileUploadingList = templist;
+            setUploadingList(templist);
+            setProcessChange({});
           }
-        })
+        });
 
         upload.addEventListener(UploadEvents.CANCEL, (e: UploadCancelEvent) => {
-          let templist = fileUploadingList
-          let index = templist.findIndex(ele => ele.id === toastID)
+          let templist = fileUploadingList;
+          let index = templist.findIndex(ele => ele.id === toastID);
           if (index > -1) {
-            templist[index].percent = 100
-            templist[index].status = 'cancelled'
-            fileUploadingList = templist
-            setUploadingList(templist)
-            setProcessChange({})
+            templist[index].percent = 100;
+            templist[index].status = 'cancelled';
+            fileUploadingList = templist;
+            setUploadingList(templist);
+            setProcessChange({});
           }
-        })
+        });
 
-        const fileStream = polyfillReadableStreamIfNeeded<Uint8Array>(file.stream())
+        const fileStream = polyfillReadableStreamIfNeeded<Uint8Array>(file.stream());
 
         try {
-          const stream = await upload.start()
-          console.log('uploading,,,,,,')
+          const stream = await upload.start();
+          console.log('uploading,,,,,,');
 
-          stream && fileStream.pipeThrough(stream as TransformStream<Uint8Array, Uint8Array> as any)
-          await upload.finish()
+          stream && fileStream.pipeThrough(stream as TransformStream<Uint8Array, Uint8Array> as any);
+          await upload.finish();
 
-          let templistdone = fileUploadingList
-          let index = templistdone.findIndex(ele => ele.id === toastID)
+          let templistdone = fileUploadingList;
+          let index = templistdone.findIndex(ele => ele.id === toastID);
           if (index > -1) {
-            templistdone[index].percent = 100
-            templistdone[index].status = 'completed'
-            fileUploadingList = templistdone
-            setUploadingList(templistdone)
-            setProcessChange({})
+            templistdone[index].percent = 100;
+            templistdone[index].status = 'completed';
+            fileUploadingList = templistdone;
+            setUploadingList(templistdone);
+            setProcessChange({});
           }
         } finally {
           // release();
 
-          curThreadNum--
-          const threadIndex = uploaderThread.findIndex(item => toastID === item.metadata?.size + file.name + item.path)
+          curThreadNum--;
+          const threadIndex = uploaderThread.findIndex(item => toastID === item.metadata?.size + file.name + item.path);
           if (threadIndex !== -1) {
-            delete uploaderThread[threadIndex]
-            uploaderThread.splice(threadIndex, 1)
+            delete uploaderThread[threadIndex];
+            uploaderThread.splice(threadIndex, 1);
           }
           if (curThreadNum < THREAD_COUNT && uploadingFileList.length > 0) {
-            const nextFile = uploadingFileList[0]
-            const nextFilePath = pathGenerator(nextFile, currentPath)
-            uploadFile(nextFile, nextFilePath)
+            const nextFile = uploadingFileList[0];
+            const nextFilePath = pathGenerator(nextFile, currentPath);
+            uploadFile(nextFile, nextFilePath);
           }
 
           if (curThreadNum === 0 && uploadingFileList.length === 0) {
-            setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)
+            setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
           }
         }
       } catch (e) {
-        curThreadNum--
+        curThreadNum--;
 
-        const threadIndex = uploaderThread.findIndex(item => toastID === item.metadata?.size + file.name + item.path)
+        const threadIndex = uploaderThread.findIndex(item => toastID === item.metadata?.size + file.name + item.path);
         if (threadIndex !== -1) {
-          delete uploaderThread[threadIndex]
-          uploaderThread.splice(threadIndex, 1)
+          delete uploaderThread[threadIndex];
+          uploaderThread.splice(threadIndex, 1);
         }
         if (curThreadNum < THREAD_COUNT && uploadingFileList.length > 0) {
-          const nextFile = uploadingFileList[0]
-          const nextFilePath = pathGenerator(nextFile, currentPath)
-          uploadFile(nextFile, nextFilePath)
+          const nextFile = uploadingFileList[0];
+          const nextFilePath = pathGenerator(nextFile, currentPath);
+          uploadFile(nextFile, nextFilePath);
         }
 
         if (curThreadNum === 0 && uploadingFileList.length === 0) {
-          setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)
+          setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
         }
       }
     },
@@ -617,90 +617,90 @@ const FileManagePage = ({ history }) => {
       updateFolderEntrySwitch,
       updateFileEntrySwitch
     ]
-  )
+  );
 
   const pathGenerator = React.useCallback((file, curPath) => {
     const folderPath = file.path
       ? curPath + relativePath(file.path)
-      : curPath + (file.webkitRelativePath !== '' ? '/' + relativePath(file.webkitRelativePath) : '')
-    return folderPath
-  }, [])
+      : curPath + (file.webkitRelativePath !== '' ? '/' + relativePath(file.webkitRelativePath) : '');
+    return folderPath;
+  }, []);
 
   const selectFiles = React.useCallback(
     async files => {
-      let addedFileList = []
+      let addedFileList = [];
 
-      isFileManaging()
+      isFileManaging();
 
       files.forEach(file => {
-        const path = pathGenerator(file, currentPath)
-        let toastID = file.size + file.name + path
+        const path = pathGenerator(file, currentPath);
+        let toastID = file.size + file.name + path;
         if (!fileUploadingList.find(item => item.id === toastID)) {
-          addedFileList.push({ id: toastID, fileName: file.name, percent: 0, status: 'active' })
-          uploadingFileList.push(file)
+          addedFileList.push({ id: toastID, fileName: file.name, percent: 0, status: 'active' });
+          uploadingFileList.push(file);
         }
-      })
+      });
 
       if (curThreadNum === 0) {
-        const orderChanged = addedFileList.slice(0, THREAD_COUNT - curThreadNum)
-        orderChanged.reverse()
-        addedFileList.splice(0, 10, ...orderChanged)
+        const orderChanged = addedFileList.slice(0, THREAD_COUNT - curThreadNum);
+        orderChanged.reverse();
+        addedFileList.splice(0, 10, ...orderChanged);
       }
 
-      fileUploadingList.push(...addedFileList)
-      setUploadingList(fileUploadingList)
-      setProcessChange({})
+      fileUploadingList.push(...addedFileList);
+      setUploadingList(fileUploadingList);
+      setProcessChange({});
 
       if (curThreadNum === 0 || curThreadNum < THREAD_COUNT) {
-        const file = uploadingFileList[0]
-        const path = pathGenerator(file, currentPath)
-        uploadFile(file, path)
+        const file = uploadingFileList[0];
+        const path = pathGenerator(file, currentPath);
+        uploadFile(file, path);
       }
-      OnfinishFileManaging()
+      OnfinishFileManaging();
     },
     [currentPath, uploadFile]
-  )
+  );
 
   const addNewFolder = React.useCallback(
     async folderName => {
-      setPageLoading(true)
+      setPageLoading(true);
       try {
-        setShowNewFolderModal(false)
-        const status = await accountSystem.addFolder(currentPath === '/' ? currentPath + folderName : currentPath + '/' + folderName)
-        toast(`Folder ${folderName} was successfully created.`)
-        setPageLoading(false)
-        setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)
+        setShowNewFolderModal(false);
+        const status = await accountSystem.addFolder(currentPath === '/' ? currentPath + folderName : currentPath + '/' + folderName);
+        toast(`Folder ${folderName} was successfully created.`);
+        setPageLoading(false);
+        setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
       } catch (e) {
-        setPageLoading(false)
-        toast.error(`An error occurred while creating new folder.`)
+        setPageLoading(false);
+        toast.error(`An error occurred while creating new folder.`);
       }
     },
     [accountSystem, currentPath, updateCurrentFolderSwitch]
-  )
+  );
 
   const fileShare = async (file: FileMetadata) => {
     try {
-      setShareMode('private')
-      setShareFile(file)
-      setOpenShareModal(true)
+      setShareMode('private');
+      setShareFile(file);
+      setOpenShareModal(true);
     } catch (e) {
-      toast.error(`An error occurred while sharing ${file.name}.`)
+      toast.error(`An error occurred while sharing ${file.name}.`);
     }
-  }
+  };
 
   const filePublicShare = async (file: FileMetadata) => {
     try {
-      setShareMode('public')
-      setShareFile(file)
-      setOpenShareModal(true)
+      setShareMode('public');
+      setShareFile(file);
+      setOpenShareModal(true);
     } catch (e) {
-      toast.error(`An error occurred while sharing ${file.name}.`)
+      toast.error(`An error occurred while sharing ${file.name}.`);
     }
-  }
+  };
 
   const fileDownload = React.useCallback(
     async (file: FileMetadata, isMultiple) => {
-      isFileManaging()
+      isFileManaging();
       if (file.private.handle) {
         try {
           const d = new OpaqueDownload({
@@ -712,35 +712,35 @@ const FileManagePage = ({ history }) => {
             },
             name: file.name,
             fileMeta: file
-          })
+          });
 
           // side effects
-          bindDownloadToAccountSystem(accountSystem, d)
+          bindDownloadToAccountSystem(accountSystem, d);
 
-          const fileStream = polyfillWritableStreamIfNeeded<Uint8Array>(streamsaver.createWriteStream(file.name, { size: file.size }))
-          const s = await d.start()
+          const fileStream = polyfillWritableStreamIfNeeded<Uint8Array>(streamsaver.createWriteStream(file.name, { size: file.size }));
+          const s = await d.start();
 
           d.finish().then(() => {
-            console.log('finish')
-            OnfinishFileManaging()
-          })
+            console.log('finish');
+            OnfinishFileManaging();
+          });
 
           // more optimized
           if (s.pipeTo && !isMultiple) {
-            console.log('pipe')
+            console.log('pipe');
             s.pipeTo(fileStream as WritableStream<Uint8Array>)
               .then(() => {
-                setPageLoading(false)
-                console.log('done')
+                setPageLoading(false);
+                console.log('done');
               })
               .catch(err => {
-                console.log(err)
-                throw err
-              })
+                console.log(err);
+                throw err;
+              });
           } else if (isMultiple && s.getReader) {
-            let blobArray = new Uint8Array([])
+            let blobArray = new Uint8Array([]);
 
-            const reader = s.getReader()
+            const reader = s.getReader();
             const pump = () =>
               reader.read().then(({ done, value }) => {
                 if (done) {
@@ -751,31 +751,31 @@ const FileManagePage = ({ history }) => {
                       type: file.type,
                       data: blobArray
                     }
-                  ])
+                  ]);
                 } else {
-                  blobArray = new Uint8Array([...blobArray, ...value])
-                  pump()
+                  blobArray = new Uint8Array([...blobArray, ...value]);
+                  pump();
                 }
-              })
-            pump()
+              });
+            pump();
           }
         } catch (e) {
-          console.error(e)
-          toast.error(`An error occurred while downloading ${file.name}.`)
+          console.error(e);
+          toast.error(`An error occurred while downloading ${file.name}.`);
         }
       } else {
-        console.error('Public download is not yet available')
-        toast.error('Public download is not yet available')
+        console.error('Public download is not yet available');
+        toast.error('Public download is not yet available');
       }
     },
     [cryptoMiddleware, netMiddleware, storageNode]
-  )
+  );
 
   const cancelPublicShare = React.useCallback(
     async file => {
-      const curFileMetadata = await accountSystem.getFileMetadata(file.location)
+      const curFileMetadata = await accountSystem.getFileMetadata(file.location);
       if (!curFileMetadata.public.location) {
-        return
+        return;
       }
       const fileSystemShare = new FileSystemShare({
         shortLink: curFileMetadata.public.shortLinks[0],
@@ -786,18 +786,18 @@ const FileManagePage = ({ history }) => {
           net: netMiddleware,
           storageNode: storageNode
         }
-      })
+      });
 
-      bindPublicShareToAccountSystem(accountSystem, fileSystemShare)
+      bindPublicShareToAccountSystem(accountSystem, fileSystemShare);
 
-      await fileSystemShare.publicShareRevoke()
+      await fileSystemShare.publicShareRevoke();
     },
     [accountSystem, cryptoMiddleware, netMiddleware, storageNode]
-  )
+  );
 
   const deleteFile = React.useCallback(
     async (file: FileMetadata) => {
-      isFileManaging()
+      isFileManaging();
       try {
         const fso = new FileSystemObject({
           handle: file.private.handle,
@@ -807,21 +807,21 @@ const FileManagePage = ({ history }) => {
             crypto: cryptoMiddleware,
             storageNode: storageNode
           }
-        })
-        bindFileSystemObjectToAccountSystem(accountSystem, fso)
-        await fso.delete()
-        setFileToDelete(null)
+        });
+        bindFileSystemObjectToAccountSystem(accountSystem, fso);
+        await fso.delete();
+        setFileToDelete(null);
       } catch (e) {
-        setFileToDelete(null)
-        toast.error(`An error occurred while deleting ${file.name}.`)
+        setFileToDelete(null);
+        toast.error(`An error occurred while deleting ${file.name}.`);
       }
     },
     [accountSystem, updateCurrentFolderSwitch]
-  )
+  );
 
   const deleteMultiFile = React.useCallback(
     async (files: FileMetadata[]) => {
-      isFileManaging()
+      isFileManaging();
       try {
         const fso = new FileSystemObject({
           handle: files[0].private.handle,
@@ -831,359 +831,359 @@ const FileManagePage = ({ history }) => {
             crypto: cryptoMiddleware,
             storageNode: storageNode
           }
-        })
-        bindFileSystemObjectToAccountSystem(accountSystem, fso)
-        await accountSystem.removeMultiFile(files.map(item => item.location))
-        await fso.deleteMultiFile(files)
-        setFileToDelete(null)
+        });
+        bindFileSystemObjectToAccountSystem(accountSystem, fso);
+        await accountSystem.removeMultiFile(files.map(item => item.location));
+        await fso.deleteMultiFile(files);
+        setFileToDelete(null);
       } catch (e) {
-        await accountSystem.removeMultiFile(files.map(item => item.location))
-        setFileToDelete(null)
-        toast.error(`An error occurred while deleting selected files.`)
+        await accountSystem.removeMultiFile(files.map(item => item.location));
+        setFileToDelete(null);
+        toast.error(`An error occurred while deleting selected files.`);
       }
     },
     [accountSystem, updateCurrentFolderSwitch]
-  )
+  );
 
   const deleteFolder = React.useCallback(
     async (folder: FoldersIndexEntry) => {
       try {
-        const folders = await accountSystem.getFoldersInFolderByLocation(folder.location)
-        const folderMeta = await accountSystem.getFolderMetadataByLocation(folder.location)
+        const folders = await accountSystem.getFoldersInFolderByLocation(folder.location);
+        const folderMeta = await accountSystem.getFolderMetadataByLocation(folder.location);
 
-        const fileMetaListInFolder = []
+        const fileMetaListInFolder = [];
         for (const file of folderMeta.files) {
-          const metaFile = await accountSystem.getFileIndexEntryByFileMetadataLocation(file.location)
-          fileMetaListInFolder.push(metaFile)
+          const metaFile = await accountSystem.getFileIndexEntryByFileMetadataLocation(file.location);
+          fileMetaListInFolder.push(metaFile);
         }
 
-        fileMetaListInFolder.length > 0 && (await deleteMultiFile(fileMetaListInFolder))
+        fileMetaListInFolder.length > 0 && (await deleteMultiFile(fileMetaListInFolder));
 
         for (const folderItem of folders) {
-          await deleteFolder(folderItem)
+          await deleteFolder(folderItem);
         }
 
-        await accountSystem.removeFolderByLocation(folder.location)
+        await accountSystem.removeFolderByLocation(folder.location);
       } catch (e) {
-        console.error(e)
-        setFolderToDelete(null)
-        toast.error(`An error occurred while deleting Folder ${folder.path}.`)
+        console.error(e);
+        setFolderToDelete(null);
+        toast.error(`An error occurred while deleting Folder ${folder.path}.`);
       }
     },
     [accountSystem]
-  )
+  );
 
   const calculateTotalItems = async (folder: FoldersIndexEntry) => {
     try {
-      const folders = await accountSystem.getFoldersInFolderByPath(folder.path)
-      const folderMeta = await accountSystem.getFolderMetadataByPath(folder.path)
+      const folders = await accountSystem.getFoldersInFolderByPath(folder.path);
+      const folderMeta = await accountSystem.getFolderMetadataByPath(folder.path);
 
-      let files = folderMeta.files?.length
+      let files = folderMeta.files?.length;
 
-      if (!folders.length) return files
+      if (!folders.length) return files;
 
-      for (const folderItem of folders) files += await calculateTotalItems(folderItem)
+      for (const folderItem of folders) files += await calculateTotalItems(folderItem);
 
-      return files
+      return files;
     } catch (e) {
-      console.error(e)
+      console.error(e);
     }
-  }
+  };
 
   const handleOpenRenameModal = React.useCallback((item, isFile) => {
-    setOldName(item.name)
-    if (isFile) setFileToRename(item)
-    else setFolderToRename(item)
-    setShowRenameModal(true)
-  }, [])
+    setOldName(item.name);
+    if (isFile) setFileToRename(item);
+    else setFolderToRename(item);
+    setShowRenameModal(true);
+  }, []);
 
   const handleChangeRename = React.useCallback(
     async rename => {
-      setPageLoading(true)
+      setPageLoading(true);
       try {
-        setShowRenameModal(false)
-        setOldName(null)
+        setShowRenameModal(false);
+        setOldName(null);
         if (fileToRename) {
-          const status = await accountSystem.renameFile(fileToRename.location, rename)
-          toast(`${fileToRename.name} was renamed successfully.`)
+          const status = await accountSystem.renameFile(fileToRename.location, rename);
+          toast(`${fileToRename.name} was renamed successfully.`);
         }
         if (folderToRename) {
-          const status = await accountSystem.renameFolder(folderToRename.path, rename)
-          toast(`${folderToRename.path} was renamed successfully.`)
+          const status = await accountSystem.renameFolder(folderToRename.path, rename);
+          toast(`${folderToRename.path} was renamed successfully.`);
         }
-        setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)
+        setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
       } catch (e) {
-        console.error(e)
-        toast.error(`An error occurred while rename ${rename}.`)
+        console.error(e);
+        toast.error(`An error occurred while rename ${rename}.`);
       } finally {
-        setFolderToRename(null)
-        setFileToRename(null)
+        setFolderToRename(null);
+        setFileToRename(null);
       }
     },
     [accountSystem, fileToRename, folderToRename, updateCurrentFolderSwitch]
-  )
+  );
 
   const handleDeleteItem = React.useCallback((item: FileMetadata | FoldersIndexEntry, isFile: boolean) => {
-    if (isFile) setFileToDelete(item as FileMetadata)
-    else setFolderToDelete(item as FoldersIndexEntry)
-    setShowDeleteModal(true)
-  }, [])
+    if (isFile) setFileToDelete(item as FileMetadata);
+    else setFolderToDelete(item as FoldersIndexEntry);
+    setShowDeleteModal(true);
+  }, []);
 
   const handleDeleteBrokenFile = React.useCallback(
     async (location: Uint8Array) => {
       await accountSystem._removeBrokenFile(currentPath, location).catch(() => {
-        toast.error('Failed to remove broken file')
-        throw new Error('Error remove file metdata')
-      })
-      setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)
+        toast.error('Failed to remove broken file');
+        throw new Error('Error remove file metdata');
+      });
+      setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
     },
     [accountSystem, currentPath]
-  )
+  );
 
   const handleDeleteBrokenFolder = React.useCallback(
     async (location: Uint8Array) => {
       await accountSystem._removeBrokenFolder(location).catch(() => {
-        toast.error('Failed to remove broken folder')
-        throw new Error('Error remove broken folder')
-      })
-      setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)
+        toast.error('Failed to remove broken folder');
+        throw new Error('Error remove broken folder');
+      });
+      setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
     },
     [accountSystem]
-  )
+  );
 
   const handleDelete = async () => {
-    setPageLoading(true)
-    setShowDeleteModal(false)
+    setPageLoading(true);
+    setShowDeleteModal(false);
     if (selectedFiles.length === 0) {
       if (folderToDelete) {
-        isFileManaging()
-        await deleteFolder(folderToDelete)
-        setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)
-        setFolderToDelete(null)
-        OnfinishFileManaging()
+        isFileManaging();
+        await deleteFolder(folderToDelete);
+        setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
+        setFolderToDelete(null);
+        OnfinishFileManaging();
       } else {
-        await deleteFile(fileToDelete)
-        OnfinishFileManaging()
-        setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)
+        await deleteFile(fileToDelete);
+        OnfinishFileManaging();
+        setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
       }
     } else {
-      await deleteMultiFile(selectedFiles)
-      OnfinishFileManaging()
-      setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)
-      setSelectedFiles([])
+      await deleteMultiFile(selectedFiles);
+      OnfinishFileManaging();
+      setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
+      setSelectedFiles([]);
     }
-  }
+  };
 
   const onDrop = React.useCallback(
     files => {
-      selectFiles(files)
+      selectFiles(files);
     },
     [currentPath]
-  )
+  );
 
   const { isDragActive, fileRejections, getRootProps } = useDropzone({
     onDrop,
     minSize: 0,
     multiple: true,
     disabled: isAccountExpired
-  })
+  });
 
   const handleSelectFolder = React.useCallback(
     folder => {
-      if (folder.path !== currentPath) setCurrentPath(folder.path)
+      if (folder.path !== currentPath) setCurrentPath(folder.path);
     },
     [currentPath]
-  )
+  );
   const handleSelectFile = file => {
-    let temp = selectedFiles.slice()
-    let i = selectedFiles.findIndex(item => arraysEqual(item.location, file.location))
+    let temp = selectedFiles.slice();
+    let i = selectedFiles.findIndex(item => arraysEqual(item.location, file.location));
     if (i !== -1) {
-      temp.splice(i, 1)
+      temp.splice(i, 1);
     } else {
-      temp = [...selectedFiles, file]
+      temp = [...selectedFiles, file];
     }
-    setSelectedFiles(temp)
-  }
+    setSelectedFiles(temp);
+  };
   const onSelectAll = async e => {
-    e.stopPropagation()
+    e.stopPropagation();
     if (selectedFiles.length) {
-      setSelectedFiles([])
+      setSelectedFiles([]);
     } else {
-      let fileMetaValues = fileMetaList
+      let fileMetaValues = fileMetaList;
 
       if (!fileMetaList) {
-        await getFolderMetaList()
-        fileMetaValues = await getFileMetaList()
+        await getFolderMetaList();
+        fileMetaValues = await getFileMetaList();
       }
 
-      setSelectedFiles(fileMetaValues.filter(item => 'uploaded' in item))
+      setSelectedFiles(fileMetaValues.filter(item => 'uploaded' in item));
     }
-  }
+  };
   const getSelectedFileSize = () => {
-    let size = 0
-    selectedFiles.map(item => (size = size + (item.size || 0)))
-    return formatBytes(size)
-  }
+    let size = 0;
+    selectedFiles.map(item => (size = size + (item.size || 0)));
+    return formatBytes(size);
+  };
   const handleMultiDownload = async () => {
-    setFilesForZip([])
-    setPageLoading(true)
+    setFilesForZip([]);
+    setPageLoading(true);
     for (const file of selectedFiles) {
-      await fileDownload(file, selectedFiles.length > 1 ? true : false)
+      await fileDownload(file, selectedFiles.length > 1 ? true : false);
     }
-    OnfinishFileManaging()
-  }
+    OnfinishFileManaging();
+  };
   const handleMultiDelete = () => {
-    setShowDeleteModal(true)
-  }
+    setShowDeleteModal(true);
+  };
 
   const compareName = (a, b, mode, type) => {
-    var nameA = type === 'file' ? a.name.toUpperCase() : a.path.toUpperCase()
-    var nameB = type === 'file' ? b.name.toUpperCase() : b.path.toUpperCase()
+    var nameA = type === 'file' ? a.name.toUpperCase() : a.path.toUpperCase();
+    var nameB = type === 'file' ? b.name.toUpperCase() : b.path.toUpperCase();
     if (nameA < nameB) {
-      return mode === 'down' ? 1 : -1
+      return mode === 'down' ? 1 : -1;
     }
     if (nameA > nameB) {
-      return mode === 'down' ? -1 : 1
+      return mode === 'down' ? -1 : 1;
     }
-    return 0
-  }
+    return 0;
+  };
 
   const compareType = (a, b, mode, type) => {
-    const sourceList = type === 'file' ? fileMetaList : folderMetaList
-    const Ameta = sourceList.find(meta => bytesToHex(meta.location) === bytesToHex(a.location))
-    const Bmeta = sourceList.find(meta => bytesToHex(meta.location) === bytesToHex(b.location))
+    const sourceList = type === 'file' ? fileMetaList : folderMetaList;
+    const Ameta = sourceList.find(meta => bytesToHex(meta.location) === bytesToHex(a.location));
+    const Bmeta = sourceList.find(meta => bytesToHex(meta.location) === bytesToHex(b.location));
 
-    var nameA = type === 'file' ? (Ameta.public?.location ? 'PUBLIC' : 'PRIVATE') : Ameta.path.toUpperCase()
-    var nameB = type === 'file' ? (Bmeta.public?.location ? 'PUBLIC' : 'PRIVATE') : Bmeta.path.toUpperCase()
+    var nameA = type === 'file' ? (Ameta.public?.location ? 'PUBLIC' : 'PRIVATE') : Ameta.path.toUpperCase();
+    var nameB = type === 'file' ? (Bmeta.public?.location ? 'PUBLIC' : 'PRIVATE') : Bmeta.path.toUpperCase();
     if (nameA < nameB) {
-      return mode === 'down' ? 1 : -1
+      return mode === 'down' ? 1 : -1;
     }
     if (nameA > nameB) {
-      return mode === 'down' ? -1 : 1
+      return mode === 'down' ? -1 : 1;
     }
-    return 0
-  }
+    return 0;
+  };
 
   const compareDate = (a, b, mode, type) => {
-    const sourceList = type === 'file' ? fileMetaList : folderMetaList
-    const Ameta = sourceList.find(meta => bytesToHex(meta.location) === bytesToHex(a.location))
-    const Bmeta = sourceList.find(meta => bytesToHex(meta.location) === bytesToHex(b.location))
+    const sourceList = type === 'file' ? fileMetaList : folderMetaList;
+    const Ameta = sourceList.find(meta => bytesToHex(meta.location) === bytesToHex(a.location));
+    const Bmeta = sourceList.find(meta => bytesToHex(meta.location) === bytesToHex(b.location));
 
     if (moment(Ameta.modified).isBefore(moment(Bmeta.modified))) {
-      return mode === 'down' ? 1 : -1
+      return mode === 'down' ? 1 : -1;
     }
     if (moment(Ameta.modified).isAfter(moment(Bmeta.modified))) {
-      return mode === 'down' ? -1 : 1
+      return mode === 'down' ? -1 : 1;
     }
-    return 0
-  }
+    return 0;
+  };
 
   const compareSize = (a, b, mode, type) => {
-    const sourceList = type === 'file' ? fileMetaList : folderMetaList
-    const Ameta = sourceList.find(meta => bytesToHex(meta.location) === bytesToHex(a.location))
-    const Bmeta = sourceList.find(meta => bytesToHex(meta.location) === bytesToHex(b.location))
+    const sourceList = type === 'file' ? fileMetaList : folderMetaList;
+    const Ameta = sourceList.find(meta => bytesToHex(meta.location) === bytesToHex(a.location));
+    const Bmeta = sourceList.find(meta => bytesToHex(meta.location) === bytesToHex(b.location));
 
     if (Ameta.size < Bmeta.size) {
-      return mode === 'down' ? 1 : -1
+      return mode === 'down' ? 1 : -1;
     }
     if (Ameta.size > Bmeta.size) {
-      return mode === 'down' ? -1 : 1
+      return mode === 'down' ? -1 : 1;
     }
-    return 0
-  }
+    return 0;
+  };
 
   const getFileMetaList = React.useCallback(async () => {
-    setPageLoading(true)
-    loadingFlagCnt++
+    setPageLoading(true);
+    loadingFlagCnt++;
     const metaList = fileList.map(async file => {
       return await accountSystem
         ._getFileMetadata(file.location)
         .then(f => {
-          return f
+          return f;
         })
         .catch(() => {
-          return file
-        })
-    })
-    const tmp = await Promise.all(metaList)
-    setFileMetaList(tmp)
-    loadingFlagCnt--
-    loadingFlagCnt === 0 && setPageLoading(false)
-    return tmp
-  }, [fileList])
+          return file;
+        });
+    });
+    const tmp = await Promise.all(metaList);
+    setFileMetaList(tmp);
+    loadingFlagCnt--;
+    loadingFlagCnt === 0 && setPageLoading(false);
+    return tmp;
+  }, [fileList]);
 
   const getFolderMetaList = React.useCallback(async () => {
-    setPageLoading(true)
-    loadingFlagCnt++
+    setPageLoading(true);
+    loadingFlagCnt++;
     const metaList = folderList.map(async folder => {
       return await accountSystem
         ._getFolderMetadataByLocation(folder.location)
         .then(f => {
-          return f
+          return f;
         })
         .catch(() => {
-          return folder
-        })
-    })
-    const tmp = await Promise.all(metaList)
-    setFolderMetaList(tmp)
-    loadingFlagCnt--
-    loadingFlagCnt === 0 && setPageLoading(false)
-  }, [folderList])
+          return folder;
+        });
+    });
+    const tmp = await Promise.all(metaList);
+    setFolderMetaList(tmp);
+    loadingFlagCnt--;
+    loadingFlagCnt === 0 && setPageLoading(false);
+  }, [folderList]);
 
   React.useEffect(() => {
     if (folderMetaList && fileMetaList && sortable.column !== 'null') {
-      const { column, method } = sortable
+      const { column, method } = sortable;
 
       switch (column) {
         case 'name':
-          setFileList([...fileList].sort((a, b) => compareName(a, b, method, 'file')))
-          setFolderList([...folderList].sort((a, b) => compareName(a, b, method, 'folder')))
-          break
+          setFileList([...fileList].sort((a, b) => compareName(a, b, method, 'file')));
+          setFolderList([...folderList].sort((a, b) => compareName(a, b, method, 'folder')));
+          break;
         case 'type':
-          setFileList([...fileList].sort((a, b) => compareType(a, b, method, 'file')))
-          break
+          setFileList([...fileList].sort((a, b) => compareType(a, b, method, 'file')));
+          break;
         case 'created':
-          setFileList([...fileList].sort((a, b) => compareDate(a, b, method, 'file')))
-          setFolderList([...folderList].sort((a, b) => compareDate(a, b, method, 'folder')))
-          break
+          setFileList([...fileList].sort((a, b) => compareDate(a, b, method, 'file')));
+          setFolderList([...folderList].sort((a, b) => compareDate(a, b, method, 'folder')));
+          break;
         case 'size':
-          setFileList([...fileList].sort((a, b) => compareSize(a, b, method, 'file')))
-          setFolderList([...folderList].sort((a, b) => compareSize(a, b, method, 'folder')))
-          break
+          setFileList([...fileList].sort((a, b) => compareSize(a, b, method, 'file')));
+          setFolderList([...folderList].sort((a, b) => compareSize(a, b, method, 'folder')));
+          break;
         default:
-          break
+          break;
       }
     }
-  }, [fileMetaList, folderMetaList, sortable])
+  }, [fileMetaList, folderMetaList, sortable]);
 
   const handleSortTable = async (mode, method) => {
     if (!folderMetaList && !fileMetaList) {
-      await getFolderMetaList()
-      await getFileMetaList()
+      await getFolderMetaList();
+      await getFileMetaList();
     }
-    setSortable({ column: mode, method })
-  }
+    setSortable({ column: mode, method });
+  };
 
-  const lastFour = localStorage.getItem('key')?.slice(-4)
+  const lastFour = localStorage.getItem('key')?.slice(-4);
 
   const keyDownHandler = e => {
     if (e.keyCode === 224 || e.keyCode === 91 || e.keyCode === 17) {
-      e.preventDefault()
-      e.stopPropagation()
-      localStorage.setItem('cmd_status', 'true')
+      e.preventDefault();
+      e.stopPropagation();
+      localStorage.setItem('cmd_status', 'true');
     }
 
     if (e.keyCode === 65 && localStorage.cmd_status === 'true') {
-      e.preventDefault()
-      e.stopPropagation()
-      onSelectAll(e)
+      e.preventDefault();
+      e.stopPropagation();
+      onSelectAll(e);
     }
-  }
+  };
 
   const keyUpHandler = e => {
-    if (e.keyCode === 224 || e.keyCode === 91 || e.keyCode === 17) localStorage.setItem('cmd_status', 'false')
-  }
+    if (e.keyCode === 224 || e.keyCode === 91 || e.keyCode === 17) localStorage.setItem('cmd_status', 'false');
+  };
 
   return (
     <div className="page" onKeyDown={e => keyDownHandler(e)} onKeyUp={e => keyUpHandler(e)}>
@@ -1201,12 +1201,12 @@ const FileManagePage = ({ history }) => {
         <FileShareModal
           open={openShareModal}
           onClose={() => {
-            setOpenShareModal(false)
-            setShareFile(null)
+            setOpenShareModal(false);
+            setShareFile(null);
           }}
           doRefresh={() => {
-            setFileList([])
-            setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)
+            setFileList([]);
+            setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
           }}
           file={shareFile}
           accountSystem={accountSystem}
@@ -1262,11 +1262,11 @@ const FileManagePage = ({ history }) => {
                   variant="default"
                   className="account-button"
                   onClick={() => {
-                    navigator.clipboard.writeText(localStorage.getItem('key'))
+                    navigator.clipboard.writeText(localStorage.getItem('key'));
                     toast.info('Copied to Clipboard', {
                       autoClose: 1500,
                       position: toast.POSITION.TOP_CENTER
-                    })
+                    });
                   }}
                 >
                   <span>Account</span>
@@ -1432,9 +1432,9 @@ const FileManagePage = ({ history }) => {
           <Alert.Link
             onClick={() => {
               if (alertLink === 'plans') {
-                history.push('/plans')
+                history.push('/plans');
               } else {
-                setShowSignUpModal(true)
+                setShowSignUpModal(true);
               }
             }}
           >
@@ -1475,7 +1475,7 @@ const FileManagePage = ({ history }) => {
                   <span
                     className="item-icon table-view"
                     onClick={() => {
-                      setTableView(true)
+                      setTableView(true);
                     }}
                   ></span>
                 </div>
@@ -1511,8 +1511,8 @@ const FileManagePage = ({ history }) => {
                           handleOpenRenameModal={handleOpenRenameModal}
                           handleDeleteBrokenFile={handleDeleteBrokenFile}
                           downloadItem={async f => {
-                            await fileDownload(f, false)
-                            OnfinishFileManaging()
+                            await fileDownload(f, false);
+                            OnfinishFileManaging();
                           }}
                           handleSelectFile={handleSelectFile}
                           selectedFiles={selectedFiles}
@@ -1589,7 +1589,7 @@ const FileManagePage = ({ history }) => {
                           <span
                             className="item-icon grid-view"
                             onClick={() => {
-                              setTableView(false)
+                              setTableView(false);
                             }}
                           ></span>
                         </div>
@@ -1625,8 +1625,8 @@ const FileManagePage = ({ history }) => {
                             handleDeleteBrokenFile={handleDeleteBrokenFile}
                             handleOpenRenameModal={handleOpenRenameModal}
                             downloadItem={async f => {
-                              await fileDownload(f)
-                              OnfinishFileManaging()
+                              await fileDownload(f);
+                              OnfinishFileManaging();
                             }}
                             handleSelectFile={handleSelectFile}
                             selectedFiles={selectedFiles}
@@ -1665,9 +1665,9 @@ const FileManagePage = ({ history }) => {
       {uploadingList.length > 0 && (
         <UploadingNotification
           setUploadingList={() => {
-            fileUploadingList = []
-            setUploadingList([])
-            setProcessChange({})
+            fileUploadingList = [];
+            setUploadingList([]);
+            setProcessChange({});
           }}
           notifications={uploadingList}
           uploadFinish={() => setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)}
@@ -1676,27 +1676,27 @@ const FileManagePage = ({ history }) => {
         />
       )}
     </div>
-  )
-}
+  );
+};
 
 const UploadForm = ({ children, onSelected, isDirectory, showWarningModal, isAccountExpired }) => {
-  const uploadFileInput = React.useRef<HTMLInputElement>(null)
-  const uploadForm = React.useRef<HTMLFormElement>(null)
+  const uploadFileInput = React.useRef<HTMLInputElement>(null);
+  const uploadForm = React.useRef<HTMLFormElement>(null);
 
   const directory = {
     directory: '',
     webkitdirectory: '',
     mozkitdirectory: ''
-  }
+  };
 
   const selectFiles = () => {
-    let files = Array.from(uploadFileInput.current!.files || [])
-    const filesLength = files.length
-    uploadForm.current!.reset()
+    let files = Array.from(uploadFileInput.current!.files || []);
+    const filesLength = files.length;
+    uploadForm.current!.reset();
     if (files.length > 0) {
-      onSelected(files)
+      onSelected(files);
     }
-  }
+  };
 
   return (
     <div onClick={() => uploadFileInput.current!.click()}>
@@ -1713,15 +1713,15 @@ const UploadForm = ({ children, onSelected, isDirectory, showWarningModal, isAcc
         />
       </form>
     </div>
-  )
-}
+  );
+};
 
 const FileManagePageWrapper = ({ history }) => {
   return (
     <DndProvider backend={HTML5Backend}>
       <FileManagePage history={history} />
     </DndProvider>
-  )
-}
+  );
+};
 
-export default FileManagePageWrapper
+export default FileManagePageWrapper;
