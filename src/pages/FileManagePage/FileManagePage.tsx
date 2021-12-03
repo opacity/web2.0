@@ -70,6 +70,7 @@ const copy = require("../../assets/copy.svg");
 streamsaver.mitm = "/resources/streamsaver/mitm.html";
 Object.assign(streamsaver, { WritableStream });
 import { OPACITY_DRIVE_FOR_MAC, OPACITY_DRIVE_FOR_WINDOWS } from "../../config";
+import { browserName, browserVersion, isChrome, isFirefox, isIE, isOpera, isSafari } from 'react-device-detect'
 
 let logoutTimeout;
 let fileUploadingList = [];
@@ -474,6 +475,30 @@ const FileManagePage = ({ history }) => {
   const uploadFile = React.useCallback(
     async (file: File, path: string) => {
       let toastID = file.size + file.name + path;
+      if (isChrome) {
+        if (file.size > 4294967296) {
+          toast.warning(`File size is too large, this ${browserName} ${browserVersion} can not upload more than 4Gbyte`);
+          setShowWarningModal(true);
+        }
+      } else if (isFirefox) {
+        if (file.size > 2147483648) {
+          toast.warning(`File size is too large, this ${browserName} ${browserVersion} can not upload more than 2Gbyte`);
+          setShowWarningModal(true);
+        }
+      } else if (isOpera && browserVersion === '10') {
+        if (file.size > 4294967296) {
+          toast.warning(`File size is too large, this ${browserName} ${browserVersion} can not upload more than 4Gbyte`);
+          setShowWarningModal(true);
+        }
+      } else if (isIE) {
+        if (file.size > 2147483648) {
+          toast.warning(`File size is too large, this ${browserName} ${browserVersion} can not upload more than 2Gbyte`);
+          setShowWarningModal(true);
+        }
+      } else {
+        setShowWarningModal(false);
+        return;
+      }
       try {
         let index = fileUploadingList.findIndex((ele) => ele.id === toastID);
         if (index > -1 && fileUploadingList[index].status === "cancelled") {
