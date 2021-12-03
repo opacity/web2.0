@@ -69,6 +69,7 @@ const copy = require("../../assets/copy.svg");
 
 streamsaver.mitm = "/resources/streamsaver/mitm.html";
 Object.assign(streamsaver, { WritableStream });
+import { OPACITY_DRIVE_FOR_MAC, OPACITY_DRIVE_FOR_WINDOWS } from "../../config";
 
 let logoutTimeout;
 let fileUploadingList = [];
@@ -1314,6 +1315,16 @@ const FileManagePage = ({ history }) => {
                   </ul>
                 )}
               </TreeMenu>
+            </div>
+            <div className="download-section">
+              <Button variant="primary" className="position-mac" href={OPACITY_DRIVE_FOR_WINDOWS}>
+                <span className="item-icon file-download"></span>
+                <span>Download 2,0 ( Mac)</span>
+              </Button>
+              <Button variant="primary" className="position-window" href={OPACITY_DRIVE_FOR_MAC}>
+                <span className="item-icon file-download"></span>
+                <span>Download 2,0 ( Win )</span>
+              </Button>
             </div>
           </div>
           <div className="side-bar-footer">
