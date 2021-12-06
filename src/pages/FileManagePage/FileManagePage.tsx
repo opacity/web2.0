@@ -1317,11 +1317,11 @@ const FileManagePage = ({ history }) => {
               </TreeMenu>
             </div>
             <div className="download-section">
-              <Button variant="primary" className="position-mac" href={OPACITY_DRIVE_FOR_WINDOWS}>
+              <Button variant="primary" className="position-mac" href={OPACITY_DRIVE_FOR_MAC}>
                 <span className="item-icon file-download"></span>
                 <span>Download 2,0 ( Mac)</span>
               </Button>
-              <Button variant="primary" className="position-window" href={OPACITY_DRIVE_FOR_MAC}>
+              <Button variant="primary" className="position-window" href={OPACITY_DRIVE_FOR_WINDOWS}>
                 <span className="item-icon file-download"></span>
                 <span>Download 2,0 ( Win )</span>
               </Button>
