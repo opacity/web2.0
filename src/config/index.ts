@@ -24,8 +24,8 @@ const PROTOCOL =
     ? "http"
     : IS_DEV &&
       process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.BETA
-      ? "http"
-      : "http";
+      ? "https"
+      : "https";
 
 export const STRIPE_API_KEY =
   process.env.STORAGE_NODE_VERSION == STORAGE_NODE_VERSION.PRODUCTION
@@ -49,10 +49,8 @@ export const PUBLIC_SHARE_URL =
 
 export const EXCHANGE_LINK = "https://www.kucoin.com/trade/OPCT-BTC";
 
-// export const DEFAULT_STORAGE_NODE_V1 = "broker-1.opacitynodes.com";
-// export const DEFAULT_STORAGE_NODE_V2 = "beta-broker.opacitynodes.com";
-export const DEFAULT_STORAGE_NODE_V1 = "18.188.20.76";
-export const DEFAULT_STORAGE_NODE_V2 = "18.188.20.76";
+export const DEFAULT_STORAGE_NODE_V1 = "broker-1.opacitynodes.com";
+export const DEFAULT_STORAGE_NODE_V2 = "beta-broker.opacitynodes.com";
 
 export const DEFAULT_STORAGE_NODE_IP =
   IS_LOCAL
