@@ -35,7 +35,7 @@
     }
   }
   .navbar-nav {
-    padding: 30px 30px;
+    padding: 10px 30px 10px 30px;
     border-top: 1px solid rgba(160, 194, 255, 0.59);
     border-bottom: 1px solid rgba(160, 194, 255, 0.59);
     margin-left: 0 !important;
@@ -44,7 +44,7 @@
     .nav-item {
       flex-direction: row;
       justify-content: initial;
-      padding: 15px 0;
+      padding: 14px 0;
       cursor: pointer;
       .nav-icon {
         width: 30px;
@@ -164,28 +164,58 @@
   border-top: 1px solid rgba(160, 194, 255, 0.59);
   margin-bottom: 70px;
   .position-mac {
-    margin-left: 60px;
+    margin-left: 40px;
     margin-top: 20px;
-    width: 210px;
+    width: 240px;
   }
   .position-window {
-    margin-left: 60px;
-    margin-top: 10px;
-    width: 210px;
+    margin-left: 40px;
+    margin-top: 15px;
+    width: 240px;
   }
   .item-icon {
     background-color: #eaf1ff;
-    width: 30px;
-    height: 30px;
+    width: 20px;
+    height: 20px;
     &.file-download {
       mask: url("../../assets/direct-download1.svg") no-repeat center;
       -webkit-mask: url("../../assets/direct-download1.svg") no-repeat center;
       -webkit-mask-size: contain;
-      width: 40px;
-      height: 23px;
+      // width: 40px;
+      // height: 23px;
+    }
+    &.mac-item {
+      margin-right: 10px;
+    }
+    &.win-item {
+      margin-left: 5px;
     }
   }
 }
+
+#mac-tooltip > .tooltip-inner {
+  background: #062e56;
+}
+#mac-tooltip > .tooltip-arrow {
+  border-top: 5px solid #062e56;
+}
+#win-tooltip > .tooltip-inner {
+  background: #062e56;
+}
+#win-tooltip > .tooltip-arrow {
+  border-top: 5px solid #062e56;
+}
+.tooltip-header {
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}
+.tooltip-contet {
+  color: white;
+  font-size: 10px;
+  text-align: justify;
+}
+
 // tree style
 .folder-tree {
   padding: 45px 30px;
@@ -281,7 +311,7 @@
 }
 
 .account-info {
-  padding: 20px;
+  padding: 0px 20px 10px 20px;
   font-size: 15px;
   color: #585858;
 
