@@ -1,7 +1,7 @@
 [submodule "ts-client-library"]
 	path = ts-client-library
 	url = https://github.com/opacity/ts-client-library.git
-	branch = debug/cors
+	branch = main
 [submodule "opaque"]
 	path = opaque
 	url = https://github.com/opacity/opaque
