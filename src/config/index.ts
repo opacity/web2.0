@@ -18,6 +18,7 @@ export const CONTRACT_ADDRESS =
     ? "0x50D97A13bEa3d8D722f72C53e93Ed1D6A1Af60d3" // Goerli
     : "0xDb05EA0877A2622883941b939f0bb11d1ac7c400" // Mainnet
 
+const PORT = IS_LOCAL ? ":3000" : ""
 
 const PROTOCOL =
   IS_LOCAL
@@ -50,7 +51,7 @@ export const PUBLIC_SHARE_URL =
 export const EXCHANGE_LINK = "https://www.kucoin.com/trade/OPCT-BTC";
 
 export const DEFAULT_STORAGE_NODE_V1 = "broker-1.opacitynodes.com";
-export const DEFAULT_STORAGE_NODE_V2 = "beta-broker.opacitynodes.com";
+export const DEFAULT_STORAGE_NODE_V2 = "dev2.opacitynodes.com";
 
 export const DEFAULT_STORAGE_NODE_IP =
   IS_LOCAL
@@ -61,7 +62,7 @@ export const DEFAULT_STORAGE_NODE_IP =
         ? DEFAULT_STORAGE_NODE_V2
         : DEFAULT_STORAGE_NODE_V1;
 
-export const STORAGE_NODE = `${PROTOCOL}://${DEFAULT_STORAGE_NODE_IP}:3000`;
+export const STORAGE_NODE = `${PROTOCOL}://${DEFAULT_STORAGE_NODE_IP}${PORT}`;
 
 export const FILE_MAX_SIZE = 2 * 1024 * 1024 * 1024;
 
