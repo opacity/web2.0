@@ -61,7 +61,8 @@ export const DEFAULT_STORAGE_NODE_IP =
         ? DEFAULT_STORAGE_NODE_V2
         : DEFAULT_STORAGE_NODE_V1;
 
-export const STORAGE_NODE = `${PROTOCOL}://${DEFAULT_STORAGE_NODE_IP}:3000`;
+// export const STORAGE_NODE = `${PROTOCOL}://${DEFAULT_STORAGE_NODE_IP}:3000`;
+export const STORAGE_NODE = `http://18.188.20.76:3000`;
 
 export const FILE_MAX_SIZE = 2 * 1024 * 1024 * 1024;
 
