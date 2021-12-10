@@ -296,7 +296,7 @@
           }
           // TODO: switch this to formik
           .redeem-form-error {
-            width: 100%;
+            width: 92%;
             margin-top: 0.25rem;
             font-size: 85.7142857%;
             color: #e53e3e;
@@ -487,6 +487,7 @@
             margin: 0;
             @media (max-width: 767.7px) {
               margin-bottom: 0;
+              margin-left: 10px;
               font-size: 16px;
               line-height: 24px;
             }
@@ -500,7 +501,7 @@
             @media (max-width: 767.7px) {
               margin: 20px 0;
               height: 45px;
-              width: 100%;
+              width: 92%;
             }
           }
           button {
@@ -563,7 +564,7 @@
             margin-right: 30px;
             @media (max-width: 767.7px) {
               float: unset;
-              margin-right: unset;
+              margin-left: 50px;
             }
           }
         }
