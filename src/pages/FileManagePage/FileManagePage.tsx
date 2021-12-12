@@ -75,7 +75,9 @@ let logoutTimeout;
 let fileUploadingList = [];
 let loadingFlagCnt = 0;
 let filesToUpload = [];
-const THREAD_COUNT = 10;
+//TODO: Find the most suitable number, for now making 1 to 
+//test is fixes FF issues
+const THREAD_COUNT = 1;
 let curThreadNum = 0;
 let uploaderThread = [];
 
