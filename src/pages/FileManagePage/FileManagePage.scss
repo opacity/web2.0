@@ -193,27 +193,29 @@
   }
 }
 
-#mac-tooltip > .tooltip-inner {
-  background: #062e56;
+#download-tooltip > .tooltip-inner {
+  background: #050578;
+  max-width: 100%;
 }
-#mac-tooltip > .tooltip-arrow {
+#download-tooltip > .tooltip-arrow {
   border-top: 5px solid #062e56;
 }
-#win-tooltip > .tooltip-inner {
-  background: #062e56;
+#download-tooltip {
+  width: 320px;
 }
-#win-tooltip > .tooltip-arrow {
-  border-top: 5px solid #062e56;
-}
-.tooltip-header {
-  color: white;
-  font-size: 14px;
-  font-weight: bold;
-}
-.tooltip-contet {
-  color: white;
-  font-size: 10px;
-  text-align: justify;
+
+.tooltip-style {
+  margin: 10px 10px 10px 10px;
+  .tooltip-header {
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  .tooltip-content {
+    color: white;
+    font-size: 14px;
+  }
 }
 
 // tree style

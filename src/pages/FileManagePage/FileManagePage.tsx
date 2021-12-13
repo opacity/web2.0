@@ -1163,15 +1163,19 @@ const FileManagePage = ({ history }) => {
   };
 
   const renderMacTooltip = (props) => (
-    <Tooltip id="mac-tooltip" {...props}>
-      <div className="tooltip-header">Download MacOS Opacity Drive for desktop</div>
-      <div className="tooltip-content">Work with all of your files right from your desktop using Opacity Drive</div> 
+    <Tooltip id="download-tooltip" {...props}>
+      <div className="tooltip-style">
+        <div className="tooltip-header">Download MacOS Opacity Drive for desktop</div>
+        <div className="tooltip-content">Work with all of your files right from your desktop using Opacity Drive</div> 
+      </div>
     </Tooltip>
   );
   const renderWinTooltip = (props) => (
-    <Tooltip id="win-tooltip" {...props}>
-      <div className="tooltip-header">Download Windows Opacity Drive for desktop</div>
-      <div className="tooltip-content">Work with all of your files right from your desktop using Opacity Drive</div>
+    <Tooltip id="download-tooltip" {...props}>
+      <div className="tooltip-style">
+        <div className="tooltip-header">Download Windows Opacity Drive for desktop</div>
+        <div className="tooltip-content">Work with all of your files right from your desktop using Opacity Drive</div>
+      </div>
     </Tooltip>
   );
 
