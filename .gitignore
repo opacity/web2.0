@@ -16,3 +16,4 @@ sourcemaps.js.map
 .fusebox
 .cache
 .env
+.editorconfig
