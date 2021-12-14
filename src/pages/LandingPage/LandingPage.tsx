@@ -42,7 +42,7 @@ const LandingPage = ({ history }) => {
     Object.freeze(configuration);
 
     // create widget
-    if (rubicWidget) rubicWidget.init(configuration);
+    // if (rubicWidget) rubicWidget.init(configuration);
   }, []);
 
   const handleCloseSignUpModal = () => {
