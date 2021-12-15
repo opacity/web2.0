@@ -80,7 +80,7 @@ const THREAD_COUNT = 10;
 let curThreadNum = 0;
 let uploaderThread = [];
 let upload_limit_byte1 = 4294967296;
-let upload_limit_bype2 = 2147483648;
+let upload_limit_byte2 = 2147483648;
 
 const FileManagePage = ({ history }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
