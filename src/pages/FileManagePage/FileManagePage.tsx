@@ -2,7 +2,7 @@ import * as React from "react";
 import { Table, Tooltip, Tag, NavLink } from "tabler-react";
 import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
-import { Button, Nav, ProgressBar, Breadcrumb, Alert } from "react-bootstrap";
+import { Button, Nav, ProgressBar, Breadcrumb, Alert, OverlayTrigger, Tooltip } from "react-bootstrap";
 import TreeMenu, { ItemComponent } from "react-simple-tree-menu";
 import { Account, AccountGetRes } from "../../../ts-client-library/packages/account-management";
 import {
@@ -71,6 +71,7 @@ const copy = require("../../assets/copy.svg");
 streamsaver.mitm = "/resources/streamsaver/mitm.html";
 Object.assign(streamsaver, { WritableStream });
 import { OPACITY_DRIVE_FOR_MAC, OPACITY_DRIVE_FOR_WINDOWS } from "../../config";
+
 
 let logoutTimeout;
 let fileUploadingList = [];
@@ -1265,6 +1266,23 @@ const FileManagePage = ({ history }) => {
     if (e.keyCode === 224 || e.keyCode === 91 || e.keyCode === 17) localStorage.setItem("cmd_status", "false");
   };
 
+  const renderMacTooltip = (props) => (
+    <Tooltip id="download-tooltip" {...props}>
+      <div className="tooltip-style">
+        <div className="tooltip-header">Download MacOS Opacity Drive for desktop</div>
+        <div className="tooltip-content">Work with all of your files right from your desktop using Opacity Drive</div> 
+      </div>
+    </Tooltip>
+  );
+  const renderWinTooltip = (props) => (
+    <Tooltip id="download-tooltip" {...props}>
+      <div className="tooltip-style">
+        <div className="tooltip-header">Download Windows Opacity Drive for desktop</div>
+        <div className="tooltip-content">Work with all of your files right from your desktop using Opacity Drive</div>
+      </div>
+    </Tooltip>
+  );
+
   return (
     <div className="page" onKeyDown={(e) => keyDownHandler(e)} onKeyUp={(e) => keyUpHandler(e)}>
       {showSignUpModal && currentPlan && (
@@ -1421,14 +1439,26 @@ const FileManagePage = ({ history }) => {
               </TreeMenu>
             </div>
             <div className="download-section">
-              <Button variant="primary" className="position-mac" href={OPACITY_DRIVE_FOR_MAC}>
-                <span className="item-icon file-download"></span>
-                <span>Download 2.0 (MacOS)</span>
-              </Button>
-              <Button variant="primary" className="position-window" href={OPACITY_DRIVE_FOR_WINDOWS}>
-                <span className="item-icon file-download"></span>
-                <span>Download 2.0 (Windows)</span>
-              </Button>
+              <OverlayTrigger
+                placement="right"
+                delay={{ show: 250, hide: 400 }}
+                overlay={renderMacTooltip}
+              >
+                <Button variant="primary" className="position-mac" href={OPACITY_DRIVE_FOR_MAC}>
+                  <span className="item-icon file-download mac-item"></span>
+                  <span>Get Opacity Drive (MacOS)</span>
+                </Button>
+              </OverlayTrigger>
+              <OverlayTrigger
+                placement="right"
+                delay={{ show: 250, hide: 400 }}
+                overlay={renderWinTooltip}
+              >
+                <Button variant="primary" className="position-window" href={OPACITY_DRIVE_FOR_WINDOWS}>
+                  <span className="item-icon file-download"></span>
+                  <span>Get Opacity Drive (Windows)</span>
+                </Button>
+              </OverlayTrigger>          
             </div>
           </div>
           <div className="side-bar-footer">
