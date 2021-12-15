@@ -39,6 +39,7 @@
     "react-circular-progressbar": "^2.0.4",
     "react-copy-to-clipboard": "^5.0.3",
     "react-country-region-selector": "^3.0.2",
+    "react-device-detect": "^2.1.2",
     "react-dnd": "^14.0.2",
     "react-dnd-html5-backend": "^14.0.0",
     "react-dom": "^16.8.6",

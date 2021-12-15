@@ -62,6 +62,7 @@ import * as fflate from "fflate";
 import { saveAs } from "file-saver";
 import SignUpModal from "../../components/SignUpModal/SignUpModal";
 import { PLANS } from "../../config";
+import { isChrome } from "react-device-detect";
 const uploadImage = require("../../assets/upload.png");
 const empty = require("../../assets/empty.png");
 const logo = require("../../assets/logo2.png");
@@ -76,7 +77,7 @@ let logoutTimeout;
 let fileUploadingList = [];
 let loadingFlagCnt = 0;
 let filesToUpload = [];
-const THREAD_COUNT = 1;
+const THREAD_COUNT = 10;
 let curThreadNum = 0;
 let uploaderThread = [];
 
@@ -171,6 +172,7 @@ const FileManagePage = ({ history }) => {
   const [isAccountExpired, setIsAccountExpired] = React.useState(false);
   const [, setProcessChange] = React.useState();
   const [cmdKeyStatus, setCmdKeyStatus] = React.useState(false);
+  const [currentUploader, setCurrentUploader] = React.useState<OpaqueUpload>();
 
   const handleShowSidebar = React.useCallback(() => {
     setShowSidebar(!showSidebar);
@@ -302,7 +304,7 @@ const FileManagePage = ({ history }) => {
     filesToUpload = [];
     curThreadNum = 0;
     uploaderThread = [];
-  }, [])
+  }, []);
 
   const doRefreshAfterRenew = React.useCallback(async () => {
     try {
@@ -436,6 +438,11 @@ const FileManagePage = ({ history }) => {
 
   const relativePath = React.useCallback((path: string) => path.substr(0, path.lastIndexOf("/")), []);
 
+  React.useEffect(() => {
+    const isFinished = uploadingList.find((item) => item.percent !== 100) ? false : true;
+    isFinished && setUpdateCurrentFolderSwitch((prev) => !prev);
+  }, [uploadingList, setUpdateCurrentFolderSwitch]);
+
   const updateUploadingItemStatus = (itemId, status, percent = 100) => {
     let templist = fileUploadingList;
     let index = templist.findIndex((ele) => ele.id === itemId);
@@ -446,32 +453,49 @@ const FileManagePage = ({ history }) => {
       setUploadingList(templist);
       setProcessChange({});
     }
-  }
+  };
+
+  const handleCancelSingleThreadUpload = React.useCallback(
+    async (item) => {
+      if (currentUploader.uploaderId === item.id) {
+        await currentUploader.cancel();
+      }
+      updateUploadingItemStatus(item.id, "cancelled");
+    },
+    [currentUploader]
+  );
 
   const handleCancelUpload = React.useCallback(async (item) => {
+    if (isChrome) {
+      await handleCancelSingleThreadUpload(item);
+      return;
+    }
     const threadIndex = uploaderThread.findIndex((uploader) => item.id === uploader.uploaderId);
     if (threadIndex !== -1) {
       const uploader = uploaderThread[threadIndex];
-      uploader.cancel()
+      uploader.cancel();
     } else {
-      updateUploadingItemStatus(item.id, "cancelled")
+      updateUploadingItemStatus(item.id, "cancelled");
     }
   }, []);
 
   const handleCancelAllUpload = React.useCallback(async () => {
     if (fileUploadingList.find((item) => item.percent !== 100)) {
-      for (const uploader of uploaderThread) {
-        uploader.cancel()
+      if (isChrome) {
+        for (const uploader of uploaderThread) {
+          uploader.cancel();
+        }
+      } else {
+        currentUploader && (await currentUploader.cancel());
       }
 
-      fileUploadingList.forEach(item => {
-        const isInThread = uploaderThread.findIndex(x => x.uploaderId === item.id)
-        isInThread === -1 && item.status !== "completed" && updateUploadingItemStatus(item.id, "cancelled")
-      })
+      fileUploadingList.forEach((item) => {
+        const isInThread = uploaderThread.findIndex((x) => x.uploaderId === item.id);
+        isInThread === -1 && item.status !== "completed" && updateUploadingItemStatus(item.id, "cancelled");
+      });
     }
-  }, []);
+  }, [currentUploader]);
 
-  // const fileUploadMutex = React.useMemo(() => new Mutex(), []);
   const uploadFile = React.useCallback(
     async (file: File, path: string) => {
       let toastID = file.size + file.name + path;
@@ -487,7 +511,6 @@ const FileManagePage = ({ history }) => {
           }
           return;
         }
-        // const release = await fileUploadMutex.acquire();
 
         const upload = new OpaqueUpload({
           config: {
@@ -514,20 +537,20 @@ const FileManagePage = ({ history }) => {
         bindUploadToAccountSystem(accountSystem, upload);
 
         upload.addEventListener(UploadEvents.PROGRESS, (e: UploadProgressEvent) => {
-          updateUploadingItemStatus(toastID, "uploading", e.detail.progress * 100)
+          updateUploadingItemStatus(toastID, "uploading", e.detail.progress * 100);
         });
 
         upload.addEventListener(UploadEvents.ERROR, (e: UploadErrorEvent) => {
           toast.error(e.detail.error);
-          updateUploadingItemStatus(toastID, "cancelled")
+          updateUploadingItemStatus(toastID, "cancelled");
         });
 
         upload.addEventListener(UploadEvents.CANCEL, (e: UploadCancelEvent) => {
-          updateUploadingItemStatus(toastID, "cancelled")
+          updateUploadingItemStatus(toastID, "cancelled");
         });
 
         upload.addEventListener(UploadEvents.FINISH, (e: UploadFinishedEvent) => {
-          updateUploadingItemStatus(toastID, "completed")
+          updateUploadingItemStatus(toastID, "completed");
         });
 
         const fileStream = polyfillReadableStreamIfNeeded<Uint8Array>(file.stream());
@@ -538,10 +561,7 @@ const FileManagePage = ({ history }) => {
 
           stream && fileStream.pipeThrough(stream as TransformStream<Uint8Array, Uint8Array> as any);
           await upload.finish();
-
         } finally {
-          // release();
-
           curThreadNum--;
           const threadIndex = uploaderThread.findIndex((item) => toastID === item.uploaderId);
           if (threadIndex !== -1) {
@@ -552,10 +572,6 @@ const FileManagePage = ({ history }) => {
             const nextFile = filesToUpload[0];
             const nextFilePath = pathGenerator(nextFile, currentPath);
             uploadFile(nextFile, nextFilePath);
-          }
-
-          if (curThreadNum === 0 && filesToUpload.length === 0) {
-            setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
           }
         }
       } catch (e) {
@@ -571,10 +587,77 @@ const FileManagePage = ({ history }) => {
           const nextFilePath = pathGenerator(nextFile, currentPath);
           uploadFile(nextFile, nextFilePath);
         }
+      }
+    },
+    [
+      currentPath,
+      accountSystem,
+      currentLocation,
+      cryptoMiddleware,
+      netMiddleware,
+      storageNode,
+      updateCurrentFolderSwitch,
+      updateFolderEntrySwitch,
+      updateFileEntrySwitch,
+    ]
+  );
 
-        if (curThreadNum === 0 && filesToUpload.length === 0) {
-          setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
+  const fileUploadMutex = React.useMemo(() => new Mutex(), []);
+  const uploadFileOnSingleThread = React.useCallback(
+    async (file: File, path: string) => {
+      let toastID = file.size + file.name + path;
+      try {
+        let index = fileUploadingList.findIndex((ele) => ele.id === toastID);
+        if (index > -1 && fileUploadingList[index].status === "cancelled") {
+          return;
         }
+        const release = await fileUploadMutex.acquire();
+
+        const upload = new OpaqueUpload({
+          config: {
+            crypto: cryptoMiddleware,
+            net: netMiddleware,
+            storageNode: storageNode,
+          },
+          meta: file,
+          name: file.name,
+          path: path,
+        });
+        setCurrentUploader(upload);
+
+        // side effects
+        bindUploadToAccountSystem(accountSystem, upload);
+
+        upload.addEventListener(UploadEvents.PROGRESS, (e: UploadProgressEvent) => {
+          updateUploadingItemStatus(toastID, "uploading", e.detail.progress * 100);
+        });
+
+        upload.addEventListener(UploadEvents.ERROR, (e: UploadErrorEvent) => {
+          toast.error(e.detail.error);
+          updateUploadingItemStatus(toastID, "cancelled");
+        });
+
+        upload.addEventListener(UploadEvents.CANCEL, (e: UploadCancelEvent) => {
+          updateUploadingItemStatus(toastID, "cancelled");
+        });
+
+        upload.addEventListener(UploadEvents.FINISH, (e: UploadFinishedEvent) => {
+          updateUploadingItemStatus(toastID, "completed");
+        });
+
+        const fileStream = polyfillReadableStreamIfNeeded<Uint8Array>(file.stream());
+
+        try {
+          const stream = await upload.start();
+          console.log("uploading,,,,,,");
+
+          stream && fileStream.pipeThrough(stream as TransformStream<Uint8Array, Uint8Array> as any);
+          await upload.finish();
+        } finally {
+          release();
+        }
+      } catch (e) {
+        console.log(e, "error on uploading file in mutex");
       }
     },
     [
@@ -599,35 +682,53 @@ const FileManagePage = ({ history }) => {
 
   const selectFiles = React.useCallback(
     async (files) => {
+      isFileManaging();
       let addedFileList = [];
 
-      isFileManaging();
+      if (isChrome) {
+        files.forEach((file) => {
+          const path = pathGenerator(file, currentPath);
+          let toastID = file.size + file.name + path;
+          if (!fileUploadingList.find((item) => item.id === toastID)) {
+            addedFileList.push({ id: toastID, fileName: file.name, percent: 0, status: "active" });
+            filesToUpload.push(file);
+          }
+        });
 
-      files.forEach((file) => {
-        const path = pathGenerator(file, currentPath);
-        let toastID = file.size + file.name + path;
-        if (!fileUploadingList.find((item) => item.id === toastID)) {
-          addedFileList.push({ id: toastID, fileName: file.name, percent: 0, status: "active" });
-          filesToUpload.push(file);
+        if (curThreadNum === 0) {
+          const orderChanged = addedFileList.slice(0, THREAD_COUNT - curThreadNum);
+          orderChanged.reverse();
+          addedFileList.splice(0, 10, ...orderChanged);
         }
-      });
 
-      if (curThreadNum === 0) {
-        const orderChanged = addedFileList.slice(0, THREAD_COUNT - curThreadNum);
-        orderChanged.reverse();
-        addedFileList.splice(0, 10, ...orderChanged);
+        fileUploadingList.push(...addedFileList);
+        setUploadingList(fileUploadingList);
+        setProcessChange({});
+
+        if (curThreadNum === 0 || curThreadNum < THREAD_COUNT) {
+          const file = filesToUpload[0];
+          const path = pathGenerator(file, currentPath);
+          uploadFile(file, path);
+        }
+      } else {
+        files.forEach((file) => {
+          const path = pathGenerator(file, currentPath);
+          let toastID = file.size + file.name + path;
+          if (!fileUploadingList.find((item) => item.id === toastID)) {
+            addedFileList.push({ id: toastID, fileName: file.name, percent: 0, status: "active" });
+          }
+        });
+
+        fileUploadingList.push(...addedFileList);
+        setUploadingList(fileUploadingList);
+        setProcessChange({});
+
+        for (const file of files) {
+          const path = pathGenerator(file, currentPath);
+          // ======================will update with UUID (DEV-445)  =======================================
+          await uploadFileOnSingleThread(file, path);
+        }
       }
-
-      fileUploadingList.push(...addedFileList);
-      setUploadingList(fileUploadingList);
-      setProcessChange({});
-
-      if (curThreadNum === 0 || curThreadNum < THREAD_COUNT) {
-        const file = filesToUpload[0];
-        const path = pathGenerator(file, currentPath);
-        uploadFile(file, path);
-      }
-      OnfinishFileManaging();
     },
     [currentPath, uploadFile]
   );
@@ -804,14 +905,17 @@ const FileManagePage = ({ history }) => {
           },
         });
         bindFileSystemObjectToAccountSystem(accountSystem, fso);
-        await accountSystem.removeMultiFile(files.map((item) => item.location)).catch(() => {
-          toast.error(`An error occurred while deleting selected files.`);
-        }).then(async () => {
-          await fso.deleteMultiFile(files).catch(() => {
+        await accountSystem
+          .removeMultiFile(files.map((item) => item.location))
+          .catch(() => {
             toast.error(`An error occurred while deleting selected files.`);
+          })
+          .then(async () => {
+            await fso.deleteMultiFile(files).catch(() => {
+              toast.error(`An error occurred while deleting selected files.`);
+            });
           });
-        });
-        
+
         setFileToDelete(null);
       } catch (e) {
         await accountSystem.removeMultiFile(files.map((item) => item.location));
