@@ -75,7 +75,7 @@ let logoutTimeout;
 let fileUploadingList = [];
 let loadingFlagCnt = 0;
 let filesToUpload = [];
-const THREAD_COUNT = 5;
+const THREAD_COUNT = 1;
 let curThreadNum = 0;
 let uploaderThread = [];
 
