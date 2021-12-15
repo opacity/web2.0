@@ -79,6 +79,8 @@ let filesToUpload = [];
 const THREAD_COUNT = 10;
 let curThreadNum = 0;
 let uploaderThread = [];
+let upload_limit_byte1 = 4294967296;
+let upload_limit_bype2 = 2147483648;
 
 const FileManagePage = ({ history }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -476,22 +478,22 @@ const FileManagePage = ({ history }) => {
     async (file: File, path: string) => {
       let toastID = file.size + file.name + path;
       if (isChrome) {
-        if (file.size > 4294967296) {
+        if (file.size > upload_limit_byte1) {
           toast.warning(`File size is too large, this ${browserName} ${browserVersion} can not upload more than 4Gbyte`);
           setShowWarningModal(true);
         }
       } else if (isFirefox) {
-        if (file.size > 2147483648) {
+        if (file.size > upload_limit_byte2) {
           toast.warning(`File size is too large, this ${browserName} ${browserVersion} can not upload more than 2Gbyte`);
           setShowWarningModal(true);
         }
       } else if (isOpera && browserVersion === '10') {
-        if (file.size > 4294967296) {
+        if (file.size > upload_limit_byte1) {
           toast.warning(`File size is too large, this ${browserName} ${browserVersion} can not upload more than 4Gbyte`);
           setShowWarningModal(true);
         }
       } else if (isIE) {
-        if (file.size > 2147483648) {
+        if (file.size > upload_limit_byte2) {
           toast.warning(`File size is too large, this ${browserName} ${browserVersion} can not upload more than 2Gbyte`);
           setShowWarningModal(true);
         }
