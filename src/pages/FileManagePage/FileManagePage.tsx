@@ -67,6 +67,7 @@ const uploadImage = require("../../assets/upload.png");
 const empty = require("../../assets/empty.png");
 const logo = require("../../assets/logo2.png");
 const copy = require("../../assets/copy.svg");
+const cancel = require("../../assets/cancel.svg");
 
 streamsaver.mitm = "/resources/streamsaver/mitm.html";
 Object.assign(streamsaver, { WritableStream });
@@ -1354,6 +1355,16 @@ const FileManagePage = ({ history }) => {
             Opacity <span>v2.0.0</span>
           </h1>
           <div className="account-info">
+            <button
+              className="navbar-toggler"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbar-menu"
+              aria-expanded={showSidebar}
+              onClick={handleShowSidebar}
+              >
+                <span className="navbar-toggler-icon"></span>
+            </button>
             {!!lastFour && (
               <div>
                 <Button
