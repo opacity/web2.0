@@ -25,7 +25,6 @@ phases:
       - npm install -g lerna
       - git submodule update --init --recursive --remote
       - cd ts-client-library
-      - rm package-lock.json
       - npx lerna bootstrap
       - cd ../opaque
       - npm install
