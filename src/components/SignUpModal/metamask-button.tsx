@@ -2,8 +2,8 @@ import React from "react";
 
 const PAY_WITH_METAMASK_IMG = require("../../assets/pay_with_metamask.png");
 
-const MetamaskButton = ({ onClick }) => (
-  <button onClick={onClick} style={{
+const MetamaskButton = ({ onClick, isDisabled }) => (
+  <button onClick={onClick} disabled={isDisabled} style={{
     cursor: 'pointer',
     padding: 0,
     border: 'none',

@@ -1,13 +1,10 @@
 import * as React from "react";
-// import { useState } from "react";
 import { Modal, Button, Row, Col } from "react-bootstrap";
 import { Field, Formik } from "formik";
 import { Form } from "tabler-react";
 import * as Yup from "yup";
-// import history from "../../redux/history";
 import "./NewFolderModal.scss";
 
-// const logo = require("../../assets/logo2.png");
 const nameSchema = Yup.object().shape({
   name: Yup.string().required("Name is required."),
 });

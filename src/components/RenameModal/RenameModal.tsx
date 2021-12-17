@@ -4,7 +4,6 @@ import { Modal, Button, Row, Col } from "react-bootstrap";
 import { Field, Formik } from "formik";
 import { Form } from "tabler-react";
 import * as Yup from "yup";
-// import history from "../../redux/history";
 import ExtChangeAlertModal from "../ExtChangeAlertModal/ExtChangeAlertModal";
 import "./RenameModal.scss";
 
