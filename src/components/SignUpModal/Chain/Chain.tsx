@@ -22,7 +22,6 @@ const Chain = ({ chain, invoice, contractAddress }) => {
       window.web3 = new Web3(window.web3.currentProvider);
     } else {
       // Non-dapp browsers...
-      toast.error("Non-Ethereum browser detected. You should consider trying MetaMask!");
       return false;
     }
     return true;
@@ -59,6 +58,7 @@ const Chain = ({ chain, invoice, contractAddress }) => {
 
   const changeNetwork = async () => {
     if (!hasConnectedWallet) {
+      toast.error("Non-Ethereum browser detected. You should consider trying MetaMask!");
       return;
     }
 
@@ -89,6 +89,9 @@ const Chain = ({ chain, invoice, contractAddress }) => {
   }, [chain]);
 
   useEffect(() => {
+    if (!hasConnectedWallet) {
+      return;
+    }
     const events = ["chainChanged"];
 
     const resetStatus = (event) => (value) => {
@@ -111,7 +114,9 @@ const Chain = ({ chain, invoice, contractAddress }) => {
   }, [chain]);
 
   useEffect(() => {
-    checkChain();
+    if (hasConnectedWallet) {
+      checkChain();
+    }
   }, [chain]);
 
   const sendTransaction = useCallback(async ({ cost, ethAddress, gasPrice, contractAddress }) => {
