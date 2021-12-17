@@ -14,14 +14,10 @@ import { PlanType, STRIPE_API_KEY, PLANS, STORAGE_NODE as storageNode } from "..
 import Redeem from "./Redeem";
 import UsdPaymentForm from "./UsdPaymentForm";
 import { Elements, StripeProvider } from "react-stripe-elements";
-import QRCode from "qrcode.react";
-import MetamaskButton from "./metamask-button";
-import Metamask from "../../services/metamask";
-import { connect } from "react-redux";
-import metamaskActions from "../../redux/actions/metamask-actions";
 import moment from "moment";
 import Chain from "./Chain/Chain";
-import ChainData from "../../config/chains.json";
+const ChainData = require("../../config/chains.json");
+//https://chainid.network/chains.json
 import ReactLoading from "react-loading";
 import "./SignUpModal.scss";
 const logo = require("../../assets/logo2.png");
@@ -35,7 +31,6 @@ type OtherProps = {
   handleClose?: Function;
   initialPlan?: PlanType;
   openLoginModal?: Function;
-  openMetamask?: Function;
   isForRenew?: boolean;
   doRefresh?: Function;
 };
@@ -48,7 +43,6 @@ type SignUpProps = {
   handleClose?: Function;
   openLoginModal?: Function;
   createAccount?: Function;
-  openMetamask?: Function;
   mnemonic?: string[];
   invoice?: AccountCreationInvoice;
   account?: Account;
@@ -102,7 +96,6 @@ const SignUpModal: React.FC<OtherProps> = ({
   handleClose: handleCloseOriginal,
   initialPlan,
   openLoginModal,
-  openMetamask,
   isForRenew = false,
   doRefresh,
 }) => {
@@ -340,7 +333,6 @@ const SignUpModal: React.FC<OtherProps> = ({
               goNext={goNext}
               isForUpgrade={currentAccount && !isForRenew && true}
               isForRenew={isForRenew}
-              openMetamask={openMetamask}
               doRefresh={() => doRefresh()}
             />
           )}
@@ -519,7 +511,7 @@ const AccountHandle: React.FC<SignUpProps> = ({ plan, goBack, goNext, mnemonic, 
   );
 };
 
-const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, openMetamask, isForUpgrade, isForRenew, doRefresh }) => {
+const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, isForUpgrade, isForRenew, doRefresh }) => {
   const [isCopied, setIsCopied] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("crypto");
   const [networkName, setNetworkName] = useState("No Network");
@@ -634,30 +626,32 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, op
 
             <div className="row qrcode">
               <Col>
-                <h1 className="subtitle-bottom-effect">Pay with Metamask</h1>
-                <div className="">
-                  <div className="select-net">Choose your payment network</div>
-                  <Dropdown>
-                    <Dropdown.Toggle variant="default" id="dropdown-basic">
-                      {networkName}
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                      {networkData.map((item) => {
-                        return (
-                          <Dropdown.Item as="button" onClick={(e) => handleChangeNetwork(item)}>
-                            {item?.network}
-                          </Dropdown.Item>
-                        );
-                      })}
-                    </Dropdown.Menu>
-                  </Dropdown>
+                <div className="scan">
+                  <h1 className="subtitle-bottom-effect">Pay with Metamask</h1>
+                  <div className="">
+                    <Dropdown style={{marginBottom: "20px"}}>
+                      <Dropdown.Toggle variant="default" id="dropdown-basic">
+                        {networkName}
+                      </Dropdown.Toggle>
+                      <Dropdown.Menu>
+                        {networkData.map((item, key) => {
+                          return (
+                            <Dropdown.Item key={key} as="button" onClick={(e) => handleChangeNetwork(item)}>
+                              {item?.network}
+                            </Dropdown.Item>
+                          );
+                        })}
+                      </Dropdown.Menu>
+                    </Dropdown>
+                    {!selectedNetwork && <div className="select-net">Choose your payment network</div>}
+                  </div>
+                  {selectedNetwork && <Chain chain={selectedNetwork.chain} contractAddress={selectedNetwork.address} invoice={invoice} />}
                 </div>
-                {selectedNetwork && <Chain chain={selectedNetwork.chain} contractAddress={selectedNetwork.address} invoice={invoice} />}
               </Col>
               <Col>
                 <div className="scan">
                   <h1 className="subtitle-bottom-effect">Pay with Gift Code</h1>
-                  <Redeem planName={plan.name} ethAddress={invoice.ethAddress} />
+                  <Redeem planName={plan?.name} ethAddress={invoice.ethAddress} />
                   {/* <QRCode
                     value={invoice.ethAddress}
                     size={200}
@@ -727,8 +721,4 @@ const ConfirmPayment: React.FC<SignUpProps> = ({ plan, handle, handleOpenLoginMo
   );
 };
 
-const mapDispatchToProps = (dispatch) => ({
-  openMetamask: ({ cost, ethAddress, gasPrice }) => dispatch(metamaskActions.createTransaction({ cost, ethAddress, gasPrice })),
-});
-
-export default connect(null, mapDispatchToProps)(SignUpModal);
+export default SignUpModal;

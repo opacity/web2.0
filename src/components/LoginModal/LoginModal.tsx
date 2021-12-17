@@ -3,15 +3,16 @@ import { useState } from "react";
 import { Modal, Button, Row, Col } from "react-bootstrap";
 import { Field, Formik, FormikHelpers } from "formik";
 import { Form } from "tabler-react";
-import history from "../../redux/history";
-import "./LoginModal.scss";
 import { Account } from "../../../ts-client-library/packages/account-management";
 import { WebAccountMiddleware, WebNetworkMiddleware } from "../../../ts-client-library/packages/middleware-web";
 import { hexToBytes } from "../../../ts-client-library/packages/util/src/hex";
 import { STORAGE_NODE as storageNode } from "../../config";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import * as moment from "moment";
+import { createBrowserHistory } from "history";
+import "./LoginModal.scss";
 
+const history = createBrowserHistory();
 const logo = require("../../assets/logo2.png");
 
 type OtherProps = {
@@ -32,6 +33,7 @@ const LoginModal: React.FC<OtherProps> = ({
   handleSignup,
 }) => {
   const [privateKey, setPrivateKey] = useState(recoveryHandle ? recoveryHandle : "");
+  const history = useHistory()
 
   React.useEffect(() => {
     recoveryHandle && setPrivateKey(recoveryHandle);
