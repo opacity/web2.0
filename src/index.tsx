@@ -13,6 +13,7 @@ import SharePage from "./pages/SharePage/SharePage";
 import LegalPage from "./pages/LegalPages/LegalPage";
 import MigrationPage from "./pages/MigrationPage/MigrationPage";
 import Page404 from "./pages/404/404Page";
+import PressPage from "./pages/PressPage/PressPage";
 import { PrivateRoute } from "./PrivateRoute";
 import "./index.scss";
 import "react-toastify/dist/ReactToastify.css";
@@ -99,6 +100,7 @@ function App() {
               <Route path="/share" component={SharePage} />
               <Route path="/migration" component={MigrationPage} />
               <Route path="/about" component={AboutPage} />
+              <Route path="/press" component={PressPage} />
               <PrivateRoute path="/migration-download" isOldRoute={true} component={OldAccountFileManage} />
 
               <Route path="*" component={Page404} />
