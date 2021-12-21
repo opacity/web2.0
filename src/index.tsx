@@ -24,8 +24,8 @@ import { VERSION, IS_LOCAL, DEFAULT_STORAGE_NODE_IP } from "./config";
 import AboutPage from "./pages/AboutPage/AboutPage";
 import WarningWrapper from "./components/WarningWrapper/WarningWrapper";
 import { createBrowserHistory } from "history";
-
 const history = createBrowserHistory();
+import { isSafari } from "react-device-detect";
 
 let sentryOptions = {
   dsn: "https://8fdbdab452f04a43b5c3f2e00ec126f7@sentry.io/295597",
@@ -49,8 +49,12 @@ function App() {
     <>
       <Helmet>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        {isSafari ?
+        <meta http-equiv="Content-Security-Policy" content="child-src 'self'" /> 
+        :
         <meta http-equiv="Content-Security-Policy" content="worker-src 'self'" />
+        }
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
         <meta
           name="description"
           content="Opacity provides encrypted cloud storage that never stores your personal data. Powered by OPCT crypto token."
