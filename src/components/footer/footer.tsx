@@ -47,8 +47,9 @@ const Footer = () => {
             <span className="title"> Company</span>
             <NavLink href="/about">About Us</NavLink>
             <br />
-            <NavLink href="/press">Press</NavLink>
-            <br />
+            {/* <NavLink href="/press">Press</NavLink>
+            <br /> */}   
+            {/* TODO: until production */}
             <NavLink href="https://blog.opacity.io" target="_blank">
               Blog
             </NavLink>
