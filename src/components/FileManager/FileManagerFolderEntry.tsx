@@ -15,8 +15,10 @@ export type FileManagerFolderEntryProps = {
   setCurrentPath: (p: string) => void;
   handleDeleteItem: (f: FolderFileEntry | FoldersIndexEntry, isFile: boolean) => void;
   handleOpenRenameModal: (f: FolderFileEntry | FoldersIndexEntry, isFile: boolean) => void;
+  handlePasteFilePath: (p: string) => void;
   handleDeleteBrokenFolder: (location: Uint8Array) => void;
   isAccountExpired?: boolean;
+  isFilechoosed?: boolean;
 };
 
 export const FileManagerFolderEntryGrid = ({
@@ -25,8 +27,10 @@ export const FileManagerFolderEntryGrid = ({
   setCurrentPath,
   handleDeleteItem,
   handleOpenRenameModal,
+  handlePasteFilePath,
   handleDeleteBrokenFolder,
   isAccountExpired,
+  isFilechoosed,
 }: FileManagerFolderEntryProps) => {
   const [folderMeta, setFolderMeta] = React.useState<FolderMetadata>();
   const [isBroken, setIsBroken] = React.useState(false);
@@ -88,6 +92,11 @@ export const FileManagerFolderEntryGrid = ({
             <i className="icon-rename"></i>
             Rename
           </Dropdown.Item>
+          <Dropdown.Divider />
+          <Dropdown.Item disabled={isFilechoosed} eventKey="6" onClick={() => handlePasteFilePath(folderEntry.path)}>
+            <i className="icon-paste"></i>
+            Paste
+          </Dropdown.Item>
           {isBroken && (
             <>
               <Dropdown.Divider />
@@ -109,8 +118,10 @@ export const FileManagerFolderEntryList = ({
   setCurrentPath,
   handleDeleteItem,
   handleOpenRenameModal,
+  handlePasteFilePath,
   handleDeleteBrokenFolder,
   isAccountExpired,
+  isFilechoosed,
 }: FileManagerFolderEntryProps) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const [folderMeta, setFolderMeta] = React.useState<FolderMetadata>();
@@ -181,6 +192,11 @@ export const FileManagerFolderEntryList = ({
           >
             <i className="icon-rename"></i>
             Rename
+          </Dropdown.Item>
+          <Dropdown.Divider />
+          <Dropdown.Item disabled={isFilechoosed} eventKey="6" onClick={() => handlePasteFilePath(folderEntry.path)}>
+            <i className="icon-paste"></i>
+            Paste
           </Dropdown.Item>
           {isBroken && (
             <>

@@ -198,12 +198,12 @@
   max-width: 100%;
 }
 #download-tooltip > .arrow {
-    top:50%;
-    left:0;
-    margin-top:-15px;
-    border-top:5px solid transparent;
-    border-bottom:5px solid transparent;
-    border-right:5px solid #050578; 
+  top: 50%;
+  left: 0;
+  margin-top: -15px;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-right: 5px solid #050578;
 }
 #download-tooltip {
   width: 320px;
@@ -713,6 +713,14 @@
       .icon-rename {
         content: url("../../assets/edit.svg");
         margin-right: 20px;
+      }
+      .icon-move {
+        content: url("../../assets/cut.svg");
+        margin-right: 15px;
+      }
+      .icon-paste {
+        content: url("../../assets/paste.svg");
+        margin-right: 15px;
       }
     }
     .grid-view {

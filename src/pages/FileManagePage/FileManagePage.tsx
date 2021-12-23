@@ -73,7 +73,6 @@ streamsaver.mitm = "/resources/streamsaver/mitm.html";
 Object.assign(streamsaver, { WritableStream });
 import { OPACITY_DRIVE_FOR_MAC, OPACITY_DRIVE_FOR_WINDOWS } from "../../config";
 
-
 let logoutTimeout;
 let fileUploadingList = [];
 let loadingFlagCnt = 0;
@@ -81,6 +80,7 @@ let filesToUpload = [];
 const THREAD_COUNT = 10;
 let curThreadNum = 0;
 let uploaderThread = [];
+let location;
 
 const FileManagePage = ({ history }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -171,6 +171,7 @@ const FileManagePage = ({ history }) => {
   const [showSignUpModal, setShowSignUpModal] = React.useState(false);
   const [currentPlan, setCurrentPlan] = React.useState();
   const [isAccountExpired, setIsAccountExpired] = React.useState(false);
+  const [isFilechoosed, setIsFileChoosed] = React.useState(true);
   const [, setProcessChange] = React.useState();
   const [cmdKeyStatus, setCmdKeyStatus] = React.useState(false);
   const [currentUploader, setCurrentUploader] = React.useState<OpaqueUpload>();
@@ -892,6 +893,33 @@ const FileManagePage = ({ history }) => {
     [accountSystem, updateCurrentFolderSwitch]
   );
 
+  const handleMoveFile = React.useCallback(async (file: FileMetadata) => {
+    try {
+      location = file.location;
+      setIsFileChoosed(false);
+    } catch (e) {
+      toast.error(`An error occurred while get file location`);
+    }
+  }, []);
+
+  const handlePasteFilePath = React.useCallback(
+    async (folderpath) => {
+      setPageLoading(true);
+      try {
+        console.log(location);
+        console.log(folderpath);
+        await accountSystem.moveFile(location, folderpath, false);
+        toast.success(`File successfully moved!`);
+        setIsFileChoosed(true);
+        setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
+      } catch (e) {
+        setPageLoading(false);
+        toast.error(`An error occurred while moving a folder.`);
+      }
+    },
+    [accountSystem, currentPath, updateCurrentFolderSwitch]
+  );
+
   const deleteMultiFile = React.useCallback(
     async (files: FileMetadata[]) => {
       isFileManaging();
@@ -1271,7 +1299,7 @@ const FileManagePage = ({ history }) => {
     <Tooltip id="download-tooltip" {...props}>
       <div className="tooltip-style">
         <div className="tooltip-header">Download MacOS Opacity Drive for desktop</div>
-        <div className="tooltip-content">Work with all of your files right from your desktop using Opacity Drive</div> 
+        <div className="tooltip-content">Work with all of your files right from your desktop using Opacity Drive</div>
       </div>
     </Tooltip>
   );
@@ -1362,8 +1390,8 @@ const FileManagePage = ({ history }) => {
               data-bs-target="#navbar-menu"
               aria-expanded={showSidebar}
               onClick={handleShowSidebar}
-              >
-                <span className="navbar-toggler-icon"></span>
+            >
+              <span className="navbar-toggler-icon"></span>
             </button>
             {!!lastFour && (
               <div>
@@ -1450,26 +1478,18 @@ const FileManagePage = ({ history }) => {
               </TreeMenu>
             </div>
             <div className="download-section">
-              <OverlayTrigger
-                placement="right"
-                delay={{ show: 250, hide: 400 }}
-                overlay={renderMacTooltip}
-              >
+              <OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderMacTooltip}>
                 <Button variant="primary" className="position-mac" href={OPACITY_DRIVE_FOR_MAC}>
                   <span className="item-icon file-download mac-item"></span>
                   <span>Get Opacity Drive (MacOS)</span>
                 </Button>
               </OverlayTrigger>
-              <OverlayTrigger
-                placement="right"
-                delay={{ show: 250, hide: 400 }}
-                overlay={renderWinTooltip}
-              >
+              <OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderWinTooltip}>
                 <Button variant="primary" className="position-window" href={OPACITY_DRIVE_FOR_WINDOWS}>
                   <span className="item-icon file-download"></span>
                   <span>Get Opacity Drive (Windows)</span>
                 </Button>
-              </OverlayTrigger>          
+              </OverlayTrigger>
             </div>
           </div>
           <div className="side-bar-footer">
@@ -1615,7 +1635,9 @@ const FileManagePage = ({ history }) => {
                           handleOpenRenameModal={handleOpenRenameModal}
                           handleDeleteBrokenFolder={handleDeleteBrokenFolder}
                           setCurrentPath={setCurrentPath}
+                          handlePasteFilePath={handlePasteFilePath}
                           isAccountExpired={isAccountExpired}
+                          isFilechoosed={isFilechoosed}
                         />
                       )
                   )}
@@ -1631,6 +1653,7 @@ const FileManagePage = ({ history }) => {
                           handleDeleteItem={handleDeleteItem}
                           handleOpenRenameModal={handleOpenRenameModal}
                           handleDeleteBrokenFile={handleDeleteBrokenFile}
+                          handleMoveFile={handleMoveFile}
                           downloadItem={async (f) => {
                             await fileDownload(f, false);
                             OnfinishFileManaging();
@@ -1729,7 +1752,9 @@ const FileManagePage = ({ history }) => {
                             handleOpenRenameModal={handleOpenRenameModal}
                             handleDeleteBrokenFolder={handleDeleteBrokenFolder}
                             setCurrentPath={setCurrentPath}
+                            handlePasteFilePath={handlePasteFilePath}
                             isAccountExpired={isAccountExpired}
+                            isFilechoosed={isFilechoosed}
                           />
                         )
                     )}
@@ -1744,6 +1769,7 @@ const FileManagePage = ({ history }) => {
                             filePublicShare={filePublicShare}
                             handleDeleteItem={handleDeleteItem}
                             handleDeleteBrokenFile={handleDeleteBrokenFile}
+                            handleMoveFile={handleMoveFile}
                             handleOpenRenameModal={handleOpenRenameModal}
                             downloadItem={async (f) => {
                               await fileDownload(f);

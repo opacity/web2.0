@@ -25,6 +25,7 @@ export type FileManagerFileEntryProps = {
   handleDeleteItem: (f: FileMetadata, isFile: boolean) => void;
   handleOpenRenameModal: (f: FolderFileEntry | FoldersIndexEntry, isFile: boolean) => void;
   handleDeleteBrokenFile: (location: Uint8Array) => void;
+  handleMoveFile: (f: FileMetadata) => Promise<void>;
   downloadItem: (f: FileMetadata) => Promise<void>;
   handleSelectFile: Function;
   selectedFiles?: FileMetadata[];
@@ -40,6 +41,7 @@ export const FileManagerFileEntryGrid = ({
   handleDeleteItem,
   handleOpenRenameModal,
   handleDeleteBrokenFile,
+  handleMoveFile,
   handleSelectFile,
   selectedFiles,
   isAccountExpired,
@@ -142,6 +144,11 @@ export const FileManagerFileEntryGrid = ({
               </Dropdown.Item>
             </>
           )}
+          <Dropdown.Divider />
+          <Dropdown.Item disabled={!fileMeta || isAccountExpired} eventKey="6" onClick={() => handleMoveFile(fileMeta)}>
+            <i className="icon-move"></i>
+            Move
+          </Dropdown.Item>
         </DropdownButton>
       </div>
     </div>
@@ -156,6 +163,7 @@ export const FileManagerFileEntryList = ({
   handleDeleteItem,
   handleOpenRenameModal,
   handleDeleteBrokenFile,
+  handleMoveFile,
   downloadItem,
   handleSelectFile,
   selectedFiles,
@@ -286,6 +294,11 @@ export const FileManagerFileEntryList = ({
               </Dropdown.Item>
             </>
           )}
+          <Dropdown.Divider />
+          <Dropdown.Item disabled={!fileMeta || isAccountExpired} eventKey="6" onClick={() => handleMoveFile(fileMeta)}>
+            <i className="icon-move"></i>
+            Move
+          </Dropdown.Item>
         </DropdownButton>
       </Table.Col>
     </Table.Row>
