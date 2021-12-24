@@ -8,7 +8,7 @@ const isUploadCompleted = (notifications) => {
 
 const getPlural = (count, string) => (count > 1 ? string + "s" : string);
 
-const UploadingNotification = ({ notifications, uploadFinish, setUploadingList, onCancel, onCancelAll }) => {
+const UploadingNotification = ({ notifications, uploadFinish, setUploadingList, onCancel, onCancelAll, onRetry, onLocation }) => {
   const [minimize, setMinimize] = React.useState(false);
   const [isClose, setClose] = React.useState(false);
   const handleMinimize = () => {
@@ -58,7 +58,13 @@ const UploadingNotification = ({ notifications, uploadFinish, setUploadingList, 
       )}
       <div className="notifications-body">
         {notifications.map((item, i) => (
-          <UploadingItem key={i} item={item} onCancel={() => onCancel(item)} />
+          <UploadingItem
+            key={i}
+            item={item}
+            onCancel={() => onCancel(item)}
+            onRetry={() => onRetry()}
+            onLocation={() => onLocation(item)}
+          />
         ))}
       </div>
     </div>

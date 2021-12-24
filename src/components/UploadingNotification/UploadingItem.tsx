@@ -43,8 +43,10 @@ const setClassNameFromExt = (ext?: string) => {
   return "icon-document";
 };
 
-const UploadingItem = ({ item, onCancel }) => {
+const UploadingItem = ({ item, onCancel, onRetry, onLocation }) => {
   const [hoverCancel, setHoverCancel] = useState(false);
+  const [hoverComplete, setHoverComplete] = useState(false);
+  const [hoverRetry, setHoverRetry] = useState(false);
 
   const iconRender = (status) => {
     switch (status) {
@@ -60,9 +62,17 @@ const UploadingItem = ({ item, onCancel }) => {
           </div>
         );
       case "cancelled":
-        return <i className="icon-warning"></i>;
+        return (
+          <div onMouseEnter={() => setHoverRetry(true)} onMouseLeave={() => setHoverRetry(false)}>
+            {!hoverRetry ? <i className="icon-warning"></i> : <i className="icon-cancel" onClick={onRetry}></i>}
+          </div>
+        );
       case "completed":
-        return <i className="icon-completed"></i>;
+        return (
+          <div onMouseEnter={() => setHoverComplete(true)} onMouseLeave={() => setHoverComplete(false)}>
+            {!hoverComplete ? <i className="icon-completed"></i> : <i className="icon-cancel" onClick={onLocation}></i>}
+          </div>
+        );
       default:
         break;
     }

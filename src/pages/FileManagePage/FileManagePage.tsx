@@ -73,7 +73,6 @@ streamsaver.mitm = "/resources/streamsaver/mitm.html";
 Object.assign(streamsaver, { WritableStream });
 import { OPACITY_DRIVE_FOR_MAC, OPACITY_DRIVE_FOR_WINDOWS } from "../../config";
 
-
 let logoutTimeout;
 let fileUploadingList = [];
 let loadingFlagCnt = 0;
@@ -496,6 +495,37 @@ const FileManagePage = ({ history }) => {
       });
     }
   }, [currentUploader]);
+
+  const handlRetryUpload = React.useCallback(async () => {
+    console.log("retry upload called");
+    // if (isChrome) {
+    //   await handleCancelSingleThreadUpload(item);
+    //   return;
+    // }
+    // const threadIndex = uploaderThread.findIndex((uploader) => item.id === uploader.uploaderId);
+    // if (threadIndex !== -1) {
+    //   const uploader = uploaderThread[threadIndex];
+    //   uploader.cancel();
+    // } else {
+    //   updateUploadingItemStatus(item.id, "cancelled");
+    // }
+  }, []);
+
+  const handleLocationShow = React.useCallback(async (item) => {
+    console.log("handlelocation called");
+    console.log(item);
+    // if (isChrome) {
+    //   await handleCancelSingleThreadUpload(item);
+    //   return;
+    // }
+    // const threadIndex = uploaderThread.findIndex((uploader) => item.id === uploader.uploaderId);
+    // if (threadIndex !== -1) {
+    //   const uploader = uploaderThread[threadIndex];
+    //   uploader.cancel();
+    // } else {
+    //   updateUploadingItemStatus(item.id, "cancelled");
+    // }
+  }, []);
 
   const uploadFile = React.useCallback(
     async (file: File, path: string) => {
@@ -1271,7 +1301,7 @@ const FileManagePage = ({ history }) => {
     <Tooltip id="download-tooltip" {...props}>
       <div className="tooltip-style">
         <div className="tooltip-header">Download MacOS Opacity Drive for desktop</div>
-        <div className="tooltip-content">Work with all of your files right from your desktop using Opacity Drive</div> 
+        <div className="tooltip-content">Work with all of your files right from your desktop using Opacity Drive</div>
       </div>
     </Tooltip>
   );
@@ -1362,8 +1392,8 @@ const FileManagePage = ({ history }) => {
               data-bs-target="#navbar-menu"
               aria-expanded={showSidebar}
               onClick={handleShowSidebar}
-              >
-                <span className="navbar-toggler-icon"></span>
+            >
+              <span className="navbar-toggler-icon"></span>
             </button>
             {!!lastFour && (
               <div>
@@ -1450,26 +1480,18 @@ const FileManagePage = ({ history }) => {
               </TreeMenu>
             </div>
             <div className="download-section">
-              <OverlayTrigger
-                placement="right"
-                delay={{ show: 250, hide: 400 }}
-                overlay={renderMacTooltip}
-              >
+              <OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderMacTooltip}>
                 <Button variant="primary" className="position-mac" href={OPACITY_DRIVE_FOR_MAC}>
                   <span className="item-icon file-download mac-item"></span>
                   <span>Get Opacity Drive (MacOS)</span>
                 </Button>
               </OverlayTrigger>
-              <OverlayTrigger
-                placement="right"
-                delay={{ show: 250, hide: 400 }}
-                overlay={renderWinTooltip}
-              >
+              <OverlayTrigger placement="right" delay={{ show: 250, hide: 400 }} overlay={renderWinTooltip}>
                 <Button variant="primary" className="position-window" href={OPACITY_DRIVE_FOR_WINDOWS}>
                   <span className="item-icon file-download"></span>
                   <span>Get Opacity Drive (Windows)</span>
                 </Button>
-              </OverlayTrigger>          
+              </OverlayTrigger>
             </div>
           </div>
           <div className="side-bar-footer">
@@ -1794,6 +1816,8 @@ const FileManagePage = ({ history }) => {
           uploadFinish={() => setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch)}
           onCancel={handleCancelUpload}
           onCancelAll={handleCancelAllUpload}
+          onRetry={handlRetryUpload}
+          onLocation={handleLocationShow}
         />
       )}
     </div>

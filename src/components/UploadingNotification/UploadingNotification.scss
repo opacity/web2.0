@@ -148,6 +148,22 @@
                 height: 16px;
                 -webkit-mask-size: contain;
             }
+            .icon-retry {
+                mask: url("../../assets/retry.svg") no-repeat center;
+                -webkit-mask: url("../../assets/retry.svg") no-repeat center;
+                cursor: pointer;
+                width: 16px;
+                height: 16px;
+                -webkit-mask-size: contain;
+            }
+            .icon-filepath {
+                mask: url("../../assets/video.svg") no-repeat center;
+                -webkit-mask: url("../../assets/video.svg") no-repeat center;
+                cursor: pointer;
+                width: 16px;
+                height: 16px;
+                -webkit-mask-size: contain;
+            }
         }
     }
     &.minimize {
