@@ -677,7 +677,7 @@ const FileManagePage = ({ history }) => {
   const pathGenerator = React.useCallback((file, curPath) => {
     const folderPath = file.path
       ? curPath + relativePath(file.path)
-      : curPath + (file.webkitRelativePath !== "" ? "/" + relativePath(file.webkitRelativePath) : "");
+      : curPath + (file.webkitRelativePath ? "/" + relativePath(file.webkitRelativePath) : "");
     return folderPath;
   }, []);
 
