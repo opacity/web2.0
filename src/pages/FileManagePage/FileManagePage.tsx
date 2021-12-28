@@ -496,35 +496,17 @@ const FileManagePage = ({ history }) => {
     }
   }, [currentUploader]);
 
-  const handlRetryUpload = React.useCallback(async () => {
+  const handlRetryUpload = React.useCallback(async (item) => {
     console.log("retry upload called");
-    // if (isChrome) {
-    //   await handleCancelSingleThreadUpload(item);
-    //   return;
-    // }
-    // const threadIndex = uploaderThread.findIndex((uploader) => item.id === uploader.uploaderId);
-    // if (threadIndex !== -1) {
-    //   const uploader = uploaderThread[threadIndex];
-    //   uploader.cancel();
-    // } else {
-    //   updateUploadingItemStatus(item.id, "cancelled");
-    // }
+    console.log(item);
+
+    
   }, []);
 
   const handleLocationShow = React.useCallback(async (item) => {
     console.log("handlelocation called");
     console.log(item);
-    // if (isChrome) {
-    //   await handleCancelSingleThreadUpload(item);
-    //   return;
-    // }
-    // const threadIndex = uploaderThread.findIndex((uploader) => item.id === uploader.uploaderId);
-    // if (threadIndex !== -1) {
-    //   const uploader = uploaderThread[threadIndex];
-    //   uploader.cancel();
-    // } else {
-    //   updateUploadingItemStatus(item.id, "cancelled");
-    // }
+  
   }, []);
 
   const uploadFile = React.useCallback(

@@ -62,7 +62,7 @@ const UploadingNotification = ({ notifications, uploadFinish, setUploadingList, 
             key={i}
             item={item}
             onCancel={() => onCancel(item)}
-            onRetry={() => onRetry()}
+            onRetry={() => onRetry(item)}
             onLocation={() => onLocation(item)}
           />
         ))}
