@@ -149,19 +149,19 @@
                 -webkit-mask-size: contain;
             }
             .icon-retry {
-                mask: url("../../assets/retry.svg") no-repeat center;
-                -webkit-mask: url("../../assets/retry.svg") no-repeat center;
+                width: 22px;
+                height: 22px;
                 cursor: pointer;
-                width: 16px;
-                height: 16px;
+                content: url("../../assets/retry.svg");
+                -webkit-mask: url("../../assets/retry.svg") no-repeat center;
                 -webkit-mask-size: contain;
             }
-            .icon-filepath {
-                mask: url("../../assets/video.svg") no-repeat center;
-                -webkit-mask: url("../../assets/video.svg") no-repeat center;
+            .icon-location {
+                width: 22px;
+                height: 22px;
                 cursor: pointer;
-                width: 16px;
-                height: 16px;
+                content: url("../../assets/location.svg");
+                -webkit-mask: url("../../assets/location.svg") no-repeat center;
                 -webkit-mask-size: contain;
             }
         }

@@ -64,13 +64,13 @@ const UploadingItem = ({ item, onCancel, onRetry, onLocation }) => {
       case "cancelled":
         return (
           <div onMouseEnter={() => setHoverRetry(true)} onMouseLeave={() => setHoverRetry(false)}>
-            {!hoverRetry ? <i className="icon-warning"></i> : <i className="icon-cancel" onClick={onRetry}></i>}
+            {!hoverRetry ? <i className="icon-warning"></i> : <i className="icon-retry" onClick={onRetry}></i>}
           </div>
         );
       case "completed":
         return (
           <div onMouseEnter={() => setHoverComplete(true)} onMouseLeave={() => setHoverComplete(false)}>
-            {!hoverComplete ? <i className="icon-completed"></i> : <i className="icon-cancel" onClick={onLocation}></i>}
+            {!hoverComplete ? <i className="icon-completed"></i> : <i className="icon-location" onClick={onLocation}></i>}
           </div>
         );
       default:
