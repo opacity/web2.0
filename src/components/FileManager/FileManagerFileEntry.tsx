@@ -49,6 +49,7 @@ export const FileManagerFileEntryGrid = ({
   const [fileMeta, setFileMeta] = React.useState<FileMetadata>();
   const [isSelected, setSelected] = React.useState(false);
   const [isBroken, setIsBroken] = React.useState(false);
+  const [isMove, setMove] = React.useState(false);
 
   const [ref, unobserve] = useIntersectionObserver(() => {
     if (fileEntry) {
@@ -91,8 +92,8 @@ export const FileManagerFileEntryGrid = ({
             extension={fileMeta && getFileExtension(fileMeta.name)}
           />
         </div>
-        <h3 className="file-name">{fileEntry.name}</h3>
-        <div className="file-info" ref={ref}>
+        <h3 className={`file-name ${isMove && "selected"}`}>{fileEntry.name}</h3>
+        <div className={`file-info ${isMove && "selected"}`} ref={ref}>
           {fileMeta ? formatBytes(fileMeta.size) : "..."}
         </div>
       </div>
@@ -145,7 +146,14 @@ export const FileManagerFileEntryGrid = ({
             </>
           )}
           <Dropdown.Divider />
-          <Dropdown.Item disabled={!fileMeta || isAccountExpired} eventKey="6" onClick={() => handleMoveFile(fileMeta)}>
+          <Dropdown.Item
+            disabled={!fileMeta || isAccountExpired}
+            eventKey="6"
+            onClick={() => {
+              handleMoveFile(fileMeta);
+              setMove(true);
+            }}
+          >
             <i className="icon-move"></i>
             Move
           </Dropdown.Item>
@@ -173,6 +181,7 @@ export const FileManagerFileEntryList = ({
   const [fileMeta, setFileMeta] = React.useState<FileMetadata>();
   const [isBroken, setIsBroken] = React.useState(false);
   const [isSelected, setSelected] = React.useState(false);
+  const [isMove, setMove] = React.useState(false);
 
   const [ref, unobserve] = useIntersectionObserver((e) => {
     if (fileEntry && e.isIntersecting) {
@@ -295,7 +304,14 @@ export const FileManagerFileEntryList = ({
             </>
           )}
           <Dropdown.Divider />
-          <Dropdown.Item disabled={!fileMeta || isAccountExpired} eventKey="6" onClick={() => handleMoveFile(fileMeta)}>
+          <Dropdown.Item
+            disabled={!fileMeta || isAccountExpired}
+            eventKey="6"
+            onClick={() => {
+              handleMoveFile(fileMeta);
+              setMove(true);
+            }}
+          >
             <i className="icon-move"></i>
             Move
           </Dropdown.Item>
