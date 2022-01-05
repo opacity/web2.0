@@ -285,7 +285,7 @@ const LandingPage = ({ history }) => {
           <div className="col-md-6 left">
             <div className="card-item">
               <img src={quickswap} width={107} height={109} />
-              <NavLink href="https://info.quickswap.exchange/pair/0xFCEF650B29a3951EcFadb8364A9f7819Cd2e221a" target="_blank">
+              <NavLink href="https://info.quickswap.exchange/#/pair/0xFCEF650B29a3951EcFadb8364A9f7819Cd2e221a" target="_blank">
                 Buy OPCT on QUICKSWAP
               </NavLink>
             </div>
