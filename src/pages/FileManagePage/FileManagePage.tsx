@@ -896,6 +896,7 @@ const FileManagePage = ({ history }) => {
   const handleMoveFile = React.useCallback(async (file: FileMetadata) => {
     try {
       location = file.location;
+      toast.info(`File copied`);
       setIsFileChoosed(false);
     } catch (e) {
       toast.error(`An error occurred while get file location`);
