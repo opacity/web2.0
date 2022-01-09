@@ -80,6 +80,7 @@ let filesToUpload = [];
 const THREAD_COUNT = 10;
 let curThreadNum = 0;
 let uploaderThread = [];
+let faildUploadingList = [];
 
 const FileManagePage = ({ history }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -496,21 +497,27 @@ const FileManagePage = ({ history }) => {
     }
   }, [currentUploader]);
 
-  const handlRetryUpload = React.useCallback(async (item) => {
-    console.log("retry upload called");
-    console.log(item);
-
-    
-  }, []);
+  const handlRetryUpload = React.useCallback(
+    async (item) => {
+      console.log("retry upload called");
+      let retryfile = faildUploadingList.find((files) => files.id === item.id);
+      const path = pathGenerator(retryfile.file, currentPath);
+      console.log(path);
+      console.log(retryfile.file);
+      uploadFileOnSingleThread(retryfile.file, path);
+    },
+    [currentPath]
+  );
 
   const handleLocationShow = React.useCallback(async (item) => {
     console.log("handlelocation called");
     console.log(item);
-  
   }, []);
 
   const uploadFile = React.useCallback(
     async (file: File, path: string) => {
+      console.log("Uploading func call---1");
+      console.log(file);
       let toastID = file.size + file.name + path;
       try {
         let index = fileUploadingList.findIndex((ele) => ele.id === toastID);
@@ -544,6 +551,8 @@ const FileManagePage = ({ history }) => {
           const nextFile = filesToUpload[0];
           const nextFilePath = pathGenerator(nextFile, currentPath);
           uploadFile(nextFile, nextFilePath);
+          console.log(nextFile);
+          console.log(nextFilePath);
         }
 
         // side effects
@@ -560,6 +569,7 @@ const FileManagePage = ({ history }) => {
 
         upload.addEventListener(UploadEvents.CANCEL, (e: UploadCancelEvent) => {
           updateUploadingItemStatus(toastID, "cancelled");
+          faildUploadingList.push({ id: toastID, file: file });
         });
 
         upload.addEventListener(UploadEvents.FINISH, (e: UploadFinishedEvent) => {
@@ -585,6 +595,8 @@ const FileManagePage = ({ history }) => {
             const nextFile = filesToUpload[0];
             const nextFilePath = pathGenerator(nextFile, currentPath);
             uploadFile(nextFile, nextFilePath);
+            console.log(nextFile);
+            console.log(nextFilePath);
           }
         }
       } catch (e) {
@@ -621,9 +633,9 @@ const FileManagePage = ({ history }) => {
       let toastID = file.size + file.name + path;
       try {
         let index = fileUploadingList.findIndex((ele) => ele.id === toastID);
-        if (index > -1 && fileUploadingList[index].status === "cancelled") {
-          return;
-        }
+        // if (index > -1 && fileUploadingList[index].status === "cancelled") {
+        //   return;
+        // }
         const release = await fileUploadMutex.acquire();
 
         const upload = new OpaqueUpload({
@@ -662,7 +674,7 @@ const FileManagePage = ({ history }) => {
 
         try {
           const stream = await upload.start();
-          console.log("uploading,,,,,,");
+          console.log("single file uploading,,,,,,");
 
           stream && fileStream.pipeThrough(stream as TransformStream<Uint8Array, Uint8Array> as any);
           await upload.finish();
