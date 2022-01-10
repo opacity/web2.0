@@ -1102,19 +1102,28 @@ const FileManagePage = ({ history }) => {
     }
   };
   const FilterbyName = async (e) => {
-    console.log(searchname);
-    e.stopPropagation();
-    if (selectedFiles.length) {
-      setSelectedFiles([]);
-    } else {
-      let fileMetaValues = fileMetaList;
-
-      if (!fileMetaList) {
-        await getFolderMetaList();
-        fileMetaValues = await getFileMetaList();
+    //if (folderList.map((folder) => folder.name == searchname)
+    let filterfileList = fileList;
+    let filterfolderlist = folderList;
+    fileList.map(async (file) => {
+      if(file.name == searchname)
+      {
+        filterfileList = fileList;
       }
+    });
+    // console.log(searchname);
+    // e.stopPropagation();
+    // if (selectedFiles.length) {
+    //   setSelectedFiles([]);
+    // } else {
+    //   let fileMetaValues = fileMetaList;
 
-      setSelectedFiles(fileMetaValues.filter((item) => "uploaded" in item));
+    //   if (!fileMetaList) {
+    //     await getFolderMetaList();
+    //     fileMetaValues = await getFileMetaList();
+    //   }
+
+    //   setSelectedFiles(fileMetaValues.filter((item) => "uploaded" in item));
     }
   };
   const getSelectedFileSize = () => {
