@@ -80,6 +80,8 @@ let filesToUpload = [];
 const THREAD_COUNT = 10;
 let curThreadNum = 0;
 let uploaderThread = [];
+let storefileList = [];
+let storefolderList = [];
 
 const FileManagePage = ({ history }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -1102,28 +1104,28 @@ const FileManagePage = ({ history }) => {
     }
   };
   const FilterbyName = async (e) => {
-    //if (folderList.map((folder) => folder.name == searchname)
-    let filterfileList = fileList;
-    let filterfolderlist = folderList;
-    fileList.map(async (file) => {
-      if(file.name == searchname)
-      {
-        filterfileList = fileList;
-      }
-    });
-    // console.log(searchname);
-    // e.stopPropagation();
-    // if (selectedFiles.length) {
-    //   setSelectedFiles([]);
-    // } else {
-    //   let fileMetaValues = fileMetaList;
-
-    //   if (!fileMetaList) {
-    //     await getFolderMetaList();
-    //     fileMetaValues = await getFileMetaList();
-    //   }
-
-    //   setSelectedFiles(fileMetaValues.filter((item) => "uploaded" in item));
+    console.log("func called");
+    console.log(searchname);
+    if (searchname) {
+      let filterfileList = [];
+      let fileterfolderList = [];
+      console.log(fileList);
+      console.log(folderList);
+      fileList.forEach((file) => {
+        if (file.name.includes(searchname)) {
+          filterfileList.push(file);
+        }
+      });
+      folderList.forEach((folder) => {
+        if (folder.path.includes(searchname)) {
+          fileterfolderList.push(folder);
+        }
+      });
+      setFileList(filterfileList);
+      setFolderList(fileterfolderList);
+    } else {
+      setFileList(storefileList);
+      setFolderList(storefolderList);
     }
   };
   const getSelectedFileSize = () => {
