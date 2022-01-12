@@ -80,8 +80,6 @@ let filesToUpload = [];
 const THREAD_COUNT = 10;
 let curThreadNum = 0;
 let uploaderThread = [];
-let storefileList = [];
-let storefolderList = [];
 
 const FileManagePage = ({ history }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -1106,7 +1104,7 @@ const FileManagePage = ({ history }) => {
   const FilterbyName = async (e) => {
     console.log("func called");
     console.log(searchname);
-    if (searchname) {
+    if (searchname.length) {
       let filterfileList = [];
       let fileterfolderList = [];
       console.log(fileList);
@@ -1124,8 +1122,8 @@ const FileManagePage = ({ history }) => {
       setFileList(filterfileList);
       setFolderList(fileterfolderList);
     } else {
-      setFileList(storefileList);
-      setFolderList(storefolderList);
+      toast.info("Search string empty!!");
+      setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
     }
   };
   const getSelectedFileSize = () => {
