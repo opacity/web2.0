@@ -43,7 +43,6 @@ import * as moment from "moment";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { FileManagerFileEntryGrid, FileManagerFileEntryList } from "../../components/FileManager/FileManagerFileEntry";
-import { posix } from "path-browserify";
 import { FileManagerFolderEntryGrid, FileManagerFolderEntryList } from "../../components/FileManager/FileManagerFolderEntry";
 import FileShareModal from "../../components/FileManager/FileShareModal";
 import { useDropzone } from "react-dropzone";
@@ -67,7 +66,6 @@ const uploadImage = require("../../assets/upload.png");
 const empty = require("../../assets/empty.png");
 const logo = require("../../assets/logo2.png");
 const copy = require("../../assets/copy.svg");
-const cancel = require("../../assets/cancel.svg");
 
 streamsaver.mitm = "/resources/streamsaver/mitm.html";
 Object.assign(streamsaver, { WritableStream });
@@ -171,7 +169,6 @@ const FileManagePage = ({ history }) => {
   const [currentPlan, setCurrentPlan] = React.useState();
   const [isAccountExpired, setIsAccountExpired] = React.useState(false);
   const [, setProcessChange] = React.useState();
-  const [cmdKeyStatus, setCmdKeyStatus] = React.useState(false);
   const [currentUploader, setCurrentUploader] = React.useState<OpaqueUpload>();
   const [searchname, SetSearchname] = React.useState("");
 
