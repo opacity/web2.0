@@ -80,6 +80,7 @@ let filesToUpload = [];
 const THREAD_COUNT = 10;
 let curThreadNum = 0;
 let uploaderThread = [];
+let location;
 
 const FileManagePage = ({ history }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -170,6 +171,7 @@ const FileManagePage = ({ history }) => {
   const [showSignUpModal, setShowSignUpModal] = React.useState(false);
   const [currentPlan, setCurrentPlan] = React.useState();
   const [isAccountExpired, setIsAccountExpired] = React.useState(false);
+  const [isFilechoosed, setIsFileChoosed] = React.useState(true);
   const [, setProcessChange] = React.useState();
   const [cmdKeyStatus, setCmdKeyStatus] = React.useState(false);
   const [currentUploader, setCurrentUploader] = React.useState<OpaqueUpload>();
@@ -890,6 +892,34 @@ const FileManagePage = ({ history }) => {
       }
     },
     [accountSystem, updateCurrentFolderSwitch]
+  );
+
+  const handleMoveFile = React.useCallback(async (file: FileMetadata) => {
+    try {
+      location = file.location;
+      toast.info(`File copied`);
+      setIsFileChoosed(false);
+    } catch (e) {
+      toast.error(`An error occurred while get file location`);
+    }
+  }, []);
+
+  const handlePasteFilePath = React.useCallback(
+    async (folderpath) => {
+      setPageLoading(true);
+      try {
+        console.log(location);
+        console.log(folderpath);
+        await accountSystem.moveFile(location, folderpath, false);
+        toast.success(`File successfully moved!`);
+        setIsFileChoosed(true);
+        setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
+      } catch (e) {
+        setPageLoading(false);
+        toast.error(`An error occurred while moving a folder.`);
+      }
+    },
+    [accountSystem, currentPath, updateCurrentFolderSwitch]
   );
 
   const deleteMultiFile = React.useCallback(
@@ -1644,7 +1674,9 @@ const FileManagePage = ({ history }) => {
                           handleOpenRenameModal={handleOpenRenameModal}
                           handleDeleteBrokenFolder={handleDeleteBrokenFolder}
                           setCurrentPath={setCurrentPath}
+                          handlePasteFilePath={handlePasteFilePath}
                           isAccountExpired={isAccountExpired}
+                          isFilechoosed={isFilechoosed}
                         />
                       )
                   )}
@@ -1660,6 +1692,7 @@ const FileManagePage = ({ history }) => {
                           handleDeleteItem={handleDeleteItem}
                           handleOpenRenameModal={handleOpenRenameModal}
                           handleDeleteBrokenFile={handleDeleteBrokenFile}
+                          handleMoveFile={handleMoveFile}
                           downloadItem={async (f) => {
                             await fileDownload(f, false);
                             OnfinishFileManaging();
@@ -1758,7 +1791,9 @@ const FileManagePage = ({ history }) => {
                             handleOpenRenameModal={handleOpenRenameModal}
                             handleDeleteBrokenFolder={handleDeleteBrokenFolder}
                             setCurrentPath={setCurrentPath}
+                            handlePasteFilePath={handlePasteFilePath}
                             isAccountExpired={isAccountExpired}
+                            isFilechoosed={isFilechoosed}
                           />
                         )
                     )}
@@ -1773,6 +1808,7 @@ const FileManagePage = ({ history }) => {
                             filePublicShare={filePublicShare}
                             handleDeleteItem={handleDeleteItem}
                             handleDeleteBrokenFile={handleDeleteBrokenFile}
+                            handleMoveFile={handleMoveFile}
                             handleOpenRenameModal={handleOpenRenameModal}
                             downloadItem={async (f) => {
                               await fileDownload(f);
