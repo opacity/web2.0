@@ -1153,7 +1153,7 @@ const FileManagePage = ({ history }) => {
       setFolderList(fileterfolderList);
     } else {
       toast.info("Search string empty!!");
-      //setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
+      setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
     }
   };
   const getSelectedFileSize = () => {
