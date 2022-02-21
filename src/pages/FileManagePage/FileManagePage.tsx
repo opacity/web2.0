@@ -81,6 +81,7 @@ const THREAD_COUNT = 10;
 let curThreadNum = 0;
 let uploaderThread = [];
 let location;
+let selectFilesLocation =[];
 
 const FileManagePage = ({ history }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -896,6 +897,7 @@ const FileManagePage = ({ history }) => {
 
   const handleMoveFile = React.useCallback(async (file: FileMetadata) => {
     try {
+      selectFilesLocation[0] = file.location;
       location = file.location;
       toast.info(`File copied`);
       setIsFileChoosed(false);
@@ -904,13 +906,50 @@ const FileManagePage = ({ history }) => {
     }
   }, []);
 
+  const handleKeyMoveFile = async () => {
+    //setPageLoading(true);
+    for(let i=0 ; i< selectedFiles.length; i++)
+    {
+      selectFilesLocation[i] = selectedFiles[i].location;
+    }
+    console.log(selectFilesLocation);
+    OnfinishFileManaging();
+  };
+
+  const handleKeyPasteFile = React.useCallback(
+    async (currentPath) => {
+      setPageLoading(true);
+      console.log(selectFilesLocation);
+      try {
+        console.log(currentPath);
+        console.log(selectFilesLocation.length);
+        for(let i=0 ; i<selectFilesLocation.length ; i++)
+        {
+          await accountSystem.moveFile(selectFilesLocation[i], currentPath, false);
+        }
+        toast.success(`File successfully moved!`);
+        setIsFileChoosed(true);
+        setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
+      } catch (e) {
+        setPageLoading(false);
+        toast.error(`An error occurred while moving a folder.`);
+      }
+    },
+    [accountSystem, currentPath, updateCurrentFolderSwitch]
+  );
+  
   const handlePasteFilePath = React.useCallback(
     async (folderpath) => {
       setPageLoading(true);
       try {
         console.log(location);
         console.log(folderpath);
-        await accountSystem.moveFile(location, folderpath, false);
+        console.log(currentPath);
+        //await accountSystem.moveFile(location, folderpath, false);
+        for(let i=0 ; i<selectFilesLocation.length ; i++)
+        {
+          await accountSystem.moveFile(selectFilesLocation[i], folderpath, false);
+        }
         toast.success(`File successfully moved!`);
         setIsFileChoosed(true);
         setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
@@ -933,7 +972,7 @@ const FileManagePage = ({ history }) => {
             net: netMiddleware,
             crypto: cryptoMiddleware,
             storageNode: storageNode,
-          },
+          }, 
         });
         bindFileSystemObjectToAccountSystem(accountSystem, fso);
         await accountSystem
@@ -1316,6 +1355,20 @@ const FileManagePage = ({ history }) => {
       e.stopPropagation();
       onSelectAll(e);
     }
+
+    if (e.keyCode === 88 && localStorage.cmd_status === "true") {
+      e.preventDefault();
+      e.stopPropagation();
+      handleKeyMoveFile();
+      console.log("file move func called");
+    }
+
+    if (e.keyCode === 86 && localStorage.cmd_status === "true") {
+      //e.prentDveefault();
+      //e.stopPropagation();
+      handleKeyPasteFile();
+      console.log("file paste func called");
+    }
   };
 
   const keyUpHandler = (e) => {
@@ -1675,8 +1728,9 @@ const FileManagePage = ({ history }) => {
                           handleDeleteBrokenFolder={handleDeleteBrokenFolder}
                           setCurrentPath={setCurrentPath}
                           handlePasteFilePath={handlePasteFilePath}
+                          handleKeyPasteFile={handleKeyPasteFile}
                           isAccountExpired={isAccountExpired}
-                          isFilechoosed={isFilechoosed}
+                          //isFilechoosed={isFilechoosed}
                         />
                       )
                   )}
@@ -1792,8 +1846,9 @@ const FileManagePage = ({ history }) => {
                             handleDeleteBrokenFolder={handleDeleteBrokenFolder}
                             setCurrentPath={setCurrentPath}
                             handlePasteFilePath={handlePasteFilePath}
+                            handleKeyPasteFile={handleKeyPasteFile}
                             isAccountExpired={isAccountExpired}
-                            isFilechoosed={isFilechoosed}
+                            //isFilechoosed={isFilechoosed}
                           />
                         )
                     )}

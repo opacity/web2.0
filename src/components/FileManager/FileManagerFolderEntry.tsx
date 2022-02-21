@@ -16,6 +16,7 @@ export type FileManagerFolderEntryProps = {
   handleDeleteItem: (f: FolderFileEntry | FoldersIndexEntry, isFile: boolean) => void;
   handleOpenRenameModal: (f: FolderFileEntry | FoldersIndexEntry, isFile: boolean) => void;
   handlePasteFilePath: (p: string) => void;
+  handleKeyPasteFile: (p: string) => void;
   handleDeleteBrokenFolder: (location: Uint8Array) => void;
   isAccountExpired?: boolean;
   isFilechoosed?: boolean;
@@ -28,6 +29,7 @@ export const FileManagerFolderEntryGrid = ({
   handleDeleteItem,
   handleOpenRenameModal,
   handlePasteFilePath,
+  handleKeyPasteFile,
   handleDeleteBrokenFolder,
   isAccountExpired,
   isFilechoosed,
@@ -93,7 +95,7 @@ export const FileManagerFolderEntryGrid = ({
             Rename
           </Dropdown.Item>
           <Dropdown.Divider />
-          <Dropdown.Item disabled={isFilechoosed} eventKey="6" onClick={() => handlePasteFilePath(folderEntry.path)}>
+          <Dropdown.Item disabled={isFilechoosed} eventKey="6" onClick={() => handlePasteFilePath(folderEntry.path)} onChange={() => handleKeyPasteFile(folderEntry.path)}>
             <i className="icon-paste"></i>
             Paste
           </Dropdown.Item>
@@ -119,6 +121,7 @@ export const FileManagerFolderEntryList = ({
   handleDeleteItem,
   handleOpenRenameModal,
   handlePasteFilePath,
+  handleKeyPasteFile,
   handleDeleteBrokenFolder,
   isAccountExpired,
   isFilechoosed,
@@ -194,7 +197,7 @@ export const FileManagerFolderEntryList = ({
             Rename
           </Dropdown.Item>
           <Dropdown.Divider />
-          <Dropdown.Item disabled={isFilechoosed} eventKey="6" onClick={() => handlePasteFilePath(folderEntry.path)}>
+          <Dropdown.Item disabled={isFilechoosed} eventKey="6" onClick={() => handlePasteFilePath(folderEntry.path)} onChange={() => handleKeyPasteFile(folderEntry.path)}>
             <i className="icon-paste"></i>
             Paste
           </Dropdown.Item>
