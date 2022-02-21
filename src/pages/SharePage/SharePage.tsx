@@ -147,10 +147,8 @@ const SharePage = ({ history }) => {
       if (mode === "download" && s.pipeTo) {
         s.pipeTo(fileStream as WritableStream<Uint8Array>)
           .then(() => {
-            console.log("done");
           })
           .catch((err) => {
-            console.log(err);
             throw err;
           });
       } else if (mode === "preview" && s.getReader) {
@@ -171,7 +169,6 @@ const SharePage = ({ history }) => {
       }
     } catch (e) {
       console.error(e);
-      console.log("download end");
     }
   };
 

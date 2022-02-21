@@ -43,7 +43,6 @@ import * as moment from "moment";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { FileManagerFileEntryGrid, FileManagerFileEntryList } from "../../components/FileManager/FileManagerFileEntry";
-import { posix } from "path-browserify";
 import { FileManagerFolderEntryGrid, FileManagerFolderEntryList } from "../../components/FileManager/FileManagerFolderEntry";
 import FileShareModal from "../../components/FileManager/FileShareModal";
 import { useDropzone } from "react-dropzone";
@@ -67,7 +66,6 @@ const uploadImage = require("../../assets/upload.png");
 const empty = require("../../assets/empty.png");
 const logo = require("../../assets/logo2.png");
 const copy = require("../../assets/copy.svg");
-const cancel = require("../../assets/cancel.svg");
 
 streamsaver.mitm = "/resources/streamsaver/mitm.html";
 Object.assign(streamsaver, { WritableStream });
@@ -173,7 +171,6 @@ const FileManagePage = ({ history }) => {
   const [isAccountExpired, setIsAccountExpired] = React.useState(false);
   const [isFilechoosed, setIsFileChoosed] = React.useState(true);
   const [, setProcessChange] = React.useState();
-  const [cmdKeyStatus, setCmdKeyStatus] = React.useState(false);
   const [currentUploader, setCurrentUploader] = React.useState<OpaqueUpload>();
   const [searchname, SetSearchname] = React.useState("");
 
@@ -203,7 +200,6 @@ const FileManagePage = ({ history }) => {
     if (isManaging === true || window.location.pathname !== "/file-manager") {
       return;
     }
-    console.log("You have been loged out");
     localStorage.clear();
     history.push("/");
   };
@@ -560,7 +556,6 @@ const FileManagePage = ({ history }) => {
 
         try {
           const stream = await upload.start();
-          console.log("uploading,,,,,,");
 
           stream && fileStream.pipeThrough(stream as TransformStream<Uint8Array, Uint8Array> as any);
           await upload.finish();
@@ -652,7 +647,6 @@ const FileManagePage = ({ history }) => {
 
         try {
           const stream = await upload.start();
-          console.log("uploading,,,,,,");
 
           stream && fileStream.pipeThrough(stream as TransformStream<Uint8Array, Uint8Array> as any);
           await upload.finish();
@@ -660,7 +654,7 @@ const FileManagePage = ({ history }) => {
           release();
         }
       } catch (e) {
-        console.log(e, "error on uploading file in mutex");
+        console.error(e,"error on uploading file in mutex");
       }
     },
     [
@@ -796,20 +790,16 @@ const FileManagePage = ({ history }) => {
           const s = await d.start();
 
           d.finish().then(() => {
-            console.log("finish");
             OnfinishFileManaging();
           });
 
           // more optimized
           if (s.pipeTo && !isMultiple) {
-            console.log("pipe");
             s.pipeTo(fileStream as WritableStream<Uint8Array>)
               .then(() => {
                 setPageLoading(false);
-                console.log("done");
               })
               .catch((err) => {
-                console.log(err);
                 throw err;
               });
           } else if (isMultiple && s.getReader) {
@@ -1132,13 +1122,9 @@ const FileManagePage = ({ history }) => {
     }
   };
   const FilterbyName = async (e) => {
-    console.log("func called");
-    console.log(searchname);
     if (searchname.length) {
       let filterfileList = [];
       let fileterfolderList = [];
-      console.log(fileList);
-      console.log(folderList);
       fileList.forEach((file) => {
         if (file.name.includes(searchname)) {
           filterfileList.push(file);

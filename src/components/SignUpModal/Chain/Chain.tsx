@@ -50,7 +50,6 @@ const Chain = ({ chain, invoice, contractAddress }) => {
           setIsConnected(true);
         })
         .catch((error) => {
-          console.log(error, "Error on add network");
           toast.error(error?.message);
         });
     });
@@ -131,7 +130,6 @@ const Chain = ({ chain, invoice, contractAddress }) => {
         contractAddress,
       });
     } catch (error) {
-      console.log(error, "error on send transaction");
       toast.error("Error on send transaction");
     } finally {
       setIsDisabled(false);
