@@ -906,38 +906,6 @@ const FileManagePage = ({ history }) => {
     }
   }, []);
 
-  const handleKeyMoveFile = async () => {
-    //setPageLoading(true);
-    for(let i=0 ; i< selectedFiles.length; i++)
-    {
-      selectFilesLocation[i] = selectedFiles[i].location;
-    }
-    console.log(selectFilesLocation);
-    OnfinishFileManaging();
-  };
-
-  const handleKeyPasteFile = React.useCallback(
-    async (currentPath) => {
-      setPageLoading(true);
-      console.log(selectFilesLocation);
-      try {
-        console.log(currentPath);
-        console.log(selectFilesLocation.length);
-        for(let i=0 ; i<selectFilesLocation.length ; i++)
-        {
-          await accountSystem.moveFile(selectFilesLocation[i], currentPath, false);
-        }
-        toast.success(`File successfully moved!`);
-        setIsFileChoosed(true);
-        setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
-      } catch (e) {
-        setPageLoading(false);
-        toast.error(`An error occurred while moving a folder.`);
-      }
-    },
-    [accountSystem, currentPath, updateCurrentFolderSwitch]
-  );
-  
   const handlePasteFilePath = React.useCallback(
     async (folderpath) => {
       setPageLoading(true);
@@ -945,8 +913,7 @@ const FileManagePage = ({ history }) => {
         console.log(location);
         console.log(folderpath);
         console.log(currentPath);
-        //await accountSystem.moveFile(location, folderpath, false);
-        for(let i=0 ; i<selectFilesLocation.length ; i++)
+        for(let i=0 ; i< selectFilesLocation.length ; i++)
         {
           await accountSystem.moveFile(selectFilesLocation[i], folderpath, false);
         }
@@ -959,6 +926,38 @@ const FileManagePage = ({ history }) => {
       }
     },
     [accountSystem, currentPath, updateCurrentFolderSwitch]
+  );
+
+  //move multiple files to folder using keypress
+  const handleKeyMoveFile = async () => {
+    for(let i=0 ; i< selectedFiles.length; i++)
+    {
+      selectFilesLocation[i] = selectedFiles[i].location;
+    }
+    console.log(selectFilesLocation);
+    setSelectedFiles([]);
+    OnfinishFileManaging();
+  };
+
+  const handleKeyPasteFile = React.useCallback(
+    async () => {
+      setPageLoading(true);
+      console.log(selectFilesLocation);
+      try {
+        console.log(currentPath);
+        for(let i=0 ; i<selectFilesLocation.length ; i++)
+        {
+          await accountSystem.moveFile(selectFilesLocation[i], currentPath, false);
+        }
+        toast.success(`File successfully moved!`);
+        setIsFileChoosed(true);
+        setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
+      } catch (e) {
+        setPageLoading(false);
+        toast.error(`An error occurred while moving a folder.`);
+      }
+    },
+    [accountSystem, updateCurrentFolderSwitch]
   );
 
   const deleteMultiFile = React.useCallback(
@@ -1666,6 +1665,7 @@ const FileManagePage = ({ history }) => {
           <div className="breadcrumb-content">
             <Breadcrumb>
               <Breadcrumb.Item href="#" onClick={() => currentPath !== "/" && setCurrentPath("/")}>
+                {console.log("curentPath:",currentPath)}
                 <span className="home-icon"></span>
               </Breadcrumb.Item>
               {currentPath !== "/" &&
