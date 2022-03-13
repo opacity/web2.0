@@ -934,7 +934,7 @@ const FileManagePage = ({ history }) => {
     {
       selectFilesLocation[i] = selectedFiles[i].location;
     }
-    console.log(selectFilesLocation);
+    console.log("Cut",selectFilesLocation);
     setSelectedFiles([]);
     OnfinishFileManaging();
   };
@@ -942,16 +942,16 @@ const FileManagePage = ({ history }) => {
   const handleKeyPasteFile = React.useCallback(
     async () => {
       setPageLoading(true);
-      console.log(selectFilesLocation);
+      console.log("Paste", selectFilesLocation);
       try {
         console.log(currentPath);
         for(let i=0 ; i<selectFilesLocation.length ; i++)
         {
           await accountSystem.moveFile(selectFilesLocation[i], currentPath, false);
         }
+        setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
         toast.success(`File successfully moved!`);
         setIsFileChoosed(true);
-        setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
       } catch (e) {
         setPageLoading(false);
         toast.error(`An error occurred while moving a folder.`);
@@ -1130,6 +1130,13 @@ const FileManagePage = ({ history }) => {
     },
     [currentPath]
   );
+
+  // const onInternalDrop = React.useCallback(
+  //   (files) => {
+  //     setSelectedFiles(files);
+  //   },
+  //   [currentPath]
+  // );
 
   const { isDragActive, fileRejections, getRootProps } = useDropzone({
     onDrop,
