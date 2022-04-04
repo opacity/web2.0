@@ -10,7 +10,6 @@ const getPlural = (count, string) => (count > 1 ? string + "s" : string);
 
 const UploadingNotification = ({ notifications, uploadFinish, setUploadingList, onCancel, onCancelAll }) => {
   const [minimize, setMinimize] = React.useState(false);
-  const [isClose, setClose] = React.useState(false);
   const handleMinimize = () => {
     setMinimize(!minimize);
   };

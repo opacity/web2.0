@@ -7,7 +7,6 @@ import * as Yup from "yup";
 import ExtChangeAlertModal from "../ExtChangeAlertModal/ExtChangeAlertModal";
 import "./RenameModal.scss";
 
-const logo = require("../../assets/logo2.png");
 const nameSchema = Yup.object().shape({
   name: Yup.string().required("Name is required."),
 });
@@ -51,7 +50,6 @@ const RenameModal: React.FC<OtherProps> = ({ show, handleClose, oldName, setNewN
         initialValues={initValues}
         validationSchema={nameSchema}
         onSubmit={(values, { setErrors }) => {
-          console.log("isfile", isFile);
           if (isFile) {
             const oldExt = oldName.split(".").pop();
             const newExt = values.name.split(".").pop();
@@ -60,7 +58,6 @@ const RenameModal: React.FC<OtherProps> = ({ show, handleClose, oldName, setNewN
             setRenamingValue(values);
 
             if (oldExt != newExt) {
-              console.log("Not Same");
               setShowExtAlert(true);
               return;
             }

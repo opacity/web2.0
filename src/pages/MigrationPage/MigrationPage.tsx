@@ -45,22 +45,18 @@ const MigrationPage = ({ history }) => {
     });
 
     migrator.addEventListener(MigratorEvents.PERCENT, (s: any) => {
-      console.log("Percent:", s.detail.percent);
       setPercent(s.detail.percent);
     });
 
     migrator.addEventListener(MigratorEvents.STATUS, (s: any) => {
-      console.log("Status:", s.detail.status);
       setMigrationStatus(s.detail.status);
     });
 
     migrator.addEventListener(MigratorEvents.DETAILS, (d: any) => {
-      console.info("Details:", d.detail.details);
       setMigrationDetails(d.detail.details);
     });
 
     migrator.addEventListener(MigratorEvents.WARNING, (w: any) => {
-      console.warn("Warning:", w.detail.warning);
       setErrorStatus(w.detail.warning);
     });
 

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Button, Container } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import SiteWrapper from "../../SiteWrapper";
 import "./AboutPage.scss";
 
