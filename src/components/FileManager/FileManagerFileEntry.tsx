@@ -9,6 +9,7 @@ import { FileIcon, defaultStyles } from "react-file-icon";
 import { useMediaQuery } from "react-responsive";
 import { arraysEqual } from "../../../ts-client-library/packages/util/src/arrayEquality";
 import BrokenBadgeOnEntry from "./BrokenBadgeOnEntry";
+import { useDrag } from "react-dnd";
 
 const getFileExtension = (name) => {
   const lastDot = name.lastIndexOf(".");
@@ -182,7 +183,7 @@ export const FileManagerFileEntryList = ({
   const [isBroken, setIsBroken] = React.useState(false);
   const [isSelected, setSelected] = React.useState(false);
   const [isMove, setMove] = React.useState(false);
-
+  
   const [ref, unobserve] = useIntersectionObserver((e) => {
     if (fileEntry && e.isIntersecting) {
       unobserve();
