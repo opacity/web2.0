@@ -8,6 +8,7 @@ import { posix } from "path-browserify";
 import { FileIcon } from "react-file-icon";
 import { useMediaQuery } from "react-responsive";
 import BrokenBadgeOnEntry from "./BrokenBadgeOnEntry";
+import { useDrop } from "react-dnd";
 
 export type FileManagerFolderEntryProps = {
   accountSystem: AccountSystem;
@@ -129,6 +130,17 @@ export const FileManagerFolderEntryList = ({
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const [folderMeta, setFolderMeta] = React.useState<FolderMetadata>();
   const [isBroken, setIsBroken] = React.useState(false);
+  const elementRef = React.useRef(null);
+
+  const [, drop] = useDrop({
+    accept: "file",
+    hover(item) {
+      console.log("hovering", item)
+    }
+  });
+
+  drop(elementRef);
+
 
   const [ref, unobserve] = useIntersectionObserver((e) => {
     if (folderEntry && e.isIntersecting) {
@@ -159,7 +171,7 @@ export const FileManagerFolderEntryList = ({
   };
 
   return (
-    <Table.Row>
+    <tr ref={elementRef}>
       <Table.Col className="file-name" onClick={() => !isBroken && folderMeta && setCurrentPath(folderEntry.path)}>
         <div className="d-flex" ref={ref}>
           <i className="icon-folder"></i>
@@ -212,6 +224,6 @@ export const FileManagerFolderEntryList = ({
           )}
         </DropdownButton>
       </Table.Col>
-    </Table.Row>
+    </tr>
   );
 };

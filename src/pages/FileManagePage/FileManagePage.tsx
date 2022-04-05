@@ -1864,7 +1864,7 @@ const FileManagePage = ({ history }) => {
                           )
                       )}
                       {fileList.map(
-                        (item) =>
+                        (item, idx) =>
                           item && (
                             <FileManagerFileEntryList
                               key={bytesToB64URL(item.location)}
@@ -1883,6 +1883,7 @@ const FileManagePage = ({ history }) => {
                               handleSelectFile={handleSelectFile}
                               selectedFiles={selectedFiles}
                               isAccountExpired={isAccountExpired}
+                              index={idx}
                             />
                           )
                       )}
