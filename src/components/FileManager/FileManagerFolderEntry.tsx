@@ -136,6 +136,9 @@ export const FileManagerFolderEntryList = ({
     accept: "file",
     hover(item) {
       console.log("hovering", item)
+      console.log(folderEntry.path)
+      handlePasteFilePath(folderEntry.path)
+      setCurrentPath(folderEntry.path);
     }
   });
 

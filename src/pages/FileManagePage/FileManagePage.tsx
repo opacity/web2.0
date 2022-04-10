@@ -902,7 +902,6 @@ const FileManagePage = ({ history }) => {
     try {
       selectFilesLocation[0] = file.location;
       location = file.location;
-      toast.info(`File copied`);
       setIsFileChoosed(false);
     } catch (e) {
       toast.error(`An error occurred while get file location`);
@@ -913,9 +912,6 @@ const FileManagePage = ({ history }) => {
     async (folderpath) => {
       setPageLoading(true);
       try {
-        console.log(location);
-        console.log(folderpath);
-        console.log(currentPath);
         for(let i=0 ; i< selectFilesLocation.length ; i++)
         {
           await accountSystem.moveFile(selectFilesLocation[i], folderpath, false);
@@ -1133,13 +1129,6 @@ const FileManagePage = ({ history }) => {
     },
     [currentPath]
   );
-
-  // const onInternalDrop = React.useCallback(
-  //   (files) => {
-  //     setSelectedFiles(files);
-  //   },
-  //   [currentPath]
-  // );
 
   const { isDragActive, fileRejections, getRootProps } = useDropzone({
     onDrop,

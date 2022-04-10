@@ -203,8 +203,10 @@ export const FileManagerFileEntryList = ({
   }));
 
   drag(elementRef)
-
   console.log("isDragging: " + isDragging)
+  if(isDragging) {
+    handleMoveFile(fileMeta)
+  }
 
   const [ref, unobserve] = useIntersectionObserver((e) => {
     if (fileEntry && e.isIntersecting) {
