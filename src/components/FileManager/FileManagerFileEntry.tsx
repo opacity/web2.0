@@ -54,6 +54,27 @@ export const FileManagerFileEntryGrid = ({
   const [isBroken, setIsBroken] = React.useState(false);
   const [isMove, setMove] = React.useState(false);
 
+  const elementRef = React.useRef(null);
+
+  const [{ isDragging }, drag] = useDrag(() => ({
+    // what type of item this to determine if a drop target accepts it
+    type: "file",
+    // data of the item to be available to the drop methods
+    item: { id: "id" + index, index },
+    // method to collect additional data for drop handling like whether is currently being dragged
+    collect: (monitor) => {
+      return {
+        isDragging: monitor.isDragging(),
+      };
+    },
+  }));
+
+  drag(elementRef)
+  console.log("isDragging: " + isDragging)
+  if(isDragging) {
+    handleMoveFile(fileMeta)
+  }
+
   const [ref, unobserve] = useIntersectionObserver(() => {
     if (fileEntry) {
       unobserve();
@@ -85,7 +106,7 @@ export const FileManagerFileEntryGrid = ({
   };
 
   return (
-    <div className="grid-item">
+    <div className="grid-item" ref={elementRef}>
       <div className={`items ${isSelected && "grid-item-selected"}`} onClick={() => fileMeta && handleSelectFile(fileMeta)}>
         <div style={{ width: "40px" }}>
           <FileIcon

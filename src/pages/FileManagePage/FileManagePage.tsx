@@ -1714,49 +1714,52 @@ const FileManagePage = ({ history }) => {
               )}
 
               {!tableView && (
-                <div className="grid-view">
-                  {folderList.map(
-                    (item) =>
-                      item && (
-                        <FileManagerFolderEntryGrid
-                          key={bytesToB64URL(item.location)}
-                          accountSystem={accountSystem}
-                          folderEntry={item}
-                          handleDeleteItem={handleDeleteItem}
-                          handleOpenRenameModal={handleOpenRenameModal}
-                          handleDeleteBrokenFolder={handleDeleteBrokenFolder}
-                          setCurrentPath={setCurrentPath}
-                          handlePasteFilePath={handlePasteFilePath}
-                          handleKeyPasteFile={handleKeyPasteFile}
-                          isAccountExpired={isAccountExpired}
-                          //isFilechoosed={isFilechoosed}
-                        />
-                      )
-                  )}
-                  {fileList.map(
-                    (item) =>
-                      item && (
-                        <FileManagerFileEntryGrid
-                          key={bytesToB64URL(item.location)}
-                          accountSystem={accountSystem}
-                          fileEntry={item}
-                          fileShare={fileShare}
-                          filePublicShare={filePublicShare}
-                          handleDeleteItem={handleDeleteItem}
-                          handleOpenRenameModal={handleOpenRenameModal}
-                          handleDeleteBrokenFile={handleDeleteBrokenFile}
-                          handleMoveFile={handleMoveFile}
-                          downloadItem={async (f) => {
-                            await fileDownload(f, false);
-                            OnfinishFileManaging();
-                          }}
-                          handleSelectFile={handleSelectFile}
-                          selectedFiles={selectedFiles}
-                          isAccountExpired={isAccountExpired}
-                        />
-                      )
-                  )}
-                </div>
+                 <DndProvider backend={HTML5Backend}>
+                  <div className="grid-view">
+                    {folderList.map(
+                      (item) =>
+                        item && (
+                          <FileManagerFolderEntryGrid
+                            key={bytesToB64URL(item.location)}
+                            accountSystem={accountSystem}
+                            folderEntry={item}
+                            handleDeleteItem={handleDeleteItem}
+                            handleOpenRenameModal={handleOpenRenameModal}
+                            handleDeleteBrokenFolder={handleDeleteBrokenFolder}
+                            setCurrentPath={setCurrentPath}
+                            handlePasteFilePath={handlePasteFilePath}
+                            handleKeyPasteFile={handleKeyPasteFile}
+                            isAccountExpired={isAccountExpired}
+                            //isFilechoosed={isFilechoosed}
+                          />
+                        )
+                    )}
+                    {fileList.map(
+                      (item, idx) =>
+                        item && (
+                          <FileManagerFileEntryGrid
+                            key={bytesToB64URL(item.location)}
+                            accountSystem={accountSystem}
+                            fileEntry={item}
+                            fileShare={fileShare}
+                            filePublicShare={filePublicShare}
+                            handleDeleteItem={handleDeleteItem}
+                            handleOpenRenameModal={handleOpenRenameModal}
+                            handleDeleteBrokenFile={handleDeleteBrokenFile}
+                            handleMoveFile={handleMoveFile}
+                            downloadItem={async (f) => {
+                              await fileDownload(f, false);
+                              OnfinishFileManaging();
+                            }}
+                            handleSelectFile={handleSelectFile}
+                            selectedFiles={selectedFiles}
+                            isAccountExpired={isAccountExpired}
+                            index={idx}
+                          />
+                        )
+                    )}
+                  </div>
+                </DndProvider>
               )}
 
               {tableView && (

@@ -37,6 +37,19 @@ export const FileManagerFolderEntryGrid = ({
 }: FileManagerFolderEntryProps) => {
   const [folderMeta, setFolderMeta] = React.useState<FolderMetadata>();
   const [isBroken, setIsBroken] = React.useState(false);
+  const elementRef = React.useRef(null);
+
+  const [, drop] = useDrop({
+    accept: "file",
+    hover(item) {
+      console.log("hovering", item)
+      console.log(folderEntry.path)
+      handlePasteFilePath(folderEntry.path)
+      setCurrentPath(folderEntry.path);
+    }
+  });
+
+  drop(elementRef);
 
   const [ref, unobserve] = useIntersectionObserver((e) => {
     if (folderEntry && e.isIntersecting) {
@@ -59,7 +72,7 @@ export const FileManagerFolderEntryGrid = ({
   };
 
   return (
-    <div className="grid-item">
+    <div className="grid-item" ref={elementRef}>
       <div className="items" onClick={() => !isBroken && folderMeta && setCurrentPath(folderEntry.path)}>
         <div style={{ width: "40px" }}>
           <FileIcon color="#8A8A8A" labelColor="#A8A8A8" fold={false} extension="folder" />
