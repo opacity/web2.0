@@ -563,7 +563,7 @@
     max-width: none;
     .breadcrumb-content {
       border-bottom: 2px solid #e2e2e2;
-      margin-bottom: 60px;
+      margin-bottom: 10px;
       .home-icon {
         content: url("../../assets/home.svg");
         margin-top: 5px;
@@ -1014,9 +1014,8 @@
 
 .searchbox-container {
   display: flex;
-  position: absolute;
-  right: 60px;
-  margin-top: 10px;
+  justify-content: right;
+  margin: 5px 40px 10px 0px;
   .searchbox-input {
     width: 250px;
     margin-right: 10px;

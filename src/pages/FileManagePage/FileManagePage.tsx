@@ -172,7 +172,6 @@ const FileManagePage = ({ history }) => {
   const [isFilechoosed, setIsFileChoosed] = React.useState(true);
   const [, setProcessChange] = React.useState();
   const [currentUploader, setCurrentUploader] = React.useState<OpaqueUpload>();
-  const [searchname, SetSearchname] = React.useState("");
 
   const handleShowSidebar = React.useCallback(() => {
     setShowSidebar(!showSidebar);
@@ -1121,17 +1120,17 @@ const FileManagePage = ({ history }) => {
       setSelectedFiles(fileMetaValues.filter((item) => "uploaded" in item));
     }
   };
-  const FilterbyName = async (e) => {
-    if (searchname.length) {
+  const FilterbyName = async (searchName) => {
+    if (searchName.length) {
       let filterfileList = [];
       let fileterfolderList = [];
       fileList.forEach((file) => {
-        if (file.name.includes(searchname)) {
+        if (file.name.toLowerCase().includes(searchName.toLowerCase())) {
           filterfileList.push(file);
         }
       });
       folderList.forEach((folder) => {
-        if (folder.path.includes(searchname)) {
+        if (folder.path.toLowerCase().includes(searchName.toLowerCase())) {
           fileterfolderList.push(folder);
         }
       });
@@ -1614,19 +1613,14 @@ const FileManagePage = ({ history }) => {
                   )
                 )}
             </Breadcrumb>
-            <div className="searchbox-container">
+          </div>
+          <div className="searchbox-container">
               <Form.Control
                 className="searchbox-input"
                 placeholder="Search folder and files"
-                onChange={(e) => SetSearchname(e.target.value)}
+                onChange={(e) => FilterbyName(e.target.value)}
               />
-              <button type="button" className="btn btn-outline-secondary" onClick={FilterbyName}>
-                <svg width="15px" height="15px">
-                  <path d="M11.618 9.897l4.224 4.212c.092.09.1.23.02.312l-1.464 1.46c-.08.08-.222.072-.314-.02L9.868 11.66M6.486 10.9c-2.42 0-4.38-1.955-4.38-4.367 0-2.413 1.96-4.37 4.38-4.37s4.38 1.957 4.38 4.37c0 2.412-1.96 4.368-4.38 4.368m0-10.834C2.904.066 0 2.96 0 6.533 0 10.105 2.904 13 6.486 13s6.487-2.895 6.487-6.467c0-3.572-2.905-6.467-6.487-6.467 "></path>
-                </svg>
-              </button>
             </div>
-          </div>
           {fileList.length === 0 && folderList.length === 0 && (
             <div className="empty-list">
               <img src={empty} />
