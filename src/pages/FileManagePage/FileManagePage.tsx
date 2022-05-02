@@ -172,7 +172,6 @@ const FileManagePage = ({ history }) => {
   const [isFilechoosed, setIsFileChoosed] = React.useState(true);
   const [, setProcessChange] = React.useState();
   const [currentUploader, setCurrentUploader] = React.useState<OpaqueUpload>();
-  //const [searchname, SetSearchname] = React.useState("");
 
   const handleShowSidebar = React.useCallback(() => {
     setShowSidebar(!showSidebar);
