@@ -172,7 +172,6 @@ const FileManagePage = ({ history }) => {
   const [isFilechoosed, setIsFileChoosed] = React.useState(true);
   const [, setProcessChange] = React.useState();
   const [currentUploader, setCurrentUploader] = React.useState<OpaqueUpload>();
-  //const [searchname, SetSearchname] = React.useState("");
 
   const handleShowSidebar = React.useCallback(() => {
     setShowSidebar(!showSidebar);
@@ -1121,17 +1120,17 @@ const FileManagePage = ({ history }) => {
       setSelectedFiles(fileMetaValues.filter((item) => "uploaded" in item));
     }
   };
-  const FilterbyName = async (searchname) => {
-    if (searchname.length) {
+  const FilterbyName = async (searchName) => {
+    if (searchName.length) {
       let filterfileList = [];
       let fileterfolderList = [];
       fileList.forEach((file) => {
-        if (file.name.toLowerCase().includes(searchname.toLowerCase())) {
+        if (file.name.toLowerCase().includes(searchName.toLowerCase())) {
           filterfileList.push(file);
         }
       });
       folderList.forEach((folder) => {
-        if (folder.path.toLowerCase().includes(searchname.toLowerCase())) {
+        if (folder.path.toLowerCase().includes(searchName.toLowerCase())) {
           fileterfolderList.push(folder);
         }
       });
