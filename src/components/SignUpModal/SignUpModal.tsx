@@ -648,11 +648,11 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, is
                   {selectedNetwork && <Chain chain={selectedNetwork.chain} contractAddress={selectedNetwork.address} invoice={invoice} />}
                 </div>
               </Col>
-              <Col>
+              {/* <Col>
                 <div className="scan">
                   <h1 className="subtitle-bottom-effect">Pay with Gift Code</h1>
                   <Redeem planName={plan?.name} ethAddress={invoice.ethAddress} />
-                  {/* <QRCode
+                  <QRCode
                     value={invoice.ethAddress}
                     size={200}
                     renderAs="svg"
@@ -661,9 +661,9 @@ const SendPayment: React.FC<SignUpProps> = ({ goNext, plan, invoice, account, is
                     level="H"
                     color="#ffffff"
                     includeMargin={true}
-                  /> */}
+                  />
                 </div>
-              </Col>
+              </Col> */}
             </div>
           </div>
         )}

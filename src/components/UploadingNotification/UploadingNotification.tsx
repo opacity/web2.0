@@ -3,7 +3,7 @@ import UploadingItem from "./UploadingItem";
 import "./UploadingNotification.scss";
 
 const isUploadCompleted = (notifications) => {
-  return notifications.find((item) => item.percent !== 100) ? false : true;
+  return notifications.every((item) => item.percent === 100) ? true : false;
 };
 
 const getPlural = (count, string) => (count > 1 ? string + "s" : string);
@@ -21,6 +21,7 @@ const UploadingNotification = ({ notifications, uploadFinish, setUploadingList, 
   React.useEffect(() => {
     if (notifications.length > 0 && isUploadCompleted(notifications)) {
       uploadFinish();
+      setUploadingList()
     }
   }, [notifications]);
 

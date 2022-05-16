@@ -448,7 +448,7 @@ const FileManagePage = ({ history }) => {
       templist[index].percent = percent;
       templist[index].status = status;
       fileUploadingList = templist;
-      setUploadingList(templist);
+      setUploadingList([...templist]);
       setProcessChange({});
     }
   };
@@ -1175,8 +1175,8 @@ const FileManagePage = ({ history }) => {
     const Ameta = sourceList.find((meta) => bytesToHex(meta.location) === bytesToHex(a.location));
     const Bmeta = sourceList.find((meta) => bytesToHex(meta.location) === bytesToHex(b.location));
 
-    var nameA = type === "file" ? (Ameta.public?.location ? "PUBLIC" : "PRIVATE") : Ameta.path.toUpperCase();
-    var nameB = type === "file" ? (Bmeta.public?.location ? "PUBLIC" : "PRIVATE") : Bmeta.path.toUpperCase();
+    var nameA = type === "file" ? (Ameta?.public?.location ? "PUBLIC" : "PRIVATE") : Ameta.path.toUpperCase();
+    var nameB = type === "file" ? (Bmeta?.public?.location ? "PUBLIC" : "PRIVATE") : Bmeta.path.toUpperCase();
     if (nameA < nameB) {
       return mode === "down" ? 1 : -1;
     }
