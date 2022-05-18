@@ -65,7 +65,10 @@ const FileShareModal = ({
     const doAction = async () => {
       setPageLoading(true);
       if (mode === "private") {
-        if (file.private.handle && _.isEmpty(file.public.location)) {
+        if (file.private.handle) {
+          if (!_.isEmpty(file.public.location)) {
+            await handleRevokeShortlink(false)
+          }
           accountSystem
             .getSharesByHandle(file.private.handle)
             .then(async (shares) => {
@@ -100,7 +103,6 @@ const FileShareModal = ({
                 );
                 setShareURL(`${FRONT_END_URL}/share#key=${shareHandle}`);
                 setPageLoading(false);
-                doRefresh();
               }
             })
             .catch((err) => {
@@ -178,7 +180,7 @@ const FileShareModal = ({
     file && doAction();
   }, [file, mode, accountSystem, cryptoMiddleware, netMiddleware, storageNode]);
 
-  const handleRevokeShortlink = async () => {
+  const handleRevokeShortlink = async (closeAfterRefresh: boolean) => {
     setPageLoading(true);
     try {
       const curFileMetadata = await accountSystem.getFileMetadata(file.location);
@@ -200,7 +202,9 @@ const FileShareModal = ({
 
       setPageLoading(false);
       doRefresh();
-      onClose();
+      if (closeAfterRefresh) {
+        onClose();
+      }
     } catch (error) {
       toast.error("An error occurred while revoking public");
       setPageLoading(false);
@@ -297,7 +301,7 @@ const FileShareModal = ({
                   <Button
                     variant="white btn-pill"
                     size="lg"
-                    onClick={handleRevokeShortlink}
+                    onClick={() => handleRevokeShortlink(true)}
                     style={{ color: "#E23B2A" }}
                   >
                     <img

@@ -1,19 +1,20 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import { lazy, Suspense }  from "react";
 import { Router, Route, Switch, Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
-import LandingPage from "./pages/LandingPage/LandingPage";
-import PlatformPage from "./pages/PlatformPage/PlatformPage";
-import PlansPage from "./pages/PlansPage/PlansPage";
-import CommunityPage from "./pages/CommunityPage/CommunityPage";
-import FileManagePage from "./pages/FileManagePage/FileManagePage";
-import OldAccountFileManage from "./pages/FileManagePage/OldAccountFileManage";
-import ForgotPage from "./pages/ForgotPage/ForgotPage";
-import SharePage from "./pages/SharePage/SharePage";
-import LegalPage from "./pages/LegalPages/LegalPage";
-import MigrationPage from "./pages/MigrationPage/MigrationPage";
-import Page404 from "./pages/404/404Page";
-import PressPage from "./pages/PressPage/PressPage";
+const LandingPage = lazy(() => import("./pages/LandingPage/LandingPage"));
+const PlatformPage = lazy(() => import("./pages/PlatformPage/PlatformPage"));
+const PlansPage = lazy(() => import("./pages/PlansPage/PlansPage"));
+const CommunityPage = lazy(() => import("./pages/CommunityPage/CommunityPage"));
+const FileManagePage = lazy(() => import("./pages/FileManagePage/FileManagePage"));
+const OldAccountFileManage = lazy(() => import("./pages/FileManagePage/OldAccountFileManage"));
+const ForgotPage = lazy(() => import("./pages/ForgotPage/ForgotPage"));
+const SharePage = lazy(() => import("./pages/SharePage/SharePage"));
+const LegalPage = lazy(() => import("./pages/LegalPages/LegalPage"));
+const MigrationPage = lazy(() => import("./pages/MigrationPage/MigrationPage"));
+const Page404 = lazy(() => import("./pages/404/404Page"));
+const PressPage = lazy(() => import("./pages/PressPage/PressPage"));
 import { PrivateRoute } from "./PrivateRoute";
 import "./index.scss";
 import "react-toastify/dist/ReactToastify.css";
@@ -43,6 +44,8 @@ let sentryOptions = {
 if (IS_LOCAL == false) {
   Sentry.init(sentryOptions);
 }
+
+const renderLoader = () => <p>Loading</p>;
 
 function App() {
   return (
@@ -89,27 +92,29 @@ function App() {
 
       <FileManagementStatusProvider>
         <WarningWrapper>
-          <Router history={history}>
-            <Switch>
-              <Route exact path="/" component={LandingPage} />
-              <Route exact path="/platform" component={PlatformPage} />
-              <Route exact path="/plans" component={PlansPage} />
-              <Route exact path="/downloads" component={CommunityPage} />
-              <Route path="/terms-of-service" render={() => <LegalPage title="Terms Of Service" type="terms-of-service" />} />
-              <Route path="/privacy-policy" render={() => <LegalPage title="Privacy Policy" type="privacy-policy" />} />
-              <Route path="/code-review-license" render={() => <LegalPage title="Code Review License" type="code-review-license" />} />
-              <PrivateRoute exact path="/file-manager" component={FileManagePage} />
-              <PrivateRoute exact path="/file-manager/:folderName" component={FileManagePage} />
-              <Route exact path="/forgot" component={ForgotPage} />
-              <Route path="/share" component={SharePage} />
-              <Route path="/migration" component={MigrationPage} />
-              <Route path="/about" component={AboutPage} />
-              <Route path="/press" component={PressPage} />
-              <PrivateRoute path="/migration-download" isOldRoute={true} component={OldAccountFileManage} />
+          <Suspense fallback={renderLoader}>
+            <Router history={history}>
+              <Switch>
+                <Route exact path="/" component={LandingPage} />
+                <Route exact path="/platform" component={PlatformPage} />
+                <Route exact path="/plans" component={PlansPage} />
+                <Route exact path="/downloads" component={CommunityPage} />
+                <Route path="/terms-of-service" render={() => <LegalPage title="Terms Of Service" type="terms-of-service" />} />
+                <Route path="/privacy-policy" render={() => <LegalPage title="Privacy Policy" type="privacy-policy" />} />
+                <Route path="/code-review-license" render={() => <LegalPage title="Code Review License" type="code-review-license" />} />
+                <PrivateRoute exact path="/file-manager" component={FileManagePage} />
+                <PrivateRoute exact path="/file-manager/:folderName" component={FileManagePage} />
+                <Route exact path="/forgot" component={ForgotPage} />
+                <Route path="/share" component={SharePage} />
+                <Route path="/migration" component={MigrationPage} />
+                <Route path="/about" component={AboutPage} />
+                <Route path="/press" component={PressPage} />
+                <PrivateRoute path="/migration-download" isOldRoute={true} component={OldAccountFileManage} />
 
-              <Route path="*" component={Page404} />
-            </Switch>
-          </Router>
+                <Route path="*" component={Page404} />
+              </Switch>
+            </Router>
+          </Suspense>
         </WarningWrapper>
       </FileManagementStatusProvider>
     </>

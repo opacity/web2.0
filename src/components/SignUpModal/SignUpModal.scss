@@ -252,7 +252,7 @@
             position: initial;
           }
           .type-item {
-            background: #ffffff;
+            background: #fff;
             color: #616161;
             width: 240px;
             height: 46px;
@@ -275,7 +275,7 @@
             }
             &.active {
               background: #2e6dde;
-              color: #ffffff;
+              color: #fff;
               position: relative;
               &::after {
                 width: 0;
@@ -314,7 +314,7 @@
               font-weight: 500;
               font-size: 15px;
               line-height: 22px;
-              color: #ffffff;
+              color: #fff;
               width: calc(100% - 40px);
               position: relative;
               text-align: left;
@@ -339,7 +339,7 @@
           }
         }
         @media (min-width: 768px) {
-          background: #ffffff;
+          background: #fff;
           box-shadow: 0px 4px 33px rgba(0, 0, 0, 0.17);
           border-radius: 20px;
           margin-top: 60px;
@@ -353,7 +353,7 @@
           font-weight: 600;
           font-size: 19px;
           line-height: 28px;
-          color: #000000;
+          color: #000;
           margin-bottom: 25px;
           margin-top: 30px;
           @media (max-width: 767.7px) {
@@ -402,7 +402,7 @@
         .need-opct {
           font-size: 16px;
           line-height: 20px;
-          color: #000000;
+          color: #000;
           .here {
             color: #2e6dde;
             font-weight: 600;
@@ -441,7 +441,6 @@
             height: 3px;
             background-color: #2e6dde;
             margin-top: 8px;
-            margin-left: 110px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -452,8 +451,12 @@
           font-weight: 600;
           font-size: 18px;
           line-height: 27px;
-          color: #000000;
+          color: #000;
           margin-bottom: 18px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
           @media (max-width: 767.7px) {
             font-size: 20px;
             line-height: 30px;
@@ -483,7 +486,7 @@
           h4 {
             font-weight: 600;
             font-size: 16px;
-            color: #000000;
+            color: #000;
             margin: 0;
             @media (max-width: 767.7px) {
               margin-bottom: 0;
@@ -521,7 +524,7 @@
           font-size: 20px;
           line-height: 30px;
           text-align: center;
-          color: #000000;
+          color: #000;
           position: relative;
           &::before {
             content: "";
@@ -553,7 +556,7 @@
             font-size: 20px;
             line-height: 30px;
             text-align: center;
-            color: #000000;
+            color: #000;
             @media (max-width: 767.7px) {
               font-size: 16px;
               line-height: 24px;
