@@ -267,7 +267,7 @@ const FileManagePage = ({ history }) => {
       accountSystem.getFoldersInFolderByPath(currentPath),
       currentPath == "/" ? accountSystem.addFolder(currentPath) : accountSystem.getFolderMetadataByPath(currentPath),
     ])
-      .then(([folders, folderMeta]) => {
+      .then(async ([folders, folderMeta]) => {
         setFolderList(folders);
         setFileList(folderMeta.files);
         setCurrentLocation(folderMeta.location);
