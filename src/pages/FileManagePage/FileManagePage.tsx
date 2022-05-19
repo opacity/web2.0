@@ -39,7 +39,6 @@ import WarningModal from "../../components/WarningModal/WarningModal";
 import AddNewFolderModal from "../../components/NewFolderModal/NewFolderModal";
 import "./FileManagePage.scss";
 import { formatBytes, formatGbs } from "../../helpers";
-import * as moment from "moment";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { FileManagerFileEntryGrid, FileManagerFileEntryList } from "../../components/FileManager/FileManagerFileEntry";
@@ -62,6 +61,11 @@ import { saveAs } from "file-saver";
 import SignUpModal from "../../components/SignUpModal/SignUpModal";
 import { PLANS } from "../../config";
 import { isChrome } from "react-device-detect";
+import formatDate from 'date-fns/format';
+import isAfter from 'date-fns/isAfter';
+import isBefore from 'date-fns/isBefore';
+import differenceInDays from "date-fns/differenceInDays";
+
 const uploadImage = require("../../assets/upload.png");
 const empty = require("../../assets/empty.png");
 const logo = require("../../assets/logo2.png");
@@ -358,7 +362,7 @@ const FileManagePage = ({ history }) => {
         setAlertShow(true);
       }
       if (remainDays < 30) {
-        moment(accountInfo.account.expirationDate).isAfter(moment(Date.now())) && setIsAccountExpired(true);
+        isAfter(new Date(accountInfo.account.expirationDate), new Date()) && setIsAccountExpired(true);
 
         setAlertText(`There are ${remainDays} days remaining on your account. `);
         if (limitStorage === 10) {
@@ -1135,7 +1139,6 @@ const FileManagePage = ({ history }) => {
       setFolderList(fileterfolderList);
     } else {
       toast.info("Search string empty!!");
-      //setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
     }
   };
   const getSelectedFileSize = () => {
@@ -1188,10 +1191,10 @@ const FileManagePage = ({ history }) => {
     const Ameta = sourceList.find((meta) => bytesToHex(meta.location) === bytesToHex(a.location));
     const Bmeta = sourceList.find((meta) => bytesToHex(meta.location) === bytesToHex(b.location));
 
-    if (moment(Ameta.modified).isBefore(moment(Bmeta.modified))) {
+    if (isBefore(new Date(Ameta.uploaded), new Date(Bmeta.uploaded))) {
       return mode === "down" ? 1 : -1;
     }
-    if (moment(Ameta.modified).isAfter(moment(Bmeta.modified))) {
+    if (isAfter(new Date(Ameta.uploaded), new Date(Bmeta.uploaded))) {
       return mode === "down" ? -1 : 1;
     }
     return 0;
@@ -1277,10 +1280,6 @@ const FileManagePage = ({ history }) => {
   }, [fileMetaList, folderMetaList, sortable]);
 
   const handleSortTable = async (mode, method) => {
-    if (!folderMetaList && !fileMetaList) {
-      await getFolderMetaList();
-      await getFileMetaList();
-    }
     setSortable({ column: mode, method });
   };
 
@@ -1434,7 +1433,7 @@ const FileManagePage = ({ history }) => {
             </div>
 
             <div className="storage-info">
-              {`Your plan expires on ${accountInfo ? moment(accountInfo.account.expirationDate).format("MMM D, YYYY") : "..."}.`}
+              {`Your plan expires on ${accountInfo ? formatDate(new Date(accountInfo.account.expirationDate), "MMM d, yyyy") : "..."}.`}
             </div>
 
             {upgradeAvailable && (
