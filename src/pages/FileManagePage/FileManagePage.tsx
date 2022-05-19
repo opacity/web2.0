@@ -272,6 +272,8 @@ const FileManagePage = ({ history }) => {
         setFileList(folderMeta.files);
         setCurrentLocation(folderMeta.location);
         loadingFlagCnt--;
+        await getFolderMetaList(folders);
+        await getFileMetaList(folderMeta.files);
         loadingFlagCnt === 0 && setPageLoading(false);
       })
       .catch((err) => {
@@ -324,8 +326,10 @@ const FileManagePage = ({ history }) => {
 
       const usedStorage = accountInfo.account.storageUsed;
       const limitStorage = accountInfo.account.storageLimit;
-      const remainDays = moment(accountInfo.account.expirationDate).diff(moment(Date.now()), "days");
-
+      const remainDays = differenceInDays(
+        new Date(accountInfo.account.expirationDate),
+        new Date()
+      );
       const plansApi = await account.plans();
       let idx = 0;
       for (idx = 0; idx < plansApi.length; idx++) {
@@ -1110,13 +1114,6 @@ const FileManagePage = ({ history }) => {
     if (selectedFiles.length) {
       setSelectedFiles([]);
     } else {
-      let fileMetaValues = fileMetaList;
-
-      if (!fileMetaList) {
-        await getFolderMetaList();
-        fileMetaValues = await getFileMetaList();
-      }
-
       setSelectedFiles(fileMetaValues.filter((item) => "uploaded" in item));
     }
   };
@@ -1138,7 +1135,7 @@ const FileManagePage = ({ history }) => {
       setFolderList(fileterfolderList);
     } else {
       toast.info("Search string empty!!");
-      setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
+      //setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
     }
   };
   const getSelectedFileSize = () => {
@@ -1175,8 +1172,8 @@ const FileManagePage = ({ history }) => {
     const Ameta = sourceList.find((meta) => bytesToHex(meta.location) === bytesToHex(a.location));
     const Bmeta = sourceList.find((meta) => bytesToHex(meta.location) === bytesToHex(b.location));
 
-    var nameA = type === "file" ? (Ameta?.public?.location ? "PUBLIC" : "PRIVATE") : Ameta.path.toUpperCase();
-    var nameB = type === "file" ? (Bmeta?.public?.location ? "PUBLIC" : "PRIVATE") : Bmeta.path.toUpperCase();
+    var nameA = type === "file" ? (Ameta.public.location ? "PUBLIC" : "PRIVATE") : Ameta.path.toUpperCase();
+    var nameB = type === "file" ? (Bmeta.public.location ? "PUBLIC" : "PRIVATE") : Bmeta.path.toUpperCase();
     if (nameA < nameB) {
       return mode === "down" ? 1 : -1;
     }
@@ -1214,7 +1211,7 @@ const FileManagePage = ({ history }) => {
     return 0;
   };
 
-  const getFileMetaList = React.useCallback(async () => {
+  const getFileMetaList = async (fileList: FolderFileEntry[]) => {
     setPageLoading(true);
     loadingFlagCnt++;
     const metaList = fileList.map(async (file) => {
@@ -1232,9 +1229,9 @@ const FileManagePage = ({ history }) => {
     loadingFlagCnt--;
     loadingFlagCnt === 0 && setPageLoading(false);
     return tmp;
-  }, [fileList]);
+  }
 
-  const getFolderMetaList = React.useCallback(async () => {
+  const getFolderMetaList = async (folderList: FoldersIndexEntry[]) => {
     setPageLoading(true);
     loadingFlagCnt++;
     const metaList = folderList.map(async (folder) => {
@@ -1251,7 +1248,7 @@ const FileManagePage = ({ history }) => {
     setFolderMetaList(tmp);
     loadingFlagCnt--;
     loadingFlagCnt === 0 && setPageLoading(false);
-  }, [folderList]);
+  }
 
   React.useEffect(() => {
     if (folderMetaList && fileMetaList && sortable.column !== "null") {
