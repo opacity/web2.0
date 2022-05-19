@@ -276,8 +276,7 @@ const FileManagePage = ({ history }) => {
         setFileList(folderMeta.files);
         setCurrentLocation(folderMeta.location);
         loadingFlagCnt--;
-        await getFolderMetaList(folders);
-        await getFileMetaList(folderMeta.files);
+        await Promise.all([getFolderMetaList(folders), getFileMetaList(folderMeta.files)]);
         loadingFlagCnt === 0 && setPageLoading(false);
       })
       .catch((err) => {
@@ -1118,7 +1117,7 @@ const FileManagePage = ({ history }) => {
     if (selectedFiles.length) {
       setSelectedFiles([]);
     } else {
-      setSelectedFiles(fileMetaValues.filter((item) => "uploaded" in item));
+      setSelectedFiles(fileMetaList.filter((item) => "uploaded" in item));
     }
   };
   const FilterbyName = async (searchName) => {
@@ -1161,6 +1160,8 @@ const FileManagePage = ({ history }) => {
   const compareName = (a, b, mode, type) => {
     var nameA = type === "file" ? a.name.toUpperCase() : a.path.toUpperCase();
     var nameB = type === "file" ? b.name.toUpperCase() : b.path.toUpperCase();
+    if (!nameA || !nameB) return 0;
+
     if (nameA < nameB) {
       return mode === "down" ? 1 : -1;
     }
@@ -1174,6 +1175,8 @@ const FileManagePage = ({ history }) => {
     const sourceList = type === "file" ? fileMetaList : folderMetaList;
     const Ameta = sourceList.find((meta) => bytesToHex(meta.location) === bytesToHex(a.location));
     const Bmeta = sourceList.find((meta) => bytesToHex(meta.location) === bytesToHex(b.location));
+    
+    if (!Ameta || !Bmeta) return 0;
 
     var nameA = type === "file" ? (Ameta.public.location ? "PUBLIC" : "PRIVATE") : Ameta.path.toUpperCase();
     var nameB = type === "file" ? (Bmeta.public.location ? "PUBLIC" : "PRIVATE") : Bmeta.path.toUpperCase();
@@ -1190,6 +1193,8 @@ const FileManagePage = ({ history }) => {
     const sourceList = type === "file" ? fileMetaList : folderMetaList;
     const Ameta = sourceList.find((meta) => bytesToHex(meta.location) === bytesToHex(a.location));
     const Bmeta = sourceList.find((meta) => bytesToHex(meta.location) === bytesToHex(b.location));
+    
+    if (!Ameta || !Bmeta) return 0;
 
     if (isBefore(new Date(Ameta.uploaded), new Date(Bmeta.uploaded))) {
       return mode === "down" ? 1 : -1;
@@ -1204,6 +1209,8 @@ const FileManagePage = ({ history }) => {
     const sourceList = type === "file" ? fileMetaList : folderMetaList;
     const Ameta = sourceList.find((meta) => bytesToHex(meta.location) === bytesToHex(a.location));
     const Bmeta = sourceList.find((meta) => bytesToHex(meta.location) === bytesToHex(b.location));
+
+    if (!Ameta || !Bmeta) return 0;
 
     if (Ameta.size < Bmeta.size) {
       return mode === "down" ? 1 : -1;
