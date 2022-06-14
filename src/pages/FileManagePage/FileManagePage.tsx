@@ -39,7 +39,6 @@ import WarningModal from "../../components/WarningModal/WarningModal";
 import AddNewFolderModal from "../../components/NewFolderModal/NewFolderModal";
 import "./FileManagePage.scss";
 import { formatBytes, formatGbs } from "../../helpers";
-import * as moment from "moment";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { FileManagerFileEntryGrid, FileManagerFileEntryList } from "../../components/FileManager/FileManagerFileEntry";
@@ -62,6 +61,11 @@ import { saveAs } from "file-saver";
 import SignUpModal from "../../components/SignUpModal/SignUpModal";
 import { PLANS } from "../../config";
 import { isChrome } from "react-device-detect";
+import formatDate from 'date-fns/format';
+import isAfter from 'date-fns/isAfter';
+import isBefore from 'date-fns/isBefore';
+import differenceInDays from "date-fns/differenceInDays";
+
 const uploadImage = require("../../assets/upload.png");
 const empty = require("../../assets/empty.png");
 const logo = require("../../assets/logo2.png");
@@ -271,11 +275,12 @@ const FileManagePage = ({ history }) => {
       accountSystem.getFoldersInFolderByPath(currentPath),
       currentPath == "/" ? accountSystem.addFolder(currentPath) : accountSystem.getFolderMetadataByPath(currentPath),
     ])
-      .then(([folders, folderMeta]) => {
+      .then(async ([folders, folderMeta]) => {
         setFolderList(folders);
         setFileList(folderMeta.files);
         setCurrentLocation(folderMeta.location);
         loadingFlagCnt--;
+        await Promise.all([getFolderMetaList(folders), getFileMetaList(folderMeta.files)]);
         loadingFlagCnt === 0 && setPageLoading(false);
       })
       .catch((err) => {
@@ -328,8 +333,10 @@ const FileManagePage = ({ history }) => {
 
       const usedStorage = accountInfo.account.storageUsed;
       const limitStorage = accountInfo.account.storageLimit;
-      const remainDays = moment(accountInfo.account.expirationDate).diff(moment(Date.now()), "days");
-
+      const remainDays = differenceInDays(
+        new Date(accountInfo.account.expirationDate),
+        new Date()
+      );
       const plansApi = await account.plans();
       let idx = 0;
       for (idx = 0; idx < plansApi.length; idx++) {
@@ -358,7 +365,7 @@ const FileManagePage = ({ history }) => {
         setAlertShow(true);
       }
       if (remainDays < 30) {
-        moment(accountInfo.account.expirationDate).isAfter(moment(Date.now())) && setIsAccountExpired(true);
+        isAfter(new Date(accountInfo.account.expirationDate), new Date()) && setIsAccountExpired(true);
 
         setAlertText(`There are ${remainDays} days remaining on your account. `);
         if (limitStorage === 10) {
@@ -1147,14 +1154,7 @@ const FileManagePage = ({ history }) => {
     if (selectedFiles.length) {
       setSelectedFiles([]);
     } else {
-      let fileMetaValues = fileMetaList;
-
-      if (!fileMetaList) {
-        await getFolderMetaList();
-        fileMetaValues = await getFileMetaList();
-      }
-
-      setSelectedFiles(fileMetaValues.filter((item) => "uploaded" in item));
+      setSelectedFiles(fileMetaList.filter((item) => "uploaded" in item));
     }
   };
   const FilterbyName = async (searchName) => {
@@ -1175,7 +1175,6 @@ const FileManagePage = ({ history }) => {
       setFolderList(fileterfolderList);
     } else {
       toast.info("Search string empty!!");
-      setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
     }
   };
   const getSelectedFileSize = () => {
@@ -1198,6 +1197,8 @@ const FileManagePage = ({ history }) => {
   const compareName = (a, b, mode, type) => {
     var nameA = type === "file" ? a.name.toUpperCase() : a.path.toUpperCase();
     var nameB = type === "file" ? b.name.toUpperCase() : b.path.toUpperCase();
+    if (!nameA || !nameB) return 0;
+
     if (nameA < nameB) {
       return mode === "down" ? 1 : -1;
     }
@@ -1211,9 +1212,11 @@ const FileManagePage = ({ history }) => {
     const sourceList = type === "file" ? fileMetaList : folderMetaList;
     const Ameta = sourceList.find((meta) => bytesToHex(meta.location) === bytesToHex(a.location));
     const Bmeta = sourceList.find((meta) => bytesToHex(meta.location) === bytesToHex(b.location));
+    
+    if (!Ameta || !Bmeta) return 0;
 
-    var nameA = type === "file" ? (Ameta?.public?.location ? "PUBLIC" : "PRIVATE") : Ameta.path.toUpperCase();
-    var nameB = type === "file" ? (Bmeta?.public?.location ? "PUBLIC" : "PRIVATE") : Bmeta.path.toUpperCase();
+    var nameA = type === "file" ? (Ameta.public.location ? "PUBLIC" : "PRIVATE") : Ameta.path.toUpperCase();
+    var nameB = type === "file" ? (Bmeta.public.location ? "PUBLIC" : "PRIVATE") : Bmeta.path.toUpperCase();
     if (nameA < nameB) {
       return mode === "down" ? 1 : -1;
     }
@@ -1227,11 +1230,13 @@ const FileManagePage = ({ history }) => {
     const sourceList = type === "file" ? fileMetaList : folderMetaList;
     const Ameta = sourceList.find((meta) => bytesToHex(meta.location) === bytesToHex(a.location));
     const Bmeta = sourceList.find((meta) => bytesToHex(meta.location) === bytesToHex(b.location));
+    
+    if (!Ameta || !Bmeta) return 0;
 
-    if (moment(Ameta.modified).isBefore(moment(Bmeta.modified))) {
+    if (isBefore(new Date(Ameta.uploaded), new Date(Bmeta.uploaded))) {
       return mode === "down" ? 1 : -1;
     }
-    if (moment(Ameta.modified).isAfter(moment(Bmeta.modified))) {
+    if (isAfter(new Date(Ameta.uploaded), new Date(Bmeta.uploaded))) {
       return mode === "down" ? -1 : 1;
     }
     return 0;
@@ -1242,6 +1247,8 @@ const FileManagePage = ({ history }) => {
     const Ameta = sourceList.find((meta) => bytesToHex(meta.location) === bytesToHex(a.location));
     const Bmeta = sourceList.find((meta) => bytesToHex(meta.location) === bytesToHex(b.location));
 
+    if (!Ameta || !Bmeta) return 0;
+
     if (Ameta.size < Bmeta.size) {
       return mode === "down" ? 1 : -1;
     }
@@ -1251,7 +1258,7 @@ const FileManagePage = ({ history }) => {
     return 0;
   };
 
-  const getFileMetaList = React.useCallback(async () => {
+  const getFileMetaList = async (fileList: FolderFileEntry[]) => {
     setPageLoading(true);
     loadingFlagCnt++;
     const metaList = fileList.map(async (file) => {
@@ -1269,9 +1276,9 @@ const FileManagePage = ({ history }) => {
     loadingFlagCnt--;
     loadingFlagCnt === 0 && setPageLoading(false);
     return tmp;
-  }, [fileList]);
+  }
 
-  const getFolderMetaList = React.useCallback(async () => {
+  const getFolderMetaList = async (folderList: FoldersIndexEntry[]) => {
     setPageLoading(true);
     loadingFlagCnt++;
     const metaList = folderList.map(async (folder) => {
@@ -1288,7 +1295,7 @@ const FileManagePage = ({ history }) => {
     setFolderMetaList(tmp);
     loadingFlagCnt--;
     loadingFlagCnt === 0 && setPageLoading(false);
-  }, [folderList]);
+  }
 
   React.useEffect(() => {
     if (folderMetaList && fileMetaList && sortable.column !== "null") {
@@ -1317,10 +1324,6 @@ const FileManagePage = ({ history }) => {
   }, [fileMetaList, folderMetaList, sortable]);
 
   const handleSortTable = async (mode, method) => {
-    if (!folderMetaList && !fileMetaList) {
-      await getFolderMetaList();
-      await getFileMetaList();
-    }
     setSortable({ column: mode, method });
   };
 
@@ -1488,7 +1491,7 @@ const FileManagePage = ({ history }) => {
             </div>
 
             <div className="storage-info">
-              {`Your plan expires on ${accountInfo ? moment(accountInfo.account.expirationDate).format("MMM D, YYYY") : "..."}.`}
+              {`Your plan expires on ${accountInfo ? formatDate(new Date(accountInfo.account.expirationDate), "MMM d, yyyy") : "..."}.`}
             </div>
 
             {upgradeAvailable && (
