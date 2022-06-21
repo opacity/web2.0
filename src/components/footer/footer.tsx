@@ -48,7 +48,7 @@ const Footer = () => {
             <NavLink href="/about">About Us</NavLink>
             <br />
             {/* <NavLink href="/press">Press</NavLink>
-            <br /> */}   
+            <br /> */}
             {/* TODO: until production */}
             <NavLink href="https://blog.opacity.io" target="_blank">
               Blog
@@ -77,10 +77,6 @@ const Footer = () => {
             <br />
             <NavLink href="https://telegram.me/opacitystorage" target="_blank">
               Telegram
-            </NavLink>
-            <br />
-            <NavLink href="http://discord.opacity.io/" target="_blank">
-              Discord
             </NavLink>
           </div>
           <div className="link-wrapper">
