@@ -8,6 +8,7 @@ import { posix } from "path-browserify";
 import { FileIcon } from "react-file-icon";
 import { useMediaQuery } from "react-responsive";
 import BrokenBadgeOnEntry from "./BrokenBadgeOnEntry";
+import { useDrop } from "react-dnd";
 
 export type FileManagerFolderEntryProps = {
   accountSystem: AccountSystem;
@@ -16,6 +17,7 @@ export type FileManagerFolderEntryProps = {
   handleDeleteItem: (f: FolderFileEntry | FoldersIndexEntry, isFile: boolean) => void;
   handleOpenRenameModal: (f: FolderFileEntry | FoldersIndexEntry, isFile: boolean) => void;
   handlePasteFilePath: (p: string) => void;
+  handleKeyPasteFile: (p: string) => void;
   handleDeleteBrokenFolder: (location: Uint8Array) => void;
   isAccountExpired?: boolean;
   isFilechoosed?: boolean;
@@ -28,12 +30,26 @@ export const FileManagerFolderEntryGrid = ({
   handleDeleteItem,
   handleOpenRenameModal,
   handlePasteFilePath,
+  handleKeyPasteFile,
   handleDeleteBrokenFolder,
   isAccountExpired,
   isFilechoosed,
 }: FileManagerFolderEntryProps) => {
   const [folderMeta, setFolderMeta] = React.useState<FolderMetadata>();
   const [isBroken, setIsBroken] = React.useState(false);
+  const elementRef = React.useRef(null);
+
+  const [, drop] = useDrop({
+    accept: "file",
+    hover(item) {
+      console.log("hovering", item)
+      console.log(folderEntry.path)
+      handlePasteFilePath(folderEntry.path)
+      setCurrentPath(folderEntry.path);
+    }
+  });
+
+  drop(elementRef);
 
   const [ref, unobserve] = useIntersectionObserver((e) => {
     if (folderEntry && e.isIntersecting) {
@@ -56,7 +72,7 @@ export const FileManagerFolderEntryGrid = ({
   };
 
   return (
-    <div className="grid-item">
+    <div className="grid-item" ref={elementRef}>
       <div className="items" onClick={() => !isBroken && folderMeta && setCurrentPath(folderEntry.path)}>
         <div style={{ width: "40px" }}>
           <FileIcon color="#8A8A8A" labelColor="#A8A8A8" fold={false} extension="folder" />
@@ -93,7 +109,7 @@ export const FileManagerFolderEntryGrid = ({
             Rename
           </Dropdown.Item>
           <Dropdown.Divider />
-          <Dropdown.Item disabled={isFilechoosed} eventKey="6" onClick={() => handlePasteFilePath(folderEntry.path)}>
+          <Dropdown.Item disabled={isFilechoosed} eventKey="6" onClick={() => handlePasteFilePath(folderEntry.path)} onChange={() => handleKeyPasteFile(folderEntry.path)}>
             <i className="icon-paste"></i>
             Paste
           </Dropdown.Item>
@@ -119,6 +135,7 @@ export const FileManagerFolderEntryList = ({
   handleDeleteItem,
   handleOpenRenameModal,
   handlePasteFilePath,
+  handleKeyPasteFile,
   handleDeleteBrokenFolder,
   isAccountExpired,
   isFilechoosed,
@@ -126,6 +143,20 @@ export const FileManagerFolderEntryList = ({
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const [folderMeta, setFolderMeta] = React.useState<FolderMetadata>();
   const [isBroken, setIsBroken] = React.useState(false);
+  const elementRef = React.useRef(null);
+
+  const [, drop] = useDrop({
+    accept: "file",
+    hover(item) {
+      console.log("hovering", item)
+      console.log(folderEntry.path)
+      handlePasteFilePath(folderEntry.path)
+      setCurrentPath(folderEntry.path);
+    }
+  });
+
+  drop(elementRef);
+
 
   const [ref, unobserve] = useIntersectionObserver((e) => {
     if (folderEntry && e.isIntersecting) {
@@ -156,7 +187,7 @@ export const FileManagerFolderEntryList = ({
   };
 
   return (
-    <Table.Row>
+    <tr ref={elementRef}>
       <Table.Col className="file-name" onClick={() => !isBroken && folderMeta && setCurrentPath(folderEntry.path)}>
         <div className="d-flex" ref={ref}>
           <i className="icon-folder"></i>
@@ -194,7 +225,7 @@ export const FileManagerFolderEntryList = ({
             Rename
           </Dropdown.Item>
           <Dropdown.Divider />
-          <Dropdown.Item disabled={isFilechoosed} eventKey="6" onClick={() => handlePasteFilePath(folderEntry.path)}>
+          <Dropdown.Item disabled={isFilechoosed} eventKey="6" onClick={() => handlePasteFilePath(folderEntry.path)} onChange={() => handleKeyPasteFile(folderEntry.path)}>
             <i className="icon-paste"></i>
             Paste
           </Dropdown.Item>
@@ -209,6 +240,6 @@ export const FileManagerFolderEntryList = ({
           )}
         </DropdownButton>
       </Table.Col>
-    </Table.Row>
+    </tr>
   );
 };

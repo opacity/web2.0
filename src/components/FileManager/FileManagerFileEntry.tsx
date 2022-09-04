@@ -9,6 +9,7 @@ import { FileIcon, defaultStyles } from "react-file-icon";
 import { useMediaQuery } from "react-responsive";
 import { arraysEqual } from "../../../ts-client-library/packages/util/src/arrayEquality";
 import BrokenBadgeOnEntry from "./BrokenBadgeOnEntry";
+import { useDrag, useDrop } from "react-dnd";
 
 const getFileExtension = (name) => {
   const lastDot = name.lastIndexOf(".");
@@ -30,6 +31,7 @@ export type FileManagerFileEntryProps = {
   handleSelectFile: Function;
   selectedFiles?: FileMetadata[];
   isAccountExpired?: boolean;
+  index?: number;
 };
 
 export const FileManagerFileEntryGrid = ({
@@ -45,11 +47,33 @@ export const FileManagerFileEntryGrid = ({
   handleSelectFile,
   selectedFiles,
   isAccountExpired,
+  index
 }: FileManagerFileEntryProps) => {
   const [fileMeta, setFileMeta] = React.useState<FileMetadata>();
   const [isSelected, setSelected] = React.useState(false);
   const [isBroken, setIsBroken] = React.useState(false);
   const [isMove, setMove] = React.useState(false);
+
+  const elementRef = React.useRef(null);
+
+  const [{ isDragging }, drag] = useDrag(() => ({
+    // what type of item this to determine if a drop target accepts it
+    type: "file",
+    // data of the item to be available to the drop methods
+    item: { id: "id" + index, index },
+    // method to collect additional data for drop handling like whether is currently being dragged
+    collect: (monitor) => {
+      return {
+        isDragging: monitor.isDragging(),
+      };
+    },
+  }));
+
+  drag(elementRef)
+  console.log("isDragging: " + isDragging)
+  if(isDragging) {
+    handleMoveFile(fileMeta)
+  }
 
   const [ref, unobserve] = useIntersectionObserver(() => {
     if (fileEntry) {
@@ -82,7 +106,7 @@ export const FileManagerFileEntryGrid = ({
   };
 
   return (
-    <div className="grid-item">
+    <div className="grid-item" ref={elementRef}>
       <div className={`items ${isSelected && "grid-item-selected"}`} onClick={() => fileMeta && handleSelectFile(fileMeta)}>
         <div style={{ width: "40px" }}>
           <FileIcon
@@ -176,12 +200,34 @@ export const FileManagerFileEntryList = ({
   handleSelectFile,
   selectedFiles,
   isAccountExpired,
+  index
 }: FileManagerFileEntryProps) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const [fileMeta, setFileMeta] = React.useState<FileMetadata>();
   const [isBroken, setIsBroken] = React.useState(false);
   const [isSelected, setSelected] = React.useState(false);
   const [isMove, setMove] = React.useState(false);
+
+  const elementRef = React.useRef(null);
+
+  const [{ isDragging }, drag] = useDrag(() => ({
+    // what type of item this to determine if a drop target accepts it
+    type: "file",
+    // data of the item to be available to the drop methods
+    item: { id: "id" + index, index },
+    // method to collect additional data for drop handling like whether is currently being dragged
+    collect: (monitor) => {
+      return {
+        isDragging: monitor.isDragging(),
+      };
+    },
+  }));
+
+  drag(elementRef)
+  console.log("isDragging: " + isDragging)
+  if(isDragging) {
+    handleMoveFile(fileMeta)
+  }
 
   const [ref, unobserve] = useIntersectionObserver((e) => {
     if (fileEntry && e.isIntersecting) {
@@ -233,8 +279,20 @@ export const FileManagerFileEntryList = ({
     handleDeleteBrokenFile(fileLocation);
   };
 
+  // const [{ isDragging }, drag] = useDrag(() => ({
+  //   // data of the item to be available to the drop methods
+  //   item: { id: id, index },
+  //   // method to collect additional data for drop handling like whether is currently being dragged
+  //   collect: (monitor) => {
+  //     return {
+  //       isDragging: monitor.isDragging(),
+  //     };
+  //   },
+  // }));
+
   return (
-    <Table.Row className={isSelected ? "selected" : ""}>
+    // <div ref={elementRef}>
+    <tr className={isSelected ? "selected" : ""} ref={elementRef}>
       <Table.Col className="file-name" onClick={() => fileMeta && handleSelectFile(fileMeta)}>
         <div className="d-flex" ref={ref}>
           <div style={{ width: "18px", marginRight: "40px" }}>
@@ -317,6 +375,7 @@ export const FileManagerFileEntryList = ({
           </Dropdown.Item>
         </DropdownButton>
       </Table.Col>
-    </Table.Row>
+    </tr>
+    // </div>
   );
 };

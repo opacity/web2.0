@@ -74,6 +74,9 @@ const copy = require("../../assets/copy.svg");
 streamsaver.mitm = "/resources/streamsaver/mitm.html";
 Object.assign(streamsaver, { WritableStream });
 import { OPACITY_DRIVE_FOR_MAC, OPACITY_DRIVE_FOR_WINDOWS } from "../../config";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+
 
 let logoutTimeout;
 let fileUploadingList = [];
@@ -83,6 +86,7 @@ const THREAD_COUNT = 10;
 let curThreadNum = 0;
 let uploaderThread = [];
 let location;
+let selectFilesLocation =[];
 
 const FileManagePage = ({ history }) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -892,8 +896,8 @@ const FileManagePage = ({ history }) => {
 
   const handleMoveFile = React.useCallback(async (file: FileMetadata) => {
     try {
+      selectFilesLocation[0] = file.location;
       location = file.location;
-      toast.info(`File copied`);
       setIsFileChoosed(false);
     } catch (e) {
       toast.error(`An error occurred while get file location`);
@@ -904,9 +908,10 @@ const FileManagePage = ({ history }) => {
     async (folderpath) => {
       setPageLoading(true);
       try {
-        console.log(location);
-        console.log(folderpath);
-        await accountSystem.moveFile(location, folderpath, false);
+        for(let i=0 ; i< selectFilesLocation.length ; i++)
+        {
+          await accountSystem.moveFile(selectFilesLocation[i], folderpath, false);
+        }
         toast.success(`File successfully moved!`);
         setIsFileChoosed(true);
         setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
@@ -916,6 +921,38 @@ const FileManagePage = ({ history }) => {
       }
     },
     [accountSystem, currentPath, updateCurrentFolderSwitch]
+  );
+
+  //move multiple files to folder using keypress
+  const handleKeyMoveFile = async () => {
+    for(let i=0 ; i< selectedFiles.length; i++)
+    {
+      selectFilesLocation[i] = selectedFiles[i].location;
+    }
+    console.log("Cut",selectFilesLocation);
+    setSelectedFiles([]);
+    OnfinishFileManaging();
+  };
+
+  const handleKeyPasteFile = React.useCallback(
+    async () => {
+      setPageLoading(true);
+      console.log("Paste", selectFilesLocation);
+      try {
+        console.log(currentPath);
+        for(let i=0 ; i<selectFilesLocation.length ; i++)
+        {
+          await accountSystem.moveFile(selectFilesLocation[i], currentPath, false);
+        }
+        setUpdateCurrentFolderSwitch(!updateCurrentFolderSwitch);
+        toast.success(`File successfully moved!`);
+        setIsFileChoosed(true);
+      } catch (e) {
+        setPageLoading(false);
+        toast.error(`An error occurred while moving a folder.`);
+      }
+    },
+    [accountSystem, updateCurrentFolderSwitch]
   );
 
   const deleteMultiFile = React.useCallback(
@@ -929,7 +966,7 @@ const FileManagePage = ({ history }) => {
             net: netMiddleware,
             crypto: cryptoMiddleware,
             storageNode: storageNode,
-          },
+          }, 
         });
         bindFileSystemObjectToAccountSystem(accountSystem, fso);
         await accountSystem
@@ -1304,6 +1341,20 @@ const FileManagePage = ({ history }) => {
       e.stopPropagation();
       onSelectAll(e);
     }
+
+    if (e.keyCode === 88 && localStorage.cmd_status === "true") {
+      e.preventDefault();
+      e.stopPropagation();
+      handleKeyMoveFile();
+      console.log("file move func called");
+    }
+
+    if (e.keyCode === 86 && localStorage.cmd_status === "true") {
+      //e.prentDveefault();
+      //e.stopPropagation();
+      handleKeyPasteFile();
+      console.log("file paste func called");
+    }
   };
 
   const keyUpHandler = (e) => {
@@ -1601,6 +1652,7 @@ const FileManagePage = ({ history }) => {
           <div className="breadcrumb-content">
             <Breadcrumb>
               <Breadcrumb.Item href="#" onClick={() => currentPath !== "/" && setCurrentPath("/")}>
+                {console.log("curentPath:",currentPath)}
                 <span className="home-icon"></span>
               </Breadcrumb.Item>
               {currentPath !== "/" &&
@@ -1645,48 +1697,52 @@ const FileManagePage = ({ history }) => {
               )}
 
               {!tableView && (
-                <div className="grid-view">
-                  {folderList.map(
-                    (item) =>
-                      item && (
-                        <FileManagerFolderEntryGrid
-                          key={bytesToB64URL(item.location)}
-                          accountSystem={accountSystem}
-                          folderEntry={item}
-                          handleDeleteItem={handleDeleteItem}
-                          handleOpenRenameModal={handleOpenRenameModal}
-                          handleDeleteBrokenFolder={handleDeleteBrokenFolder}
-                          setCurrentPath={setCurrentPath}
-                          handlePasteFilePath={handlePasteFilePath}
-                          isAccountExpired={isAccountExpired}
-                          isFilechoosed={isFilechoosed}
-                        />
-                      )
-                  )}
-                  {fileList.map(
-                    (item) =>
-                      item && (
-                        <FileManagerFileEntryGrid
-                          key={bytesToB64URL(item.location)}
-                          accountSystem={accountSystem}
-                          fileEntry={item}
-                          fileShare={fileShare}
-                          filePublicShare={filePublicShare}
-                          handleDeleteItem={handleDeleteItem}
-                          handleOpenRenameModal={handleOpenRenameModal}
-                          handleDeleteBrokenFile={handleDeleteBrokenFile}
-                          handleMoveFile={handleMoveFile}
-                          downloadItem={async (f) => {
-                            await fileDownload(f, false);
-                            OnfinishFileManaging();
-                          }}
-                          handleSelectFile={handleSelectFile}
-                          selectedFiles={selectedFiles}
-                          isAccountExpired={isAccountExpired}
-                        />
-                      )
-                  )}
-                </div>
+                 <DndProvider backend={HTML5Backend}>
+                  <div className="grid-view">
+                    {folderList.map(
+                      (item) =>
+                        item && (
+                          <FileManagerFolderEntryGrid
+                            key={bytesToB64URL(item.location)}
+                            accountSystem={accountSystem}
+                            folderEntry={item}
+                            handleDeleteItem={handleDeleteItem}
+                            handleOpenRenameModal={handleOpenRenameModal}
+                            handleDeleteBrokenFolder={handleDeleteBrokenFolder}
+                            setCurrentPath={setCurrentPath}
+                            handlePasteFilePath={handlePasteFilePath}
+                            handleKeyPasteFile={handleKeyPasteFile}
+                            isAccountExpired={isAccountExpired}
+                            //isFilechoosed={isFilechoosed}
+                          />
+                        )
+                    )}
+                    {fileList.map(
+                      (item, idx) =>
+                        item && (
+                          <FileManagerFileEntryGrid
+                            key={bytesToB64URL(item.location)}
+                            accountSystem={accountSystem}
+                            fileEntry={item}
+                            fileShare={fileShare}
+                            filePublicShare={filePublicShare}
+                            handleDeleteItem={handleDeleteItem}
+                            handleOpenRenameModal={handleOpenRenameModal}
+                            handleDeleteBrokenFile={handleDeleteBrokenFile}
+                            handleMoveFile={handleMoveFile}
+                            downloadItem={async (f) => {
+                              await fileDownload(f, false);
+                              OnfinishFileManaging();
+                            }}
+                            handleSelectFile={handleSelectFile}
+                            selectedFiles={selectedFiles}
+                            isAccountExpired={isAccountExpired}
+                            index={idx}
+                          />
+                        )
+                    )}
+                  </div>
+                </DndProvider>
               )}
 
               {tableView && (
@@ -1763,46 +1819,50 @@ const FileManagePage = ({ history }) => {
                     </tr>
                   </Table.Header>
                   <Table.Body>
-                    {folderList.map(
-                      (item) =>
-                        item && (
-                          <FileManagerFolderEntryList
-                            key={bytesToB64URL(item.location)}
-                            accountSystem={accountSystem}
-                            folderEntry={item}
-                            handleDeleteItem={handleDeleteItem}
-                            handleOpenRenameModal={handleOpenRenameModal}
-                            handleDeleteBrokenFolder={handleDeleteBrokenFolder}
-                            setCurrentPath={setCurrentPath}
-                            handlePasteFilePath={handlePasteFilePath}
-                            isAccountExpired={isAccountExpired}
-                            isFilechoosed={isFilechoosed}
-                          />
-                        )
-                    )}
-                    {fileList.map(
-                      (item) =>
-                        item && (
-                          <FileManagerFileEntryList
-                            key={bytesToB64URL(item.location)}
-                            accountSystem={accountSystem}
-                            fileEntry={item}
-                            fileShare={fileShare}
-                            filePublicShare={filePublicShare}
-                            handleDeleteItem={handleDeleteItem}
-                            handleDeleteBrokenFile={handleDeleteBrokenFile}
-                            handleMoveFile={handleMoveFile}
-                            handleOpenRenameModal={handleOpenRenameModal}
-                            downloadItem={async (f) => {
-                              await fileDownload(f);
-                              OnfinishFileManaging();
-                            }}
-                            handleSelectFile={handleSelectFile}
-                            selectedFiles={selectedFiles}
-                            isAccountExpired={isAccountExpired}
-                          />
-                        )
-                    )}
+                    <DndProvider backend={HTML5Backend}>
+                      {folderList.map(
+                        (item) =>
+                          item && (
+                            <FileManagerFolderEntryList
+                              key={bytesToB64URL(item.location)}
+                              accountSystem={accountSystem}
+                              folderEntry={item}
+                              handleDeleteItem={handleDeleteItem}
+                              handleOpenRenameModal={handleOpenRenameModal}
+                              handleDeleteBrokenFolder={handleDeleteBrokenFolder}
+                              setCurrentPath={setCurrentPath}
+                              handlePasteFilePath={handlePasteFilePath}
+                              handleKeyPasteFile={handleKeyPasteFile}
+                              isAccountExpired={isAccountExpired}
+                              //isFilechoosed={isFilechoosed}
+                            />
+                          )
+                      )}
+                      {fileList.map(
+                        (item, idx) =>
+                          item && (
+                            <FileManagerFileEntryList
+                              key={bytesToB64URL(item.location)}
+                              accountSystem={accountSystem}
+                              fileEntry={item}
+                              fileShare={fileShare}
+                              filePublicShare={filePublicShare}
+                              handleDeleteItem={handleDeleteItem}
+                              handleDeleteBrokenFile={handleDeleteBrokenFile}
+                              handleMoveFile={handleMoveFile}
+                              handleOpenRenameModal={handleOpenRenameModal}
+                              downloadItem={async (f) => {
+                                await fileDownload(f);
+                                OnfinishFileManaging();
+                              }}
+                              handleSelectFile={handleSelectFile}
+                              selectedFiles={selectedFiles}
+                              isAccountExpired={isAccountExpired}
+                              index={idx}
+                            />
+                          )
+                      )}
+                    </DndProvider>
                   </Table.Body>
                 </Table>
               )}
